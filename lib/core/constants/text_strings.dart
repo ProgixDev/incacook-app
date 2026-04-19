@@ -212,4 +212,22 @@ class AppTexts {
   static const String homeBrandsNearYou = "Big brands near you";
   static const String homeFreeDelivery = "Free Delivery";
   static const String homeSpecialOffers = "Special offers";
+
+  //* home — active order strip
+  static const String homeActiveOrderEtaPrefix = "Arriving in";
+  static const String homeActiveOrderEtaSuffix = "min";
+  static const String homeActiveOrderSubtitle = "John is on the way";
+
+  //* home — promo banners
+  static const String homePromo1Title = "20% off your first order";
+  static const String homePromo1Subtitle = "Use code TASTY20 at checkout";
+  static const String homePromo1Cta = "Claim now";
+
+  static const String homePromo2Title = "Free delivery, all weekend";
+  static const String homePromo2Subtitle = "On orders above \$15";
+  static const String homePromo2Cta = "Shop now";
+
+  static const String homePromo3Title = "Chef's spicy bowls";
+  static const String homePromo3Subtitle = "Bold flavors, just landed";
+  static const String homePromo3Cta = "Explore";
 }

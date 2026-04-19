@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
@@ -8,13 +9,17 @@ import 'package:vinted_v2/core/utils/device_utils.dart';
 import 'package:vinted_v2/core/widgets/layouts/grid_layout.dart';
 import 'package:vinted_v2/features/home/domain/brand.dart';
 import 'package:vinted_v2/features/home/domain/food_offer.dart';
+import 'package:vinted_v2/features/home/domain/promo_banner.dart';
+import 'package:vinted_v2/features/home/presentation/widget/active_order_strip.dart';
 import 'package:vinted_v2/features/home/presentation/widget/brand_card.dart';
 import 'package:vinted_v2/features/home/presentation/widget/category_chip.dart';
 import 'package:vinted_v2/features/home/presentation/widget/craving_header.dart';
 import 'package:vinted_v2/features/home/presentation/widget/food_offer_card.dart';
 import 'package:vinted_v2/features/home/presentation/widget/home_appbar.dart';
 import 'package:vinted_v2/features/home/presentation/widget/home_search_bar.dart';
+import 'package:vinted_v2/features/home/presentation/widget/promo_banner_carousel.dart';
 import 'package:vinted_v2/features/home/presentation/widget/section_header.dart';
+import 'package:vinted_v2/features/orders/presentation/screens/order_tracking.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +30,36 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedCategoryIndex = 1; //? Food selected by default
+
+  //? demo flag — swap for real "hasActiveOrder" check once orders are wired
+  final bool _hasActiveOrder = true;
+
+  static const List<PromoBanner> _promos = [
+    PromoBanner(
+      title: AppTexts.homePromo1Title,
+      subtitle: AppTexts.homePromo1Subtitle,
+      ctaLabel: AppTexts.homePromo1Cta,
+      imagePath: AppImages.foodTest,
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.white,
+    ),
+    PromoBanner(
+      title: AppTexts.homePromo2Title,
+      subtitle: AppTexts.homePromo2Subtitle,
+      ctaLabel: AppTexts.homePromo2Cta,
+      imagePath: AppImages.foodTest,
+      backgroundColor: AppColors.secondary,
+      foregroundColor: AppColors.white,
+    ),
+    PromoBanner(
+      title: AppTexts.homePromo3Title,
+      subtitle: AppTexts.homePromo3Subtitle,
+      ctaLabel: AppTexts.homePromo3Cta,
+      imagePath: AppImages.foodTest,
+      backgroundColor: Color(0xFFE8823B),
+      foregroundColor: AppColors.white,
+    ),
+  ];
 
   static const List<_Category> _categories = [
     _Category(name: 'Plats', imagePath: AppImages.crafts),
@@ -120,6 +155,21 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //* active order strip — only while a delivery is in progress
+            if (_hasActiveOrder) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSizes.md,
+                  AppSizes.md,
+                  AppSizes.md,
+                  0,
+                ),
+                child: ActiveOrderStrip(
+                  onTap: () => Get.to(() => const OrderTrackingScreen()),
+                ),
+              ),
+            ],
+
             //* craving heading
             const Padding(
               padding: EdgeInsets.all(AppSizes.md),
@@ -131,6 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
               child: HomeSearchBar(),
             ),
+            const Gap(AppSizes.spaceBtwSections),
+
+            //* promo banner carousel
+            PromoBannerCarousel(banners: _promos, onBannerTap: (_) {}),
             const Gap(AppSizes.spaceBtwSections),
 
             //* category header
