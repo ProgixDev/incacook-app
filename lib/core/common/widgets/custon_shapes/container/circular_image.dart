@@ -9,10 +9,10 @@ class CustomCircularImage extends StatelessWidget {
     this.width = 56,
     this.height = 56,
     this.overlayColor,
-    this.backgroundColor,
+    // this.backgroundColor,
     required this.image,
     this.fit = BoxFit.cover,
-    this.padding = AppSizes.sm,
+    this.padding = 0,
     this.isNetworkImage = false,
   });
 
@@ -20,7 +20,7 @@ class CustomCircularImage extends StatelessWidget {
   final String image;
   final bool isNetworkImage;
   final Color? overlayColor;
-  final Color? backgroundColor;
+  // final Color? backgroundColor;
   final double width, height, padding;
 
   @override

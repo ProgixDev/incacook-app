@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:vinted_v2/features/chat/presentation/screens/chat.dart';
 import 'package:vinted_v2/features/orders/controllers/order_tracking_controller.dart';
 import 'package:vinted_v2/features/orders/domain/order_stage.dart';
 import 'package:vinted_v2/features/orders/presentation/widgets/delivered_stage_view.dart';
@@ -18,6 +19,7 @@ class OrderTrackingScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
+      extendBodyBehindAppBar: true,
       appBar: CustomAppBar(showBackArrow: true),
       body: Obx(
         () => Stack(
@@ -35,7 +37,7 @@ class OrderTrackingScreen extends StatelessWidget {
                 etaMinutes: controller.etaMinutes.value,
                 onStageTap: controller.setStage,
                 onCallTap: () {},
-                onChatTap: () {},
+                onChatTap: () => Get.to(() => const ChatScreen()),
               ),
             ),
           ],

@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
                 itemCount: _categories.length,
-                separatorBuilder: (_, _) => const Gap(AppSizes.sm),
+                separatorBuilder: (_, _) => const Gap(AppSizes.md),
                 itemBuilder: (context, index) {
                   final category = _categories[index];
                   return CategoryChip(

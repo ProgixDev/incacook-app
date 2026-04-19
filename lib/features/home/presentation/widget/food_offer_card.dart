@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:vinted_v2/features/catalog/presentation/screens/product_detail.dart';
 import 'package:vinted_v2/features/home/domain/food_offer.dart';
 
 class FoodOfferCard extends StatelessWidget {
@@ -14,30 +16,33 @@ class FoodOfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.4),
-      ),
-      padding: const EdgeInsets.all(AppSizes.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _TopRow(
-            minutes: offer.deliveryMinutes,
-            freeDelivery: offer.freeDelivery,
-          ),
-          const Gap(AppSizes.md),
-          _TitleAndImage(offer: offer),
-          const Spacer(),
-          _PriceRow(price: offer.price),
-          const Gap(AppSizes.md),
-          _SpecialOffersRow(
-            containOffers: offer.containOffers,
-            discountLabel: offer.discountLabel,
-            onAddToCart: onAddToCart,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => Get.to(() => const ProductDetailScreen()),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.accent,
+          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.4),
+        ),
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _TopRow(
+              minutes: offer.deliveryMinutes,
+              freeDelivery: offer.freeDelivery,
+            ),
+            const Gap(AppSizes.md),
+            _TitleAndImage(offer: offer),
+            const Spacer(),
+            _PriceRow(price: offer.price),
+            const Gap(AppSizes.md),
+            _SpecialOffersRow(
+              containOffers: offer.containOffers,
+              discountLabel: offer.discountLabel,
+              onAddToCart: onAddToCart,
+            ),
+          ],
+        ),
       ),
     );
   }

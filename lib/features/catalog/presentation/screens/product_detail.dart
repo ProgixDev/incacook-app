@@ -7,14 +7,14 @@ import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
 import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/catalog/presentation/widgets/deliverer_card.dart';
-import 'package:vinted_v2/features/catalog/presentation/widgets/often_ordered_with.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_bottom_bar.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_description_block.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_image_header.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_info_pill_bar.dart';
+import 'package:vinted_v2/features/catalog/presentation/widgets/product_reviews_section.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_sheet_blend.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_title_price_row.dart';
+import 'package:vinted_v2/features/catalog/presentation/widgets/seller_card.dart';
 import 'package:vinted_v2/features/orders/presentation/screens/order_summary.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -42,6 +42,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     AppImages.foodTest,
   ];
 
+  //? sample reviews — swap with a real data source when the API is wired
+  static const List<ProductReview> _sampleReviews = [
+    ProductReview(
+      author: AppTexts.productReview1Author,
+      avatarPath: AppImages.profilePic,
+      rating: 5,
+      body: AppTexts.productReview1Body,
+      time: AppTexts.productReview1Time,
+    ),
+    ProductReview(
+      author: AppTexts.productReview2Author,
+      avatarPath: AppImages.profilePic,
+      rating: 5,
+      body: AppTexts.productReview2Body,
+      time: AppTexts.productReview2Time,
+    ),
+    ProductReview(
+      author: AppTexts.productReview3Author,
+      avatarPath: AppImages.profilePic,
+      rating: 4,
+      body: AppTexts.productReview3Body,
+      time: AppTexts.productReview3Time,
+    ),
+  ];
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -54,7 +79,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(showBackArrow: true),
       body: Stack(
         children: [
@@ -111,7 +136,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         //? solid sheet body continues below the blend
                         Container(
-                          color: AppColors.white,
+                          color: AppColors.lightBackground,
                           padding: const EdgeInsets.fromLTRB(
                             AppSizes.md,
                             AppSizes.lg,
@@ -120,19 +145,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              ProductInfoPillBar(),
-                              Gap(AppSizes.lg),
-                              DelivererCard(),
-                              Gap(AppSizes.lg),
-                              ProductDescriptionBlock(
+                            children: [
+                              const ProductInfoPillBar(),
+                              const Gap(AppSizes.lg),
+                              const SellerCard(),
+                              const Gap(AppSizes.lg),
+                              const ProductDescriptionBlock(
                                 description: AppTexts.productSampleLongDesc,
                               ),
-                              Gap(AppSizes.lg),
-                              OftenOrderedWith(),
+                              const Gap(AppSizes.lg),
+                              ProductReviewsSection(
+                                averageRating: 3.9,
+                                totalReviews: 193,
+                                reviews: _sampleReviews,
+                                onSeeAll: () {},
+                              ),
                             ],
                           ),
                         ),
+                        const Gap(AppSizes.lg),
                       ],
                     ),
                   ),

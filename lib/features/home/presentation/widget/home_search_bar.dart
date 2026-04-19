@@ -34,7 +34,7 @@ class HomeSearchBar extends StatelessWidget {
                 size: 22,
               ),
               filled: true,
-              fillColor: AppColors.white,
+              fillColor: AppColors.accent,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(32),

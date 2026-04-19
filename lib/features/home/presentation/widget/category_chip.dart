@@ -20,7 +20,7 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double pillHeight = 35;
+    const double pillHeight = 66;
     final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
       fontWeight: FontWeight.w600,
       color: selected ? AppColors.accent : AppColors.secondary,
@@ -31,17 +31,29 @@ class CategoryChip extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOut,
-        height: pillHeight,
+
         padding: const EdgeInsets.only(right: AppSizes.md),
         decoration: BoxDecoration(
           color: selected ? AppColors.secondary : AppColors.accent,
-          borderRadius: BorderRadius.circular(100),
+          borderRadius: BorderRadius.circular(19),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CustomCircularImage(image: imagePath),
+            Container(
+              height: pillHeight,
+              width: pillHeight,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(19),
+                color: AppColors.lightGrey,
+                border: BoxBorder.all(
+                  color: AppColors.darkGrey.withValues(alpha: 0.4),
+                  width: 0.2,
+                ),
+              ),
+              child: CustomCircularImage(image: imagePath, fit: BoxFit.contain),
+            ),
             const Gap(AppSizes.sm),
             Text(label, style: textStyle),
           ],

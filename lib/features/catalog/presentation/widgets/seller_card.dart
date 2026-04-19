@@ -10,19 +10,32 @@ import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
 import 'package:vinted_v2/features/chat/presentation/screens/chat.dart';
 
-class DelivererCard extends StatelessWidget {
-  const DelivererCard({
+class SellerCard extends StatelessWidget {
+  const SellerCard({
     super.key,
-    this.name = AppTexts.productSampleDelivererName,
-    this.role = AppTexts.productDelivererRole,
+    this.name = AppTexts.productSampleSellerName,
     this.imagePath = AppImages.profilePic,
+    this.rating = AppTexts.productSampleSellerRating,
+    this.ordersCompleted = AppTexts.productSampleSellerOrdersCompleted,
     this.onCallTap,
   });
 
   final String name;
-  final String role;
   final String imagePath;
+  final double rating;
+  final int ordersCompleted;
   final VoidCallback? onCallTap;
+
+  String get _formattedOrders {
+    //? 1284 -> "1,284"
+    final s = ordersCompleted.toString();
+    final buffer = StringBuffer();
+    for (var i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buffer.write(',');
+      buffer.write(s[i]);
+    }
+    return buffer.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +61,42 @@ class DelivererCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Text(
-                  role,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                Row(
+                  children: [
+                    const Icon(
+                      Iconsax.star1,
+                      size: 14,
+                      color: Color(0xFFFFC107),
+                    ),
+                    const Gap(4),
+                    Text(
+                      rating.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Gap(6),
+                    //? separator dot
+                    Container(
+                      width: 3,
+                      height: 3,
+                      decoration: const BoxDecoration(
+                        color: AppColors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const Gap(6),
+                    Flexible(
+                      child: Text(
+                        '$_formattedOrders ${AppTexts.productSellerOrdersSuffix}',
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

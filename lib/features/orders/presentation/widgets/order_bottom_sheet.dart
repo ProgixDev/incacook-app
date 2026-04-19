@@ -29,7 +29,7 @@ class OrderBottomSheet extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.accent,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       padding: EdgeInsets.fromLTRB(
@@ -41,15 +41,6 @@ class OrderBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //* drag handle
-          Container(
-            width: 44,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.grey.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
           const Gap(AppSizes.lg),
 
           //* title + subtitle (changes per stage)
@@ -80,10 +71,9 @@ class _StageHeader extends StatelessWidget {
       color: AppColors.textPrimary,
       fontWeight: FontWeight.w800,
     );
-    final subtitleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: AppColors.grey,
-      height: 1.35,
-    );
+    final subtitleStyle = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(color: AppColors.grey, height: 1.35);
 
     late final String title;
     late final String subtitle;

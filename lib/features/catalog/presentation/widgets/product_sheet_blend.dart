@@ -19,7 +19,7 @@ class ProductSheetBlend extends StatelessWidget {
     this.height = 130,
     this.cornerRadius = 32,
     this.blurSigma = 22,
-    this.sheetColor = AppColors.white,
+    this.sheetColor = AppColors.lightBackground,
     this.child,
     this.childPadding = const EdgeInsets.fromLTRB(16, 0, 16, 12),
   });
@@ -43,10 +43,7 @@ class ProductSheetBlend extends StatelessWidget {
             //* layer 1: blur + transparent→sheet gradient
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: blurSigma,
-                  sigmaY: blurSigma,
-                ),
+                filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

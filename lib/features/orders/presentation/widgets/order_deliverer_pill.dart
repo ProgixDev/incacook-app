@@ -18,7 +18,7 @@ class OrderDelivererPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: AppColors.black,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(48),
       ),
       child: Row(
@@ -65,7 +65,7 @@ class OrderDelivererPill extends StatelessWidget {
             child: const CustomCircularContainer(
               size: 44,
               backgroundColor: AppColors.white,
-              child: Icon(Iconsax.call, color: AppColors.black, size: 18),
+              child: Icon(Iconsax.call, color: AppColors.primary, size: 18),
             ),
           ),
           const Gap(AppSizes.xs + 2),
@@ -79,7 +79,11 @@ class OrderDelivererPill extends StatelessWidget {
                 const CustomCircularContainer(
                   size: 44,
                   backgroundColor: AppColors.white,
-                  child: Icon(Iconsax.message, color: AppColors.black, size: 18),
+                  child: Icon(
+                    Iconsax.message,
+                    color: AppColors.primary,
+                    size: 18,
+                  ),
                 ),
                 Positioned(
                   right: 2,

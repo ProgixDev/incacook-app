@@ -173,6 +173,34 @@ class AppTexts {
       "Premium chicken breast marinated and grilled to perfection. Every bite is flavorful, lean, and incredibly tender. Great for anyone who loves healthy comfort food";
   static const String productSampleDelivererName = "Alice Johnson";
 
+  //* seller (product page)
+  static const String productSampleSellerName = "Alice's Kitchen";
+  static const double productSampleSellerRating = 4.8;
+  static const int productSampleSellerOrdersCompleted = 1284;
+  static const String productSellerOrdersSuffix = "orders completed";
+
+  //* reviews section
+  static const String productReviewsTitle = "Reviews";
+  static const String productReviewsSeeAll = "See all";
+  static const String productReviewsBasedOn = "Based on";
+  static const String productReviewsWordReviews = "reviews";
+
+  //* sample review data
+  static const String productReview1Author = "Sophie M.";
+  static const String productReview1Body =
+      "Flavors were on point and the portion was perfect. Will definitely order again.";
+  static const String productReview1Time = "2 days ago";
+
+  static const String productReview2Author = "Marcus L.";
+  static const String productReview2Body =
+      "Came hot and fresh. The chicken was super tender — exactly as described.";
+  static const String productReview2Time = "5 days ago";
+
+  static const String productReview3Author = "Lina K.";
+  static const String productReview3Body =
+      "Great value for the price. Seasoning was a little mild but the meat was juicy.";
+  static const String productReview3Time = "1 week ago";
+
   //* home screen
   static const String homeCravingPart1 = "What's";
   static const String homeCravingPart2 = "Your Craving";
