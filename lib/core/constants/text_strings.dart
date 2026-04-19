@@ -122,6 +122,28 @@ class AppTexts {
   static const String productOrder = "Order";
   static const String productDelivererRole = "Deliver man";
 
+  //* chat list
+  static const String chatListTitle = "Chats List";
+  static const String chatSearchHint = "Search Popular Stores";
+  static const String chatTypingSuffix = "is typing...";
+
+  //* chat list sample data
+  static const String chatSample1Name = "Fresh Mart Super Shop";
+  static const String chatSample1Msg =
+      "Hello, I would like to get information about your delivery times";
+  static const String chatSample2Name = "Daily Grocery Store";
+  static const String chatSample2Msg =
+      "Could you please let me know if tomatoes are available?";
+  static const String chatSample3Name = "Green Cart Grocery";
+  static const String chatSample3Msg = "Welcome! What can I help you with?";
+  static const String chatSample4Name = "Duck go Support";
+  static const String chatSample4Msg =
+      "I would appreciate receiving a refund for my last order";
+  static const String chatSample5Name = "Pharmacy Care";
+  static const String chatSample5Msg =
+      "Kindly provide information about the prescription";
+  static const String chatSample6Name = "ShopNest E-Commerce";
+
   //* order tracking
   static const String trackingPreparingTitle = "Your order is being prepared";
   static const String trackingPreparingSubtitle =

@@ -25,10 +25,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: () => Get.to(() => const ProductDetailScreen()),
-            child: Icon(Iconsax.location, color: AppColors.secondary),
-          ),
+          Icon(Iconsax.location, color: AppColors.secondary),
           const Gap(AppSizes.sm),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

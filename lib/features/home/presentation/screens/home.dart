@@ -231,10 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       left: index == 0 ? AppSizes.md : AppSizes.sm,
                       right: AppSizes.sm,
                     ),
-                    child: FoodOfferCard(
-                      offer: _offers[index],
-                      onAddToCart: () {},
-                    ),
+                    child: FoodOfferCard(offer: _offers[index]),
                   );
                 },
               ),

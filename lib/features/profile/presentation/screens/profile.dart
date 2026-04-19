@@ -7,7 +7,6 @@ import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
 import 'package:vinted_v2/features/profile/domain/profile_menu_item.dart';
-import 'package:vinted_v2/features/profile/presentation/widgets/profile_appbar.dart';
 import 'package:vinted_v2/features/profile/presentation/widgets/profile_menu_card.dart';
 import 'package:vinted_v2/features/profile/presentation/widgets/profile_user_card.dart';
 
@@ -73,7 +72,6 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       extendBody: false,
-      // appBar: const ProfileAppBar(),
       appBar: CustomAppBar(
         leading: const CustomCircularContainer(
           size: 44,
@@ -82,9 +80,9 @@ class ProfileScreen extends StatelessWidget {
         ),
         title: Text(
           AppTexts.profileTitle,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppColors.secondary,
-            fontWeight: FontWeight.w600,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
           ),
         ),
         actions: [

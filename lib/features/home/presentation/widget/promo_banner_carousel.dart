@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:vinted_v2/core/utils/device/device_utility.dart';
 import 'package:vinted_v2/features/home/domain/promo_banner.dart';
 import 'package:vinted_v2/features/home/presentation/widget/promo_banner_card.dart';
 
@@ -59,7 +60,7 @@ class _PromoBannerCarouselState extends State<PromoBannerCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 140,
+          height: DeviceUtils.getScreenHeight(context) * 0.18,
           child: PageView.builder(
             controller: _controller,
             onPageChanged: (i) => setState(() => _currentIndex = i),

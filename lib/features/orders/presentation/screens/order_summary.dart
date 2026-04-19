@@ -16,7 +16,7 @@ class OrderSummaryScreen extends StatelessWidget {
     const total = itemPrice + deliveryFee;
 
     return Scaffold(
-      backgroundColor: AppColors.lightGrey,
+      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         title: Text(
           'Order Summary',

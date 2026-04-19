@@ -86,21 +86,26 @@ class _MyCartScreenState extends State<MyCartScreen> {
               height: double.infinity,
               child: Stack(
                 children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (final item in _items) ...[
-                          CartItemCard(
-                            item: item,
-                            onIncrement: () => _updateQuantity(item.id, 1),
-                            onDecrement: () => _updateQuantity(item.id, -1),
-                            onRemove: () => _removeItem(item.id),
-                          ),
-                          const Gap(AppSizes.md),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.md,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final item in _items) ...[
+                            CartItemCard(
+                              item: item,
+                              onIncrement: () => _updateQuantity(item.id, 1),
+                              onDecrement: () => _updateQuantity(item.id, -1),
+                              onRemove: () => _removeItem(item.id),
+                            ),
+                            const Gap(AppSizes.md),
+                          ],
+                          const Gap(AppSizes.spaceBtwSections),
                         ],
-                        const Gap(AppSizes.spaceBtwSections),
-                      ],
+                      ),
                     ),
                   ),
                   Positioned(

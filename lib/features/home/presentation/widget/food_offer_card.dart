@@ -9,10 +9,9 @@ import 'package:vinted_v2/features/catalog/presentation/screens/product_detail.d
 import 'package:vinted_v2/features/home/domain/food_offer.dart';
 
 class FoodOfferCard extends StatelessWidget {
-  const FoodOfferCard({super.key, required this.offer, this.onAddToCart});
+  const FoodOfferCard({super.key, required this.offer});
 
   final FoodOffer offer;
-  final VoidCallback? onAddToCart;
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +31,11 @@ class FoodOfferCard extends StatelessWidget {
               freeDelivery: offer.freeDelivery,
             ),
             const Gap(AppSizes.md),
-            _TitleAndImage(offer: offer),
-            const Spacer(),
-            _PriceRow(price: offer.price),
-            const Gap(AppSizes.md),
-            _SpecialOffersRow(
-              containOffers: offer.containOffers,
-              discountLabel: offer.discountLabel,
-              onAddToCart: onAddToCart,
-            ),
+            _TitleImageAndPrice(offer: offer),
+            if (offer.containOffers) ...[
+              const Gap(AppSizes.md),
+              _SpecialOffersRow(discountLabel: offer.discountLabel),
+            ],
           ],
         ),
       ),
@@ -97,8 +92,8 @@ class _TopRow extends StatelessWidget {
   }
 }
 
-class _TitleAndImage extends StatelessWidget {
-  const _TitleAndImage({required this.offer});
+class _TitleImageAndPrice extends StatelessWidget {
+  const _TitleImageAndPrice({required this.offer});
   final FoodOffer offer;
 
   @override
@@ -110,15 +105,15 @@ class _TitleAndImage extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 140,
+      height: 160,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          //* title on the left
+          //* title spans the upper-left, reserving space for the round image
           Positioned(
             left: 0,
             top: 0,
-            right: 110,
+            right: 120,
             child: Text.rich(
               TextSpan(
                 children: [
@@ -136,7 +131,7 @@ class _TitleAndImage extends StatelessWidget {
             ),
           ),
 
-          //* food image on the right
+          //* food image floats bottom-right
           Positioned(
             right: -AppSizes.md,
             bottom: -AppSizes.sm,
@@ -149,52 +144,22 @@ class _TitleAndImage extends StatelessWidget {
               ),
             ),
           ),
+
+          //* large price sits at the bottom-left, next to the image
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: _LargePrice(price: offer.price),
+          ),
         ],
       ),
     );
   }
 }
 
-// class _FloatingChip extends StatelessWidget {
-//   const _FloatingChip({required this.icon, required this.label});
-//   final IconData icon;
-//   final String label;
+class _LargePrice extends StatelessWidget {
+  const _LargePrice({required this.price});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm, vertical: 4),
-//       decoration: BoxDecoration(
-//         color: AppColors.white,
-//         borderRadius: BorderRadius.circular(16),
-//         boxShadow: [
-//           BoxShadow(
-//             color: AppColors.black.withValues(alpha: 0.06),
-//             blurRadius: 8,
-//             offset: const Offset(0, 2),
-//           ),
-//         ],
-//       ),
-//       child: Row(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Icon(icon, size: 14, color: AppColors.textPrimary),
-//           const Gap(4),
-//           Text(
-//             label,
-//             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//               fontWeight: FontWeight.w600,
-//               color: AppColors.textPrimary,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class _PriceRow extends StatelessWidget {
-  const _PriceRow({required this.price});
   final double price;
 
   @override
@@ -202,19 +167,21 @@ class _PriceRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           '€',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: AppColors.primary,
             fontWeight: FontWeight.w700,
           ),
         ),
         Text(
           price.toStringAsFixed(2),
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w800,
+            height: 1.0,
           ),
         ),
       ],
@@ -223,87 +190,53 @@ class _PriceRow extends StatelessWidget {
 }
 
 class _SpecialOffersRow extends StatelessWidget {
-  const _SpecialOffersRow({
-    required this.containOffers,
-    this.discountLabel,
-    required this.onAddToCart,
-  });
+  const _SpecialOffersRow({this.discountLabel});
 
-  final bool containOffers;
   final String? discountLabel;
-  final VoidCallback? onAddToCart;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (containOffers) ...[
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.lightGrey, width: 1),
+          ),
+          child: const Icon(
+            Iconsax.discount_shape,
+            size: 20,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const Gap(AppSizes.sm),
+        if (discountLabel != null && discountLabel!.isNotEmpty)
           Expanded(
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.lightGrey, width: 1),
-                  ),
-                  child: const Icon(
-                    Iconsax.discount_shape,
-                    size: 20,
+                Text(
+                  AppTexts.homeSpecialOffers,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                ),
+                Text(
+                  discountLabel!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Gap(AppSizes.sm),
-                if (discountLabel != null && discountLabel!.isNotEmpty)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          AppTexts.homeSpecialOffers,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.grey),
-                        ),
-                        Text(
-                          discountLabel!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
               ],
             ),
           ),
-          const Gap(AppSizes.sm),
-        ],
-
-        if (containOffers) const SizedBox.shrink() else const Spacer(),
-
-        GestureDetector(
-          onTap: onAddToCart,
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Iconsax.shopping_cart,
-              color: AppColors.white,
-              size: 22,
-            ),
-          ),
-        ),
       ],
     );
   }

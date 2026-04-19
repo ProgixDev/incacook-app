@@ -80,7 +80,11 @@ class PromoBannerCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        _CtaPill(label: banner.ctaLabel, foreground: fg),
+                        _CtaPill(
+                          label: banner.ctaLabel,
+                          backgroundColor: banner.backgroundColor,
+                          foregroundColor: fg,
+                        ),
                       ],
                     ),
                   ),
@@ -110,26 +114,28 @@ class PromoBannerCard extends StatelessWidget {
 }
 
 class _CtaPill extends StatelessWidget {
-  const _CtaPill({required this.label, required this.foreground});
+  const _CtaPill({
+    required this.label,
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
 
   final String label;
-  final Color foreground;
+  final Color backgroundColor;
+  final Color foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.md,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: backgroundColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: foreground,
+          color: foregroundColor,
           fontWeight: FontWeight.w700,
         ),
       ),

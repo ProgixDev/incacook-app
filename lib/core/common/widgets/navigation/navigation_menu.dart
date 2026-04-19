@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:vinted_v2/core/common/widgets/navigation/navigation_controller.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:vinted_v2/core/utils/device/device_utility.dart';
 
 class NavigationMenu extends GetView<NavigationController> {
   const NavigationMenu({super.key});
+
+  static const List<_NavItemSpec> _items = [
+    _NavItemSpec(icon: Iconsax.home, label: 'Home'),
+    _NavItemSpec(icon: Iconsax.heart, label: 'Favorites'),
+    _NavItemSpec(icon: Iconsax.message, label: 'Chats'),
+    _NavItemSpec(icon: Iconsax.setting, label: 'Settings'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -16,49 +25,112 @@ class NavigationMenu extends GetView<NavigationController> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Obx(() => controller.screens[controller.selectedIndex.value]),
-      bottomNavigationBar: Obx(
-        () => Container(
-          margin: const EdgeInsets.all(AppSizes.lg),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(controller, 0, Iconsax.home, "Home"),
-              _buildNavItem(controller, 2, Iconsax.add, "Create"),
-              _buildNavItem(controller, 3, Iconsax.message, "Messages"),
-              _buildNavItem(controller, 1, Iconsax.user, "Profile"),
-            ],
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSizes.md,
+          0,
+          AppSizes.md,
+          DeviceUtils.getBottomNavigationBarHeight() / 1.5,
+        ),
+        child: Obx(
+          () => Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(48),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(_items.length, (index) {
+                final spec = _items[index];
+                return _NavItem(
+                  icon: spec.icon,
+                  label: spec.label,
+                  selected: controller.selectedIndex.value == index,
+                  onTap: () => controller.selectedIndex.value = index,
+                );
+              }),
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildNavItem(
-    NavigationController controller,
-    int index,
-    IconData icon,
-    String label,
-  ) {
-    final isSelected = controller.selectedIndex.value == index;
+class _NavItemSpec {
+  const _NavItemSpec({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => controller.selectedIndex.value = index,
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.white
-              : AppColors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(30),
+        duration: const Duration(milliseconds: 240),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: selected ? 18 : 14,
+          vertical: 12,
         ),
-        child: Icon(
-          icon,
-          color: isSelected ? AppColors.secondary : Colors.white,
+        decoration: BoxDecoration(
+          color: selected ? AppColors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(40),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: selected ? AppColors.secondary : AppColors.white,
+            ),
+            //? only the selected item shows its label, like the reference
+            AnimatedSize(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              child: selected
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Gap(AppSizes.sm),
+                        Text(
+                          label,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppColors.secondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
         ),
       ),
     );
