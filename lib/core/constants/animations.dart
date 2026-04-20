@@ -1,16 +1,17 @@
 class AppAnimations {
   //*on boarding animations
-  static const String onBoarding1 = "assets/animations/onboarding/doctor.json";
-  static const String onBoarding2 = 'assets/animations/map.json';
-  static const String onBoarding3 = "assets/animations/onboarding/pill.json";
+  static const String onBoarding1 = "assets/animations/shopping_cart.json";
+  static const String onBoarding2 = 'assets/animations/onboarding/map.json';
+  static const String onBoarding3 = "assets/animations/user_type/delivery.json";
 
-    //* user type selection animations
+  //* user type selection animations
   static const String userTypeSeller = "assets/animations/user_type/cook.json";
-  static const String userTypeClient = "assets/animations/user_type/customer.json";
-  static const String userTypeDelivery = "assets/animations/user_type/delivery.json";
+  static const String userTypeClient =
+      "assets/animations/user_type/customer.json";
+  static const String userTypeDelivery =
+      "assets/animations/user_type/delivery.json";
 
   //* misc animations
-  static const String delivery = "assets/animations/delivery.json";
   static const String loading = "assets/animations/loading_dots.json";
   static const String shoppingCart = "assets/animations/shopping_cart.json";
   static const String success = "assets/animations/success.json";

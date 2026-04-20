@@ -17,7 +17,7 @@ class App extends StatelessWidget {
       theme: CustomAppTheme.lightTheme,
       darkTheme: CustomAppTheme.darkTheme,
       initialBinding: GeneralBindings(),
-      home: const LoginScreen(),
+      home: const OnBoardingScreen(),
     );
   }
 }

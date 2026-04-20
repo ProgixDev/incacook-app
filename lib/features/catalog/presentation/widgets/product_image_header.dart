@@ -70,7 +70,7 @@ class ProductImageHeader extends StatelessWidget {
               onTap: onFavoriteTap,
               child: CustomCircularContainer(
                 size: 44,
-                backgroundColor: AppColors.white,
+                backgroundColor: AppColors.accent,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 220),
                   transitionBuilder: (child, animation) =>

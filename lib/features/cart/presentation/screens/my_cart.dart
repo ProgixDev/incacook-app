@@ -1,164 +1,141 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/cart/domain/cart_item.dart';
+import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
+import 'package:vinted_v2/features/cart/presentation/widgets/add_more_items_button.dart';
+import 'package:vinted_v2/features/cart/presentation/widgets/cart_footer.dart';
 import 'package:vinted_v2/features/cart/presentation/widgets/cart_item_card.dart';
-import 'package:vinted_v2/features/cart/presentation/widgets/order_summary_section.dart';
+import 'package:vinted_v2/features/cart/presentation/widgets/empty_cart_state.dart';
+import 'package:vinted_v2/features/cart/presentation/widgets/seller_header_block.dart';
+import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
+import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
+import 'package:vinted_v2/features/orders/presentation/screens/delivery_address.dart';
+import 'package:vinted_v2/features/orders/presentation/screens/order_summary.dart';
+import 'package:vinted_v2/features/orders/presentation/widgets/fulfillment_choice_sheet.dart';
 
-class MyCartScreen extends StatefulWidget {
+class MyCartScreen extends StatelessWidget {
   const MyCartScreen({super.key});
 
-  @override
-  State<MyCartScreen> createState() => _MyCartScreenState();
-}
+  Future<void> _continueToFulfillment(
+    BuildContext context,
+    FoodListing seller,
+  ) async {
+    final options = FulfillmentOptions(
+      deliveryAvailable:
+          seller.fulfillment == Fulfillment.delivery ||
+          seller.fulfillment == Fulfillment.both,
+      deliveryMinMinutes: 25,
+      deliveryMaxMinutes: 40,
+      deliveryFee: 2.50,
+      pickupAvailable:
+          seller.fulfillment == Fulfillment.pickup ||
+          seller.fulfillment == Fulfillment.both,
+      pickupNeighborhood: 'Bastille, Paris 11ème',
+    );
 
-class _MyCartScreenState extends State<MyCartScreen> {
-  static const double _shippingFee = 10.00;
+    final selection = await FulfillmentChoiceSheet.resolve(
+      context,
+      options: options,
+    );
+    if (selection == null || !context.mounted) return;
 
-  //? in-memory cart until the cart feature is wired to a real source
-  final List<CartItem> _items = [
-    CartItem(
-      id: 'grilled-chicken',
-      name: AppTexts.cartItem1Name,
-      description: AppTexts.cartItem1Desc,
-      imagePath: AppImages.foodTest,
-      price: 3.97,
-    ),
-    CartItem(
-      id: 'crunchy-taco',
-      name: AppTexts.cartItem2Name,
-      description: AppTexts.cartItem2Desc,
-      imagePath: AppImages.foodTest,
-      price: 4.00,
-    ),
-    CartItem(
-      id: 'el-combo',
-      name: AppTexts.cartItem3Name,
-      description: AppTexts.cartItem3Desc,
-      imagePath: AppImages.foodTest,
-      price: 6.50,
-    ),
-    CartItem(
-      id: 'gusco-griller',
-      name: AppTexts.cartItem4Name,
-      description: AppTexts.cartItem4Desc,
-      imagePath: AppImages.foodTest,
-      price: 3.50,
-    ),
-  ];
+    DeliveryDetails? deliveryDetails;
+    if (selection.choice == FulfillmentChoice.delivery) {
+      deliveryDetails = await Get.to<DeliveryDetails>(
+        () => const DeliveryAddressScreen(),
+      );
+      if (deliveryDetails == null || !context.mounted) return;
+    }
 
-  double get _subTotal =>
-      _items.fold(0, (sum, item) => sum + item.price * item.quantity);
-
-  void _updateQuantity(String id, int delta) {
-    setState(() {
-      final item = _items.firstWhere((i) => i.id == id);
-      final next = item.quantity + delta;
-      if (next < 1) return;
-      item.quantity = next;
-    });
-  }
-
-  void _removeItem(String id) {
-    setState(() => _items.removeWhere((i) => i.id == id));
+    await Get.to<void>(
+      () => OrderSummaryScreen(
+        selection: selection,
+        options: options,
+        deliveryDetails: deliveryDetails,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final cart = CartController.instance;
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(
-          AppTexts.cartTitle,
-          style: Theme.of(context).textTheme.titleMedium,
+          AppTexts.cartTitleFr,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
       ),
-      body: _items.isEmpty
-          ? const _EmptyCart()
-          : SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.md,
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final item in _items) ...[
-                            CartItemCard(
-                              item: item,
-                              onIncrement: () => _updateQuantity(item.id, 1),
-                              onDecrement: () => _updateQuantity(item.id, -1),
-                              onRemove: () => _removeItem(item.id),
-                            ),
-                            const Gap(AppSizes.md),
-                          ],
-                          const Gap(AppSizes.spaceBtwSections),
-                        ],
+      body: Obx(() {
+        if (cart.isEmpty) {
+          return EmptyCartState(onGoHome: () => Get.back<void>());
+        }
+
+        final seller = cart.sellerReference!;
+        return Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSizes.md,
+                  AppSizes.md,
+                  AppSizes.md,
+                  AppSizes.md,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SellerHeaderBlock(listing: seller),
+                    const _Divider(),
+                    for (final item in cart.items) ...[
+                      CartItemCard(
+                        item: item,
+                        onIncrement: () => cart.incrementQuantity(item.id),
+                        onDecrement: () => cart.decrementQuantity(item.id),
+                        onRemove: () => cart.removeItem(item.id),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: OrderSummarySection(
-                      subTotal: _subTotal,
-                      shipping: _shippingFee,
-                    ),
-                  ),
-                ],
+                      const Gap(AppSizes.sm + 2),
+                    ],
+                    const Gap(AppSizes.sm),
+                    AddMoreItemsButton(onTap: () => Get.back<void>()),
+                    const _Divider(),
+                    CartSubtotalRow(subtotal: cart.subtotal),
+                    const Gap(AppSizes.md),
+                  ],
+                ),
               ),
             ),
+            CartFooter(
+              total: cart.subtotal,
+              enabled: cart.items.every((i) => i.isAvailable),
+              onContinue: () => _continueToFulfillment(context, seller),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
 
-class _EmptyCart extends StatelessWidget {
-  const _EmptyCart();
+class _Divider extends StatelessWidget {
+  const _Divider();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.defaultSpace),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Iconsax.shopping_cart,
-              size: 56,
-              color: AppColors.secondary,
-            ),
-            const Gap(AppSizes.md),
-            Text(
-              AppTexts.cartEmptyTitle,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const Gap(AppSizes.xs),
-            Text(
-              AppTexts.cartEmptySubtitle,
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
-            ),
-          ],
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+      child: Container(height: 1, color: AppColors.lightGrey),
     );
   }
 }

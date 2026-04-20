@@ -18,6 +18,7 @@ class SellerCard extends StatelessWidget {
     this.rating = AppTexts.productSampleSellerRating,
     this.ordersCompleted = AppTexts.productSampleSellerOrdersCompleted,
     this.onCallTap,
+    this.onCardTap,
   });
 
   final String name;
@@ -25,6 +26,7 @@ class SellerCard extends StatelessWidget {
   final double rating;
   final int ordersCompleted;
   final VoidCallback? onCallTap;
+  final VoidCallback? onCardTap;
 
   String get _formattedOrders {
     //? 1284 -> "1,284"
@@ -39,7 +41,9 @@ class SellerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onCardTap,
+      child: Container(
       padding: const EdgeInsets.all(AppSizes.sm),
       decoration: BoxDecoration(
         color: AppColors.accent,
@@ -119,6 +123,7 @@ class SellerCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

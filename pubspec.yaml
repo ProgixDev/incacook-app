@@ -54,8 +54,11 @@ flutter:
     - assets/animations/onboarding/
     - assets/animations/user_type/
     - assets/icons/
+    - assets/icons/home_categories/
+    - assets/icons/payment/
     - assets/images/
     - assets/images/categories/
+    - assets/images/onboarding/
     - assets/logos/
     - assets/test/
 

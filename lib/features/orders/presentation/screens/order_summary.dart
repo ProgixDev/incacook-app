@@ -1,167 +1,230 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
+import 'package:vinted_v2/features/cart/domain/cart_line_item.dart';
+import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
+import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
+import 'package:vinted_v2/features/orders/presentation/screens/payment.dart';
 
 class OrderSummaryScreen extends StatelessWidget {
-  const OrderSummaryScreen({super.key});
+  const OrderSummaryScreen({
+    super.key,
+    required this.selection,
+    required this.options,
+    this.deliveryDetails,
+  });
+
+  final FulfillmentSelection selection;
+  final FulfillmentOptions options;
+  final DeliveryDetails? deliveryDetails;
+
+  static const double _serviceFee = 0.50;
+
+  double _computeTotal(double subtotal) =>
+      subtotal + selection.fee + _serviceFee;
 
   @override
   Widget build(BuildContext context) {
-    const itemPrice = 8.00;
-    const deliveryFee = 2.50;
-    const total = itemPrice + deliveryFee;
+    final cart = CartController.instance;
+    final seller = cart.sellerReference!;
+    final subtotal = cart.subtotal;
+    final total = _computeTotal(subtotal);
+
+    final firstNote = cart.items
+        .map((i) => i.note)
+        .firstWhere((n) => n.trim().isNotEmpty, orElse: () => '');
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
-        title: Text(
-          'Order Summary',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-        ),
         showBackArrow: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.md,
-          vertical: AppSizes.md,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            //* Item card
-            _OrderItemCard(
-              image: AppImages.tshirt,
-              title: 'Tarte aux pommes',
-              seller: 'Sophie Martin',
-              quantity: 1,
-              price: itemPrice,
-            ),
-
-            Gap(AppSizes.spaceBtwSections),
-
-            //* Fulfillment
-            _SectionHeading(title: 'Fulfillment'),
-            Gap(AppSizes.md),
-            _FulfillmentCard(
-              address: '12 Rue de la Roquette, Paris',
-              eta: 'Est. 30–45 min',
-            ),
-
-            Gap(AppSizes.spaceBtwSections),
-
-            //* Price breakdown
-            _SectionHeading(title: 'Price breakdown'),
-            Gap(AppSizes.md),
-            _PriceBreakdown(
-              itemPrice: itemPrice,
-              deliveryFee: deliveryFee,
-              total: total,
-            ),
-
-            Gap(AppSizes.spaceBtwSections),
-
-            //* Note to seller
-            _SectionHeading(title: 'Note to seller (optional)'),
-            Gap(AppSizes.md),
-            _NoteField(),
-
-            Gap(AppSizes.spaceBtwSections),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSizes.md,
-            AppSizes.sm,
-            AppSizes.md,
-            AppSizes.md,
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Continue to Payment'),
-            ),
+        title: Text(
+          AppTexts.checkoutTitle,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
           ),
         ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.md,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _SectionHeader(title: AppTexts.checkoutOrderSection),
+                  const Gap(AppSizes.md),
+                  for (final item in cart.items) ...[
+                    _SummaryItemCard(item: item),
+                    const Gap(AppSizes.sm),
+                  ],
+                  const Gap(AppSizes.xs),
+                  _EditLinkInline(
+                    label: AppTexts.checkoutEditCart,
+                    onTap: () => Get.back<void>(),
+                  ),
+                  const Gap(AppSizes.lg),
+
+                  _SectionHeader(
+                    title: selection.choice == FulfillmentChoice.delivery
+                        ? AppTexts.checkoutDeliverySection
+                        : AppTexts.checkoutPickupSection,
+                  ),
+                  const Gap(AppSizes.md),
+                  _FulfillmentSummary(
+                    selection: selection,
+                    options: options,
+                    deliveryDetails: deliveryDetails,
+                    onEdit: () => Get.back<void>(),
+                  ),
+                  const Gap(AppSizes.lg),
+
+                  const _SectionHeader(title: AppTexts.checkoutSellerSection),
+                  const Gap(AppSizes.md),
+                  _SellerSummary(seller: seller, note: firstNote),
+                  const Gap(AppSizes.lg),
+
+                  const _SectionHeader(title: AppTexts.checkoutPriceSection),
+                  const Gap(AppSizes.md),
+                  _PriceBreakdown(
+                    subtotal: subtotal,
+                    deliveryFee: selection.fee,
+                    serviceFee: _serviceFee,
+                    total: total,
+                    isDelivery:
+                        selection.choice == FulfillmentChoice.delivery,
+                  ),
+                  const Gap(AppSizes.lg),
+
+                  const _ImpactBanner(),
+                  const Gap(AppSizes.md),
+                ],
+              ),
+            ),
+          ),
+          _ContinueFooter(
+            onContinue: () => Get.to<void>(
+              () => PaymentScreen(
+                totalAmount: total,
+                selection: selection,
+                options: options,
+                deliveryDetails: deliveryDetails,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _OrderItemCard extends StatelessWidget {
-  const _OrderItemCard({
-    required this.image,
-    required this.title,
-    required this.seller,
-    required this.quantity,
-    required this.price,
-  });
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title});
 
-  final String image;
   final String title;
-  final String seller;
-  final int quantity;
-  final double price;
 
   @override
   Widget build(BuildContext context) {
-    return _SurfaceCard(
+    final lineColor = AppColors.secondary.withValues(alpha: 0.18);
+    return Row(
+      children: [
+        Expanded(child: Container(height: 2, color: lineColor)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSizes.md - 2),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+        Expanded(child: Container(height: 2, color: lineColor)),
+      ],
+    );
+  }
+}
+
+class _SummaryItemCard extends StatelessWidget {
+  const _SummaryItemCard({required this.item});
+
+  final CartLineItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.sm + 2),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(AppSizes.productImageRadius),
+            borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
             child: Image.asset(
-              image,
-              width: AppSizes.imageThumbSize,
-              height: AppSizes.imageThumbSize,
+              item.listing.imagePath,
+              width: 56,
+              height: 56,
               fit: BoxFit.cover,
             ),
           ),
-          const Gap(AppSizes.md),
+          const Gap(AppSizes.sm + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  item.listing.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                const Gap(AppSizes.xs / 2),
-                Text(
-                  seller,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
-                ),
-                const Gap(AppSizes.sm),
+                if (item.selectedAddOns.isNotEmpty) ...[
+                  const Gap(2),
+                  Text(
+                    item.selectedAddOns.map((a) => a.label).join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                  ),
+                ],
+                const Gap(AppSizes.sm - 2),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Qty: $quantity',
+                      'x${item.quantity}',
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+                      ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
                     ),
+                    const Spacer(),
                     Text(
-                      '€${price.toStringAsFixed(2)}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      '€${item.lineTotal.toStringAsFixed(2)}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.secondary,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -175,77 +238,288 @@ class _OrderItemCard extends StatelessWidget {
   }
 }
 
-class _FulfillmentCard extends StatelessWidget {
-  const _FulfillmentCard({required this.address, required this.eta});
+class _EditLinkInline extends StatelessWidget {
+  const _EditLinkInline({required this.label, required this.onTap});
 
-  final String address;
-  final String eta;
+  final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return _SurfaceCard(
-      child: Row(
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.secondary,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.secondary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FulfillmentSummary extends StatelessWidget {
+  const _FulfillmentSummary({
+    required this.selection,
+    required this.options,
+    required this.deliveryDetails,
+    required this.onEdit,
+  });
+
+  final FulfillmentSelection selection;
+  final FulfillmentOptions options;
+  final DeliveryDetails? deliveryDetails;
+  final VoidCallback onEdit;
+
+  String _formatScheduledLabel(DateTime when) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(when.year, when.month, when.day);
+    final diff = target.difference(today).inDays;
+    final time =
+        '${when.hour.toString().padLeft(2, '0')}:'
+        '${when.minute.toString().padLeft(2, '0')}';
+    if (diff == 0) return '${AppTexts.addressToday}, $time';
+    if (diff == 1) return '${AppTexts.addressTomorrow}, $time';
+    final date =
+        '${when.day.toString().padLeft(2, '0')}/'
+        '${when.month.toString().padLeft(2, '0')}';
+    return '$date, $time';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDelivery = selection.choice == FulfillmentChoice.delivery;
+    final icon = isDelivery ? Iconsax.truck_fast : Iconsax.shop;
+    final mode = isDelivery
+        ? AppTexts.checkoutDeliveryHomeMode
+        : AppTexts.checkoutPickupMode;
+
+    final lines = <String>[];
+    if (isDelivery && deliveryDetails != null) {
+      lines.add(deliveryDetails!.address.line1);
+      final timing = deliveryDetails!.timing;
+      if (timing == DeliveryTiming.asap) {
+        lines.add(
+          AppTexts.checkoutDeliveryAsapEta(options.deliveryMaxMinutes),
+        );
+      } else if (deliveryDetails!.scheduledAt != null) {
+        lines.add(_formatScheduledLabel(deliveryDetails!.scheduledAt!));
+      }
+    } else {
+      lines.add(options.pickupNeighborhood);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.md - 2),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.accent,
-              borderRadius: BorderRadius.circular(AppSizes.borderRadiusMd),
-            ),
-            child: const Icon(
-              Iconsax.truck_fast,
-              color: AppColors.secondary,
-              size: AppSizes.iconMd,
-            ),
-          ),
-          const Gap(AppSizes.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Delivery to',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  shape: BoxShape.circle,
                 ),
-                const Gap(AppSizes.xs),
-                Text(
-                  address,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const Gap(AppSizes.xs),
-                Text(
-                  eta,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.sm,
-                vertical: AppSizes.xs,
+                child: Icon(icon, size: 20, color: AppColors.secondary),
               ),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              const Gap(AppSizes.md - 2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      mode,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    for (final line in lines) ...[
+                      const Gap(2),
+                      Text(
+                        line,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Gap(AppSizes.sm),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _EditPillLink(label: AppTexts.checkoutEdit, onTap: onEdit),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SellerSummary extends StatelessWidget {
+  const _SellerSummary({required this.seller, required this.note});
+
+  final FoodListing seller;
+  final String note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.md - 2),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ClipOval(
+                child: Image.asset(
+                  seller.imagePath,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const Gap(AppSizes.md - 2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      seller.sellerName,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const Gap(2),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: Image.asset(
+                            seller.category.imagePath,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const Gap(4),
+                        Text(
+                          seller.category.label,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.grey),
+                        ),
+                        const Gap(6),
+                        Text(
+                          '·',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.grey),
+                        ),
+                        const Gap(6),
+                        const Icon(
+                          Iconsax.star1,
+                          size: 12,
+                          color: Color(0xFFFFC107),
+                        ),
+                        const Gap(3),
+                        Text(
+                          seller.rating.toStringAsFixed(1),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (note.isNotEmpty) ...[
+            const Gap(AppSizes.md),
+            Text(
+              '${AppTexts.checkoutNoteForPrefix} ${seller.sellerName} :',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
             ),
-            child: const Text(
-              'Change',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            const Gap(4),
+            Text(
+              '"$note"',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+          const Gap(AppSizes.sm),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _EditPillLink(
+              label: AppTexts.checkoutEdit,
+              onTap: () => Get.back<void>(),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditPillLink extends StatelessWidget {
+  const _EditPillLink({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.md - 2,
+          vertical: 6,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.accent,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: AppColors.lightGrey),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.secondary,
+          ),
+        ),
       ),
     );
   }
@@ -253,36 +527,56 @@ class _FulfillmentCard extends StatelessWidget {
 
 class _PriceBreakdown extends StatelessWidget {
   const _PriceBreakdown({
-    required this.itemPrice,
+    required this.subtotal,
     required this.deliveryFee,
+    required this.serviceFee,
     required this.total,
+    required this.isDelivery,
   });
 
-  final double itemPrice;
+  final double subtotal;
   final double deliveryFee;
+  final double serviceFee;
   final double total;
+  final bool isDelivery;
 
   @override
   Widget build(BuildContext context) {
-    return _SurfaceCard(
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.md - 2),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      ),
       child: Column(
         children: [
-          _PriceRow(label: 'Item price', amount: itemPrice),
+          _Row(label: AppTexts.checkoutPriceArticles, amount: subtotal),
+          if (isDelivery) ...[
+            const Gap(AppSizes.sm),
+            _Row(
+              label: AppTexts.checkoutPriceDelivery,
+              amount: deliveryFee,
+            ),
+          ],
           const Gap(AppSizes.sm),
-          _PriceRow(label: 'Delivery fee', amount: deliveryFee),
+          _Row(label: AppTexts.checkoutPriceService, amount: serviceFee),
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: AppSizes.md),
+            padding: EdgeInsets.symmetric(vertical: AppSizes.md - 4),
             child: Divider(height: 1, color: AppColors.lightGrey),
           ),
-          _PriceRow(label: 'Total', amount: total, emphasized: true),
+          _Row(
+            label: AppTexts.checkoutPriceTotal,
+            amount: total,
+            emphasized: true,
+          ),
         ],
       ),
     );
   }
 }
 
-class _PriceRow extends StatelessWidget {
-  const _PriceRow({
+class _Row extends StatelessWidget {
+  const _Row({
     required this.label,
     required this.amount,
     this.emphasized = false,
@@ -297,18 +591,18 @@ class _PriceRow extends StatelessWidget {
     final theme = Theme.of(context);
     final labelStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           )
         : theme.textTheme.bodyMedium?.copyWith(color: AppColors.grey);
     final amountStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.secondary,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
           )
         : theme.textTheme.bodyMedium?.copyWith(
             color: AppColors.textPrimary,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           );
 
     return Row(
@@ -321,78 +615,82 @@ class _PriceRow extends StatelessWidget {
   }
 }
 
-class _NoteField extends StatelessWidget {
-  const _NoteField();
+class _ImpactBanner extends StatelessWidget {
+  const _ImpactBanner();
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      maxLines: 3,
-      minLines: 3,
-      decoration: InputDecoration(
-        hintText: 'Any special requests...',
-        hintStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
-        filled: true,
-        fillColor: AppColors.white,
-        contentPadding: const EdgeInsets.all(AppSizes.md),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.inputFieldRadius),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.inputFieldRadius),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.inputFieldRadius),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.2),
-        ),
+    const accentGreen = Color(0xFF2E7D32);
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.md - 2,
+        vertical: AppSizes.md - 2,
+      ),
+      decoration: BoxDecoration(
+        color: accentGreen.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+        border: Border.all(color: accentGreen.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Iconsax.heart5, size: 18, color: accentGreen),
+          const Gap(AppSizes.sm + 2),
+          Expanded(
+            child: Text(
+              AppTexts.checkoutImpactMessage,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: accentGreen,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({required this.title});
+class _ContinueFooter extends StatelessWidget {
+  const _ContinueFooter({required this.onContinue});
 
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-}
-
-class _SurfaceCard extends StatelessWidget {
-  const _SurfaceCard({required this.child});
-
-  final Widget child;
+  final VoidCallback onContinue;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSizes.md),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: AppColors.lightBackground,
+        border: Border(top: BorderSide(color: AppColors.lightGrey)),
       ),
-      child: child,
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.md,
+        AppSizes.md,
+        AppSizes.md,
+        AppSizes.md,
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: onContinue,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              foregroundColor: AppColors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              textStyle: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            child: const Text(AppTexts.checkoutContinuePayment),
+          ),
+        ),
+      ),
     );
   }
 }

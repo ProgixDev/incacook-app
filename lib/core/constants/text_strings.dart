@@ -223,33 +223,256 @@ class AppTexts {
       "Great value for the price. Seasoning was a little mild but the meat was juicy.";
   static const String productReview3Time = "1 week ago";
 
-  //* home screen
-  static const String homeCravingPart1 = "What's";
-  static const String homeCravingPart2 = "Your Craving";
-  static const String homeCravingPart3 = "Today?";
-  static const String homeSearchHint = "Search for food or restaurants...";
-  static const String homeCategory = "Category";
-  static const String homeSeeAll = "See all";
-  static const String homeNearbyOffers = "Nearby offers";
-  static const String homeBrandsNearYou = "Big brands near you";
-  static const String homeFreeDelivery = "Free Delivery";
-  static const String homeSpecialOffers = "Special offers";
+  //* home — shared
+  static const String homeSearchHint = "Chercher un plat, un traiteur...";
+  static const String homeSeeAll = "Voir tout";
 
-  //* home — active order strip
-  static const String homeActiveOrderEtaPrefix = "Arriving in";
-  static const String homeActiveOrderEtaSuffix = "min";
-  static const String homeActiveOrderSubtitle = "John is on the way";
+  //* home — category tabs
+  static const String homeCategoryAll = "Tout";
+  static const String homeCategorySocial = "Social";
+  static const String homeCategoryTraiteur = "Traiteurs";
+  static const String homeCategoryRestaurant = "Restaurants";
 
-  //* home — promo banners
-  static const String homePromo1Title = "20% off your first order";
-  static const String homePromo1Subtitle = "Use code TASTY20 at checkout";
-  static const String homePromo1Cta = "Claim now";
+  //* home — quick filter chips
+  static const String homeFilterAvailableNow = "Disponible maintenant";
+  static const String homeFilterNearby = "Moins de 1km";
+  static const String homeFilterCheap = "Moins de 5€";
+  static const String homeFilterHalal = "Halal";
+  static const String homeFilterVegan = "Végé";
+  static const String homeFilterGlutenFree = "Sans gluten";
 
-  static const String homePromo2Title = "Free delivery, all weekend";
-  static const String homePromo2Subtitle = "On orders above \$15";
-  static const String homePromo2Cta = "Shop now";
+  //* home — section titles
+  static const String homeSectionUrgent = "Expire bientôt";
+  static const String homeSectionNearYou = "Près de toi";
+  static const String homeSectionRestaurants = "Restaurants proches";
 
-  static const String homePromo3Title = "Chef's spicy bowls";
-  static const String homePromo3Subtitle = "Bold flavors, just landed";
-  static const String homePromo3Cta = "Explore";
+  //* home — feed card labels
+  static const String feedExpireAt = "Expire à";
+  static const String feedPortions = "portions";
+  static const String feedPortion = "portion";
+  static const String feedDelivery = "Livraison";
+  static const String feedPickup = "Retrait";
+
+  //* home — urgent card labels
+  static const String urgentPrefix = "Dans";
+  static const String urgentHourSuffix = "h";
+  static const String urgentMinSuffix = "min";
+
+  //* home — dietary tag labels
+  static const String dietaryHalal = "Halal";
+  static const String dietaryVegan = "Végé";
+  static const String dietaryGlutenFree = "Sans gluten";
+  static const String dietarySpicy = "Épicé";
+
+  //* home — empty state
+  static const String homeEmptyTitle = "Pas encore de repas près de toi";
+  static const String homeEmptyBody =
+      "Sois le premier à proposer un repas dans ton quartier!";
+  static const String homeEmptyCtaPost = "Publier mon premier repas";
+  static const String homeEmptyCtaExpand = "Élargir la recherche à 5km";
+
+  //* map screen
+  static const String mapLocationCurrent = "Paris 11ème";
+  static const String mapCategoryUrgent = "Urgent";
+  static const String mapRadiusLabel = "Rayon";
+  static const String mapSheetDetailCta = "Voir le détail";
+  static const String mapSheetOrderCta = "Commander";
+
+  //* seller profile — hero + promo
+  static const String sellerProfileFirstOrderPromo =
+      "Première commande livrée gratuitement";
+  static const String sellerProfilePrepTimePrefix = "Prêt dans";
+  static const String sellerProfileDeliveryFeePrefix = "Livraison";
+  static const String sellerProfileFreeLabel = "Gratuit";
+
+  //* seller profile — trust stats
+  static const String sellerTrustAverageRating = "Note\nmoyenne";
+  static const String sellerTrustFastResponse = "Réponse\nrapide";
+  static const String sellerTrustMealsSold = "Repas\nvendus";
+  static const String sellerTrustMealsSaved = "Repas sauvés";
+
+  //* seller profile — performance bars
+  static const String sellerPerformanceTitle = "Qualité du vendeur";
+  static const String sellerPerformanceHygiene = "Hygiène";
+  static const String sellerPerformancePunctuality = "Ponctualité";
+  static const String sellerPerformanceAccuracy = "Exactitude des commandes";
+  static const String sellerPerformanceCommunication = "Communication";
+  static const String sellerPerformanceFoodQuality = "Qualité de la nourriture";
+
+  //* seller profile — listings
+  static const String sellerListingsTitle = "Disponible maintenant";
+  static const String sellerListingsSubtitle = "Offres du jour à ne pas manquer";
+
+  //* seller profile — bio
+  static const String sellerBioTitlePrefix = "À propos de";
+  static const String sellerBioSeeMore = "Voir plus";
+  static const String sellerBioLanguagesLabel = "Langues parlées :";
+  static const String sellerBioMemberSincePrefix = "Membre depuis :";
+  static const String sellerBioLastActivePrefix = "Dernière connexion :";
+
+  //* seller profile — verifications
+  static const String sellerVerificationsTitle = "Vérifications";
+  static const String sellerVerificationIdentity = "Identité vérifiée";
+  static const String sellerVerificationHygieneCharter =
+      "Charte d'hygiène signée";
+  static const String sellerVerificationPhone = "Numéro de téléphone confirmé";
+  static const String sellerVerificationAddress = "Adresse vérifiée";
+  static const String sellerVerificationsSeeAll = "Voir les certifications";
+
+  //* seller profile — reviews
+  static const String sellerReviewsTitlePrefix = "Avis";
+  static const String sellerReviewsWhatPeopleSay =
+      "Ce que les clients disent";
+  static const String sellerReviewsHelpfulSuffix =
+      "personnes ont trouvé cet avis utile";
+  static const String sellerReviewsSeeAllPrefix = "Voir tous les";
+  static const String sellerReviewsSeeAllSuffix = "avis";
+
+  //* seller profile — location
+  static const String sellerLocationTitle = "Où retirer";
+  static const String sellerLocationExactNote =
+      "(adresse exacte après commande)";
+  static const String sellerLocationDeliveryRadiusPrefix =
+      "Zone de livraison :";
+  static const String sellerLocationSchedulePrefix = "Disponible :";
+
+  //* seller profile — bottom action bar
+  static const String sellerActionMessage = "Message";
+  static const String sellerActionOrder = "Commander";
+
+  //* order — success / confirmation
+  static const String successTitle = "Commande confirmée !";
+  static const String successOrderNumberPrefix = "Commande";
+  static const String successDeliveryEstimateLabel = "Livraison estimée";
+  static const String successPickupEstimateLabel = "À récupérer au point de retrait";
+  static const String successExpectedArrivalPrefix = "Arrivée prévue :";
+  static const String successExpectedPickupPrefix = "Retrait prévu :";
+  static const String successImpactMessage =
+      "Tu viens de sauver un repas du gaspillage. Merci !";
+  static const String successRecapTitle = "Récapitulatif";
+  static const String successRecapServiceLabel = "Service";
+  static const String successTotalPaidLabel = "Total payé";
+  static const String successTrackOrderCta = "Suivre ma commande";
+  static const String successBackHomeCta = "Retour à l'accueil";
+
+  static String successStatusPreparing(String sellerName) =>
+      "$sellerName prépare ta commande";
+
+  static String successDeliveryWindow(int minMinutes, int maxMinutes) =>
+      "entre $minMinutes et $maxMinutes min";
+
+  //* payment — processing + error state
+  static const String paymentProcessingTitle = "Paiement en cours...";
+  static const String paymentProcessingSecurity = "Paiement sécurisé";
+  static const String paymentErrorTitle = "Paiement échoué";
+  static const String paymentErrorBody =
+      "Ta carte a été refusée. Essaie une autre méthode.";
+  static const String paymentErrorRetry = "Réessayer";
+  static const String paymentErrorChooseMethod = "Choisir une autre méthode";
+
+  //* payment — method selection
+  static const String paymentTitle = "Paiement";
+  static const String paymentTotalLabel = "Total à payer";
+  static const String paymentMethodLabel = "Méthode de paiement";
+  static const String paymentWalletLabel = "Mon portefeuille";
+  static const String paymentWalletBalancePrefix = "Solde :";
+  static const String paymentWalletAfterPrefix = "Après paiement :";
+  static const String paymentWalletInsufficientPrefix = "Il manque";
+  static const String paymentCardLabelPrefix = "Carte";
+  static const String paymentCardExpiryPrefix = "Expire";
+  static const String paymentApplePayLabel = "Apple Pay";
+  static const String paymentGooglePayLabel = "Google Pay";
+  static const String paymentAddCard = "Ajouter une nouvelle carte";
+  static const String paymentSecureNote = "Paiement sécurisé via Stripe";
+  static const String paymentTermsPrefix = "En confirmant, tu acceptes les";
+  static const String paymentTermsLink = "Conditions générales d'utilisation";
+  static const String paymentPayCtaPrefix = "Payer";
+
+  //* checkout — order summary
+  static const String checkoutTitle = "Récapitulatif";
+  static const String checkoutOrderSection = "Ta commande";
+  static const String checkoutDeliverySection = "Livraison";
+  static const String checkoutPickupSection = "Retrait";
+  static const String checkoutSellerSection = "Vendeur";
+  static const String checkoutPriceSection = "Détail du prix";
+  static const String checkoutEditCart = "Modifier le panier";
+  static const String checkoutEdit = "Modifier";
+  static const String checkoutDeliveryHomeMode = "Livraison à domicile";
+  static const String checkoutPickupMode = "À récupérer";
+  static const String checkoutPriceArticles = "Articles";
+  static const String checkoutPriceDelivery = "Frais de livraison";
+  static const String checkoutPriceService = "Frais de service";
+  static const String checkoutPriceTotal = "Total";
+  static const String checkoutImpactMessage =
+      "En commandant ici, tu sauves un repas du gaspillage";
+  static const String checkoutContinuePayment = "Continuer vers le paiement";
+  static const String checkoutNoteForPrefix = "Note pour";
+
+  static String checkoutDeliveryAsapEta(int minutes) =>
+      "Dès que possible (~$minutes min)";
+
+  //* delivery — address confirmation
+  static const String addressTitle = "Adresse de livraison";
+  static const String addressDeliverTo = "Livrer à";
+  static const String addressAdd = "Ajouter une adresse";
+  static const String addressAddFirst = "Ajouter ta première adresse";
+  static const String addressNoSavedTitle = "Aucune adresse enregistrée";
+  static const String addressTypeHome = "Domicile";
+  static const String addressTypeWork = "Bureau";
+  static const String addressTypeOther = "Autre";
+  static const String addressInstructionsLabel = "Instructions pour le livreur";
+  static const String addressInstructionsHint = "Ex: 3e étage, code 1234...";
+  static const String addressWhenLabel = "Quand ?";
+  static const String addressWhenAsap = "Dès que possible";
+  static const String addressWhenLater = "Plus tard";
+  static const String addressToday = "Aujourd'hui";
+  static const String addressTomorrow = "Demain";
+  static const String addressOutOfRange =
+      "Cette adresse est hors de la zone de livraison. Essaie une autre adresse ou choisis la récupération.";
+  static const String addressContinueCta = "Continuer";
+
+  //* fulfillment — choice sheet
+  static const String fulfillmentTitle =
+      "Comment veux-tu recevoir ta commande ?";
+  static const String fulfillmentDeliveryLabel = "Livraison";
+  static const String fulfillmentDeliveryFeePrefix = "Frais :";
+  static const String fulfillmentPickupLabel = "À récupérer";
+  static const String fulfillmentPickupFree = "Gratuit";
+  static const String fulfillmentNoAddress =
+      "Ajoute une adresse pour la livraison";
+  static const String fulfillmentContinueCta = "Continuer";
+
+  static String fulfillmentDeliveryWindow(int minMinutes, int maxMinutes) =>
+      "Entre $minMinutes et $maxMinutes min";
+
+  //* cart — new French flow
+  static const String cartTitleFr = "Mon panier";
+  static const String cartSellerLabel = "Vendeur";
+  static const String cartAddMoreItems = "Ajouter d'autres articles";
+  static const String cartSubtotalLabel = "Sous-total";
+  static const String cartContinueCta = "Continuer";
+  static const String cartEmptyTitleFr = "Ton panier est vide";
+  static const String cartEmptyCtaHomeFr = "Retour à l'accueil";
+  static const String cartFloatingArticlesPlural = "articles";
+  static const String cartFloatingArticleSingular = "article";
+  static const String cartFloatingSeeCart = "Voir le panier";
+  static const String cartFloatingTotalPrefix = "Total :";
+  static const String cartUnavailableBody = "Cet article n'est plus disponible";
+  static const String cartUnavailableRemove = "Retirer";
+  static const String cartDifferentSellerTitle = "Changer de vendeur ?";
+  static const String cartDifferentSellerConfirm = "Vider et recommencer";
+  static const String cartDifferentSellerCancel = "Annuler";
+
+  static String cartDifferentSellerBody(String sellerName) =>
+      "Tu as déjà un panier chez $sellerName. Veux-tu le vider et recommencer ?";
+
+  //* order — customize sheet
+  static const String orderSheetQuantityLabel = "Quantité";
+  static const String orderSheetPortionsAvailableSuffix = "portions disponibles";
+  static const String orderSheetPortionAvailableSuffix = "portion disponible";
+  static const String orderSheetOptionsLabel = "Options";
+  static const String orderSheetNoteLabel = "Note pour le vendeur (facultatif)";
+  static const String orderSheetNoteHint = "Ex: pas trop épicé...";
+  static const String orderSheetTotalLabel = "Total";
+  static const String orderSheetAddToCartCta = "Ajouter au panier";
 }

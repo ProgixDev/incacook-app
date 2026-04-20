@@ -33,7 +33,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Text("Location", style: Theme.of(context).textTheme.bodyMedium),
               Text(
-                "Paris, France",
+                "Lyon, France",
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],

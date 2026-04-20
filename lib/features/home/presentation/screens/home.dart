@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/utils/device_utils.dart';
-import 'package:vinted_v2/core/widgets/layouts/grid_layout.dart';
-import 'package:vinted_v2/features/home/domain/brand.dart';
-import 'package:vinted_v2/features/home/domain/food_offer.dart';
-import 'package:vinted_v2/features/home/domain/promo_banner.dart';
-import 'package:vinted_v2/features/home/presentation/widget/active_order_strip.dart';
-import 'package:vinted_v2/features/home/presentation/widget/brand_card.dart';
-import 'package:vinted_v2/features/home/presentation/widget/category_chip.dart';
-import 'package:vinted_v2/features/home/presentation/widget/craving_header.dart';
-import 'package:vinted_v2/features/home/presentation/widget/food_offer_card.dart';
+import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:vinted_v2/features/catalog/presentation/screens/product_detail.dart';
+import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/map/presentation/screens/map.dart';
+import 'package:vinted_v2/features/home/domain/restaurant_offer.dart';
+import 'package:vinted_v2/features/home/presentation/widget/category_pill.dart';
+import 'package:vinted_v2/features/home/presentation/widget/empty_feed_state.dart';
+import 'package:vinted_v2/features/home/presentation/widget/feed_food_card.dart';
 import 'package:vinted_v2/features/home/presentation/widget/home_appbar.dart';
 import 'package:vinted_v2/features/home/presentation/widget/home_search_bar.dart';
-import 'package:vinted_v2/features/home/presentation/widget/promo_banner_carousel.dart';
+import 'package:vinted_v2/features/home/presentation/widget/quick_filter_chip.dart';
+import 'package:vinted_v2/features/home/presentation/widget/restaurant_offer_card.dart';
 import 'package:vinted_v2/features/home/presentation/widget/section_header.dart';
-import 'package:vinted_v2/features/orders/presentation/screens/order_tracking.dart';
+import 'package:vinted_v2/features/home/presentation/widget/urgent_food_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,238 +30,314 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedCategoryIndex = 1; //? Food selected by default
+  //* null == "Tout" (all categories)
+  SellerCategory? _selectedCategory;
 
-  //? demo flag — swap for real "hasActiveOrder" check once orders are wired
-  final bool _hasActiveOrder = true;
+  final Set<_QuickFilter> _activeFilters = <_QuickFilter>{};
+  final Set<String> _savedIds = <String>{};
 
-  static const List<PromoBanner> _promos = [
-    PromoBanner(
-      title: AppTexts.homePromo1Title,
-      subtitle: AppTexts.homePromo1Subtitle,
-      ctaLabel: AppTexts.homePromo1Cta,
+  late final List<FoodListing> _listings = _buildListings();
+  late final List<FoodListing> _urgentListings = _buildUrgentListings();
+  static const List<RestaurantOffer> _restaurants = [
+    RestaurantOffer(
+      name: 'Le Bistro',
       imagePath: AppImages.foodTest,
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.white,
-    ),
-    PromoBanner(
-      title: AppTexts.homePromo2Title,
-      subtitle: AppTexts.homePromo2Subtitle,
-      ctaLabel: AppTexts.homePromo2Cta,
-      imagePath: AppImages.foodTest,
-      backgroundColor: AppColors.secondary,
-      foregroundColor: AppColors.white,
-    ),
-    PromoBanner(
-      title: AppTexts.homePromo3Title,
-      subtitle: AppTexts.homePromo3Subtitle,
-      ctaLabel: AppTexts.homePromo3Cta,
-      imagePath: AppImages.foodTest,
-      backgroundColor: Color(0xFFE8823B),
-      foregroundColor: AppColors.white,
-    ),
-  ];
-
-  static const List<_Category> _categories = [
-    _Category(name: 'Plats', imagePath: AppImages.crafts),
-    _Category(name: 'Boulang.', imagePath: AppImages.food),
-    _Category(name: 'Desserts', imagePath: AppImages.plants),
-    _Category(name: 'Épicerie', imagePath: AppImages.secondHand),
-    _Category(name: 'Frais', imagePath: AppImages.wellness),
-    _Category(name: 'Boissons', imagePath: AppImages.wellness),
-  ];
-
-  static const List<FoodOffer> _offers = [
-    FoodOffer(
-      titleLeading: 'Grilled',
-      titleTrailing: 'Chicken Breast',
-      imagePath: AppImages.foodTest,
-      deliveryMinutes: 22,
-      freeDelivery: true,
-      price: 3.97,
-      weightGrams: 320,
-      calories: 162,
-      containOffers: false,
-      discountLabel: '25% Off Prices',
-    ),
-    FoodOffer(
-      titleLeading: 'Spaghetti',
-      titleTrailing: 'Meat Sauce',
-      imagePath: AppImages.foodTest,
-      deliveryMinutes: 35,
-      freeDelivery: false,
-      price: 2.50,
-      weightGrams: 280,
-      calories: 210,
-      containOffers: true,
-      discountLabel: '15% Off Prices',
-    ),
-    FoodOffer(
-      titleLeading: 'Veggie',
-      titleTrailing: 'Bowl',
-      imagePath: AppImages.foodTest,
-      deliveryMinutes: 18,
-      freeDelivery: false,
-      price: 4.20,
-      weightGrams: 260,
-      calories: 145,
-      containOffers: true,
-      discountLabel: 'Buy 1 Get 1',
-    ),
-  ];
-
-  static const List<Brand> _brands = [
-    Brand(
-      name: 'Talabat Mart',
-      imagePath: AppImages.foodTest,
-      tagline: 'Freshness guaranteed',
-      rating: 4.9,
-      minDeliveryMinutes: 25,
-      maxDeliveryMinutes: 60,
-    ),
-    Brand(
-      name: 'LuLu Express',
-      imagePath: AppImages.foodTest,
-      tagline: 'Daily essentials',
+      offerLabel: '-50% après 20h',
       rating: 4.7,
-      minDeliveryMinutes: 30,
-      maxDeliveryMinutes: 55,
+      distanceKm: 0.6,
     ),
-    Brand(
-      name: 'Burger House',
+    RestaurantOffer(
+      name: 'Pizza Mamma',
       imagePath: AppImages.foodTest,
-      tagline: 'Loved by locals',
-      rating: 4.8,
-      minDeliveryMinutes: 15,
-      maxDeliveryMinutes: 35,
+      offerLabel: 'Panier surprise',
+      rating: 4.5,
+      distanceKm: 0.9,
     ),
-    Brand(
+    RestaurantOffer(
       name: 'Sushi Corner',
       imagePath: AppImages.foodTest,
-      tagline: 'Chef specials',
+      offerLabel: '-30% fin de service',
       rating: 4.6,
-      minDeliveryMinutes: 20,
-      maxDeliveryMinutes: 40,
+      distanceKm: 1.2,
     ),
   ];
+
+  List<FoodListing> _buildListings() {
+    final now = DateTime.now();
+    return [
+      FoodListing(
+        id: 'f1',
+        name: 'Tajine poulet olives',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Fatima',
+        category: SellerCategory.social,
+        distanceKm: 0.3,
+        rating: 4.9,
+        reviewCount: 24,
+        dietaryTags: const [DietaryTag.halal, DietaryTag.spicy],
+        portionsLeft: 4,
+        fulfillment: Fulfillment.delivery,
+        originalPrice: 8.00,
+        price: 3.00,
+        expiresAt: now.add(const Duration(hours: 3, minutes: 30)),
+      ),
+      FoodListing(
+        id: 'f2',
+        name: 'Lasagne maison',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Chez Luigi',
+        category: SellerCategory.traiteur,
+        distanceKm: 0.8,
+        rating: 4.7,
+        reviewCount: 56,
+        dietaryTags: const [],
+        portionsLeft: 6,
+        fulfillment: Fulfillment.both,
+        originalPrice: 12.00,
+        price: 5.50,
+        expiresAt: now.add(const Duration(hours: 5)),
+      ),
+      FoodListing(
+        id: 'f3',
+        name: 'Buddha bowl végé',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Green Kitchen',
+        category: SellerCategory.restaurant,
+        distanceKm: 1.1,
+        rating: 4.6,
+        reviewCount: 89,
+        dietaryTags: const [DietaryTag.vegan, DietaryTag.glutenFree],
+        portionsLeft: 2,
+        fulfillment: Fulfillment.pickup,
+        originalPrice: 11.00,
+        price: 4.50,
+        expiresAt: now.add(const Duration(hours: 2)),
+      ),
+      FoodListing(
+        id: 'f4',
+        name: 'Quiche lorraine',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Marc',
+        category: SellerCategory.social,
+        distanceKm: 0.5,
+        rating: 4.8,
+        reviewCount: 12,
+        dietaryTags: const [],
+        portionsLeft: 1,
+        fulfillment: Fulfillment.pickup,
+        price: 2.50,
+        expiresAt: now.add(const Duration(hours: 1, minutes: 45)),
+      ),
+    ];
+  }
+
+  List<FoodListing> _buildUrgentListings() {
+    final now = DateTime.now();
+    return [
+      FoodListing(
+        id: 'u1',
+        name: 'Tajine',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Fatima',
+        category: SellerCategory.social,
+        distanceKm: 0.3,
+        rating: 4.9,
+        reviewCount: 24,
+        portionsLeft: 2,
+        fulfillment: Fulfillment.delivery,
+        price: 3,
+        expiresAt: now.add(const Duration(hours: 2)),
+      ),
+      FoodListing(
+        id: 'u2',
+        name: 'Tarte aux pommes',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Boulangerie Paul',
+        category: SellerCategory.restaurant,
+        distanceKm: 0.7,
+        rating: 4.6,
+        reviewCount: 41,
+        portionsLeft: 3,
+        fulfillment: Fulfillment.pickup,
+        price: 2,
+        expiresAt: now.add(const Duration(hours: 4)),
+      ),
+      FoodListing(
+        id: 'u3',
+        name: 'Soupe de légumes',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Chez Anna',
+        category: SellerCategory.traiteur,
+        distanceKm: 1.0,
+        rating: 4.7,
+        reviewCount: 18,
+        portionsLeft: 2,
+        fulfillment: Fulfillment.both,
+        price: 4,
+        expiresAt: now.add(const Duration(hours: 1)),
+      ),
+    ];
+  }
+
+  List<FoodListing> get _filteredListings {
+    if (_selectedCategory == null) return _listings;
+    return _listings.where((l) => l.category == _selectedCategory).toList();
+  }
+
+  void _toggleSaved(String id) {
+    setState(() {
+      if (_savedIds.contains(id)) {
+        _savedIds.remove(id);
+      } else {
+        _savedIds.add(id);
+      }
+    });
+  }
+
+  void _toggleFilter(_QuickFilter filter) {
+    setState(() {
+      if (_activeFilters.contains(filter)) {
+        _activeFilters.remove(filter);
+      } else {
+        _activeFilters.add(filter);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _filteredListings;
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       extendBody: true,
       appBar: const HomeAppBar(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: AppSizes.spaceBtwSections * 2),
+        padding: const EdgeInsets.only(
+          top: AppSizes.md,
+          bottom: AppSizes.spaceBtwSections * 2,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //* active order strip — only while a delivery is in progress
-            if (_hasActiveOrder) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSizes.md,
-                  AppSizes.md,
-                  AppSizes.md,
-                  0,
-                ),
-                child: ActiveOrderStrip(
-                  onTap: () => Get.to(() => const OrderTrackingScreen()),
-                ),
+            //* search bar + map button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              child: Row(
+                children: [
+                  const Expanded(child: HomeSearchBar()),
+                  const Gap(AppSizes.md),
+                  GestureDetector(
+                    onTap: () => Get.to(() => const MapScreen()),
+                    child: CustomCircularContainer(
+                      size: 56,
+                      backgroundColor: AppColors.secondary,
+                      child: const Icon(
+                        Iconsax.map,
+                        color: AppColors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-
-            //* craving heading
-            const Padding(
-              padding: EdgeInsets.all(AppSizes.md),
-              child: CravingHeader(),
             ),
+            const Gap(AppSizes.md + 2),
 
-            //* search bar + filter button
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
-              child: HomeSearchBar(),
+            //* category tabs
+            _CategoryTabs(
+              selected: _selectedCategory,
+              onSelect: (cat) => setState(() => _selectedCategory = cat),
             ),
-            const Gap(AppSizes.spaceBtwSections),
+            const Gap(AppSizes.md),
 
-            //* promo banner carousel
-            PromoBannerCarousel(banners: _promos, onBannerTap: (_) {}),
-            const Gap(AppSizes.spaceBtwSections),
+            //* quick filter chips
+            _QuickFilterRow(active: _activeFilters, onToggle: _toggleFilter),
+            const Gap(AppSizes.spaceBtwSections - 4),
 
-            //* category header
+            //* urgent section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
               child: SectionHeader(
-                title: AppTexts.homeCategory,
+                title: AppTexts.homeSectionUrgent,
+                showSeeAll: true,
                 onSeeAllTap: () {},
               ),
             ),
             const Gap(AppSizes.md),
-
-            //* category carousel — horizontal chips
             SizedBox(
-              height: 64,
+              height: DeviceUtils.getScreenHeight(context) * 0.28,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                itemCount: _categories.length,
-                separatorBuilder: (_, _) => const Gap(AppSizes.md),
+                itemCount: _urgentListings.length,
+                separatorBuilder: (_, _) => const Gap(AppSizes.md - 4),
                 itemBuilder: (context, index) {
-                  final category = _categories[index];
-                  return CategoryChip(
-                    label: category.name,
-                    imagePath: category.imagePath,
-                    selected: _selectedCategoryIndex == index,
-                    onTap: () => setState(() => _selectedCategoryIndex = index),
+                  return UrgentFoodCard(
+                    listing: _urgentListings[index],
+                    onTap: () => Get.to(() => const ProductDetailScreen()),
                   );
                 },
               ),
             ),
             const Gap(AppSizes.spaceBtwSections),
 
-            //* nearby offers carousel
-            SizedBox(
-              height: DeviceUtils.getScreenHeight() * 0.36,
-              child: PageView.builder(
-                controller: PageController(viewportFraction: 0.85),
-                padEnds: false,
-                itemCount: _offers.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      left: index == 0 ? AppSizes.md : AppSizes.sm,
-                      right: AppSizes.sm,
-                    ),
-                    child: FoodOfferCard(offer: _offers[index]),
-                  );
-                },
-              ),
+            //* main feed section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              child: SectionHeader(title: AppTexts.homeSectionNearYou),
             ),
-            const Gap(AppSizes.spaceBtwSections),
+            const Gap(AppSizes.md),
+            if (filtered.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: EmptyFeedState(onPostMeal: () {}, onExpandSearch: () {}),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: Column(
+                  children: [
+                    for (final listing in filtered) ...[
+                      FeedFoodCard(
+                        listing: listing,
+                        isSaved: _savedIds.contains(listing.id),
+                        onTap: () => Get.to(() => const ProductDetailScreen()),
+                        onToggleSaved: () => _toggleSaved(listing.id),
+                      ),
+                      const Gap(AppSizes.md),
+                    ],
+                  ],
+                ),
+              ),
+            const Gap(AppSizes.spaceBtwSections - AppSizes.md),
 
-            //* big brands header
+            //* restaurants section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
               child: SectionHeader(
-                title: AppTexts.homeBrandsNearYou,
+                title: AppTexts.homeSectionRestaurants,
+                showSeeAll: true,
                 onSeeAllTap: () {},
               ),
             ),
             const Gap(AppSizes.md),
-
-            //* brands grid — 1 column stacked list of wide cards
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-              child: CustomGridLayout(
-                itemCount: _brands.length,
-                columns: 1,
-                spacing: AppSizes.md,
-                childAspectRatio: 3.6,
+            SizedBox(
+              height: DeviceUtils.getScreenHeight(context) * 0.28,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                itemCount: _restaurants.length,
+                separatorBuilder: (_, _) => const Gap(AppSizes.md - 4),
                 itemBuilder: (context, index) {
-                  return BrandCard(brand: _brands[index], onTap: () {});
+                  return RestaurantOfferCard(
+                    offer: _restaurants[index],
+                    onTap: () => Get.to(() => const ProductDetailScreen()),
+                  );
                 },
               ),
             ),
+            const Gap(AppSizes.spaceBtwSections * 2.5),
           ],
         ),
       ),
@@ -268,9 +345,111 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _Category {
-  const _Category({required this.name, required this.imagePath});
+class _CategoryTabs extends StatelessWidget {
+  const _CategoryTabs({required this.selected, required this.onSelect});
 
-  final String name;
-  final String imagePath;
+  final SellerCategory? selected;
+  final ValueChanged<SellerCategory?> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <(SellerCategory?, String, String?)>[
+      (null, AppTexts.homeCategoryAll, AppImages.all),
+      (
+        SellerCategory.social,
+        SellerCategory.social.label,
+        SellerCategory.social.imagePath,
+      ),
+      (
+        SellerCategory.traiteur,
+        SellerCategory.traiteur.label,
+        SellerCategory.traiteur.imagePath,
+      ),
+      (
+        SellerCategory.restaurant,
+        SellerCategory.restaurant.label,
+        SellerCategory.restaurant.imagePath,
+      ),
+    ];
+
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const Gap(AppSizes.sm + 2),
+        itemBuilder: (context, index) {
+          final (cat, label, imagePath) = items[index];
+          return CategoryPill(
+            label: label,
+            imagePath: imagePath,
+            selected: selected == cat,
+            onTap: () => onSelect(cat),
+          );
+        },
+      ),
+    );
+  }
 }
+
+class _QuickFilterRow extends StatelessWidget {
+  const _QuickFilterRow({required this.active, required this.onToggle});
+
+  final Set<_QuickFilter> active;
+  final ValueChanged<_QuickFilter> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final specs = <(_QuickFilter, String, IconData?, Color?)>[
+      (
+        _QuickFilter.availableNow,
+        AppTexts.homeFilterAvailableNow,
+        Iconsax.clock,
+        null,
+      ),
+      (_QuickFilter.nearby, AppTexts.homeFilterNearby, Iconsax.location, null),
+      (_QuickFilter.cheap, AppTexts.homeFilterCheap, Iconsax.wallet_2, null),
+      (
+        _QuickFilter.halal,
+        AppTexts.homeFilterHalal,
+        null,
+        DietaryTag.halal.color,
+      ),
+      (
+        _QuickFilter.vegan,
+        AppTexts.homeFilterVegan,
+        null,
+        DietaryTag.vegan.color,
+      ),
+      (
+        _QuickFilter.glutenFree,
+        AppTexts.homeFilterGlutenFree,
+        null,
+        DietaryTag.glutenFree.color,
+      ),
+    ];
+
+    return SizedBox(
+      height: 38,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+        itemCount: specs.length,
+        separatorBuilder: (_, _) => const Gap(AppSizes.sm),
+        itemBuilder: (context, index) {
+          final (filter, label, icon, color) = specs[index];
+          return QuickFilterChip(
+            label: label,
+            icon: icon,
+            activeColor: color,
+            selected: active.contains(filter),
+            onTap: () => onToggle(filter),
+          );
+        },
+      ),
+    );
+  }
+}
+
+enum _QuickFilter { availableNow, nearby, cheap, halal, vegan, glutenFree }
