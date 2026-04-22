@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 import 'package:vinted_v2/features/map/presentation/widget/map_pin.dart';
 

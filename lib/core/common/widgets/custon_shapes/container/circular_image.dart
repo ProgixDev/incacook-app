@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:vinted_v2/core/common/widgets/loaders/shimmer.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
 
 class CustomCircularImage extends StatelessWidget {
   const CustomCircularImage({
     super.key,
-    this.width = 56,
-    this.height = 56,
+    this.size = 56,
     this.overlayColor,
     // this.backgroundColor,
     required this.image,
@@ -21,13 +19,13 @@ class CustomCircularImage extends StatelessWidget {
   final bool isNetworkImage;
   final Color? overlayColor;
   // final Color? backgroundColor;
-  final double width, height, padding;
+  final double size, padding;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
+      width: size,
+      height: size,
       padding: EdgeInsets.all(padding),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
@@ -39,8 +37,8 @@ class CustomCircularImage extends StatelessWidget {
                   imageUrl: image,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       CustomShimmerEffect(
-                        width: width,
-                        height: height,
+                        width: size,
+                        height: size,
                         radius: 100,
                       ),
                   errorWidget: (context, url, error) => const Icon(Icons.error),

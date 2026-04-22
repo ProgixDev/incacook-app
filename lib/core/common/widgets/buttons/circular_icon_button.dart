@@ -2,36 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 
 class CircularIconButton extends StatelessWidget {
-  const CircularIconButton({super.key, 
+  const CircularIconButton({
+    super.key,
+    this.size,
     required this.icon,
-    this.size = 34,
-    required this.onTap,
-    required this.background,
-    required this.borderColor,
-    required this.iconColor,
+    this.backgroundColor = Colors.blue,
+    this.iconColor = Colors.white,
+    this.onPressed,
   });
 
+  final double? size;
   final IconData icon;
-  final double size;
-  final VoidCallback onTap;
-  final Color background;
-  final Color borderColor;
+  final Color? backgroundColor;
   final Color iconColor;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+      onTap: onPressed,
       child: Container(
-        width: size,
-        height: size,
+        width: size ?? AppSizes.lg * 1.8,
+        height: size ?? AppSizes.lg * 1.8,
         decoration: BoxDecoration(
-          color: background,
+          color: backgroundColor,
           shape: BoxShape.circle,
-          border: Border.all(color: borderColor),
         ),
-        child: Icon(icon, color: iconColor, size: AppSizes.iconSm + 2),
+        alignment: Alignment.center,
+        child: Icon(icon, color: iconColor, size: AppSizes.lg - 2),
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:vinted_v2/core/common/widgets/misc/horizontal_separator.dart';
+import 'package:vinted_v2/core/common/widgets/misc/price_display.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
@@ -117,7 +119,20 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
           ),
           child: Column(
             children: [
-              const _DragHandle(),
+              //* Drag handle
+              Padding(
+                padding: const EdgeInsets.only(top: AppSizes.sm + 2),
+                child: Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -131,7 +146,7 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _Header(listing: widget.listing),
-                      const _SectionDivider(),
+                      const HorizontalSeparator(),
                       _QuantitySection(
                         quantity: _quantity,
                         portionsAvailable: widget.listing.portionsLeft,
@@ -141,14 +156,14 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                         onIncrease: _increase,
                       ),
                       if (widget.addOns.isNotEmpty) ...[
-                        const _SectionDivider(),
+                        const HorizontalSeparator(),
                         _OptionsSection(
                           addOns: widget.addOns,
                           selectedIds: _selectedAddOnIds,
                           onToggle: _toggleAddOn,
                         ),
                       ],
-                      const _SectionDivider(),
+                      const HorizontalSeparator(),
                       _NoteSection(
                         controller: _noteController,
                         maxLength: _noteMaxLength,
@@ -162,42 +177,6 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
           ),
         );
       },
-    );
-  }
-}
-
-class _DragHandle extends StatelessWidget {
-  const _DragHandle();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSizes.sm + 2),
-      child: Center(
-        child: Container(
-          width: 42,
-          height: 4,
-          decoration: BoxDecoration(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionDivider extends StatelessWidget {
-  const _SectionDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-      child: Container(
-        height: 1,
-        color: AppColors.secondary.withValues(alpha: 0.3),
-      ),
     );
   }
 }
@@ -258,21 +237,25 @@ class _SellerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(
-      context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.grey);
-
     return Row(
       children: [
         Flexible(
           child: Text(
             listing.sellerName,
             overflow: TextOverflow.ellipsis,
-            style: style?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.grey,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         const Gap(6),
-        Text('·', style: style),
+        Text(
+          '·',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+        ),
         const Gap(6),
         SizedBox(
           width: 14,
@@ -280,7 +263,14 @@ class _SellerRow extends StatelessWidget {
           child: Image.asset(listing.category.imagePath, fit: BoxFit.contain),
         ),
         const Gap(4),
-        Flexible(child: Text(listing.category.label, style: style)),
+        Flexible(
+          child: Text(
+            listing.category.label,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+          ),
+        ),
       ],
     );
   }
@@ -311,13 +301,7 @@ class _PriceRow extends StatelessWidget {
           const Icon(Iconsax.arrow_right_3, size: 12, color: AppColors.grey),
           const Gap(6),
         ],
-        Text(
-          '€${price.toStringAsFixed(2)}',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        PriceDisplay(price: price, priceSize: 15),
       ],
     );
   }
@@ -339,13 +323,6 @@ class _QuantitySection extends StatelessWidget {
   final bool canIncrease;
   final VoidCallback onDecrease;
   final VoidCallback onIncrease;
-
-  String _portionsLabel() {
-    final word = portionsAvailable == 1
-        ? AppTexts.orderSheetPortionAvailableSuffix
-        : AppTexts.orderSheetPortionsAvailableSuffix;
-    return '$portionsAvailable $word';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -395,7 +372,7 @@ class _QuantitySection extends StatelessWidget {
         ),
         const Gap(AppSizes.sm),
         Text(
-          _portionsLabel(),
+          '$portionsAvailable ${portionsAvailable == 1 ? AppTexts.orderSheetPortionAvailableSuffix : AppTexts.orderSheetPortionsAvailableSuffix}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: canIncrease ? AppColors.grey : const Color(0xFFC05D3B),
             fontWeight: canIncrease ? FontWeight.w500 : FontWeight.w600,
@@ -539,7 +516,7 @@ class _Checkbox extends StatelessWidget {
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        color: selected ? AppColors.secondary : AppColors.white,
+        color: selected ? AppColors.secondary : AppColors.accent,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: selected ? AppColors.secondary : AppColors.lightGrey,
@@ -547,7 +524,7 @@ class _Checkbox extends StatelessWidget {
         ),
       ),
       child: selected
-          ? const Icon(Iconsax.tick_square, size: 14, color: AppColors.white)
+          ? const Icon(Icons.check, size: 14, color: AppColors.white)
           : null,
     );
   }
@@ -591,15 +568,15 @@ class _NoteSection extends StatelessWidget {
             counterText: '',
             contentPadding: const EdgeInsets.all(AppSizes.md - 2),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
+              borderRadius: BorderRadius.circular(20),
               borderSide: const BorderSide(
                 color: AppColors.secondary,
                 width: 1,
@@ -620,19 +597,10 @@ class _TotalAndCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.lightBackground,
-        border: Border(top: BorderSide(color: AppColors.lightGrey, width: 1)),
-      ),
-      padding: const EdgeInsets.fromLTRB(
-        AppSizes.md,
-        AppSizes.md,
-        AppSizes.md,
-        AppSizes.md,
-      ),
-      child: SafeArea(
-        top: false,
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -648,14 +616,7 @@ class _TotalAndCta extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(
-                  '€${total.toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    height: 1,
-                  ),
-                ),
+                PriceDisplay(price: total, priceSize: 18, currencySize: 18),
               ],
             ),
             const Gap(AppSizes.sm + 2),

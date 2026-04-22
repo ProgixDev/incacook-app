@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/features/profile/domain/profile_menu_item.dart';
-import 'package:vinted_v2/features/profile/presentation/widgets/profile_menu_tile.dart';
+import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
+import 'package:vinted_v2/features/profile/presentation/widgets/setting_menu_tile.dart';
 
-class ProfileMenuCard extends StatelessWidget {
-  const ProfileMenuCard({super.key, this.title, required this.items});
+class SettingMenuSection extends StatelessWidget {
+  const SettingMenuSection({super.key, this.title, required this.items});
 
   final String? title;
-  final List<ProfileMenuItem> items;
+  final List<SettingMenuItem> items;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class ProfileMenuCard extends StatelessWidget {
               ),
             ),
           for (var i = 0; i < items.length; i++) ...[
-            ProfileMenuTile(item: items[i]),
+            SettingMenuTile(item: items[i]),
             if (i != items.length - 1) const _Separator(),
           ],
         ],

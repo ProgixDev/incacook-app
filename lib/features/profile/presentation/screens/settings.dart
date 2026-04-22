@@ -6,64 +6,64 @@ import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_c
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/profile/domain/profile_menu_item.dart';
+import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
 import 'package:vinted_v2/features/profile/presentation/widgets/profile_menu_card.dart';
 import 'package:vinted_v2/features/profile/presentation/widgets/profile_user_card.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final accountItems = <ProfileMenuItem>[
-      ProfileMenuItem(
+    final accountItems = <SettingMenuItem>[
+      SettingMenuItem(
         icon: Iconsax.cup,
-        title: AppTexts.profileRewards,
+        title: AppTexts.settingsWallet,
         trailingText: '0 points',
         showChevron: false,
         onTap: () {},
       ),
-      ProfileMenuItem(
+      SettingMenuItem(
         icon: Iconsax.clipboard_text,
-        title: AppTexts.profileOrders,
+        title: AppTexts.settingsOrders,
         onTap: () {},
       ),
-      ProfileMenuItem(
+      SettingMenuItem(
         icon: Iconsax.card,
-        title: AppTexts.profilePay,
+        title: AppTexts.settingsPay,
         trailingText: '\$0.00',
         showChevron: false,
         onTap: () {},
       ),
-      ProfileMenuItem(
+      SettingMenuItem(
         icon: Iconsax.ticket_discount,
-        title: AppTexts.profileVouchers,
+        title: AppTexts.settingsVouchers,
         onTap: () {},
       ),
-      ProfileMenuItem(
-        icon: Iconsax.crown_1,
-        title: AppTexts.profilePro,
-        onTap: () {},
-      ),
+      // SettingMenuItem(
+      //   icon: Iconsax.crown_1,
+      //   title: AppTexts.settingsPro,
+      //   onTap: () {},
+      // ),
     ];
 
-    final supportItems = <ProfileMenuItem>[
-      ProfileMenuItem(
+    final supportItems = <SettingMenuItem>[
+      SettingMenuItem(
         icon: Iconsax.message_question,
-        title: AppTexts.profileGetHelp,
+        title: AppTexts.settingsGetHelp,
         onTap: () {},
       ),
-      ProfileMenuItem(
+      SettingMenuItem(
         icon: Iconsax.info_circle,
-        title: AppTexts.profileAboutApp,
+        title: AppTexts.settingsAboutApp,
         onTap: () {},
       ),
     ];
 
-    final logoutItems = <ProfileMenuItem>[
-      ProfileMenuItem(
+    final logoutItems = <SettingMenuItem>[
+      SettingMenuItem(
         icon: Iconsax.logout,
-        title: AppTexts.profileLogout,
+        title: AppTexts.settingsLogout,
         showChevron: false,
         onTap: () {},
       ),
@@ -73,11 +73,6 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: AppColors.lightBackground,
       extendBody: false,
       appBar: CustomAppBar(
-        leading: const CustomCircularContainer(
-          size: 44,
-          backgroundColor: AppColors.accent,
-          child: Icon(Iconsax.user, color: AppColors.secondary, size: 20),
-        ),
         title: Text(
           AppTexts.profileTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -111,17 +106,18 @@ class ProfileScreen extends StatelessWidget {
           children: [
             ProfileUserCard(onEdit: () {}),
             const Gap(AppSizes.md),
-            ProfileMenuCard(
+            SettingMenuSection(
               title: AppTexts.profileSectionSettings,
               items: accountItems,
             ),
             const Gap(AppSizes.md),
-            ProfileMenuCard(
+            SettingMenuSection(
               title: AppTexts.profileSectionSupport,
               items: supportItems,
             ),
             const Gap(AppSizes.md),
-            ProfileMenuCard(items: logoutItems),
+            SettingMenuSection(items: logoutItems),
+            const Gap(AppSizes.spaceBtwSections * 4),
           ],
         ),
       ),

@@ -163,8 +163,7 @@ class _ReviewCard extends StatelessWidget {
             children: [
               CustomCircularImage(
                 image: review.avatarPath,
-                width: 36,
-                height: 36,
+                size: 36,
               ),
               const Gap(AppSizes.sm),
               Expanded(

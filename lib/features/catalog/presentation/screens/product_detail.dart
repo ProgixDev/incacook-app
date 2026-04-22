@@ -18,14 +18,15 @@ import 'package:vinted_v2/features/catalog/presentation/widgets/product_reviews_
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_sheet_blend.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/product_title_price_row.dart';
 import 'package:vinted_v2/features/catalog/presentation/widgets/seller_card.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
+import 'package:vinted_v2/core/enums/order_enums.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/orders/domain/order_customization.dart';
 import 'package:vinted_v2/features/orders/domain/product_add_on.dart';
 import 'package:vinted_v2/features/orders/presentation/widgets/order_customize_sheet.dart';
-import 'package:vinted_v2/features/seller/domain/seller_profile.dart';
-import 'package:vinted_v2/features/seller/presentation/screens/seller_profile.dart';
+import 'package:vinted_v2/features/seller/data/seller_mock_data.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:vinted_v2/features/seller/presentation/screens/seller_profile2.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});
@@ -59,7 +60,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     name: 'Tajine poulet olives',
     imagePath: AppImages.foodTest,
     sellerName: 'Fatima K.',
-    category: SellerCategory.social,
+    category: SellerCategory.faitMaison,
     distanceKm: 0.3,
     rating: 4.9,
     reviewCount: 24,
@@ -80,166 +81,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ProductAddOn(id: 'kids', label: 'Portion enfant', priceDelta: -1.00),
   ];
 
-  //? demo seller profile shown when tapping the SellerCard below
-  static final SellerProfile _demoSellerProfile = SellerProfile(
-    id: 'fatima-k',
-    name: 'Fatima K.',
-    avatarPath: AppImages.profilePic,
-    category: SellerCategory.social,
-    categoryTag: 'Fait maison',
-    cuisineType: 'Cuisine nord-africaine',
-    rating: 4.9,
-    reviewCount: 247,
-    distanceKm: 0.4,
-    neighborhood: 'Bastille, Paris 11ème',
-    prepMinMinutes: 30,
-    prepMaxMinutes: 45,
-    deliveryFee: 2.50,
-    responseRatePercent: 98,
-    mealsSold: 247,
-    mealsSaved: 312,
-    promoText: AppTexts.sellerProfileFirstOrderPromo,
-    performance: const [
-      PerformanceMetric(
-        icon: Iconsax.shield_tick,
-        label: AppTexts.sellerPerformanceHygiene,
-        percent: 95,
-        caption: "Toujours emballé proprement",
-      ),
-      PerformanceMetric(
-        icon: Iconsax.clock,
-        label: AppTexts.sellerPerformancePunctuality,
-        percent: 92,
-        caption: "Préparé à l'heure 92% du temps",
-      ),
-      PerformanceMetric(
-        icon: Iconsax.tick_circle,
-        label: AppTexts.sellerPerformanceAccuracy,
-        percent: 100,
-        caption: "Aucune erreur dans les 50 derniers",
-      ),
-      PerformanceMetric(
-        icon: Iconsax.message_tick,
-        label: AppTexts.sellerPerformanceCommunication,
-        percent: 88,
-        caption: "Répond en moyenne en 3 min",
-      ),
-      PerformanceMetric(
-        icon: Iconsax.heart5,
-        label: AppTexts.sellerPerformanceFoodQuality,
-        percent: 96,
-        caption: "Basé sur 247 avis clients",
-      ),
-    ],
-    menuCategories: const ['Tout', 'Plats', 'Desserts', 'Entrées', 'Boissons'],
-    listings: [
-      FoodListing(
-        id: 's1',
-        name: 'Tajine poulet',
-        imagePath: AppImages.foodTest,
-        sellerName: 'Fatima K.',
-        category: SellerCategory.social,
-        distanceKm: 0.4,
-        rating: 4.9,
-        reviewCount: 24,
-        portionsLeft: 3,
-        fulfillment: Fulfillment.both,
-        originalPrice: 7.00,
-        price: 3.50,
-        expiresAt: DateTime.now().add(const Duration(hours: 2)),
-      ),
-      FoodListing(
-        id: 's2',
-        name: 'Chorba maison',
-        imagePath: AppImages.foodTest,
-        sellerName: 'Fatima K.',
-        category: SellerCategory.social,
-        distanceKm: 0.4,
-        rating: 4.8,
-        reviewCount: 18,
-        portionsLeft: 5,
-        fulfillment: Fulfillment.both,
-        originalPrice: 3.50,
-        price: 2.00,
-        expiresAt: DateTime.now().add(const Duration(hours: 4)),
-      ),
-      FoodListing(
-        id: 's3',
-        name: 'Salade marocaine',
-        imagePath: AppImages.foodTest,
-        sellerName: 'Fatima K.',
-        category: SellerCategory.social,
-        distanceKm: 0.4,
-        rating: 4.7,
-        reviewCount: 12,
-        portionsLeft: 4,
-        fulfillment: Fulfillment.both,
-        originalPrice: 4.00,
-        price: 2.50,
-        expiresAt: DateTime.now().add(const Duration(hours: 3)),
-      ),
-      FoodListing(
-        id: 's4',
-        name: 'Baklava',
-        imagePath: AppImages.foodTest,
-        sellerName: 'Fatima K.',
-        category: SellerCategory.social,
-        distanceKm: 0.4,
-        rating: 5.0,
-        reviewCount: 33,
-        portionsLeft: 6,
-        fulfillment: Fulfillment.both,
-        originalPrice: 5.00,
-        price: 3.00,
-        expiresAt: DateTime.now().add(const Duration(hours: 5)),
-      ),
-    ],
-    bio:
-        "Je cuisine chaque jour pour ma famille à Bastille depuis 15 ans. Plutôt que de jeter mes restes, je partage avec mes voisins à prix doux. Une cuisine saine, épicée, et pleine d'amour.",
-    languageCodes: const ['FR', 'DZ'],
-    memberSince: DateTime(2024, 3, 1),
-    lastActiveAgo: 'il y a 2h',
-    verifications: const [
-      AppTexts.sellerVerificationIdentity,
-      AppTexts.sellerVerificationHygieneCharter,
-      AppTexts.sellerVerificationPhone,
-      AppTexts.sellerVerificationAddress,
-    ],
-    ratingDistribution: const {5: 89, 4: 8, 3: 2, 2: 1, 1: 0},
-    sentimentTags: const [
-      SentimentTag(label: 'Délicieux', count: 82),
-      SentimentTag(label: 'Copieux', count: 47),
-      SentimentTag(label: 'Épicé', count: 34),
-      SentimentTag(label: "À l'heure", count: 98),
-    ],
-    recentReviews: [
-      SellerReview(
-        authorName: 'Marie D.',
-        avatarPath: AppImages.profilePic,
-        rating: 5,
-        body:
-            'Excellent tajine, vraiment comme à la maison. Fatima est adorable en plus !',
-        timeAgoLabel: 'il y a 2 jours',
-        helpfulCount: 12,
-      ),
-      SellerReview(
-        authorName: 'Karim B.',
-        avatarPath: AppImages.profilePic,
-        rating: 5,
-        body: 'Portions généreuses, livraison à l\'heure. Top.',
-        timeAgoLabel: 'il y a 5 jours',
-        helpfulCount: 7,
-      ),
-    ],
-    location: LatLng(48.8532, 2.3692),
-    deliveryRadiusKm: 3,
-    availabilitySchedule: 'Lun–Ven · 18h–22h',
-  );
-
-  void _openSellerProfile() {
-    Get.to<void>(() => SellerProfileScreen(profile: _demoSellerProfile));
-  }
-
   Future<void> _openOrderSheet() async {
     final customization = await OrderCustomizeSheet.show(
       context,
@@ -255,6 +96,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         currentSellerName: currentSellerName,
       ),
     );
+  }
+
+  //? quick-add: no customize sheet, default quantity 1, no add-ons, no note
+  Future<void> _quickAddToCart() async {
+    final customization = OrderCustomization(
+      listing: _demoListing,
+      quantity: 1,
+      selectedAddOns: const [],
+      note: '',
+      totalPrice: _demoListing.price,
+    );
+
+    final added = await CartController.instance.tryAdd(
+      customization,
+      resolveConflict: (currentSellerName) => DifferentSellerDialog.show(
+        context,
+        currentSellerName: currentSellerName,
+      ),
+    );
+    if (!added || !mounted) return;
+
+    await AddedToCartOverlay.show(context);
   }
 
   //? sample reviews — swap with a real data source when the API is wired
@@ -363,7 +226,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             children: [
                               const ProductInfoPillBar(),
                               const Gap(AppSizes.lg),
-                              SellerCard(onCardTap: _openSellerProfile),
+                              SellerCard(
+                                onCardTap: () => Get.to(
+                                  () => SellerProfileScreen(
+                                    profile: SellerMockData.demoSeller(),
+                                  ),
+                                ),
+                              ),
                               const Gap(AppSizes.lg),
                               const ProductDescriptionBlock(
                                 description: AppTexts.productSampleLongDesc,
@@ -397,7 +266,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 const FloatingCartBar(),
                 ProductBottomBar(
-                  onAddToCart: () => AddedToCartOverlay.show(context),
+                  onAddToCart: _quickAddToCart,
                   onOrder: _openOrderSheet,
                 ),
               ],

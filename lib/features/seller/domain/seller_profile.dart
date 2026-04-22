@@ -1,6 +1,7 @@
-import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/seller/domain/performance_metric.dart';
 
 class SellerProfile {
   const SellerProfile({
@@ -68,20 +69,6 @@ class SellerProfile {
   final double deliveryRadiusKm;
   final String availabilitySchedule;
   final String? promoText;
-}
-
-class PerformanceMetric {
-  const PerformanceMetric({
-    required this.icon,
-    required this.label,
-    required this.percent,
-    required this.caption,
-  });
-
-  final IconData icon;
-  final String label;
-  final int percent;
-  final String caption;
 }
 
 class SentimentTag {

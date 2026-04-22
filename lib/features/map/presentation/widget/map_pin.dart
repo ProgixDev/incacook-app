@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 
 //? category-to-color mapping local to the map feature — not part of AppColors
 //? since these are semantic map markers, not app-wide tokens
 Color pinColorFor(SellerCategory category) {
   switch (category) {
-    case SellerCategory.social:
+    case SellerCategory.faitMaison:
       return const Color(0xFFE8823B);
     case SellerCategory.traiteur:
       return const Color(0xFF2E7D32);
@@ -18,7 +19,7 @@ Color pinColorFor(SellerCategory category) {
 
 String pinEmojiFor(SellerCategory category) {
   switch (category) {
-    case SellerCategory.social:
+    case SellerCategory.faitMaison:
       return '🏠';
     case SellerCategory.traiteur:
       return '🍲';

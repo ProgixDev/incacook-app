@@ -1,275 +1,265 @@
 class AppTexts {
   //* on boarding text
-  static const String onBoardingTitle1 = "Discover Delicious Meals";
-  static const String onBoardingTitle2 = "Order In A Few Taps";
-  static const String onBoardingTitle3 = "Fast Delivery To Your Door";
+  static const String onBoardingTitle1 = "Découvrez des plats faits maison";
+  static const String onBoardingTitle2 = "Aidez votre communauté";
+  static const String onBoardingTitle3 = "Luttez contre le gaspillage";
 
   static const String onBoardingSubTitle1 =
-      "Explore a wide variety of dishes from your favorite local restaurants. Find something new to crave every day";
+      "Explorez une grande variété de plats préparés avec amour par des cuisiniers locaux. Trouvez chaque jour de nouvelles saveurs à savourer.";
   static const String onBoardingSubTitle2 =
-      "Browse menus, customize your order, and check out in seconds. Enjoy a smooth, hassle-free food ordering experience";
+      "En commandant, vous soutenez les vendeurs locaux et contribuez à une économie de partage solidaire.";
   static const String onBoardingSubTitle3 =
-      "Track your order in real time and get hot, fresh food delivered straight to your doorstep by our trusted delivery partners";
+      "Chaque commande aide à sauver des invendus et à réduire le gaspillage alimentaire. Ensemble, faisons la différence.";
 
   //* authentication Forum text
-  static const String firstName = "First Name";
-  static const String lastName = "Last Name";
-  static const String email = "Email";
-  static const String password = "Password";
-  static const String username = "Username";
-  static const String phoneNumber = "Phone Number";
-  static const String rememberMe = "Remember Me";
-  static const String forgetPassword = "Forget Passwrod?";
-  static const String signIn = "Sign In";
-  static const String createAccount = "Create Account";
-  static const String orSignInWith = "Or Sign In With";
-  static const String orSignUpWith = "Or Sign Up With";
-  static const String verificationCode = "Verification Code";
-  static const String iAgreeTo = "I agree to";
-  static const String privacy = "Privacy Policy";
-  static const String and = "and";
-  static const String terms = "Terms of use";
+  static const String firstName = "Prénom";
+  static const String lastName = "Nom de famille";
+  static const String email = "E-mail";
+  static const String password = "Mot de passe";
+  static const String username = "Nom d'utilisateur";
+  static const String phoneNumber = "Numéro de téléphone";
+  static const String rememberMe = "Se souvenir de moi";
+  static const String forgetPassword = "Mot de passe oublié?";
+  static const String signIn = "Se connecter";
+  static const String createAccount = "Créer un compte";
+  static const String orSignInWith = "Ou se connecter avec";
+  static const String orSignUpWith = "Ou s'inscrire avec";
+  static const String verificationCode = "Code de vérification";
+  static const String iAgreeTo = "J'accepte";
+  static const String privacy = "Politique de confidentialité";
+  static const String and = "et";
+  static const String terms = "Conditions d'utilisation";
 
   //* authentication heading text
-  static const String loginTitle = "Welcome!";
-  static const String loginSubtitle = "jump back to your account";
-  static const String signUpTitile = "Let's create your account";
+  static const String loginTitle = "Bienvenue!";
+  static const String loginSubtitle = "Reconnectez-vous à votre compte";
+  static const String signUpTitile = "Créons votre compte";
 
   //* user type selection
-  static const String userTypeHeading = "How will you use the app?";
+  static const String userTypeHeading =
+      "Comment utiliserez-vous l'application ?";
   static const String userTypeSubHeading =
-      "Pick the option that fits you best. You can always contact support to change it later";
+      "Choisissez l'option qui vous convient le mieux. Vous pouvez toujours contacter le support pour la modifier plus tard";
 
-  static const String userTypeSellerTitle = "I'm a Seller";
+  static const String userTypeSellerTitle = "Je suis un vendeur";
   static const String userTypeSellerSubtitle =
-      "Own a restaurant or shop? List your dishes and reach hungry customers nearby";
+      "Vous avez un restaurant ou une boutique ? Listez vos plats et atteignez des clients affamés à proximité";
 
-  static const String userTypeClientTitle = "I'm a Client";
+  static const String userTypeClientTitle = "Je suis un client";
   static const String userTypeClientSubtitle =
-      "Crave something delicious? Browse menus and order your favorite meals in a few taps";
+      "Envie de quelque chose de délicieux ? Parcourez les menus et commandez vos plats préférés en quelques clics";
 
-  static const String userTypeDeliveryTitle = "I'm a Delivery Partner";
+  static const String userTypeDeliveryTitle =
+      "Je suis un partenaire de livraison";
   static const String userTypeDeliverySubtitle =
-      "Ride with us to deliver fresh food across the city and earn on your own schedule";
+      "Roulez avec nous pour livrer des plats frais à travers la ville et gagnez de l'argent selon votre propre horaire";
 
   //* seller-specific fields
-  static const String restaurantName = "Restaurant Name";
-  static const String restaurantAddress = "Restaurant Address";
+  static const String restaurantName = "Nom du restaurant";
+  static const String restaurantAddress = "Adresse du restaurant";
 
   //* delivery-specific fields
-  static const String vehicleType = "Vehicle Type";
-  static const String licenseNumber = "License Number";
+  static const String vehicleType = "Type de véhicule";
+  static const String licenseNumber = "Numéro de permis";
 
   //* forgot password screen
-  static const String forgetPasswordTitle = "Forgot your password?";
+  static const String forgetPasswordTitle = "Mot de passe oublié ?";
   static const String forgetPasswordSubTitle =
-      "Write your email down so we can send you a reset link";
-  static const String submit = "Submit";
+      "Notez votre e-mail pour que nous puissions vous envoyer un lien de réinitialisation";
+  static const String submit = "Soumettre";
 
-  static const String changeYourPasswordTitle = "Passwrod reset email sent!";
+  static const String changeYourPasswordTitle =
+      "E-mail de réinitialisation du mot de passe envoyé !";
   static const String changeYourPasswordSubTitle =
-      "i honestly have nothing to say here";
-  static const String sayDone = "Done";
-  static const String resendEmail = "Resend Email";
+      "Honnêtement, je n'ai rien à dire ici";
+  static const String sayDone = "Terminé";
+  static const String resendEmail = "Renvoyer l'e-mail";
 
-  static const String confirmEmail = "Verify your email address!";
+  static const String confirmEmail = "Vérifiez votre adresse e-mail !";
   static const String confirmEmailSubtitle =
-      "Congratulations! Your account awaits, please verify your email to start using it";
+      "Félicitations ! Votre compte vous attend, veuillez vérifier votre e-mail pour commencer à l'utiliser";
 
-  static const String sayContinue = "Continue";
+  static const String sayContinue = "Continuer";
 
   //* success screen
   static const String yourAccountCreatedTitle =
-      "Your Account was created successfully!";
+      "Votre compte a été créé avec succès !";
   static const String yourAccountCreatedSubtitle =
-      "Congratulations, you can now start exploring the app";
+      "Félicitations, vous pouvez maintenant commencer à explorer l'application";
 
   //* home appbar title
-  static const String homeAppbarTitle = "Good morning";
-  static const String homeAppbarSubtitle = "Feeling good today?";
+  static const String homeAppbarTitle = "Bonjour";
+  static const String homeAppbarSubtitle =
+      "Vous vous sentez bien aujourd'hui ?";
 
   //* profile screen
-  static const String profileTitle = "Profile";
-  static const String profileSectionSettings = "Settings";
+  static const String profileTitle = "Profil";
+  static const String profileSectionSettings = "Paramètres";
   static const String profileSectionSupport = "Support";
-  static const String profileEditAccount = "Edit account";
+  static const String profileEditAccount = "Modifier le compte";
 
-  //* profile menu — account
-  static const String profileRewards = "Rewards";
-  static const String profileOrders = "Your orders";
-  static const String profilePay = "Cravk pay";
-  static const String profileVouchers = "Vouchers";
-  static const String profilePro = "Cravk pro";
+  //* Settings menu — account
+  static const String settingsWallet = "Mon portefeuille";
+  static const String settingsOrders = "Vos commandes";
+  static const String settingsPay = "Payer avec Cravk";
+  static const String settingsVouchers = "Bons de réduction";
+  static const String settingsPro = "Cravk pro";
 
-  //* profile menu — support
-  static const String profileGetHelp = "Get help";
-  static const String profileAboutApp = "About app";
-  static const String profileLogout = "Log out";
+  //* Settings menu — support
+  static const String settingsGetHelp = "Obtenir de l'aide";
+  static const String settingsAboutApp = "À propos de l'application";
+  static const String settingsLogout = "Se déconnecter";
 
   //* profile placeholders (until real user data is wired)
-  static const String profileSampleName = "Mark John";
+  static const String profileSampleName = "Marc Jean";
   static const String profileSampleAddress = "745 Lincoln Pl, New York";
 
   //* product detail
-  static const String productFreeDelivery = "Free Delivery";
+  static const String productFreeDelivery = "Livraison gratuite";
   static const String productPrepTime = "20-25 min";
   static const String productCalories = "162 Kcal";
-  static const String productQuickChoices = "Try these quick choices";
+  static const String productQuickChoices = "Essayez ces choix rapides";
   static const String productDescription = "Description";
-  static const String productReadMore = "More...";
-  static const String productOftenOrderedWith = "Often order with";
-  static const String productAddToCart = "Add to Cart";
-  static const String productOrder = "Order";
-  static const String productDelivererRole = "Deliver man";
+  static const String productReadMore = "Plus...";
+  static const String productOftenOrderedWith = "Souvent commandé avec";
+  static const String productAddToCart = "Ajouter au panier";
+  static const String productOrder = "Commander";
+  static const String productDelivererRole = "Livreur";
 
   //* chat list
-  static const String chatListTitle = "Chats List";
-  static const String chatSearchHint = "Search Popular Stores";
-  static const String chatTypingSuffix = "is typing...";
+  static const String chatListTitle = "Liste des discussions";
+  static const String chatSearchHint = "Rechercher des magasins populaires";
+  static const String chatTypingSuffix = "est en train d'écrire...";
 
   //* chat list sample data
-  static const String chatSample1Name = "Fresh Mart Super Shop";
+  static const String chatSample1Name = "Supermarché Frais Mart";
   static const String chatSample1Msg =
-      "Hello, I would like to get information about your delivery times";
-  static const String chatSample2Name = "Daily Grocery Store";
+      "Bonjour, j'aimerais avoir des informations sur vos délais de livraison";
+  static const String chatSample2Name = "Épicerie du quotidien";
   static const String chatSample2Msg =
-      "Could you please let me know if tomatoes are available?";
-  static const String chatSample3Name = "Green Cart Grocery";
-  static const String chatSample3Msg = "Welcome! What can I help you with?";
-  static const String chatSample4Name = "Duck go Support";
+      "Pourriez-vous me dire si les tomates sont disponibles ?";
+  static const String chatSample3Name = "Épicerie Green Cart";
+  static const String chatSample3Msg =
+      "Bienvenue ! Comment puis-je vous aider ?";
+  static const String chatSample4Name = "Support Duck go";
   static const String chatSample4Msg =
-      "I would appreciate receiving a refund for my last order";
-  static const String chatSample5Name = "Pharmacy Care";
+      "J'apprécierais de recevoir un remboursement pour ma dernière commande";
+  static const String chatSample5Name = "Pharmacie Soins";
   static const String chatSample5Msg =
-      "Kindly provide information about the prescription";
+      "Veuillez fournir des informations sur l'ordonnance";
   static const String chatSample6Name = "ShopNest E-Commerce";
 
   //* order tracking
-  static const String trackingPreparingTitle = "Your order is being prepared";
+  static const String trackingPreparingTitle =
+      "Votre commande est en cours de préparation";
   static const String trackingPreparingSubtitle =
-      "The chef is putting magic in your meal. Hang tight!";
-  static const String trackingArrivingPrefix = "Arriving in";
+      "Le chef met de la magie dans votre plat. Tenez bon !";
+  static const String trackingArrivingPrefix = "Arrivée dans";
   static const String trackingMinutesSuffix = "minutes";
   static const String trackingArrivingSubtitle =
-      "Sit back and relax, your food is on the way.";
-  static const String trackingDeliveredTitle = "Your order has arrived";
+      "Asseyez-vous et détendez-vous, votre nourriture est en route.";
+  static const String trackingDeliveredTitle = "Votre commande est arrivée";
   static const String trackingDeliveredSubtitle =
-      "Enjoy your meal! We hope you love it.";
-  static const String trackingStagePrepared = "Prepared";
-  static const String trackingStageOnTheWay = "On the way";
-  static const String trackingStageDelivered = "Delivered";
-  static const String trackingDelivererName = "John Doe";
-  static const String trackingDelivererMeta = "1k+ Deliveries";
+      "Bon appétit ! Nous espérons que vous aimez.";
+  static const String trackingStagePrepared = "Préparé";
+  static const String trackingStageOnTheWay = "En route";
+  static const String trackingStageDelivered = "Livré";
+  static const String trackingDelivererName = "Jean Dupont";
+  static const String trackingDelivererMeta = "1k+ livraisons";
 
   //* cart screen
-  static const String cartTitle = "Cart";
-  static const String cartEmptyTitle = "Your cart is empty";
+  static const String cartTitle = "Panier";
+  static const String cartEmptyTitle = "Votre panier est vide";
   static const String cartEmptySubtitle =
-      "Browse the menu and add tasty picks to your cart";
-  static const String cartPromoHint = "Promo Code";
-  static const String cartApply = "Apply";
-  static const String cartOrderSummary = "Order Summary";
-  static const String cartSubTotal = "Sub Total";
-  static const String cartShipping = "Shipping";
+      "Parcourez le menu et ajoutez de savoureux choix à votre panier";
+  static const String cartPromoHint = "Code promo";
+  static const String cartApply = "Appliquer";
+  static const String cartOrderSummary = "Résumé de la commande";
+  static const String cartSubTotal = "Sous-total";
+  static const String cartShipping = "Livraison";
   static const String cartTotal = "Total";
-  static const String cartContinuePay = "Continue Pay";
+  static const String cartContinuePay = "Continuer le paiement";
 
   //* cart placeholder items
-  static const String cartItem1Name = "Grilled chicken breast";
-  static const String cartItem1Desc = "Tender grilled chicken breast seasoned.";
-  static const String cartItem2Name = "Crunchy Taco Supreme";
+  static const String cartItem1Name = "Poitrine de poulet grillée";
+  static const String cartItem1Desc =
+      "Poitrine de poulet tendre et assaisonnée.";
+  static const String cartItem2Name = "Taco Suprême Croquant";
   static const String cartItem2Desc =
-      "A crispy, flavor-packed Crunchy Taco Supreme loaded with seasoned filling";
-  static const String cartItem3Name = "El Combo";
+      "Un Taco Suprême croquant et savoureux garni d'une garniture assaisonnée";
+  static const String cartItem3Name = "Le Combo";
   static const String cartItem3Desc =
-      "Regular, Grilled Chicken Quesadilla, Nacho & Cheese, Pepsi Zero";
-  static const String cartItem4Name = "Gusco Griller Meal";
+      "Régulier, Quesadilla au poulet grillé, Nacho & Fromage, Pepsi Zéro";
+  static const String cartItem4Name = "Repas Gusco Griller";
   static const String cartItem4Desc =
-      "A flavorful Gusco Griller Meal loaded with juicy grilled chicken, fresh toppings.";
+      "Un savoureux repas Gusco Griller garni de poulet grillé juteux, de garnitures fraîches.";
 
   //* product detail sample data (placeholders)
-  static const String productSampleName = "Grilled Chicken Breast";
+  static const String productSampleName = "Poitrine de poulet grillée";
   static const String productSampleShortDesc =
-      "Tender grilled chicken breast seasoned.";
+      "Poitrine de poulet tendre et assaisonnée.";
   static const String productSampleLongDesc =
-      "Premium chicken breast marinated and grilled to perfection. Every bite is flavorful, lean, and incredibly tender. Great for anyone who loves healthy comfort food";
+      "Poitrine de poulet de qualité supérieure marinée et grillée à la perfection. Chaque bouchée est savoureuse, maigre et incroyablement tendre. Idéal pour tous ceux qui aiment la nourriture réconfortante et saine";
   static const String productSampleDelivererName = "Alice Johnson";
 
   //* seller (product page)
-  static const String productSampleSellerName = "Alice's Kitchen";
+  static const String productSampleSellerName = "La Cuisine d'Alice";
   static const double productSampleSellerRating = 4.8;
   static const int productSampleSellerOrdersCompleted = 1284;
-  static const String productSellerOrdersSuffix = "orders completed";
+  static const String productSellerOrdersSuffix = "commandes terminées";
 
   //* reviews section
-  static const String productReviewsTitle = "Reviews";
-  static const String productReviewsSeeAll = "See all";
-  static const String productReviewsBasedOn = "Based on";
-  static const String productReviewsWordReviews = "reviews";
+  static const String productReviewsTitle = "Avis";
+  static const String productReviewsSeeAll = "Voir tout";
+  static const String productReviewsBasedOn = "Basé sur";
+  static const String productReviewsWordReviews = "avis";
 
   //* sample review data
   static const String productReview1Author = "Sophie M.";
   static const String productReview1Body =
-      "Flavors were on point and the portion was perfect. Will definitely order again.";
-  static const String productReview1Time = "2 days ago";
+      "Les saveurs étaient au rendez-vous et la portion était parfaite. Je commanderai à nouveau sans hésiter.";
+  static const String productReview1Time = "Il y a 2 jours";
 
   static const String productReview2Author = "Marcus L.";
   static const String productReview2Body =
-      "Came hot and fresh. The chicken was super tender — exactly as described.";
-  static const String productReview2Time = "5 days ago";
+      "Arrivé chaud et frais. Le poulet était super tendre — exactement comme décrit.";
+  static const String productReview2Time = "Il y a 5 jours";
 
   static const String productReview3Author = "Lina K.";
   static const String productReview3Body =
-      "Great value for the price. Seasoning was a little mild but the meat was juicy.";
-  static const String productReview3Time = "1 week ago";
+      "Excellent rapport qualité-prix. L'assaisonnement était un peu doux mais la viande était juteuse.";
+  static const String productReview3Time = "Il y a 1 semaine";
 
   //* home — shared
   static const String homeSearchHint = "Chercher un plat, un traiteur...";
-  static const String homeSeeAll = "Voir tout";
 
   //* home — category tabs
   static const String homeCategoryAll = "Tout";
-  static const String homeCategorySocial = "Social";
+  static const String homeCategorySocial = "Fait Maison";
   static const String homeCategoryTraiteur = "Traiteurs";
   static const String homeCategoryRestaurant = "Restaurants";
 
-  //* home — quick filter chips
-  static const String homeFilterAvailableNow = "Disponible maintenant";
-  static const String homeFilterNearby = "Moins de 1km";
-  static const String homeFilterCheap = "Moins de 5€";
-  static const String homeFilterHalal = "Halal";
-  static const String homeFilterVegan = "Végé";
-  static const String homeFilterGlutenFree = "Sans gluten";
-
   //* home — section titles
-  static const String homeSectionUrgent = "Expire bientôt";
-  static const String homeSectionNearYou = "Près de toi";
-  static const String homeSectionRestaurants = "Restaurants proches";
+  static const String homeSectionFoodNearYou = "Plats près de toi";
+  static const String homeSectionKitchensNearYou = "Cuisines près de toi";
+  static const String homeSectionSolidarity = "Partages solidaires";
 
-  //* home — feed card labels
+  //* home — kitchen card labels
+  static const String kitchenFreeDelivery = "Livraison gratuite";
+
+  //* home — feed card labels (also used in map sheet)
   static const String feedExpireAt = "Expire à";
   static const String feedPortions = "portions";
   static const String feedPortion = "portion";
-  static const String feedDelivery = "Livraison";
-  static const String feedPickup = "Retrait";
-
-  //* home — urgent card labels
-  static const String urgentPrefix = "Dans";
-  static const String urgentHourSuffix = "h";
-  static const String urgentMinSuffix = "min";
+  static const String feedPortionsLeft = "portions restantes";
+  static const String feedPortionLeft = "portion restante";
+  static const String feedPriceFree = "Gratuit";
 
   //* home — dietary tag labels
   static const String dietaryHalal = "Halal";
   static const String dietaryVegan = "Végé";
   static const String dietaryGlutenFree = "Sans gluten";
   static const String dietarySpicy = "Épicé";
-
-  //* home — empty state
-  static const String homeEmptyTitle = "Pas encore de repas près de toi";
-  static const String homeEmptyBody =
-      "Sois le premier à proposer un repas dans ton quartier!";
-  static const String homeEmptyCtaPost = "Publier mon premier repas";
-  static const String homeEmptyCtaExpand = "Élargir la recherche à 5km";
 
   //* map screen
   static const String mapLocationCurrent = "Paris 11ème";
@@ -301,7 +291,8 @@ class AppTexts {
 
   //* seller profile — listings
   static const String sellerListingsTitle = "Disponible maintenant";
-  static const String sellerListingsSubtitle = "Offres du jour à ne pas manquer";
+  static const String sellerListingsSubtitle =
+      "Offres du jour à ne pas manquer";
 
   //* seller profile — bio
   static const String sellerBioTitlePrefix = "À propos de";
@@ -321,8 +312,7 @@ class AppTexts {
 
   //* seller profile — reviews
   static const String sellerReviewsTitlePrefix = "Avis";
-  static const String sellerReviewsWhatPeopleSay =
-      "Ce que les clients disent";
+  static const String sellerReviewsWhatPeopleSay = "Ce que les clients disent";
   static const String sellerReviewsHelpfulSuffix =
       "personnes ont trouvé cet avis utile";
   static const String sellerReviewsSeeAllPrefix = "Voir tous les";
@@ -344,7 +334,8 @@ class AppTexts {
   static const String successTitle = "Commande confirmée !";
   static const String successOrderNumberPrefix = "Commande";
   static const String successDeliveryEstimateLabel = "Livraison estimée";
-  static const String successPickupEstimateLabel = "À récupérer au point de retrait";
+  static const String successPickupEstimateLabel =
+      "À récupérer au point de retrait";
   static const String successExpectedArrivalPrefix = "Arrivée prévue :";
   static const String successExpectedPickupPrefix = "Retrait prévu :";
   static const String successImpactMessage =
@@ -476,7 +467,8 @@ class AppTexts {
 
   //* order — customize sheet
   static const String orderSheetQuantityLabel = "Quantité";
-  static const String orderSheetPortionsAvailableSuffix = "portions disponibles";
+  static const String orderSheetPortionsAvailableSuffix =
+      "portions disponibles";
   static const String orderSheetPortionAvailableSuffix = "portion disponible";
   static const String orderSheetOptionsLabel = "Options";
   static const String orderSheetNoteLabel = "Note pour le vendeur (facultatif)";

@@ -70,9 +70,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 children: [
                   CircularIconButton(
                     icon: Iconsax.add,
-                    onTap: widget.onAttach ?? () {},
-                    background: AppColors.white,
-                    borderColor: Color(0xFFEAEAEA),
+                    onPressed: widget.onAttach ?? () {},
+                    backgroundColor: AppColors.white,
                     iconColor: AppColors.grey,
                   ),
                   const Gap(AppSizes.sm),
@@ -105,9 +104,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   const Gap(AppSizes.sm),
                   CircularIconButton(
                     icon: Iconsax.microphone,
-                    onTap: widget.onMic ?? () {},
-                    background: Color(0xFFF6F6F6),
-                    borderColor: Color(0xFFEAEAEA),
+                    onPressed: widget.onMic ?? () {},
+                    backgroundColor: Color(0xFFF6F6F6),
                     iconColor: AppColors.grey,
                   ),
                 ],
@@ -119,9 +117,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
           CircularIconButton(
             size: 42,
             icon: Iconsax.send_1,
-            onTap: _handleSend,
-            background: AppColors.secondary,
-            borderColor: AppColors.secondary,
+            onPressed: _handleSend,
+            backgroundColor: AppColors.secondary,
             iconColor: AppColors.white,
           ),
         ],

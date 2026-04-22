@@ -21,7 +21,9 @@ class UserTypeDotNavigation extends StatelessWidget {
           onDotClicked: controller.dotNavigationClick,
           count: UserTypeSelectionController.pageOrder.length,
           effect: ExpandingDotsEffect(
-            activeDotColor: dark ? AppColors.lightBackground : AppColors.primary,
+            activeDotColor: dark
+                ? AppColors.lightBackground
+                : AppColors.secondary,
             dotHeight: 6,
           ),
         ),

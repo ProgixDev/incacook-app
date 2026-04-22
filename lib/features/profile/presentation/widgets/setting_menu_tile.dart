@@ -4,12 +4,12 @@ import 'package:iconsax/iconsax.dart';
 import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/features/profile/domain/profile_menu_item.dart';
+import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
 
-class ProfileMenuTile extends StatelessWidget {
-  const ProfileMenuTile({super.key, required this.item});
+class SettingMenuTile extends StatelessWidget {
+  const SettingMenuTile({super.key, required this.item});
 
-  final ProfileMenuItem item;
+  final SettingMenuItem item;
 
   @override
   Widget build(BuildContext context) {

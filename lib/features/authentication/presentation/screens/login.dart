@@ -22,6 +22,7 @@ class LoginScreen extends StatelessWidget {
           padding: AppSpacingStyle.paddingWithAppBarHeight,
           child: Column(
             children: [
+              const Gap(AppSizes.spaceBtwSections),
               //* logo, title, subtitle
               const LoginHeader(),
 

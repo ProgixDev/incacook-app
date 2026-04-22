@@ -15,6 +15,7 @@ dependencies:
   get_storage: ^2.1.1
   lottie: ^3.3.3
   flutter_svg: ^2.2.4
+  flutter_credit_card: ^4.1.0
   gap: ^3.0.1
   shimmer: ^3.0.0
   iconsax: ^0.0.8
@@ -36,6 +37,8 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  rename_app: ^1.6.5
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +61,7 @@ flutter:
     - assets/icons/payment/
     - assets/images/
     - assets/images/categories/
+    - assets/images/delivery_options/
     - assets/images/onboarding/
     - assets/logos/
     - assets/test/

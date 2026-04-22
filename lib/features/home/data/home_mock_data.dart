@@ -1,0 +1,218 @@
+import 'package:vinted_v2/core/constants/image_strings.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
+import 'package:vinted_v2/core/enums/order_enums.dart';
+import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:vinted_v2/features/home/domain/kitchen.dart';
+
+class HomeMockData {
+  HomeMockData._();
+
+  static List<FoodListing> listings() {
+    final now = DateTime.now();
+    return [
+      FoodListing(
+        id: 'f1',
+        name: 'Tajine poulet aux olives',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Fatima K.',
+        category: SellerCategory.faitMaison,
+        distanceKm: 0.3,
+        rating: 4.9,
+        reviewCount: 24,
+        dietaryTags: const [DietaryTag.halal, DietaryTag.spicy],
+        portionsLeft: 4,
+        fulfillment: Fulfillment.delivery,
+        originalPrice: 8.00,
+        price: 3.50,
+        expiresAt: now.add(const Duration(hours: 2)),
+      ),
+      FoodListing(
+        id: 'f2',
+        name: 'Lasagne maison',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Chez Luigi',
+        category: SellerCategory.traiteur,
+        distanceKm: 0.8,
+        rating: 4.7,
+        reviewCount: 56,
+        portionsLeft: 6,
+        fulfillment: Fulfillment.both,
+        originalPrice: 12.00,
+        price: 5.50,
+        expiresAt: now.add(const Duration(hours: 5)),
+      ),
+      FoodListing(
+        id: 'f3',
+        name: 'Buddha bowl végé',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Green Kitchen',
+        category: SellerCategory.restaurant,
+        distanceKm: 1.1,
+        rating: 4.6,
+        reviewCount: 89,
+        dietaryTags: const [DietaryTag.vegan, DietaryTag.glutenFree],
+        portionsLeft: 2,
+        fulfillment: Fulfillment.pickup,
+        originalPrice: 11.00,
+        price: 4.50,
+        expiresAt: now.add(const Duration(hours: 3)),
+      ),
+      FoodListing(
+        id: 'f4',
+        name: 'Quiche lorraine',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Marc',
+        category: SellerCategory.faitMaison,
+        distanceKm: 0.5,
+        rating: 4.8,
+        reviewCount: 12,
+        portionsLeft: 1,
+        fulfillment: Fulfillment.pickup,
+        originalPrice: 6.00,
+        price: 2.50,
+        expiresAt: now.add(const Duration(hours: 1, minutes: 45)),
+      ),
+      FoodListing(
+        id: 'f5',
+        name: 'Poke bowl saumon',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Sushi Corner',
+        category: SellerCategory.restaurant,
+        distanceKm: 1.4,
+        rating: 4.5,
+        reviewCount: 73,
+        dietaryTags: const [DietaryTag.glutenFree],
+        portionsLeft: 3,
+        fulfillment: Fulfillment.delivery,
+        originalPrice: 14.00,
+        price: 6.00,
+        expiresAt: now.add(const Duration(hours: 4)),
+      ),
+    ];
+  }
+
+  static List<FoodListing> solidarityListings() {
+    final now = DateTime.now();
+    return [
+      FoodListing(
+        id: 's1',
+        name: 'Pain frais du jour',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Boulangerie Maurice',
+        category: SellerCategory.traiteur,
+        distanceKm: 0.4,
+        rating: 0,
+        reviewCount: 0,
+        portionsLeft: 3,
+        fulfillment: Fulfillment.pickup,
+        price: 0,
+        expiresAt: now.add(const Duration(hours: 2)),
+      ),
+      FoodListing(
+        id: 's2',
+        name: 'Soupe de légumes maison',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Claire',
+        category: SellerCategory.faitMaison,
+        distanceKm: 0.7,
+        rating: 0,
+        reviewCount: 0,
+        dietaryTags: const [DietaryTag.vegan],
+        portionsLeft: 2,
+        fulfillment: Fulfillment.pickup,
+        price: 0,
+        expiresAt: now.add(const Duration(hours: 3)),
+      ),
+      FoodListing(
+        id: 's3',
+        name: 'Fruits de saison',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Marché bio Nation',
+        category: SellerCategory.traiteur,
+        distanceKm: 1.2,
+        rating: 0,
+        reviewCount: 0,
+        dietaryTags: const [DietaryTag.vegan, DietaryTag.glutenFree],
+        portionsLeft: 5,
+        fulfillment: Fulfillment.pickup,
+        price: 0,
+        expiresAt: now.add(const Duration(hours: 5)),
+      ),
+      FoodListing(
+        id: 's4',
+        name: 'Riz cuit en trop',
+        imagePath: AppImages.foodTest,
+        sellerName: 'Amir',
+        category: SellerCategory.faitMaison,
+        distanceKm: 0.6,
+        rating: 0,
+        reviewCount: 0,
+        portionsLeft: 1,
+        fulfillment: Fulfillment.pickup,
+        price: 0,
+        expiresAt: now.add(const Duration(hours: 1, minutes: 30)),
+      ),
+    ];
+  }
+
+  static const Map<String, String> neighborhoodById = {
+    'f1': 'Bastille',
+    'f2': 'Le Marais',
+    'f3': 'République',
+    'f4': 'Oberkampf',
+    'f5': 'Nation',
+  };
+
+  static List<Kitchen> kitchens() {
+    return const [
+      Kitchen(
+        id: 'k1',
+        name: 'Aliva Kitchen',
+        imagePath: AppImages.foodTest,
+        chefImagePath: AppImages.profilePic,
+        rating: 4.5,
+        reviewCount: 25,
+        isVerified: true,
+        hasFreeDelivery: true,
+        deliveryTime: '10-15 min',
+        tags: ['Burger', 'Chicken', 'Meal'],
+      ),
+      Kitchen(
+        id: 'k2',
+        name: 'Eckart Kitchen',
+        imagePath: AppImages.foodTest,
+        chefImagePath: AppImages.profilePic,
+        rating: 4.7,
+        reviewCount: 52,
+        isVerified: true,
+        hasFreeDelivery: true,
+        deliveryTime: '15-20 min',
+        tags: ['Pasta', 'Pizza', 'Italian'],
+      ),
+      Kitchen(
+        id: 'k3',
+        name: 'Fatima\'s Corner',
+        imagePath: AppImages.foodTest,
+        chefImagePath: AppImages.profilePic,
+        rating: 4.9,
+        reviewCount: 89,
+        isVerified: true,
+        hasFreeDelivery: false,
+        deliveryTime: '20-30 min',
+        tags: ['Tajine', 'Halal', 'Couscous'],
+      ),
+      Kitchen(
+        id: 'k4',
+        name: 'Green Bowl',
+        imagePath: AppImages.foodTest,
+        chefImagePath: AppImages.profilePic,
+        rating: 4.6,
+        reviewCount: 41,
+        isVerified: false,
+        hasFreeDelivery: true,
+        deliveryTime: '10-15 min',
+        tags: ['Vegan', 'Healthy', 'Bowl'],
+      ),
+    ];
+  }
+}

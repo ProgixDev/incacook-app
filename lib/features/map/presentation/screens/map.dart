@@ -7,6 +7,8 @@ import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:vinted_v2/core/enums/food_enums.dart';
+import 'package:vinted_v2/core/enums/order_enums.dart';
 import 'package:vinted_v2/features/catalog/presentation/screens/product_detail.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 import 'package:vinted_v2/features/map/presentation/widget/center_on_user_button.dart';
@@ -44,7 +46,7 @@ class _MapScreenState extends State<MapScreen> {
           name: 'Tajine poulet olives',
           imagePath: AppImages.foodTest,
           sellerName: 'Fatima',
-          category: SellerCategory.social,
+          category: SellerCategory.faitMaison,
           distanceKm: 0.3,
           rating: 4.9,
           reviewCount: 24,
@@ -117,7 +119,7 @@ class _MapScreenState extends State<MapScreen> {
           name: 'Quiche lorraine',
           imagePath: AppImages.foodTest,
           sellerName: 'Marc',
-          category: SellerCategory.social,
+          category: SellerCategory.faitMaison,
           distanceKm: 0.5,
           rating: 4.8,
           reviewCount: 12,
@@ -155,7 +157,7 @@ class _MapScreenState extends State<MapScreen> {
       case MapFilter.all:
         return true;
       case MapFilter.social:
-        return e.listing.category == SellerCategory.social;
+        return e.listing.category == SellerCategory.faitMaison;
       case MapFilter.traiteur:
         return e.listing.category == SellerCategory.traiteur;
       case MapFilter.restaurant:

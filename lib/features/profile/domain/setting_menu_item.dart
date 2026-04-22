@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ProfileMenuItem {
-  const ProfileMenuItem({
+class SettingMenuItem {
+  const SettingMenuItem({
     required this.icon,
     required this.title,
     this.trailingText,

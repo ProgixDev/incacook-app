@@ -24,7 +24,7 @@ class UserTypePage extends StatelessWidget {
           Lottie.asset(
             animation,
             width: DeviceUtils.getScreenWidth(context) * 0.8,
-            height: DeviceUtils.getScreenHeight(context) * 0.45,
+            height: DeviceUtils.getScreenHeight(context) * 0.35,
           ),
           const Gap(AppSizes.spaceBtwItems),
           Text(

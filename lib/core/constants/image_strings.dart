@@ -6,11 +6,15 @@ class AppImages {
 
   //* home category icons
   static const String all = "assets/icons/home_categories/select_all.png";
-  static const String individual =
-      "assets/icons/home_categories/individuel.png";
+  static const String homeMade = "assets/icons/home_categories/home.png";
   static const String bulk = "assets/icons/home_categories/traiteur.png";
   static const String restaurants =
       "assets/icons/home_categories/restaurant.png";
+
+  //* order delivery options
+  static const String delivery =
+      "assets/images/delivery_options/by_delivery.png";
+  static const String pickup = "assets/images/delivery_options/pickup.png";
 
   //* payment method icons
   static const String creditCard = "assets/icons/payment/credit_card.png";
@@ -21,8 +25,8 @@ class AppImages {
 
   //* onboarding illustrations
   static const String onboarding1 = "assets/images/onboarding/cook.png";
-  static const String onboarding2 = "assets/images/onboarding/delivery.png";
-  static const String onboarding3 = "assets/images/onboarding/happy.png";
+  static const String onboarding2 = "assets/images/onboarding/help_others.png";
+  static const String onboarding3 = "assets/images/onboarding/save_food.png";
 
   //* tests
   static const String tshirt = "assets/test/tshirt.jpg";

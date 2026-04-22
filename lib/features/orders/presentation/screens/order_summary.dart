@@ -7,7 +7,7 @@ import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
 import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/domain/cart_line_item.dart';
+import 'package:vinted_v2/features/cart/domain/cart_item.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
 import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
@@ -154,7 +154,7 @@ class _SectionHeader extends StatelessWidget {
 class _SummaryItemCard extends StatelessWidget {
   const _SummaryItemCard({required this.item});
 
-  final CartLineItem item;
+  final CartItem item;
 
   @override
   Widget build(BuildContext context) {
@@ -451,31 +451,6 @@ class _SellerSummary extends StatelessWidget {
               ),
             ],
           ),
-          // if (note.isNotEmpty) ...[
-          //   const Gap(AppSizes.md),
-          //   Text(
-          //     '${AppTexts.checkoutNoteForPrefix} ${seller.sellerName} :',
-          //     style: Theme.of(
-          //       context,
-          //     ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
-          //   ),
-          //   const Gap(4),
-          //   Text(
-          //     '"$note"',
-          //     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          //       color: AppColors.textPrimary,
-          //       fontStyle: FontStyle.italic,
-          //     ),
-          //   ),
-          // ],
-          // const Gap(AppSizes.sm),
-          // Align(
-          //   alignment: Alignment.centerRight,
-          //   child: _EditPillLink(
-          //     label: AppTexts.checkoutEdit,
-          //     onTap: () => Get.back<void>(),
-          //   ),
-          // ),
         ],
       ),
     );

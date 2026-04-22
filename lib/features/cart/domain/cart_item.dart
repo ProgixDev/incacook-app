@@ -3,8 +3,8 @@ import 'package:vinted_v2/features/orders/domain/product_add_on.dart';
 
 /// One line in the cart. Two buys of the same dish with different options
 /// produce two separate line items so their state stays independent.
-class CartLineItem {
-  const CartLineItem({
+class CartItem {
+  const CartItem({
     required this.id,
     required this.listing,
     required this.quantity,
@@ -26,8 +26,8 @@ class CartLineItem {
 
   double get lineTotal => unitPrice * quantity;
 
-  CartLineItem copyWith({int? quantity, bool? isAvailable}) {
-    return CartLineItem(
+  CartItem copyWith({int? quantity, bool? isAvailable}) {
+    return CartItem(
       id: id,
       listing: listing,
       quantity: quantity ?? this.quantity,

@@ -58,22 +58,21 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final labelStyle = emphasize
-        ? theme.textTheme.titleMedium?.copyWith(
+        ? Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           )
-        : theme.textTheme.bodyMedium?.copyWith(
+        : Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.grey,
             fontWeight: FontWeight.w500,
           );
     final valueStyle = emphasize
-        ? theme.textTheme.titleMedium?.copyWith(
+        ? Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           )
-        : theme.textTheme.bodyMedium?.copyWith(
+        : Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           );

@@ -12,7 +12,7 @@ class NavigationMenu extends GetView<NavigationController> {
 
   static const List<_NavItemSpec> _items = [
     _NavItemSpec(icon: Iconsax.home, label: 'Accueil'),
-    _NavItemSpec(icon: Iconsax.add, label: 'Publier'),
+    // _NavItemSpec(icon: Iconsax.add, label: 'Publier'),
     _NavItemSpec(icon: Iconsax.message, label: 'Messages'),
     _NavItemSpec(icon: Iconsax.user, label: 'Profil'),
   ];

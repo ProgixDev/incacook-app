@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:vinted_v2/features/cart/domain/cart_line_item.dart';
+import 'package:vinted_v2/features/cart/domain/cart_item.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 import 'package:vinted_v2/features/orders/domain/order_customization.dart';
 
@@ -12,7 +12,7 @@ class CartController extends GetxController {
           ? Get.find<CartController>()
           : Get.put(CartController(), permanent: true);
 
-  final RxList<CartLineItem> items = <CartLineItem>[].obs;
+  final RxList<CartItem> items = <CartItem>[].obs;
 
   int _sequence = 0;
 
@@ -55,7 +55,7 @@ class CartController extends GetxController {
   void _addInternal(OrderCustomization c) {
     _sequence++;
     items.add(
-      CartLineItem(
+      CartItem(
         id: '${c.listing.id}-$_sequence',
         listing: c.listing,
         quantity: c.quantity,

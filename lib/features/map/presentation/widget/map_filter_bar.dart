@@ -35,7 +35,7 @@ class MapFilterBar extends StatelessWidget {
           const Gap(AppSizes.sm),
           CategoryPill(
             label: AppTexts.homeCategorySocial,
-            imagePath: AppImages.individual,
+            imagePath: AppImages.homeMade,
             selected: selected == MapFilter.social,
             onTap: () => onSelect(MapFilter.social),
           ),

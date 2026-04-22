@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vinted_v2/bindings/general_bindings.dart';
 import 'package:vinted_v2/core/utils/theme/theme.dart';
-import 'package:vinted_v2/core/common/widgets/navigation/navigation_menu.dart';
-import 'package:vinted_v2/features/authentication/presentation/screens/login.dart';
 import 'package:vinted_v2/features/onboarding/presentation/screens/onboarding.dart';
 
 class App extends StatelessWidget {

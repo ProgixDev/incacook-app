@@ -11,7 +11,7 @@ import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
 import 'package:vinted_v2/core/constants/text_strings.dart';
 import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/domain/cart_line_item.dart';
+import 'package:vinted_v2/features/cart/domain/cart_item.dart';
 import 'package:vinted_v2/features/home/domain/food_listing.dart';
 import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
 import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
@@ -40,7 +40,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   static const double _serviceFee = 0.50;
 
   late final String _orderNumber;
-  late final List<CartLineItem> _items;
+  late final List<CartItem> _items;
   late final FoodListing _seller;
   late final double _subtotal;
 

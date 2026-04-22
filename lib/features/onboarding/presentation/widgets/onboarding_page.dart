@@ -19,7 +19,12 @@ class OnBoardingPage extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Column(
         children: [
-          Lottie.asset(
+          // Lottie.asset(
+          //   animation,
+          //   width: DeviceUtils.getScreenWidth(context) * 0.8,
+          //   height: DeviceUtils.getScreenHeight(context) * 0.6,
+          // ),
+          Image.asset(
             animation,
             width: DeviceUtils.getScreenWidth(context) * 0.8,
             height: DeviceUtils.getScreenHeight(context) * 0.6,

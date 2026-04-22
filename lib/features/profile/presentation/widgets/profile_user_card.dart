@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:vinted_v2/core/constants/colors.dart';
 import 'package:vinted_v2/core/constants/image_strings.dart';
 import 'package:vinted_v2/core/constants/sizes.dart';
@@ -22,16 +23,7 @@ class ProfileUserCard extends StatelessWidget {
       child: Row(
         children: [
           //* avatar
-          Container(
-            width: 52,
-            height: 52,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFD54F),
-              shape: BoxShape.circle,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Image.asset(AppImages.profilePic, fit: BoxFit.cover),
-          ),
+          CustomCircularImage(image: AppImages.profilePic, size: 64),
           const Gap(AppSizes.md),
 
           //* name + address
@@ -50,19 +42,15 @@ class ProfileUserCard extends StatelessWidget {
                 const Gap(2),
                 Row(
                   children: [
-                    const Icon(
-                      Iconsax.location,
-                      size: 14,
-                      color: AppColors.primary,
-                    ),
+                    const Icon(Icons.mail, size: 14, color: AppColors.primary),
                     const Gap(4),
                     Flexible(
                       child: Text(
-                        AppTexts.profileSampleAddress,
+                        'arselene.test@gmail.com',
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.grey,
-                        ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
                       ),
                     ),
                   ],

@@ -185,8 +185,8 @@ class SignupForm extends StatelessWidget {
           const Gap(AppSizes.spaceBtwInputFields),
 
           //* terms&conditions checkbox
-          const TermsAndConditionsCheckBox(),
-          const Gap(AppSizes.spaceBtwItems),
+          // const TermsAndConditionsCheckBox(),
+          // const Gap(AppSizes.spaceBtwItems),
 
           //* sign up button
           SizedBox(
