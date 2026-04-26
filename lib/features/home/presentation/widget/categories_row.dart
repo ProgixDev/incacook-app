@@ -22,17 +22,17 @@ class CategoriesRow extends StatelessWidget {
       (null, AppTexts.homeCategoryAll, AppImages.all),
       (
         SellerCategory.faitMaison,
-        SellerCategory.faitMaison.label,
+        SellerCategory.faitMaison.shortLabel,
         SellerCategory.faitMaison.imagePath,
       ),
       (
         SellerCategory.traiteur,
-        SellerCategory.traiteur.label,
+        SellerCategory.traiteur.shortLabel,
         SellerCategory.traiteur.imagePath,
       ),
       (
         SellerCategory.restaurant,
-        SellerCategory.restaurant.label,
+        SellerCategory.restaurant.shortLabel,
         SellerCategory.restaurant.imagePath,
       ),
     ];

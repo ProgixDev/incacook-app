@@ -276,12 +276,14 @@ class _DietaryTagChip extends StatelessWidget {
     switch (tag) {
       case DietaryTag.halal:
         return '🟣';
+      case DietaryTag.vegetarien:
+        return '🥗';
       case DietaryTag.vegan:
         return '🌱';
       case DietaryTag.glutenFree:
         return '🔵';
-      case DietaryTag.spicy:
-        return '🌶️';
+      case DietaryTag.casher:
+        return '✡️';
     }
   }
 

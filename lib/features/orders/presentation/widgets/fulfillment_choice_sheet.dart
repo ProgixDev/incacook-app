@@ -4,6 +4,7 @@ import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:homemade/core/widgets/misc/drag_handle.dart';
 import 'package:homemade/features/orders/domain/fulfillment_options.dart';
 import 'package:homemade/features/orders/presentation/widgets/delivery_option_card.dart';
@@ -19,10 +20,8 @@ class FulfillmentChoiceSheet extends StatefulWidget {
     BuildContext context, {
     required FulfillmentOptions options,
   }) {
-    return showModalBottomSheet<FulfillmentSelection>(
+    return showBlurredModalBottomSheet<FulfillmentSelection>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => FulfillmentChoiceSheet(options: options),
     );
   }

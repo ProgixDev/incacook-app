@@ -7,6 +7,7 @@ import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 import 'package:homemade/features/orders/domain/order_customization.dart';
 import 'package:homemade/features/orders/domain/product_add_on.dart';
@@ -26,10 +27,8 @@ class OrderCustomizeSheet extends StatefulWidget {
     required FoodListing listing,
     List<ProductAddOn> addOns = const [],
   }) {
-    return showModalBottomSheet<OrderCustomization>(
+    return showBlurredModalBottomSheet<OrderCustomization>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => OrderCustomizeSheet(listing: listing, addOns: addOns),
     );
   }

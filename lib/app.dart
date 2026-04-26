@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:homemade/bindings/general_bindings.dart';
+import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:homemade/core/utils/theme/theme.dart';
 import 'package:homemade/features/onboarding/presentation/screens/onboarding.dart';
 
@@ -15,7 +16,7 @@ class App extends StatelessWidget {
       theme: CustomAppTheme.lightTheme,
       darkTheme: CustomAppTheme.darkTheme,
       initialBinding: GeneralBindings(),
-      home: const OnBoardingScreen(),
+      home: const NavigationMenu(),
     );
   }
 }

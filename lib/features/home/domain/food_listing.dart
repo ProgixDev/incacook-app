@@ -17,6 +17,9 @@ class FoodListing {
     required this.expiresAt,
     this.originalPrice,
     this.dietaryTags = const [],
+    this.cuisineType,
+    this.dishType,
+    this.allergens = const [],
   });
 
   final String id;
@@ -33,4 +36,7 @@ class FoodListing {
   final double price;
   final double? originalPrice;
   final DateTime expiresAt;
+  final CuisineType? cuisineType;
+  final DishType? dishType;
+  final List<Allergen> allergens;
 }

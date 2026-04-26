@@ -4,13 +4,15 @@ import 'package:get/get.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/enums/food_enums.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/catalog/presentation/screens/product_detail.dart';
+import 'package:homemade/features/home/controllers/filter_controller.dart';
 import 'package:homemade/features/home/data/home_mock_data.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 import 'package:homemade/features/home/domain/kitchen.dart';
+import 'package:homemade/features/home/presentation/widget/active_filters_strip.dart';
 import 'package:homemade/features/home/presentation/widget/categories_row.dart';
+import 'package:homemade/features/home/presentation/widget/filters_button.dart';
 import 'package:homemade/features/home/presentation/widget/food_listing_card.dart';
 import 'package:homemade/features/home/presentation/widget/home_appbar.dart';
 import 'package:homemade/features/home/presentation/widget/home_search_bar.dart';
@@ -27,8 +29,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //* null == "Tout" (all categories)
-  SellerCategory? _selectedCategory;
+  final FilterController _filter = FilterController.instance;
 
   final Set<String> _savedKitchenIds = <String>{};
 
@@ -36,11 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late final List<Kitchen> _kitchens = HomeMockData.kitchens();
   late final List<FoodListing> _solidarityListings =
       HomeMockData.solidarityListings();
-
-  List<FoodListing> get _filteredListings {
-    if (_selectedCategory == null) return _listings;
-    return _listings.where((l) => l.category == _selectedCategory).toList();
-  }
 
   void _toggleKitchenSaved(String id) {
     setState(() {
@@ -54,8 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filteredListings;
-
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       extendBody: true,
@@ -68,32 +62,47 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //* search bar
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
-              child: HomeSearchBar(),
+            //* search bar + Filtres button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              child: Row(
+                children: const [
+                  Expanded(child: HomeSearchBar()),
+                  Gap(AppSizes.sm),
+                  FiltersButton(),
+                ],
+              ),
             ),
             const Gap(AppSizes.md + 2),
 
-            //* categories (Tout + 3)
-            CategoriesRow(
-              selected: _selectedCategory,
-              onSelect: (cat) => setState(() => _selectedCategory = cat),
+            //* categories (Tout + 3) — drives filter.category
+            Obx(
+              () => CategoriesRow(
+                selected: _filter.filter.value.category,
+                onSelect: _filter.setCategory,
+              ),
             ),
+            const Gap(AppSizes.sm),
+
+            //* active filter chips (auto-hides when no filters)
+            const ActiveFiltersStrip(),
             const Gap(AppSizes.spaceBtwSections - AppSizes.sm),
 
-            //* food near you
-            HomeSection(
-              title: AppTexts.homeSectionFoodNearYou,
-              height: DeviceUtils.getScreenHeight(context) * 0.4,
-              children: [
-                for (final listing in filtered)
-                  FoodListingCard(
-                    listing: listing,
-                    onTap: () => Get.to(() => const ProductDetailScreen()),
-                  ),
-              ],
-            ),
+            //* food near you (filtered)
+            Obx(() {
+              final filtered = _filter.apply(_listings);
+              return HomeSection(
+                title: AppTexts.homeSectionFoodNearYou,
+                height: DeviceUtils.getScreenHeight(context) * 0.4,
+                children: [
+                  for (final listing in filtered)
+                    FoodListingCard(
+                      listing: listing,
+                      onTap: () => Get.to(() => const ProductDetailScreen()),
+                    ),
+                ],
+              );
+            }),
             // const Gap(AppSizes.spaceBtwItems),
 
             //* kitchens near you

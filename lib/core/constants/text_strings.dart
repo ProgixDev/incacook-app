@@ -233,11 +233,16 @@ class AppTexts {
   //* home — shared
   static const String homeSearchHint = "Chercher un plat, un traiteur...";
 
-  //* home — category tabs
+  //* home — category tabs (compact pill labels)
   static const String homeCategoryAll = "Tout";
-  static const String homeCategorySocial = "Fait Maison";
-  static const String homeCategoryTraiteur = "Traiteurs";
-  static const String homeCategoryRestaurant = "Restaurants";
+  static const String homeCategorySocialShort = "Fait Maison";
+  static const String homeCategoryTraiteurShort = "Traiteurs";
+  static const String homeCategoryRestaurantShort = "Restaurants";
+
+  //* category — full official names (filter screens, headers)
+  static const String homeCategorySocial = "Le Bon Fait Maison";
+  static const String homeCategoryTraiteur = "L'Atelier Traiteur";
+  static const String homeCategoryRestaurant = "Sauve Ton Panier";
 
   //* home — section titles
   static const String homeSectionFoodNearYou = "Plats près de toi";
@@ -257,9 +262,64 @@ class AppTexts {
 
   //* home — dietary tag labels
   static const String dietaryHalal = "Halal";
-  static const String dietaryVegan = "Végé";
+  static const String dietaryVegetarian = "Végétarien";
+  static const String dietaryVegan = "Végan";
   static const String dietaryGlutenFree = "Sans gluten";
-  static const String dietarySpicy = "Épicé";
+  static const String dietaryKosher = "Casher";
+
+  //* filters — sheet chrome
+  static const String filterSheetTitle = "Filtres";
+  static const String filterReset = "Réinitialiser";
+  static const String filterApply = "Appliquer";
+  static const String filterSeeResults = "Voir les résultats";
+  static const String filterDistanceAll = "Tous";
+  static const String filterDistanceUpTo = "Jusqu'à";
+  static const String filterDistanceKmSuffix = "km";
+  static const String filterDistanceMaxSuffix = "km max";
+
+  //* filters — section labels
+  static const String filterCategoryLabel = "Catégorie";
+  static const String filterCuisineLabel = "Type de cuisine";
+  static const String filterDietLabel = "Régime alimentaire";
+  static const String filterDishLabel = "Type de plat";
+  static const String filterDistanceLabel = "Distance";
+  static const String filterAvailabilityLabel = "Disponibilité";
+  static const String filterInStockOnly = "En stock uniquement";
+  static const String filterAllergensLabel = "Allergènes";
+
+  //* filters — cuisine types
+  static const String cuisineOrientale = "Orientale";
+  static const String cuisineFrancaise = "Française";
+  static const String cuisineAfricaine = "Africaine";
+  static const String cuisinePortugaise = "Portugaise";
+  static const String cuisineItalienne = "Italienne";
+  static const String cuisineEspagnole = "Espagnole";
+  static const String cuisineLatine = "Latine";
+
+  //* filters — dish types
+  static const String dishStarter = "Entrée";
+  static const String dishMain = "Plat";
+  static const String dishDessert = "Desserts";
+  static const String dishCocktail = "Cocktail dinatoire";
+
+  //* allergens (regulatory declaration on every listing)
+  static const String allergenGluten =
+      "Céréales contenant du gluten";
+  static const String allergenCrustaceans = "Crustacés";
+  static const String allergenEggs = "Œufs";
+  static const String allergenFish = "Poissons";
+  static const String allergenPeanuts = "Arachides";
+  static const String allergenSoy = "Soja";
+  static const String allergenMilk = "Lait";
+  static const String allergenNuts = "Fruits à coque";
+  static const String allergenCelery = "Céleri";
+  static const String allergenMustard = "Moutarde";
+  static const String allergenSesame = "Graines de sésame";
+  static const String allergenSulfites = "Sulfites";
+  static const String allergenLupin = "Lupin";
+  static const String allergenMolluscs = "Mollusques";
+  static const String allergenOther = "Autres";
+  static const String allergenNone = "Aucun";
 
   //* map screen
   static const String mapLocationCurrent = "Paris 11ème";

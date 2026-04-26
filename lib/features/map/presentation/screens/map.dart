@@ -9,6 +9,7 @@ import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/enums/food_enums.dart';
 import 'package:homemade/core/enums/order_enums.dart';
+import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:homemade/features/catalog/presentation/screens/product_detail.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 import 'package:homemade/features/map/presentation/widget/center_on_user_button.dart';
@@ -50,7 +51,7 @@ class _MapScreenState extends State<MapScreen> {
           distanceKm: 0.3,
           rating: 4.9,
           reviewCount: 24,
-          dietaryTags: const [DietaryTag.halal, DietaryTag.spicy],
+          dietaryTags: const [DietaryTag.halal],
           portionsLeft: 4,
           fulfillment: Fulfillment.delivery,
           originalPrice: 8.00,
@@ -178,10 +179,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() => _selectedId = entry.listing.id);
     _mapController.move(entry.position, _mapController.camera.zoom);
 
-    showModalBottomSheet<void>(
+    showBlurredModalBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => MapListingSheet(
         listing: entry.listing,
         onViewDetail: () => Get.to(() => const ProductDetailScreen()),
