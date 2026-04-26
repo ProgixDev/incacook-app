@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/domain/cart_item.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
-import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
-import 'package:vinted_v2/features/orders/presentation/screens/payment.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/cart/controllers/cart_controller.dart';
+import 'package:homemade/features/cart/domain/cart_item.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/delivery_details.dart';
+import 'package:homemade/features/orders/domain/fulfillment_options.dart';
+import 'package:homemade/features/orders/presentation/screens/payment.dart';
 
 class OrderSummaryScreen extends StatelessWidget {
   const OrderSummaryScreen({
@@ -572,42 +572,6 @@ class _Row extends StatelessWidget {
         Text(label, style: labelStyle),
         Text('€${amount.toStringAsFixed(2)}', style: amountStyle),
       ],
-    );
-  }
-}
-
-class _ImpactBanner extends StatelessWidget {
-  const _ImpactBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    const accentGreen = Color(0xFF2E7D32);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.md - 2,
-        vertical: AppSizes.md - 2,
-      ),
-      decoration: BoxDecoration(
-        color: accentGreen.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-        border: Border.all(color: accentGreen.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Iconsax.heart5, size: 18, color: accentGreen),
-          const Gap(AppSizes.sm + 2),
-          Expanded(
-            child: Text(
-              AppTexts.checkoutImpactMessage,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: accentGreen,
-                fontWeight: FontWeight.w700,
-                height: 1.35,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

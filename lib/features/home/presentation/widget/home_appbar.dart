@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/cart/presentation/screens/my_cart.dart';
-import 'package:vinted_v2/features/cart/presentation/widgets/cart_badge.dart';
-import 'package:vinted_v2/features/map/presentation/screens/map.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
+import 'package:homemade/features/cart/presentation/widgets/cart_badge.dart';
+import 'package:homemade/features/map/presentation/screens/map.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
@@ -69,6 +69,3 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Size.fromHeight(statusBarHeight + AppSizes.appBarHeight);
   }
 }
-
-
-

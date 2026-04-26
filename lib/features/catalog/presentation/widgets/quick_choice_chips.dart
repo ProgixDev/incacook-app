@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 class QuickChoiceChips extends StatefulWidget {
   const QuickChoiceChips({
@@ -47,9 +47,7 @@ class _QuickChoiceChipsState extends State<QuickChoiceChips> {
                 color: selected ? AppColors.secondary : Colors.transparent,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: selected
-                      ? AppColors.secondary
-                      : AppColors.lightGrey,
+                  color: selected ? AppColors.secondary : AppColors.lightGrey,
                   width: 1.2,
                 ),
               ),

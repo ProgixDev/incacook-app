@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 class SocialButtons extends StatelessWidget {
   const SocialButtons({super.key});

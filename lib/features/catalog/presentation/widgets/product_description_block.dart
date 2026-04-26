@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class ProductDescriptionBlock extends StatelessWidget {
   const ProductDescriptionBlock({super.key, required this.description});
@@ -11,10 +11,9 @@ class ProductDescriptionBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bodyStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: AppColors.grey,
-      height: 1.5,
-    );
+    final bodyStyle = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(color: AppColors.grey, height: 1.5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

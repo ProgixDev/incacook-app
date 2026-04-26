@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class PerformanceMetric {
   const PerformanceMetric({required this.type, required this.percent});

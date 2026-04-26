@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/image_strings.dart';
 
 class OnTheWayStageView extends StatelessWidget {
   const OnTheWayStageView({super.key});

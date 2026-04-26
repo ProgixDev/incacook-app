@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/features/authentication/domain/user_type.dart';
-import 'package:vinted_v2/features/authentication/presentation/screens/signup.dart';
+import 'package:homemade/features/authentication/domain/user_type.dart';
+import 'package:homemade/features/authentication/presentation/screens/signup.dart';
 
 class UserTypeSelectionController extends GetxController {
   static UserTypeSelectionController get instance => Get.find();

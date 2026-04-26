@@ -6,16 +6,16 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/domain/cart_item.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
-import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
-import 'package:vinted_v2/features/orders/presentation/screens/order_tracking.dart';
+import 'package:homemade/core/constants/animations.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/cart/controllers/cart_controller.dart';
+import 'package:homemade/features/cart/domain/cart_item.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/delivery_details.dart';
+import 'package:homemade/features/orders/domain/fulfillment_options.dart';
+import 'package:homemade/features/orders/presentation/screens/order_tracking.dart';
 
 class OrderConfirmationScreen extends StatefulWidget {
   const OrderConfirmationScreen({
@@ -64,9 +64,8 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     return 'A${1000 + random.nextInt(9000)}';
   }
 
-  DateTime get _expectedArrival => DateTime.now().add(
-        Duration(minutes: widget.options.deliveryMaxMinutes),
-      );
+  DateTime get _expectedArrival =>
+      DateTime.now().add(Duration(minutes: widget.options.deliveryMaxMinutes));
 
   String _formatTime(DateTime t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -127,10 +126,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                       widget.selection.choice == FulfillmentChoice.delivery,
                 ),
                 const Gap(AppSizes.lg),
-                _CtaStack(
-                  onTrack: _goToTracking,
-                  onGoHome: _goHome,
-                ),
+                _CtaStack(onTrack: _goToTracking, onGoHome: _goHome),
               ],
             ),
           ),
@@ -225,11 +221,7 @@ class _StatusBlock extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(
-              Iconsax.shop,
-              size: 20,
-              color: AppColors.secondary,
-            ),
+            const Icon(Iconsax.shop, size: 20, color: AppColors.secondary),
             const Gap(AppSizes.sm + 2),
             Expanded(
               child: Text(
@@ -443,9 +435,9 @@ class _CtaStack extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),
-              textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              textStyle: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             child: const Text(AppTexts.successTrackOrderCta),
           ),
@@ -462,9 +454,9 @@ class _CtaStack extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),
-              textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              textStyle: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             child: const Text(AppTexts.successBackHomeCta),
           ),

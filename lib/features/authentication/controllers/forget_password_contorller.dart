@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/utils/helpers/network_manager.dart';
-import 'package:vinted_v2/core/utils/popups/fullscreen_loader.dart';
 
 class ForgetPasswordController extends GetxController {
   static ForgetPasswordController get instance => Get.find();

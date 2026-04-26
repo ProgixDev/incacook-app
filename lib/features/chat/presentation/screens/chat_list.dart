@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/chat/domain/chat_preview.dart';
-import 'package:vinted_v2/features/chat/presentation/screens/chat.dart';
-import 'package:vinted_v2/features/chat/presentation/widgets/chat_list_tile.dart';
-import 'package:vinted_v2/features/chat/presentation/widgets/chat_search_bar.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/chat/domain/chat_preview.dart';
+import 'package:homemade/features/chat/presentation/screens/chat.dart';
+import 'package:homemade/features/chat/presentation/widgets/chat_list_tile.dart';
+import 'package:homemade/features/chat/presentation/widgets/chat_search_bar.dart';
 
 class ChatListScreen extends StatelessWidget {
   const ChatListScreen({super.key});

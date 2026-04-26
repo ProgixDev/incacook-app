@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 class CenterOnUserButton extends StatelessWidget {
   const CenterOnUserButton({super.key, required this.onTap});

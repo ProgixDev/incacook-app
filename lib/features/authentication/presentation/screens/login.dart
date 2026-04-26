@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/common/styles/spacing_styles.dart';
-import 'package:vinted_v2/core/common/widgets/login_signup/form_divider.dart';
-import 'package:vinted_v2/core/common/widgets/login_signup/social_buttons.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/authentication/presentation/widgets/login_form.dart';
-import 'package:vinted_v2/features/authentication/presentation/widgets/login_header.dart';
+import 'package:homemade/core/common/styles/spacing_styles.dart';
+import 'package:homemade/core/common/widgets/login_signup/form_divider.dart';
+import 'package:homemade/core/common/widgets/login_signup/social_buttons.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/authentication/presentation/widgets/login_form.dart';
+import 'package:homemade/features/authentication/presentation/widgets/login_header.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

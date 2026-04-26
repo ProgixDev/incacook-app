@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/features/chat/presentation/screens/chat_list.dart';
-import 'package:vinted_v2/features/home/presentation/screens/home.dart';
-import 'package:vinted_v2/features/profile/presentation/screens/settings.dart';
+import 'package:homemade/features/chat/presentation/screens/chat_list.dart';
+import 'package:homemade/features/home/presentation/screens/home.dart';
+import 'package:homemade/features/profile/presentation/screens/settings.dart';
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;

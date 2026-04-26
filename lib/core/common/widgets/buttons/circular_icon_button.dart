@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 class CircularIconButton extends StatelessWidget {
   const CircularIconButton({

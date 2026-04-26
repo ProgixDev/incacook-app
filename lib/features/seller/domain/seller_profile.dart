@@ -1,7 +1,7 @@
 import 'package:latlong2/latlong.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/seller/domain/performance_metric.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/seller/domain/performance_metric.dart';
 
 class SellerProfile {
   const SellerProfile({

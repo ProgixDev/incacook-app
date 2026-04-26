@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class CustomShimmerEffect extends StatelessWidget {
   const CustomShimmerEffect({

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 class KitchenMetaItem extends StatelessWidget {
-  const KitchenMetaItem({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
+  const KitchenMetaItem({super.key, required this.icon, required this.label});
 
   final IconData icon;
   final String label;

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/orders/domain/order_stage.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/orders/domain/order_stage.dart';
 
 class OrderTimeline extends StatelessWidget {
-  const OrderTimeline({
-    super.key,
-    required this.currentStage,
-    this.onStageTap,
-  });
+  const OrderTimeline({super.key, required this.currentStage, this.onStageTap});
 
   final OrderStage currentStage;
   final ValueChanged<OrderStage>? onStageTap;
@@ -45,15 +41,14 @@ class OrderTimeline extends StatelessWidget {
               state: i < currentIndex
                   ? _StageState.done
                   : i == currentIndex
-                      ? _StageState.active
-                      : _StageState.upcoming,
+                  ? _StageState.active
+                  : _StageState.upcoming,
               onTap: onStageTap == null
                   ? null
                   : () => onStageTap!(_stages[i].stage),
             ),
           ),
-          if (i != _stages.length - 1)
-            _Connector(done: i < currentIndex),
+          if (i != _stages.length - 1) _Connector(done: i < currentIndex),
         ],
       ],
     );
@@ -164,9 +159,7 @@ class _DashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = done
-          ? AppColors.black
-          : AppColors.grey.withValues(alpha: 0.35)
+      ..color = done ? AppColors.black : AppColors.grey.withValues(alpha: 0.35)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/enums/food_enums.dart';
 
 class DietaryTagDot extends StatelessWidget {
   const DietaryTagDot({super.key, required this.tag});

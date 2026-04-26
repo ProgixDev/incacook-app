@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 /// Frosted-glass strip that blurs whatever is painted behind it and fades
 /// that blurred image into a solid sheet color through a vertical gradient.

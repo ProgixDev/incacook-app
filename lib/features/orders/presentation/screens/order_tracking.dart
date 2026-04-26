@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/features/chat/presentation/screens/chat.dart';
-import 'package:vinted_v2/features/orders/controllers/order_tracking_controller.dart';
-import 'package:vinted_v2/features/orders/domain/order_stage.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/delivered_stage_view.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/on_the_way_stage_view.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/order_bottom_sheet.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/preparing_stage_view.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/features/chat/presentation/screens/chat.dart';
+import 'package:homemade/features/orders/controllers/order_tracking_controller.dart';
+import 'package:homemade/features/orders/domain/order_stage.dart';
+import 'package:homemade/features/orders/presentation/widgets/delivered_stage_view.dart';
+import 'package:homemade/features/orders/presentation/widgets/on_the_way_stage_view.dart';
+import 'package:homemade/features/orders/presentation/widgets/order_bottom_sheet.dart';
+import 'package:homemade/features/orders/presentation/widgets/preparing_stage_view.dart';
 
 class OrderTrackingScreen extends StatelessWidget {
   const OrderTrackingScreen({super.key});

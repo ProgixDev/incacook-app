@@ -1,4 +1,4 @@
-import 'package:vinted_v2/core/utils/validation_utils.dart';
+import 'package:homemade/core/utils/validation_utils.dart';
 
 extension StringExtensions on String {
   bool get isEmail => ValidationUtils.isValidEmail(this);

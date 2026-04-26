@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
-import 'package:vinted_v2/features/profile/presentation/widgets/setting_menu_tile.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
+import 'package:homemade/features/profile/presentation/widgets/setting_menu_tile.dart';
 
 class SettingMenuSection extends StatelessWidget {
   const SettingMenuSection({super.key, this.title, required this.items});

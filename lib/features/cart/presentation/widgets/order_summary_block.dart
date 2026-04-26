@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/common/widgets/misc/horizontal_separator.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class OrderSummaryBlock extends StatelessWidget {
   const OrderSummaryBlock({
@@ -85,6 +85,3 @@ class _SummaryRow extends StatelessWidget {
     );
   }
 }
-
-
-

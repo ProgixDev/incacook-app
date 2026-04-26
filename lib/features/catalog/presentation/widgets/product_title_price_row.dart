@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/misc/price_display.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 class ProductTitlePriceRow extends StatelessWidget {
   const ProductTitlePriceRow({

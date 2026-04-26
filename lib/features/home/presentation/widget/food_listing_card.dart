@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/common/widgets/misc/price_display.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
 
 class FoodListingCard extends StatelessWidget {
   const FoodListingCard({

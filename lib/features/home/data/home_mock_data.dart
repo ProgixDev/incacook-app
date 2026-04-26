@@ -1,8 +1,8 @@
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/core/enums/order_enums.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/home/domain/kitchen.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/core/enums/order_enums.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/home/domain/kitchen.dart';
 
 class HomeMockData {
   HomeMockData._();

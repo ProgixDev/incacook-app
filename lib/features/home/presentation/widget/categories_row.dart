@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/features/home/presentation/widget/category_pill.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/features/home/presentation/widget/category_pill.dart';
 
 class CategoriesRow extends StatelessWidget {
-  const CategoriesRow({super.key, required this.selected, required this.onSelect});
+  const CategoriesRow({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   final SellerCategory? selected;
   final ValueChanged<SellerCategory?> onSelect;

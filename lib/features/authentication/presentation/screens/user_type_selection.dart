@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/authentication/controllers/user_type_selection_controller.dart';
-import 'package:vinted_v2/features/authentication/presentation/widgets/user_type_dot_navigation.dart';
-import 'package:vinted_v2/features/authentication/presentation/widgets/user_type_page.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
+import 'package:homemade/core/constants/animations.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/authentication/controllers/user_type_selection_controller.dart';
+import 'package:homemade/features/authentication/presentation/widgets/user_type_dot_navigation.dart';
+import 'package:homemade/features/authentication/presentation/widgets/user_type_page.dart';
 
 class UserTypeSelectionScreen extends StatelessWidget {
   const UserTypeSelectionScreen({super.key});

@@ -65,7 +65,7 @@ class _ScrollAnimatedItemState extends State<ScrollAnimatedItem>
       child: AnimatedBuilder(
         animation: _controller,
         builder:
-            (_, __) => Opacity(
+            (_, _) => Opacity(
               opacity: _fade.value,
               child: Transform.translate(
                 offset: _slide.value * 100,

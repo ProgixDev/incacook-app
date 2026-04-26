@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class ProductReview {
   const ProductReview({
@@ -92,11 +92,7 @@ class _Header extends StatelessWidget {
               const Gap(2),
               Row(
                 children: [
-                  const Icon(
-                    Iconsax.star1,
-                    color: Color(0xFFFFC107),
-                    size: 14,
-                  ),
+                  const Icon(Iconsax.star1, color: Color(0xFFFFC107), size: 14),
                   const Gap(4),
                   Text(
                     averageRating.toStringAsFixed(1),
@@ -161,10 +157,7 @@ class _ReviewCard extends StatelessWidget {
           //* header: avatar + name + time
           Row(
             children: [
-              CustomCircularImage(
-                image: review.avatarPath,
-                size: 36,
-              ),
+              CustomCircularImage(image: review.avatarPath, size: 36),
               const Gap(AppSizes.sm),
               Expanded(
                 child: Column(

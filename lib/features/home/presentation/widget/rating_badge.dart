@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 class RatingBadge extends StatelessWidget {
   const RatingBadge({

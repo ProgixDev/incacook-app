@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 enum SellerCategory {
-  faitMaison(
-    label: AppTexts.homeCategorySocial,
-    imagePath: AppImages.homeMade,
-  ),
-  traiteur(
-    label: AppTexts.homeCategoryTraiteur,
-    imagePath: AppImages.bulk,
-  ),
+  faitMaison(label: AppTexts.homeCategorySocial, imagePath: AppImages.homeMade),
+  traiteur(label: AppTexts.homeCategoryTraiteur, imagePath: AppImages.bulk),
   restaurant(
     label: AppTexts.homeCategoryRestaurant,
     imagePath: AppImages.restaurants,

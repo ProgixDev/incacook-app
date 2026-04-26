@@ -1,11 +1,11 @@
 import 'package:latlong2/latlong.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/core/enums/order_enums.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/seller/domain/performance_metric.dart';
-import 'package:vinted_v2/features/seller/domain/seller_profile.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/core/enums/order_enums.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/seller/domain/performance_metric.dart';
+import 'package:homemade/features/seller/domain/seller_profile.dart';
 
 class SellerMockData {
   SellerMockData._();
@@ -31,26 +31,14 @@ class SellerMockData {
       mealsSaved: 312,
       promoText: AppTexts.sellerProfileFirstOrderPromo,
       performance: const [
-        PerformanceMetric(
-          type: PerformanceMetricType.hygiene,
-          percent: 88,
-        ),
-        PerformanceMetric(
-          type: PerformanceMetricType.punctuality,
-          percent: 92,
-        ),
-        PerformanceMetric(
-          type: PerformanceMetricType.accuracy,
-          percent: 100,
-        ),
+        PerformanceMetric(type: PerformanceMetricType.hygiene, percent: 88),
+        PerformanceMetric(type: PerformanceMetricType.punctuality, percent: 92),
+        PerformanceMetric(type: PerformanceMetricType.accuracy, percent: 100),
         PerformanceMetric(
           type: PerformanceMetricType.communication,
           percent: 88,
         ),
-        PerformanceMetric(
-          type: PerformanceMetricType.foodQuality,
-          percent: 96,
-        ),
+        PerformanceMetric(type: PerformanceMetricType.foodQuality, percent: 96),
       ],
       menuCategories: const [
         'Tout',

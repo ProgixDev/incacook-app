@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
 
 class SettingMenuTile extends StatelessWidget {
   const SettingMenuTile({super.key, required this.item});
@@ -26,11 +26,7 @@ class SettingMenuTile extends StatelessWidget {
             CustomCircularContainer(
               size: 44,
               backgroundColor: AppColors.lightBackground,
-              child: Icon(
-                item.icon,
-                size: 20,
-                color: AppColors.secondary,
-              ),
+              child: Icon(item.icon, size: 20, color: AppColors.secondary),
             ),
             const Gap(AppSizes.md),
             Expanded(

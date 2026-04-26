@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:vinted_v2/features/orders/domain/order_stage.dart';
+import 'package:homemade/features/orders/domain/order_stage.dart';
 
 class OrderTrackingController extends GetxController {
   static OrderTrackingController get instance => Get.find();

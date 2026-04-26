@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class CustomLoaders {
   static void hideSnackBar() =>

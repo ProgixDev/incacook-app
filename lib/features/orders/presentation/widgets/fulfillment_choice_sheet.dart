@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/widgets/misc/drag_handle.dart';
-import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/delivery_option_card.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/misc/drag_handle.dart';
+import 'package:homemade/features/orders/domain/fulfillment_options.dart';
+import 'package:homemade/features/orders/presentation/widgets/delivery_option_card.dart';
 
 class FulfillmentChoiceSheet extends StatefulWidget {
   const FulfillmentChoiceSheet({super.key, required this.options});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 //? a widget for displaying an animated loading indicator with optional text and action button
 class CustomAnimationLoader extends StatelessWidget {
@@ -48,9 +48,9 @@ class CustomAnimationLoader extends StatelessWidget {
                     ),
                     child: Text(
                       actionText!,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium!.apply(color: AppColors.textPrimary),
+                      style: Theme.of(context).textTheme.bodyMedium!.apply(
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 )

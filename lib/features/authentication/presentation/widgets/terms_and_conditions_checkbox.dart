@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/authentication/controllers/signup_controller.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/features/authentication/controllers/signup_controller.dart';
 
 class TermsAndConditionsCheckBox extends StatelessWidget {
   const TermsAndConditionsCheckBox({super.key});

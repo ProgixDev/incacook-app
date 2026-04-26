@@ -41,7 +41,7 @@ class AppTexts {
   static const String userTypeSubHeading =
       "Choisissez l'option qui vous convient le mieux. Vous pouvez toujours contacter le support pour la modifier plus tard";
 
-  static const String userTypeSellerTitle = "Je suis un vendeur";
+  static const String userTypeSellerTitle = "Je suis un cuisinier";
   static const String userTypeSellerSubtitle =
       "Vous avez un restaurant ou une boutique ? Listez vos plats et atteignez des clients affamés à proximité";
 

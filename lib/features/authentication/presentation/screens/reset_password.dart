@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/authentication/presentation/screens/login.dart';
+import 'package:homemade/core/constants/animations.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/features/authentication/presentation/screens/login.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({super.key, required this.email});

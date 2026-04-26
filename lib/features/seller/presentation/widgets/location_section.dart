@@ -3,10 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vinted_v2/core/common/styles/shadows_styles.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/common/styles/shadows_styles.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class LocationSection extends StatelessWidget {
   const LocationSection({

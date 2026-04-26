@@ -1,4 +1,4 @@
-package com.example.vinted_v2
+package com.example.homemade
 
 import io.flutter.embedding.android.FlutterActivity
 

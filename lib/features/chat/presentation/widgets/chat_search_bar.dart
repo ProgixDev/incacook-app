@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class ChatSearchBar extends StatelessWidget {
   const ChatSearchBar({super.key, this.onChanged, this.controller});
@@ -25,9 +25,9 @@ class ChatSearchBar extends StatelessWidget {
         decoration: InputDecoration(
           isCollapsed: true,
           hintText: AppTexts.chatSearchHint,
-          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.grey,
-          ),
+          hintStyle: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
           prefixIcon: const Padding(
             padding: EdgeInsets.only(left: AppSizes.md, right: AppSizes.sm),
             child: Icon(
@@ -36,7 +36,10 @@ class ChatSearchBar extends StatelessWidget {
               size: 20,
             ),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 0,
+            minHeight: 0,
+          ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: AppSizes.md,
             vertical: 18,

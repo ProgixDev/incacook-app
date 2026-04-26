@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/common/styles/shadows_styles.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/common/styles/shadows_styles.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class BioSection extends StatelessWidget {
   const BioSection({super.key});

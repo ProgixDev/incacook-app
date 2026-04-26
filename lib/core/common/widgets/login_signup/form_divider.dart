@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class FormDivider extends StatelessWidget {
   const FormDivider({super.key, required this.dividerText});

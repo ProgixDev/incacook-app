@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/presentation/screens/my_cart.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/cart/controllers/cart_controller.dart';
+import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
 
 /// Compact pill that floats at the bottom of seller-browsing screens while
 /// the cart has items. Tap to open [MyCartScreen].
@@ -63,20 +63,18 @@ class FloatingCartBar extends StatelessWidget {
                     children: [
                       Text(
                         '$count $articleWord',
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w700,
-                              height: 1.15,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w700,
+                          height: 1.15,
+                        ),
                       ),
                       Text(
                         '${AppTexts.cartFloatingTotalPrefix} €${cart.subtotal.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.bodySmall
-                            ?.copyWith(
-                              color: AppColors.white.withValues(alpha: 0.85),
-                              height: 1.15,
-                            ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.85),
+                          height: 1.15,
+                        ),
                       ),
                     ],
                   ),

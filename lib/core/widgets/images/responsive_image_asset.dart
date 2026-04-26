@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/core/utils/image_utils.dart';
-
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/image_utils.dart';
 
 class ResponsiveImageAsset extends StatelessWidget {
   const ResponsiveImageAsset({
@@ -42,26 +41,25 @@ class ResponsiveImageAsset extends StatelessWidget {
 
         return isSvg
             ? SvgPicture.asset(
-              key: imageKey,
-              assetPath,
-              width: width ?? DeviceUtils.getScreenWidth(context),
-              height: height ?? calculatedHeight,
-              fit: fit,
-              alignment: alignment,
-              colorFilter:
-                  filtered
-                      ? ColorFilter.mode(filterColor, BlendMode.color)
-                      : null,
-            )
+                key: imageKey,
+                assetPath,
+                width: width ?? DeviceUtils.getScreenWidth(context),
+                height: height ?? calculatedHeight,
+                fit: fit,
+                alignment: alignment,
+                colorFilter: filtered
+                    ? ColorFilter.mode(filterColor, BlendMode.color)
+                    : null,
+              )
             : Image.asset(
-              key: imageKey,
-              assetPath,
-              width: width ?? DeviceUtils.getScreenWidth(context),
-              height: height ?? calculatedHeight,
-              fit: fit,
-              scale: scale,
-              alignment: alignment,
-            );
+                key: imageKey,
+                assetPath,
+                width: width ?? DeviceUtils.getScreenWidth(context),
+                height: height ?? calculatedHeight,
+                fit: fit,
+                scale: scale,
+                alignment: alignment,
+              );
       },
     );
   }

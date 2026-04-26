@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class ProductImageHeader extends StatelessWidget {
   const ProductImageHeader({

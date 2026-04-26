@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/text_strings.dart';
 
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key, this.onTap, this.onChanged});

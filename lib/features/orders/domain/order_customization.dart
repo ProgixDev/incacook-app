@@ -1,5 +1,5 @@
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/product_add_on.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/product_add_on.dart';
 
 class OrderCustomization {
   const OrderCustomization({

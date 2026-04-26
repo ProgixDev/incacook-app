@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
 
 //? category-to-color mapping local to the map feature — not part of AppColors
 //? since these are semantic map markers, not app-wide tokens

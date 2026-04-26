@@ -1,16 +1,15 @@
 import 'package:get/get.dart';
-import 'package:vinted_v2/features/cart/domain/cart_item.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/order_customization.dart';
+import 'package:homemade/features/cart/domain/cart_item.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/order_customization.dart';
 
 /// Session-scoped cart state. Items are locked to a single seller: trying to
 /// add from another seller surfaces a conflict that the caller resolves via
 /// [SellerConflictResolver], typically by prompting the user to clear the cart.
 class CartController extends GetxController {
-  static CartController get instance =>
-      Get.isRegistered<CartController>()
-          ? Get.find<CartController>()
-          : Get.put(CartController(), permanent: true);
+  static CartController get instance => Get.isRegistered<CartController>()
+      ? Get.find<CartController>()
+      : Get.put(CartController(), permanent: true);
 
   final RxList<CartItem> items = <CartItem>[].obs;
 

@@ -1,5 +1,5 @@
-import 'package:vinted_v2/core/enums/food_enums.dart';
-import 'package:vinted_v2/core/enums/order_enums.dart';
+import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/core/enums/order_enums.dart';
 
 class FoodListing {
   const FoodListing({

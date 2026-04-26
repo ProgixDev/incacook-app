@@ -1,5 +1,5 @@
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/product_add_on.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/product_add_on.dart';
 
 /// One line in the cart. Two buys of the same dish with different options
 /// produce two separate line items so their state stays independent.
@@ -21,8 +21,7 @@ class CartItem {
   final bool isAvailable;
 
   double get unitPrice =>
-      listing.price +
-      selectedAddOns.fold(0.0, (sum, a) => sum + a.priceDelta);
+      listing.price + selectedAddOns.fold(0.0, (sum, a) => sum + a.priceDelta);
 
   double get lineTotal => unitPrice * quantity;
 

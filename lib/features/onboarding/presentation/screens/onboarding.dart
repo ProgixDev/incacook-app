@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/image_strings.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/onboarding/controllers/onboarding_controller.dart';
-import 'package:vinted_v2/features/onboarding/presentation/widgets/onboarding_dot_navigation.dart';
-import 'package:vinted_v2/features/onboarding/presentation/widgets/onboarding_next_button.dart';
-import 'package:vinted_v2/features/onboarding/presentation/widgets/onboarding_page.dart';
-import 'package:vinted_v2/features/onboarding/presentation/widgets/onboarding_skip.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/onboarding/controllers/onboarding_controller.dart';
+import 'package:homemade/features/onboarding/presentation/widgets/onboarding_dot_navigation.dart';
+import 'package:homemade/features/onboarding/presentation/widgets/onboarding_next_button.dart';
+import 'package:homemade/features/onboarding/presentation/widgets/onboarding_page.dart';
+import 'package:homemade/features/onboarding/presentation/widgets/onboarding_skip.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({super.key});

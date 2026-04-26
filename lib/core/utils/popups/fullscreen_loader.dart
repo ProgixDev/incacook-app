@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:vinted_v2/core/common/widgets/loaders/animation_loader.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/common/widgets/loaders/animation_loader.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class CustomFullscreenLoader {
   static void openLoadingDialog(String text, String animation) {

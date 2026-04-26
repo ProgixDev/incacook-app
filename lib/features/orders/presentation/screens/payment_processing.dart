@@ -3,13 +3,13 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/orders/domain/delivery_details.dart';
-import 'package:vinted_v2/features/orders/domain/fulfillment_options.dart';
-import 'package:vinted_v2/features/orders/presentation/screens/order_confirmation.dart';
+import 'package:homemade/core/constants/animations.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/orders/domain/delivery_details.dart';
+import 'package:homemade/features/orders/domain/fulfillment_options.dart';
+import 'package:homemade/features/orders/presentation/screens/order_confirmation.dart';
 
 enum _PaymentPhase { processing, failed }
 
@@ -200,9 +200,9 @@ class _FailedView extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               child: const Text(AppTexts.paymentErrorRetry),
             ),
@@ -219,9 +219,9 @@ class _FailedView extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               child: const Text(AppTexts.paymentErrorChooseMethod),
             ),

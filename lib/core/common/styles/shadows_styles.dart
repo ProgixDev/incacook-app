@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 class CustomShadowStyle {
   static BoxShadow customCircleShadows({

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/misc/horizontal_separator.dart';
-import 'package:vinted_v2/core/common/widgets/misc/price_display.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/home/domain/food_listing.dart';
-import 'package:vinted_v2/features/orders/domain/order_customization.dart';
-import 'package:vinted_v2/features/orders/domain/product_add_on.dart';
+import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/home/domain/food_listing.dart';
+import 'package:homemade/features/orders/domain/order_customization.dart';
+import 'package:homemade/features/orders/domain/product_add_on.dart';
 
 class OrderCustomizeSheet extends StatefulWidget {
   const OrderCustomizeSheet({

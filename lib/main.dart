@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:vinted_v2/app.dart';
+import 'package:homemade/app.dart';
 
 void main() async {
   //* add widgets bindings

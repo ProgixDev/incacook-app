@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/orders/domain/order_stage.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/order_deliverer_pill.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/order_timeline.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/orders/domain/order_stage.dart';
+import 'package:homemade/features/orders/presentation/widgets/order_deliverer_pill.dart';
+import 'package:homemade/features/orders/presentation/widgets/order_timeline.dart';
 
 class OrderBottomSheet extends StatelessWidget {
   const OrderBottomSheet({

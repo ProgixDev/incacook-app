@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/navigation/navigation_menu.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/utils/validators/validators.dart';
-import 'package:vinted_v2/features/authentication/controllers/signup_controller.dart';
-import 'package:vinted_v2/features/authentication/domain/user_type.dart';
-import 'package:vinted_v2/features/authentication/presentation/widgets/terms_and_conditions_checkbox.dart';
+import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/validators/validators.dart';
+import 'package:homemade/features/authentication/controllers/signup_controller.dart';
+import 'package:homemade/features/authentication/domain/user_type.dart';
 
 class SignupForm extends StatelessWidget {
   const SignupForm({super.key, required this.userType});

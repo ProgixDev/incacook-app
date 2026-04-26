@@ -1,9 +1,9 @@
-import 'package:vinted_v2/features/onboarding/controllers/onboarding_controller.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/features/onboarding/controllers/onboarding_controller.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
+import 'package:homemade/core/constants/sizes.dart';
 
 class OnBoardingDotNavigation extends StatelessWidget {
   const OnBoardingDotNavigation({super.key});

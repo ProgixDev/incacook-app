@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/common/widgets/appbar/appbar.dart';
-import 'package:vinted_v2/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/features/profile/domain/Setting_menu_item.dart';
-import 'package:vinted_v2/features/profile/presentation/widgets/profile_menu_card.dart';
-import 'package:vinted_v2/features/profile/presentation/widgets/profile_user_card.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
+import 'package:homemade/features/profile/presentation/widgets/profile_menu_card.dart';
+import 'package:homemade/features/profile/presentation/widgets/profile_user_card.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

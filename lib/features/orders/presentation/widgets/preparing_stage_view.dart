@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/constants/animations.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/orders/presentation/widgets/order_tracking_layout.dart';
+import 'package:homemade/core/constants/animations.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/features/orders/presentation/widgets/order_tracking_layout.dart';
 
 class PreparingStageView extends StatelessWidget {
   const PreparingStageView({super.key});

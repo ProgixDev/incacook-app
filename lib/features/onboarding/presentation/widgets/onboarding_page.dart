@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:lottie/lottie.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 
 class OnBoardingPage extends StatelessWidget {
   const OnBoardingPage({

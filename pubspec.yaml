@@ -1,4 +1,4 @@
-name: vinted_v2
+name: homemade
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
@@ -22,7 +22,7 @@ dependencies:
   dio: ^5.9.2
   pretty_dio_logger: ^1.4.0
   connectivity_plus: ^7.1.1
-  device_info_plus: ^13.0.0
+  device_info_plus: ^13.1.0
   file_picker: ^3.0.4
   permission_handler: ^12.0.1
   freezed_annotation: ^3.1.0
@@ -35,7 +35,7 @@ dependencies:
   vector_math: ^2.2.0
   cached_network_image: ^3.4.1
   smooth_page_indicator: ^2.0.1
-  flutter_map: ^7.0.2
+  flutter_map: ^8.3.0
   latlong2: ^0.9.1
   rename_app: ^1.6.5
   flutter_launcher_icons: ^0.14.4
@@ -45,7 +45,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-  build_runner: ^2.13.1
+  build_runner: ^2.14.1
   json_serializable: ^6.13.1
 
 

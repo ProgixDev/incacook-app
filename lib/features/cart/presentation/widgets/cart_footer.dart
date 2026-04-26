@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:vinted_v2/core/common/styles/shadows_styles.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
-import 'package:vinted_v2/core/constants/sizes.dart';
-import 'package:vinted_v2/core/constants/text_strings.dart';
-import 'package:vinted_v2/core/utils/device/device_utility.dart';
-import 'package:vinted_v2/features/cart/controllers/cart_controller.dart';
-import 'package:vinted_v2/features/cart/presentation/widgets/cart_seller_card.dart';
-import 'package:vinted_v2/features/cart/presentation/widgets/order_summary_block.dart';
+import 'package:homemade/core/common/styles/shadows_styles.dart';
+import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/features/cart/controllers/cart_controller.dart';
+import 'package:homemade/features/cart/presentation/widgets/cart_seller_card.dart';
+import 'package:homemade/features/cart/presentation/widgets/order_summary_block.dart';
 
 class CartFooter extends StatelessWidget {
   const CartFooter({super.key, required this.onContinue, this.enabled = true});

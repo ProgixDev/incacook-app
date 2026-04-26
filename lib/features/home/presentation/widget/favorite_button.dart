@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:vinted_v2/core/constants/colors.dart';
+import 'package:homemade/core/constants/colors.dart';
 
 class FavoriteButton extends StatelessWidget {
   const FavoriteButton({super.key, required this.isSaved, this.onTap});
