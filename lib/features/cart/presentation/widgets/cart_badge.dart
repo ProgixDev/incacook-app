@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class CartBadge extends StatelessWidget {
   const CartBadge({super.key, required this.count});
@@ -16,16 +17,16 @@ class CartBadge extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.accent,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Iconsax.shopping_cart,
-              color: AppColors.secondary,
-              size: AppSizes.lg - 2,
+          const FrostedSurface(
+            shape: BoxShape.circle,
+            child: SizedBox.expand(
+              child: Center(
+                child: Icon(
+                  Iconsax.shopping_cart,
+                  color: AppColors.secondary,
+                  size: AppSizes.lg - 2,
+                ),
+              ),
             ),
           ),
           if (count > 0)

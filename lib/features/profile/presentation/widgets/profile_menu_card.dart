@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
 import 'package:homemade/features/profile/presentation/widgets/setting_menu_tile.dart';
 
@@ -12,14 +13,11 @@ class SettingMenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.sm,
         vertical: AppSizes.sm,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

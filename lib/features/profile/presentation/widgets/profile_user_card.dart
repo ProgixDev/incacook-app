@@ -6,6 +6,7 @@ import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class ProfileUserCard extends StatelessWidget {
   const ProfileUserCard({super.key, this.onEdit});
@@ -14,12 +15,9 @@ class ProfileUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
       padding: const EdgeInsets.all(AppSizes.md),
-      decoration: BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
-      ),
       child: Row(
         children: [
           //* avatar

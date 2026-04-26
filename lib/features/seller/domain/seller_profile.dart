@@ -1,7 +1,7 @@
 import 'package:latlong2/latlong.dart';
 import 'package:homemade/core/enums/food_enums.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
-import 'package:homemade/features/seller/domain/performance_metric.dart';
+import 'package:homemade/features/seller/domain/seller_rating.dart';
 
 class SellerProfile {
   const SellerProfile({
@@ -21,7 +21,7 @@ class SellerProfile {
     required this.responseRatePercent,
     required this.mealsSold,
     required this.mealsSaved,
-    required this.performance,
+    required this.ratings,
     required this.menuCategories,
     required this.listings,
     required this.bio,
@@ -54,7 +54,7 @@ class SellerProfile {
   final int responseRatePercent;
   final int mealsSold;
   final int mealsSaved;
-  final List<PerformanceMetric> performance;
+  final List<SellerRating> ratings;
   final List<String> menuCategories;
   final List<FoodListing> listings;
   final String bio;

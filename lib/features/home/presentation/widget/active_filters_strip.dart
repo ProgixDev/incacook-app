@@ -96,7 +96,7 @@ class _RemovableChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = tint ?? AppColors.primary;
+    final accent = tint ?? AppColors.secondary;
     return GestureDetector(
       onTap: onRemove,
       child: Container(
@@ -107,7 +107,6 @@ class _RemovableChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: accent.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: accent.withValues(alpha: 0.4)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

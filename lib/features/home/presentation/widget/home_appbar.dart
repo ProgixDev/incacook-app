@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
 import 'package:homemade/features/cart/presentation/widgets/cart_badge.dart';
 import 'package:homemade/features/map/presentation/screens/map.dart';
@@ -38,18 +39,18 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           const Spacer(),
           GestureDetector(
             onTap: () => Get.to(() => const MapScreen()),
-            child: Container(
-              width: AppSizes.lg * 1.8,
-              height: AppSizes.lg * 1.8,
-              decoration: const BoxDecoration(
-                color: AppColors.accent,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: const Icon(
-                Iconsax.map,
-                color: AppColors.secondary,
-                size: AppSizes.lg - 2,
+            child: FrostedSurface(
+              shape: BoxShape.circle,
+              child: SizedBox(
+                width: AppSizes.lg * 1.8,
+                height: AppSizes.lg * 1.8,
+                child: const Center(
+                  child: Icon(
+                    Iconsax.map,
+                    color: AppColors.secondary,
+                    size: AppSizes.lg - 2,
+                  ),
+                ),
               ),
             ),
           ),

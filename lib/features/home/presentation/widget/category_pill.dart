@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class CategoryPill extends StatelessWidget {
   const CategoryPill({
@@ -23,45 +24,58 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contentColor = selected ? AppColors.white : AppColors.secondary;
-    final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.w600,
-      color: contentColor,
-    );
-
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.md,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.secondary : AppColors.accent,
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (imagePath != null) ...[
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: Image.asset(imagePath!, fit: BoxFit.contain),
-              ),
-              const Gap(AppSizes.sm),
-            ] else if (icon != null) ...[
-              Icon(icon, size: 16, color: contentColor),
-              const Gap(AppSizes.sm - 2),
-            ] else if (emoji != null) ...[
-              Text(emoji!, style: const TextStyle(fontSize: 16)),
-              const Gap(AppSizes.sm),
-            ],
-            Text(label, style: textStyle),
-          ],
-        ),
+      child: TweenAnimationBuilder<double>(
+        //* t == 0 → unselected look, t == 1 → selected. The tween rebuilds
+        //* whenever [selected] flips and animates from the previous value.
+        tween: Tween<double>(end: selected ? 1.0 : 0.0),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        builder: (context, t, _) {
+          final bgTint = Color.lerp(
+            FrostedSurface.defaultTint,
+            AppColors.secondary,
+            t,
+          );
+          final contentColor = Color.lerp(
+            AppColors.secondary,
+            AppColors.white,
+            t,
+          )!;
+          final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: contentColor,
+          );
+          return FrostedSurface(
+            borderRadius: BorderRadius.circular(999),
+            tint: bgTint,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.md,
+              vertical: 10,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (imagePath != null) ...[
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: Image.asset(imagePath!, fit: BoxFit.contain),
+                  ),
+                  const Gap(AppSizes.sm),
+                ] else if (icon != null) ...[
+                  Icon(icon, size: 16, color: contentColor),
+                  const Gap(AppSizes.sm - 2),
+                ] else if (emoji != null) ...[
+                  Text(emoji!, style: const TextStyle(fontSize: 16)),
+                  const Gap(AppSizes.sm),
+                ],
+                Text(label, style: textStyle),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

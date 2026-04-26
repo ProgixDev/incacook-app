@@ -11,6 +11,8 @@ class AppImages {
   static const String restaurants =
       "assets/icons/home_categories/restaurant.png";
 
+  static const String welcome = "assets/images/welcome.jpg";
+
   //* order delivery options
   static const String delivery =
       "assets/images/delivery_options/by_delivery.png";

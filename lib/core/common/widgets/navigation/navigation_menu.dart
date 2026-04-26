@@ -6,6 +6,7 @@ import 'package:homemade/core/common/widgets/navigation/navigation_controller.da
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class NavigationMenu extends GetView<NavigationController> {
   const NavigationMenu({super.key});
@@ -33,30 +34,34 @@ class NavigationMenu extends GetView<NavigationController> {
           DeviceUtils.getBottomNavigationBarHeight() / 1.5,
         ),
         child: Obx(
-          () => Container(
-            padding: const EdgeInsets.all(6),
+          () => DecoratedBox(
+            //* shadow lives on an outer DecoratedBox so the FrostedSurface's
+            //* clip doesn't swallow it.
             decoration: BoxDecoration(
-              color: AppColors.primary,
               borderRadius: BorderRadius.circular(48),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.25),
+                  color: AppColors.secondary.withValues(alpha: 0.18),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(_items.length, (index) {
-                final spec = _items[index];
-                return _NavItem(
-                  icon: spec.icon,
-                  label: spec.label,
-                  selected: controller.selectedIndex.value == index,
-                  onTap: () => controller.selectedIndex.value = index,
-                );
-              }),
+            child: FrostedSurface(
+              borderRadius: BorderRadius.circular(48),
+              padding: const EdgeInsets.all(6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(_items.length, (index) {
+                  final spec = _items[index];
+                  return _NavItem(
+                    icon: spec.icon,
+                    label: spec.label,
+                    selected: controller.selectedIndex.value == index,
+                    onTap: () => controller.selectedIndex.value = index,
+                  );
+                }),
+              ),
             ),
           ),
         ),
@@ -98,7 +103,7 @@ class _NavItem extends StatelessWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.white : Colors.transparent,
+          color: selected ? AppColors.secondary : Colors.transparent,
           borderRadius: BorderRadius.circular(40),
         ),
         child: Row(
@@ -107,11 +112,11 @@ class _NavItem extends StatelessWidget {
             Icon(
               icon,
               size: 22,
-              color: selected ? AppColors.secondary : AppColors.white,
+              color: selected ? AppColors.white : AppColors.secondary,
             ),
             //? only the selected item shows its label, like the reference
             AnimatedSize(
-              duration: const Duration(milliseconds: 240),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
               child: selected
                   ? Row(
@@ -122,7 +127,7 @@ class _NavItem extends StatelessWidget {
                           label,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: AppColors.secondary,
+                                color: AppColors.white,
                                 fontWeight: FontWeight.w700,
                               ),
                         ),

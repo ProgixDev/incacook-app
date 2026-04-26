@@ -1,4 +1,12 @@
 class AppTexts {
+  //* welcome screen
+  static const String welcomeBrand = "HomeMade";
+  static const String welcomeTagline = "Le goût de chez toi, près de chez toi";
+  static const String welcomeSkip = "Passer";
+  static const String welcomeContinueWith = "Continuer";
+  static const String welcomeSignUpEmail = "S'inscrire avec e-mail";
+  static const String welcomeAlreadyAccount = "Déjà un compte ?";
+
   //* on boarding text
   static const String onBoardingTitle1 = "Découvrez des plats faits maison";
   static const String onBoardingTitle2 = "Aidez votre communauté";
@@ -106,9 +114,15 @@ class AppTexts {
   static const String settingsPro = "Cravk pro";
 
   //* Settings menu — support
+  static const String settingsAddresses = "Mes adresses";
   static const String settingsGetHelp = "Obtenir de l'aide";
   static const String settingsAboutApp = "À propos de l'application";
   static const String settingsLogout = "Se déconnecter";
+
+  //* Saved addresses sheet
+  static const String addressesSheetTitle = "Mes adresses";
+  static const String addressesAddNew = "Ajouter une adresse";
+  static const String addressesEmpty = "Aucune adresse enregistrée";
 
   //* profile placeholders (until real user data is wired)
   static const String profileSampleName = "Marc Jean";
@@ -342,12 +356,16 @@ class AppTexts {
   static const String sellerTrustMealsSaved = "Repas sauvés";
 
   //* seller profile — performance bars
-  static const String sellerPerformanceTitle = "Qualité du vendeur";
-  static const String sellerPerformanceHygiene = "Hygiène";
-  static const String sellerPerformancePunctuality = "Ponctualité";
-  static const String sellerPerformanceAccuracy = "Exactitude des commandes";
-  static const String sellerPerformanceCommunication = "Communication";
-  static const String sellerPerformanceFoodQuality = "Qualité de la nourriture";
+  //* seller profile — ratings (Évaluations)
+  static const String ratingsTitle = "Évaluations";
+  static const String ratingHygiene = "Hygiène";
+  static const String ratingFoodQuality = "Qualité du plat";
+  static const String ratingPackaging = "Emballage";
+  static const String ratingScoreSuffix = "/5";
+  static const String ratingPercentSuffix = "%";
+  static const String ratingVerifiedOrders = "commandes vérifiées";
+  static const String ratingBasedOn = "Basé sur";
+  static const String ratingReviews = "avis";
 
   //* seller profile — listings
   static const String sellerListingsTitle = "Disponible maintenant";

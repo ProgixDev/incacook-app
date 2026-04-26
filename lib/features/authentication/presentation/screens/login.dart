@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/common/styles/spacing_styles.dart';
+import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/common/widgets/login_signup/form_divider.dart';
 import 'package:homemade/core/common/widgets/login_signup/social_buttons.dart';
 import 'package:homemade/core/constants/colors.dart';
@@ -17,12 +18,12 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
+      appBar: CustomAppBar(showBackArrow: true),
       body: SingleChildScrollView(
         child: Padding(
           padding: AppSpacingStyle.paddingWithAppBarHeight,
           child: Column(
             children: [
-              const Gap(AppSizes.spaceBtwSections),
               //* logo, title, subtitle
               const LoginHeader(),
 

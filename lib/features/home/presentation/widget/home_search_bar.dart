@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key, this.onTap, this.onChanged});
@@ -15,35 +16,38 @@ class HomeSearchBar extends StatelessWidget {
       onTap: onTap,
       child: AbsorbPointer(
         absorbing: onTap != null,
-        child: TextField(
-          onChanged: onChanged,
-          cursorColor: AppColors.secondary,
-          style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration(
-            isCollapsed: true,
-            hintText: AppTexts.homeSearchHint,
-            hintStyle: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
-            prefixIcon: const Icon(
-              Iconsax.search_normal_1,
-              color: AppColors.secondary,
-              size: 22,
-            ),
-            filled: true,
-            fillColor: AppColors.accent,
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide.none,
+        child: FrostedSurface(
+          borderRadius: BorderRadius.circular(32),
+          child: TextField(
+            onChanged: onChanged,
+            cursorColor: AppColors.secondary,
+            style: Theme.of(context).textTheme.bodyMedium,
+            decoration: InputDecoration(
+              isCollapsed: true,
+              hintText: AppTexts.homeSearchHint,
+              hintStyle: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+              prefixIcon: const Icon(
+                Iconsax.search_normal_1,
+                color: AppColors.secondary,
+                size: 22,
+              ),
+              filled: true,
+              fillColor: Colors.transparent,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(32),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(32),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(32),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ),
