@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
@@ -29,12 +28,13 @@ class CartItemCardDismissible extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
       background: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFE53935).withValues(alpha: 0.15),
+          color: const Color(0xFFE53935).withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
         ),
         alignment: Alignment.centerRight,
@@ -44,7 +44,7 @@ class CartItemCardDismissible extends StatelessWidget {
       onDismissed: (_) => onDismissed,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(20),
         ),
         clipBehavior: Clip.antiAlias,
@@ -65,7 +65,7 @@ class CartItemCardDismissible extends StatelessWidget {
                       child: Container(
                         width: 80,
                         height: 80,
-                        color: AppColors.lightBackground,
+                        color: scheme.surfaceContainerLow,
                         child: Image.asset(
                           item.listing.imagePath,
                           fit: BoxFit.cover,
@@ -84,7 +84,6 @@ class CartItemCardDismissible extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
                                 ),
                           ),
                           const Gap(4),
@@ -100,7 +99,7 @@ class CartItemCardDismissible extends StatelessWidget {
                                 '${item.listing.rating.toStringAsFixed(1)}(${item.listing.reviewCount} ${AppTexts.cartReviewSuffix})',
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: AppColors.grey,
+                                      color: scheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
                               ),
@@ -159,6 +158,7 @@ class _CompactQuantity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -173,7 +173,7 @@ class _CompactQuantity extends StatelessWidget {
             quantity.toString().padLeft(2, '0'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.primary,
+              color: scheme.primary,
             ),
           ),
         ),
@@ -200,24 +200,26 @@ class _StepButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final disabled = scheme.onSurface.withValues(alpha: 0.38);
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: Container(
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: scheme.surface,
           shape: BoxShape.circle,
           border: Border.all(
             color: enabled
-                ? AppColors.grey.withValues(alpha: 0.35)
-                : AppColors.buttonDisabled,
+                ? scheme.onSurfaceVariant.withValues(alpha: 0.35)
+                : scheme.outline,
           ),
         ),
         child: Icon(
           icon,
           size: 12,
-          color: enabled ? AppColors.textPrimary : AppColors.buttonDisabled,
+          color: enabled ? scheme.onSurface : disabled,
         ),
       ),
     );

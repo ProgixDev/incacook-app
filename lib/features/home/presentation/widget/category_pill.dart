@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class CategoryPill extends StatelessWidget {
@@ -24,6 +24,9 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final scheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: TweenAnimationBuilder<double>(
@@ -34,13 +37,13 @@ class CategoryPill extends StatelessWidget {
         curve: Curves.easeOutCubic,
         builder: (context, t, _) {
           final bgTint = Color.lerp(
-            FrostedSurface.defaultTint,
-            AppColors.secondary,
+            colors.frostedTint,
+            colors.selectedSurface,
             t,
           );
           final contentColor = Color.lerp(
-            AppColors.secondary,
-            AppColors.white,
+            scheme.onSurface,
+            colors.selectedOnSurface,
             t,
           )!;
           final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(

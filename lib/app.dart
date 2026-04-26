@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:homemade/bindings/general_bindings.dart';
-import 'package:homemade/core/controllers/theme_controller.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
+import 'package:homemade/core/controllers/theme_controller.dart';
 import 'package:homemade/core/utils/theme/theme.dart';
-import 'package:homemade/features/authentication/presentation/screens/welcome.dart';
 import 'package:homemade/features/onboarding/presentation/screens/onboarding.dart';
 
 class App extends StatelessWidget {
@@ -13,13 +12,15 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.put(ThemeController());
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: themeController.themeMode,
-      theme: CustomAppTheme.lightTheme,
-      darkTheme: CustomAppTheme.darkTheme,
-      initialBinding: GeneralBindings(),
-      home: OnBoardingScreen(),
+    return Obx(
+      () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        themeMode: themeController.mode.value,
+        theme: CustomAppTheme.lightTheme,
+        darkTheme: CustomAppTheme.darkTheme,
+        initialBinding: GeneralBindings(),
+        home: const OnBoardingScreen(),
+      ),
     );
   }
 }

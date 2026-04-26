@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class ProductBottomBar extends StatelessWidget {
   const ProductBottomBar({
@@ -16,6 +16,8 @@ class ProductBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double height = 64;
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     final bottomSafe = MediaQuery.of(context).padding.bottom;
 
     return Padding(
@@ -27,11 +29,11 @@ class ProductBottomBar extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(height / 2),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -44,16 +46,16 @@ class ProductBottomBar extends StatelessWidget {
               child: _PillButton(
                 label: AppTexts.productAddToCart,
                 onTap: onAddToCart,
-                background: AppColors.accent,
-                foreground: AppColors.textPrimary,
+                background: scheme.surface,
+                foreground: scheme.onSurface,
               ),
             ),
             Expanded(
               child: _PillButton(
                 label: AppTexts.productOrder,
                 onTap: onOrder,
-                background: AppColors.secondary,
-                foreground: AppColors.white,
+                background: colors.selectedSurface,
+                foreground: colors.selectedOnSurface,
               ),
             ),
           ],

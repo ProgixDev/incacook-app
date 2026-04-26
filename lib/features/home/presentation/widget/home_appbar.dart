@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
@@ -15,6 +14,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: EdgeInsets.only(
         top: DeviceUtils.getStatusBarHeight(),
@@ -24,7 +24,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: DeviceUtils.getAppBarHeight() + DeviceUtils.getStatusBarHeight(),
       child: Row(
         children: [
-          const Icon(Iconsax.location, color: AppColors.secondary, size: 20),
+          Icon(Iconsax.location, color: onSurface, size: 20),
           const Gap(AppSizes.xs),
           Flexible(
             child: Text(
@@ -32,7 +32,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.secondary,
+                color: onSurface,
               ),
             ),
           ),
@@ -44,10 +44,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: SizedBox(
                 width: AppSizes.lg * 1.8,
                 height: AppSizes.lg * 1.8,
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Iconsax.map,
-                    color: AppColors.secondary,
+                    color: onSurface,
                     size: AppSizes.lg - 2,
                   ),
                 ),

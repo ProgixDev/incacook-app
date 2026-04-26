@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -75,6 +74,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -85,7 +85,6 @@ class _Header extends StatelessWidget {
               Text(
                 AppTexts.productReviewsTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -97,7 +96,6 @@ class _Header extends StatelessWidget {
                   Text(
                     averageRating.toStringAsFixed(1),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -106,7 +104,7 @@ class _Header extends StatelessWidget {
                     '${AppTexts.productReviewsBasedOn} $totalReviews ${AppTexts.productReviewsWordReviews}',
                     style: Theme.of(
                       context,
-                    ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -121,13 +119,13 @@ class _Header extends StatelessWidget {
                 AppTexts.productReviewsSeeAll,
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+                ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
               ),
               const Gap(2),
-              const Icon(
+              Icon(
                 Iconsax.arrow_right_3,
                 size: 14,
-                color: AppColors.grey,
+                color: scheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -144,11 +142,12 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: 260,
       padding: const EdgeInsets.all(AppSizes.md),
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
       ),
       child: Column(
@@ -169,7 +168,6 @@ class _ReviewCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -177,7 +175,7 @@ class _ReviewCard extends StatelessWidget {
                       review.time,
                       style: Theme.of(
                         context,
-                      ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                      ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -197,7 +195,7 @@ class _ReviewCard extends StatelessWidget {
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.grey,
+                color: scheme.onSurfaceVariant,
                 height: 1.45,
               ),
             ),
@@ -214,6 +212,7 @@ class _StarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     const int total = 5;
     final filled = rating.round().clamp(0, total);
 
@@ -227,7 +226,7 @@ class _StarRow extends StatelessWidget {
             size: 14,
             color: isFilled
                 ? const Color(0xFFFFC107)
-                : AppColors.grey.withValues(alpha: 0.4),
+                : scheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
         );
       }),

@@ -5,7 +5,6 @@ import 'package:homemade/features/seller/presentation/widgets/profile_stats_sect
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/common/widgets/buttons/circular_icon_button.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/features/seller/domain/seller_profile.dart';
 import 'package:homemade/features/seller/presentation/widgets/bio_section.dart';
@@ -19,17 +18,17 @@ class SellerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final List<SellerRating> ratings = profile.ratings;
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text('Profile', style: Theme.of(context).textTheme.titleMedium),
         actions: [
           CircularIconButton(
             icon: Iconsax.heart,
-            iconColor: AppColors.primary,
-            backgroundColor: AppColors.accent,
+            iconColor: scheme.primary,
+            backgroundColor: scheme.surface,
             onPressed: () {},
           ),
         ],

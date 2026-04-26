@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 
@@ -25,6 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.only(
         right: 16.0,
@@ -43,12 +43,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   onTap: () {
                     Get.back();
                   },
-                  child: const CustomCircularContainer(
+                  child: CustomCircularContainer(
                     size: AppSizes.lg * 1.8,
-                    backgroundColor: AppColors.accent,
+                    backgroundColor: scheme.surfaceContainerHigh,
                     child: Icon(
                       Iconsax.arrow_left,
-                      color: AppColors.secondary,
+                      color: scheme.onSurface,
                       size: AppSizes.lg,
                     ),
                   ),

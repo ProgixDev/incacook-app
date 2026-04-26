@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomTextTheme {
   CustomTextTheme._();
@@ -8,60 +8,60 @@ class CustomTextTheme {
     headlineLarge: const TextStyle().copyWith(
       fontSize: 32,
       fontWeight: FontWeight.bold,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     headlineMedium: const TextStyle().copyWith(
       fontSize: 24,
       fontWeight: FontWeight.w600,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     headlineSmall: const TextStyle().copyWith(
       fontSize: 18,
       fontWeight: FontWeight.w600,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
 
     titleLarge: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w600,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     titleMedium: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w500,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     titleSmall: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w400,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
 
     bodyLarge: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     bodyMedium: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.normal,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     bodySmall: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: AppColors.black.withOpacity(0.5),
+      color: LightPalette.onSurface.withValues(alpha: 0.5),
     ),
 
     labelLarge: const TextStyle().copyWith(
       fontSize: 12,
       fontWeight: FontWeight.normal,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
     labelMedium: const TextStyle().copyWith(
       fontSize: 12,
       fontWeight: FontWeight.normal,
-      color: AppColors.black.withOpacity(0.5),
+      color: LightPalette.onSurface.withValues(alpha: 0.5),
     ),
   );
 
@@ -69,60 +69,60 @@ class CustomTextTheme {
     headlineLarge: const TextStyle().copyWith(
       fontSize: 32,
       fontWeight: FontWeight.bold,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     headlineMedium: const TextStyle().copyWith(
       fontSize: 24,
       fontWeight: FontWeight.w600,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     headlineSmall: const TextStyle().copyWith(
       fontSize: 18,
       fontWeight: FontWeight.w600,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
 
     titleLarge: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w600,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     titleMedium: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w500,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     titleSmall: const TextStyle().copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w400,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
 
     bodyLarge: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     bodyMedium: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.normal,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     bodySmall: const TextStyle().copyWith(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: AppColors.white.withOpacity(0.5),
+      color: DarkPalette.onSurface.withValues(alpha: 0.5),
     ),
 
     labelLarge: const TextStyle().copyWith(
       fontSize: 12,
       fontWeight: FontWeight.normal,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
     labelMedium: const TextStyle().copyWith(
       fontSize: 12,
       fontWeight: FontWeight.normal,
-      color: AppColors.white.withOpacity(0.5),
+      color: DarkPalette.onSurface.withValues(alpha: 0.5),
     ),
   );
 }

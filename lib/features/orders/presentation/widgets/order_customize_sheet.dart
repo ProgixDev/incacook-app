@@ -4,10 +4,10 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 import 'package:homemade/features/orders/domain/order_customization.dart';
 import 'package:homemade/features/orders/domain/product_add_on.dart';
@@ -111,10 +111,11 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
       maxChildSize: 0.95,
       expand: false,
       builder: (_, scrollController) {
+        final scheme = Theme.of(context).colorScheme;
         return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.lightBackground,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             children: [
@@ -126,7 +127,7 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                     width: 42,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.secondary,
+                      color: scheme.onSurface,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -210,7 +211,6 @@ class _Header extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
                   height: 1.15,
                 ),
               ),
@@ -236,6 +236,7 @@ class _SellerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Flexible(
@@ -243,7 +244,7 @@ class _SellerRow extends StatelessWidget {
             listing.sellerName,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -253,7 +254,7 @@ class _SellerRow extends StatelessWidget {
           '·',
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
         ),
         const Gap(6),
         SizedBox(
@@ -267,7 +268,7 @@ class _SellerRow extends StatelessWidget {
             listing.category.label,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ),
       ],
@@ -283,6 +284,7 @@ class _PriceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
@@ -291,13 +293,13 @@ class _PriceRow extends StatelessWidget {
           Text(
             '€${originalPrice!.toStringAsFixed(2)}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               decoration: TextDecoration.lineThrough,
-              decorationColor: AppColors.grey,
+              decorationColor: scheme.onSurfaceVariant,
             ),
           ),
           const Gap(6),
-          const Icon(Iconsax.arrow_right_3, size: 12, color: AppColors.grey),
+          Icon(Iconsax.arrow_right_3, size: 12, color: scheme.onSurfaceVariant),
           const Gap(6),
         ],
         PriceDisplay(price: price, priceSize: 15),
@@ -325,6 +327,7 @@ class _QuantitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -332,16 +335,15 @@ class _QuantitySection extends StatelessWidget {
           AppTexts.orderSheetQuantityLabel,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.sm + 2),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.accent,
+            color: scheme.surface,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: AppColors.lightGrey),
+            border: Border.all(color: scheme.outline),
           ),
           child: Row(
             children: [
@@ -356,7 +358,6 @@ class _QuantitySection extends StatelessWidget {
                     '$quantity',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -373,7 +374,7 @@ class _QuantitySection extends StatelessWidget {
         Text(
           '$portionsAvailable ${portionsAvailable == 1 ? AppTexts.orderSheetPortionAvailableSuffix : AppTexts.orderSheetPortionsAvailableSuffix}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: canIncrease ? AppColors.grey : const Color(0xFFC05D3B),
+            color: canIncrease ? scheme.onSurfaceVariant : const Color(0xFFC05D3B),
             fontWeight: canIncrease ? FontWeight.w500 : FontWeight.w600,
           ),
         ),
@@ -395,19 +396,21 @@ class _QtyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: Container(
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: enabled ? AppColors.secondary : AppColors.lightGrey,
+          color: enabled ? colors.selectedSurface : scheme.surfaceContainerHigh,
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
           size: 18,
-          color: enabled ? AppColors.white : AppColors.grey,
+          color: enabled ? colors.selectedOnSurface : scheme.onSurfaceVariant,
         ),
       ),
     );
@@ -434,7 +437,6 @@ class _OptionsSection extends StatelessWidget {
           AppTexts.orderSheetOptionsLabel,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.sm),
@@ -467,8 +469,9 @@ class _AddOnRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final deltaColor = addOn.priceDelta >= 0
-        ? AppColors.textPrimary
+        ? scheme.onSurface
         : const Color(0xFF2E7D32);
 
     return InkWell(
@@ -484,7 +487,6 @@ class _AddOnRow extends StatelessWidget {
               child: Text(
                 addOn.label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -510,20 +512,22 @@ class _Checkbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        color: selected ? AppColors.secondary : AppColors.accent,
+        color: selected ? colors.selectedSurface : scheme.surface,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: selected ? AppColors.secondary : AppColors.lightGrey,
+          color: selected ? colors.selectedSurface : scheme.outline,
           width: 1.5,
         ),
       ),
       child: selected
-          ? const Icon(Icons.check, size: 14, color: AppColors.white)
+          ? Icon(Icons.check, size: 14, color: colors.selectedOnSurface)
           : null,
     );
   }
@@ -537,6 +541,7 @@ class _NoteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -544,7 +549,6 @@ class _NoteSection extends StatelessWidget {
           AppTexts.orderSheetNoteLabel,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.sm + 2),
@@ -554,16 +558,14 @@ class _NoteSection extends StatelessWidget {
           maxLines: 3,
           minLines: 2,
           inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             hintText: AppTexts.orderSheetNoteHint,
             hintStyle: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+            ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             filled: true,
-            fillColor: AppColors.accent,
+            fillColor: scheme.surface,
             counterText: '',
             contentPadding: const EdgeInsets.all(AppSizes.md - 2),
             border: OutlineInputBorder(
@@ -576,8 +578,8 @@ class _NoteSection extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: AppColors.secondary,
+              borderSide: BorderSide(
+                color: scheme.onSurface,
                 width: 1,
               ),
             ),
@@ -596,6 +598,7 @@ class _TotalAndCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return SafeArea(
       top: false,
       child: Padding(
@@ -611,7 +614,6 @@ class _TotalAndCta extends StatelessWidget {
                 Text(
                   '${AppTexts.orderSheetTotalLabel} : ',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -624,8 +626,8 @@ class _TotalAndCta extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onAddToCart,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: colors.selectedSurface,
+                  foregroundColor: colors.selectedOnSurface,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

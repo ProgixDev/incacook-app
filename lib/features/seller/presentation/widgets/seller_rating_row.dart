@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/features/seller/domain/seller_rating.dart';
 
@@ -13,6 +12,7 @@ class SellerRatingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final accent = rating.criterion.color;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,7 +24,6 @@ class SellerRatingRow extends StatelessWidget {
               child: Text(
                 rating.criterion.label,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -44,7 +43,7 @@ class SellerRatingRow extends StatelessWidget {
           child: LinearProgressIndicator(
             value: rating.fillRatio,
             minHeight: 8,
-            backgroundColor: AppColors.lightGrey,
+            backgroundColor: scheme.outlineVariant,
             valueColor: AlwaysStoppedAnimation<Color>(accent),
           ),
         ),
@@ -53,7 +52,7 @@ class SellerRatingRow extends StatelessWidget {
           rating.subtitle,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
         ),
       ],
     );

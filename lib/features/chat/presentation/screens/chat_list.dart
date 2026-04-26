@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -103,7 +102,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         MediaQuery.viewPaddingOf(context).top + AppSizes.appBarHeight;
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
@@ -116,7 +114,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
             title: Text(
               AppTexts.chatListTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),

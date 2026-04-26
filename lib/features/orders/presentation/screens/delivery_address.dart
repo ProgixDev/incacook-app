@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/orders/domain/delivery_details.dart';
 import 'package:homemade/features/orders/domain/saved_address.dart';
 import 'package:homemade/features/orders/presentation/widgets/address_card.dart';
@@ -43,8 +43,10 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
 
   String? _selectedId = _addresses.isNotEmpty ? _addresses.first.id : null;
   final TextEditingController _instructionsController = TextEditingController();
-  DeliveryTiming _timing = DeliveryTiming.asap;
-  DateTime _scheduledAt = DateTime.now().add(const Duration(minutes: 45));
+  final DeliveryTiming _timing = DeliveryTiming.asap;
+  final DateTime _scheduledAt = DateTime.now().add(
+    const Duration(minutes: 45),
+  );
 
   @override
   void initState() {
@@ -86,14 +88,12 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
     final showOutOfRangeWarning = _selected != null && !_selected!.inRange;
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(
           AppTexts.addressTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
       ),
@@ -121,7 +121,6 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
                           style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
                               ),
                         ),
                         IconButton(
@@ -162,11 +161,13 @@ class _EmptyAddressState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSizes.lg),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
       child: Column(
@@ -174,14 +175,14 @@ class _EmptyAddressState extends StatelessWidget {
           Container(
             width: 56,
             height: 56,
-            decoration: const BoxDecoration(
-              color: AppColors.accent,
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerHigh,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Iconsax.location,
               size: 24,
-              color: AppColors.secondary,
+              color: scheme.onSurface,
             ),
           ),
           const Gap(AppSizes.md),
@@ -189,7 +190,6 @@ class _EmptyAddressState extends StatelessWidget {
             AppTexts.addressNoSavedTitle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
             ),
           ),
           const Gap(AppSizes.md),
@@ -198,8 +198,8 @@ class _EmptyAddressState extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: AppColors.white,
+                backgroundColor: colors.selectedSurface,
+                foregroundColor: colors.selectedOnSurface,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -254,10 +254,12 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.lightBackground,
-        border: Border(top: BorderSide(color: Colors.transparent)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: const Border(top: BorderSide(color: Colors.transparent)),
       ),
       padding: const EdgeInsets.all(AppSizes.md),
       child: SafeArea(
@@ -267,9 +269,9 @@ class _Footer extends StatelessWidget {
           child: ElevatedButton(
             onPressed: enabled ? onContinue : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.white,
-              disabledBackgroundColor: AppColors.buttonDisabled,
+              backgroundColor: colors.selectedSurface,
+              foregroundColor: colors.selectedOnSurface,
+              disabledBackgroundColor: scheme.onSurface.withValues(alpha: 0.38),
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(

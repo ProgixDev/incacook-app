@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -12,27 +11,28 @@ class ChatSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(32),
       ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        cursorColor: AppColors.secondary,
+        cursorColor: scheme.onSurface,
         style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
           isCollapsed: true,
           hintText: AppTexts.chatSearchHint,
           hintStyle: Theme.of(
             context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
-          prefixIcon: const Padding(
-            padding: EdgeInsets.only(left: AppSizes.md, right: AppSizes.sm),
+          ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: AppSizes.md, right: AppSizes.sm),
             child: Icon(
               Iconsax.search_normal_1,
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               size: 20,
             ),
           ),

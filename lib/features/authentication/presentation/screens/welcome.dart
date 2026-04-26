@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -16,6 +15,7 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -23,14 +23,14 @@ class WelcomeScreen extends StatelessWidget {
           //* 1) full-bleed background image
           Image.asset(AppImages.welcome, fit: BoxFit.cover),
 
-          //* 2) frosted layer over the image
+          //* 2) frosted layer over the image (tint adapts to mode)
           BackdropFilter(
             filter: ImageFilter.blur(
               sigmaX: FrostedSurface.blurSigma,
               sigmaY: FrostedSurface.blurSigma,
             ),
             child: Container(
-              color: AppColors.lightBackground.withValues(alpha: 0.55),
+              color: scheme.surface.withValues(alpha: 0.55),
             ),
           ),
 
@@ -50,8 +50,9 @@ class WelcomeScreen extends StatelessWidget {
                   const Gap(AppSizes.sm),
                   Text(
                     AppTexts.welcomeBrand,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.secondary,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -62,9 +63,7 @@ class WelcomeScreen extends StatelessWidget {
                   Text(
                     AppTexts.welcomeTagline,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.secondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const Gap(AppSizes.md),
 
@@ -113,16 +112,15 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         AppTexts.welcomeAlreadyAccount,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: scheme.onSurfaceVariant),
                       ),
                       TextButton(
                         onPressed: () => Get.to(() => const LoginScreen()),
                         child: Text(
                           AppTexts.signIn,
-                          style: const TextStyle(
-                            color: AppColors.secondary,
+                          style: TextStyle(
+                            color: scheme.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -152,15 +150,16 @@ class _SocialPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: AppColors.grey.withValues(alpha: 0.3),
+            color: scheme.outline.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -173,10 +172,9 @@ class _SocialPill extends StatelessWidget {
             const Gap(AppSizes.sm),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

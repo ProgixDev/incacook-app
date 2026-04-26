@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/widgets/decor/decor_blob.dart';
@@ -12,6 +11,7 @@ import 'package:homemade/features/orders/domain/saved_address.dart';
 import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
 import 'package:homemade/features/profile/presentation/widgets/profile_menu_card.dart';
 import 'package:homemade/features/profile/presentation/widgets/profile_user_card.dart';
+import 'package:homemade/features/profile/presentation/widgets/appearance_sheet.dart';
 import 'package:homemade/features/profile/presentation/widgets/saved_addresses_sheet.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -112,6 +112,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     final supportItems = <SettingMenuItem>[
       SettingMenuItem(
+        icon: Iconsax.brush_2,
+        title: AppTexts.settingsAppearance,
+        onTap: () => AppearanceSheet.show(context),
+      ),
+      SettingMenuItem(
         icon: Iconsax.message_question,
         title: AppTexts.settingsGetHelp,
         onTap: () {},
@@ -133,7 +138,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       extendBody: false,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
@@ -146,19 +150,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text(
               AppTexts.profileTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
             actions: [
               GestureDetector(
                 onTap: () {},
-                child: const CustomCircularContainer(
+                child: CustomCircularContainer(
                   size: 44,
-                  backgroundColor: AppColors.accent,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   child: Icon(
                     Iconsax.notification,
-                    color: AppColors.secondary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     size: 20,
                   ),
                 ),

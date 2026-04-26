@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class KitchenTagChip extends StatelessWidget {
   const KitchenTagChip({super.key, required this.label});
@@ -8,16 +7,17 @@ class KitchenTagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.lightGrey,
+        color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColors.grey,
+          color: scheme.onSurfaceVariant,
           fontWeight: FontWeight.w600,
         ),
       ),

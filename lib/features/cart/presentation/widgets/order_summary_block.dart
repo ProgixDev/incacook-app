@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -25,7 +24,6 @@ class OrderSummaryBlock extends StatelessWidget {
           AppTexts.cartOrderSummaryTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.md),
@@ -58,23 +56,21 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final labelStyle = emphasize
         ? Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           )
         : Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.grey,
+            color: scheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           );
     final valueStyle = emphasize
         ? Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           )
         : Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           );
     return Row(
       children: [

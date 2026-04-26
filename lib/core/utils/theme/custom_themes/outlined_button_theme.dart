@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomOutlinedButtonTheme {
   CustomOutlinedButtonTheme._();
@@ -7,11 +8,11 @@ class CustomOutlinedButtonTheme {
   static final lightOutlinedButtonTheme = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       elevation: 0,
-      foregroundColor: AppColors.black,
-      side: const BorderSide(color: AppColors.primary),
+      foregroundColor: LightPalette.onSurface,
+      side: const BorderSide(color: BrandColors.primary),
       textStyle: const TextStyle(
         fontSize: 16,
-        color: AppColors.black,
+        color: LightPalette.onSurface,
         fontWeight: FontWeight.w600,
       ),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -22,11 +23,11 @@ class CustomOutlinedButtonTheme {
   static final darkOutlinedButtonTheme = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       elevation: 0,
-      foregroundColor: AppColors.white,
-      side: const BorderSide(color: AppColors.primary),
+      foregroundColor: DarkPalette.onSurface,
+      side: const BorderSide(color: BrandColors.primary),
       textStyle: const TextStyle(
         fontSize: 16,
-        color: AppColors.white,
+        color: DarkPalette.onSurface,
         fontWeight: FontWeight.w600,
       ),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 /// Asks the user whether to clear the existing cart when adding an item from
 /// a different seller. Resolves to `true` if they confirm.
@@ -26,8 +26,10 @@ class DifferentSellerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Dialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
@@ -41,14 +43,13 @@ class DifferentSellerDialog extends StatelessWidget {
               AppTexts.cartDifferentSellerTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
               ),
             ),
             const Gap(AppSizes.sm + 2),
             Text(
               AppTexts.cartDifferentSellerBody(currentSellerName),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.grey,
+                color: scheme.onSurfaceVariant,
                 height: 1.35,
               ),
             ),
@@ -59,9 +60,9 @@ class DifferentSellerDialog extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () => Navigator.of(context).pop(false),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.secondary,
+                      foregroundColor: scheme.onSurface,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      side: const BorderSide(color: AppColors.lightGrey),
+                      side: BorderSide(color: scheme.outline),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(999),
                       ),
@@ -76,8 +77,8 @@ class DifferentSellerDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: colors.selectedSurface,
+                      foregroundColor: colors.selectedOnSurface,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(

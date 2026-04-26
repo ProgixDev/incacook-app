@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/validators/validators.dart';
@@ -17,6 +16,7 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LoginController());
+    final scheme = Theme.of(context).colorScheme;
     return Form(
       key: controller.loginFormKey,
       child: Padding(
@@ -29,23 +29,23 @@ class LoginForm extends StatelessWidget {
             TextFormField(
               controller: controller.email,
               validator: (value) => CustomValidator.validateEmail(value),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
-                fillColor: AppColors.accent,
+                fillColor: scheme.surfaceContainerHigh,
                 prefixIcon: Icon(
                   Iconsax.direct_right,
-                  color: AppColors.primary,
+                  color: scheme.primary,
                 ),
                 labelText: AppTexts.email,
-                border: OutlineInputBorder(
+                border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(48.0)),
                   borderSide: BorderSide.none,
                 ),
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(48.0)),
                   borderSide: BorderSide.none,
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(48.0)),
                   borderSide: BorderSide.none,
                 ),
@@ -62,11 +62,11 @@ class LoginForm extends StatelessWidget {
                 obscureText: controller.hidePassword.value,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: AppColors.accent,
+                  fillColor: scheme.surfaceContainerHigh,
                   labelText: AppTexts.password,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Iconsax.password_check,
-                    color: AppColors.primary,
+                    color: scheme.primary,
                   ),
                   suffixIcon: IconButton(
                     onPressed: () => controller.hidePassword.value =
@@ -77,15 +77,15 @@ class LoginForm extends StatelessWidget {
                           : Iconsax.eye,
                     ),
                   ),
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(48.0)),
                     borderSide: BorderSide.none,
                   ),
-                  enabledBorder: OutlineInputBorder(
+                  enabledBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(48.0)),
                     borderSide: BorderSide.none,
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(48.0)),
                     borderSide: BorderSide.none,
                   ),
@@ -106,16 +106,16 @@ class LoginForm extends StatelessWidget {
                         value: controller.rememberMe.value,
                         onChanged: (value) => controller.rememberMe.value =
                             !controller.rememberMe.value,
-                        activeColor: AppColors.primary,
-                        checkColor: AppColors.white,
+                        activeColor: scheme.primary,
+                        checkColor: scheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),
-                    const Text(
+                    Text(
                       AppTexts.rememberMe,
-                      style: TextStyle(color: AppColors.grey),
+                      style: TextStyle(color: scheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -123,10 +123,7 @@ class LoginForm extends StatelessWidget {
                 //* forget password
                 TextButton(
                   onPressed: () => Get.to(() => const ForgetPasswordScreen()),
-                  child: const Text(
-                    AppTexts.forgetPassword,
-                    style: TextStyle(color: AppColors.secondary),
-                  ),
+                  child: const Text(AppTexts.forgetPassword),
                 ),
               ],
             ),
@@ -148,8 +145,8 @@ class LoginForm extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Get.to(() => const UserTypeSelectionScreen()),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: AppColors.grey,
+                  backgroundColor: scheme.surfaceContainerHigh,
+                  foregroundColor: scheme.onSurfaceVariant,
                   side: BorderSide.none,
                 ),
                 child: const Text(AppTexts.createAccount),

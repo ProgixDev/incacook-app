@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/orders/presentation/widgets/order_tracking_layout.dart';
 
@@ -11,7 +10,7 @@ class PreparingStageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.lightBackground,
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.only(bottom: kOrderSheetApproxHeight),
       alignment: Alignment.center,
       child: Lottie.asset(

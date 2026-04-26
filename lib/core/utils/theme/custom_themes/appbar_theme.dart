@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomAppBarTheme {
   CustomAppBarTheme._();
@@ -10,12 +10,12 @@ class CustomAppBarTheme {
     scrolledUnderElevation: 0,
     backgroundColor: Colors.transparent,
     surfaceTintColor: Colors.transparent,
-    iconTheme: IconThemeData(color: AppColors.black, size: 24),
-    actionsIconTheme: IconThemeData(color: AppColors.black, size: 24),
+    iconTheme: IconThemeData(color: LightPalette.onSurface, size: 24),
+    actionsIconTheme: IconThemeData(color: LightPalette.onSurface, size: 24),
     titleTextStyle: TextStyle(
       fontSize: 18.0,
       fontWeight: FontWeight.w600,
-      color: AppColors.black,
+      color: LightPalette.onSurface,
     ),
   );
 
@@ -25,12 +25,12 @@ class CustomAppBarTheme {
     scrolledUnderElevation: 0,
     backgroundColor: Colors.transparent,
     surfaceTintColor: Colors.transparent,
-    iconTheme: IconThemeData(color: AppColors.white, size: 24),
-    actionsIconTheme: IconThemeData(color: AppColors.white, size: 24),
+    iconTheme: IconThemeData(color: DarkPalette.onSurface, size: 24),
+    actionsIconTheme: IconThemeData(color: DarkPalette.onSurface, size: 24),
     titleTextStyle: TextStyle(
       fontSize: 18.0,
       fontWeight: FontWeight.w600,
-      color: AppColors.white,
+      color: DarkPalette.onSurface,
     ),
   );
 }

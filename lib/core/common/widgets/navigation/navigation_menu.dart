@@ -3,9 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_controller.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class NavigationMenu extends GetView<NavigationController> {
@@ -21,6 +21,7 @@ class NavigationMenu extends GetView<NavigationController> {
   @override
   Widget build(BuildContext context) {
     Get.put(NavigationController());
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       extendBody: true,
@@ -41,7 +42,7 @@ class NavigationMenu extends GetView<NavigationController> {
               borderRadius: BorderRadius.circular(48),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.secondary.withValues(alpha: 0.18),
+                  color: scheme.shadow.withValues(alpha: 0.18),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -92,6 +93,11 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final scheme = Theme.of(context).colorScheme;
+    final selectedFg = colors.selectedOnSurface;
+    final unselectedFg = scheme.onSurface;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -103,7 +109,7 @@ class _NavItem extends StatelessWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.secondary : Colors.transparent,
+          color: selected ? colors.selectedSurface : Colors.transparent,
           borderRadius: BorderRadius.circular(40),
         ),
         child: Row(
@@ -112,7 +118,7 @@ class _NavItem extends StatelessWidget {
             Icon(
               icon,
               size: 22,
-              color: selected ? AppColors.white : AppColors.secondary,
+              color: selected ? selectedFg : unselectedFg,
             ),
             //? only the selected item shows its label, like the reference
             AnimatedSize(
@@ -127,7 +133,7 @@ class _NavItem extends StatelessWidget {
                           label,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: AppColors.white,
+                                color: selectedFg,
                                 fontWeight: FontWeight.w700,
                               ),
                         ),

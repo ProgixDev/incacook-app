@@ -1,15 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
-/// Frosted-glass surface used across the home screen UI (search bar,
-/// Filtres button, appbar buttons, cart badge…).
+/// Frosted-glass surface used across the app (search bar, filter button,
+/// appbar buttons, cart badge, address tiles, settings cards…).
 ///
-/// The blur strength and translucent tint live on this class — change them
-/// here and every consumer updates in lockstep.
+/// The blur strength is centralized here. The tint and border colors are
+/// theme-driven — read from [AppColorExtensions.frostedTint] /
+/// [ColorScheme.outlineVariant] so they swap automatically in dark mode.
+/// Pass an explicit [tint] to override (e.g. selected pill states).
 ///
-/// Pass [shape: BoxShape.circle] for round buttons; otherwise provide
+/// Use [shape: BoxShape.circle] for round buttons; otherwise provide
 /// [borderRadius] for rounded rectangles.
 class FrostedSurface extends StatelessWidget {
   const FrostedSurface({
@@ -30,18 +32,22 @@ class FrostedSurface extends StatelessWidget {
   final EdgeInsets? padding;
 
   /// Centralized blur strength applied behind every frosted surface.
+  /// Static (not theme-driven) since blur intensity doesn't vary by mode.
   static const double blurSigma = 14.0;
-
-  /// Default translucent tint painted over the blur — keeps icons/text legible.
-  static const Color defaultTint = Color(0x66FEFEF3);
 
   @override
   Widget build(BuildContext context) {
     final isCircle = shape == BoxShape.circle;
-    final effectiveTint = tint ?? defaultTint;
+    final colors = context.appColors;
+    final effectiveTint = tint ?? colors.frostedTint;
     final effectiveBorder =
         border ??
-        Border.all(color: AppColors.white.withValues(alpha: 0.35), width: 0.8);
+        Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(
+            alpha: 0.45,
+          ),
+          width: 0.8,
+        );
 
     final filtered = BackdropFilter(
       filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),

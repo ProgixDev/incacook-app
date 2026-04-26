@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 
@@ -62,7 +61,7 @@ class FoodListingCard extends StatelessWidget {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                     child: Container(
-                      color: AppColors.white.withValues(alpha: 0.12),
+                      color: Colors.white.withValues(alpha: 0.12),
                       padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
                       child: Row(
                         children: [
@@ -77,7 +76,7 @@ class FoodListingCard extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.white,
+                                      color: Colors.white,
                                       height: 1.2,
                                     ),
                               ),
@@ -88,7 +87,7 @@ class FoodListingCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: AppColors.white.withValues(
+                                      color: Colors.white.withValues(
                                         alpha: 0.75,
                                       ),
                                     ),

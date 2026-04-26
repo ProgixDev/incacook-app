@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 
-//? category-to-color mapping local to the map feature — not part of AppColors
-//? since these are semantic map markers, not app-wide tokens
+//? category-to-color mapping local to the map feature — semantic markers,
+//? not app-wide tokens
 Color pinColorFor(SellerCategory category) {
   switch (category) {
     case SellerCategory.faitMaison:
@@ -13,7 +13,7 @@ Color pinColorFor(SellerCategory category) {
     case SellerCategory.traiteur:
       return const Color(0xFF2E7D32);
     case SellerCategory.restaurant:
-      return AppColors.primary;
+      return BrandColors.primary;
   }
 }
 
@@ -72,12 +72,12 @@ class MapPin extends StatelessWidget {
                     color: color,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: AppColors.white,
+                      color: Colors.white,
                       width: isSelected ? 2.5 : 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.black.withValues(alpha: 0.18),
+                        color: Colors.black.withValues(alpha: 0.18),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -91,7 +91,7 @@ class MapPin extends StatelessWidget {
                       Text(
                         '€${listing.price.toStringAsFixed(0)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white,
+                          color: Colors.white,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -115,7 +115,7 @@ class MapPin extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFFE53935),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.white, width: 1.5),
+                    border: Border.all(color: Colors.white, width: 1.5),
                   ),
                 ),
               ),

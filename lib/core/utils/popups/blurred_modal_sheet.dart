@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 /// A drop-in replacement for [showModalBottomSheet] that paints a frosted
 /// blur of the underlying screen behind the sheet content.
@@ -8,6 +9,10 @@ import 'package:flutter/material.dart';
 /// The builder you pass should return the sheet content with its own
 /// background and shape — this helper always sets the modal's
 /// [backgroundColor] to transparent so the blur is visible.
+///
+/// The barrier color defaults to [AppColorExtensions.barrierOverlay] so it
+/// adapts to light/dark mode (dark mode uses a stronger overlay). Pass
+/// [barrierColor] to override.
 Future<T?> showBlurredModalBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -21,7 +26,7 @@ Future<T?> showBlurredModalBottomSheet<T>({
   Clip? clipBehavior,
   BoxConstraints? constraints,
   double sigma = 10,
-  double barrierOpacity = 0.18,
+  Color? barrierColor,
 }) {
   return showModalBottomSheet<T>(
     context: context,
@@ -35,7 +40,7 @@ Future<T?> showBlurredModalBottomSheet<T>({
     clipBehavior: clipBehavior,
     constraints: constraints,
     backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: barrierOpacity),
+    barrierColor: barrierColor ?? context.appColors.barrierOverlay,
     showDragHandle: false,
     builder: (ctx) => Stack(
       children: [

@@ -115,9 +115,16 @@ class AppTexts {
 
   //* Settings menu — support
   static const String settingsAddresses = "Mes adresses";
+  static const String settingsAppearance = "Apparence";
   static const String settingsGetHelp = "Obtenir de l'aide";
   static const String settingsAboutApp = "À propos de l'application";
   static const String settingsLogout = "Se déconnecter";
+
+  //* Appearance sheet
+  static const String appearanceSheetTitle = "Apparence";
+  static const String appearanceSystem = "Système";
+  static const String appearanceLight = "Clair";
+  static const String appearanceDark = "Sombre";
 
   //* Saved addresses sheet
   static const String addressesSheetTitle = "Mes adresses";

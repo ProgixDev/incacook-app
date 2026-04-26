@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 /// Frosted-glass strip that blurs whatever is painted behind it and fades
 /// that blurred image into a solid sheet color through a vertical gradient.
@@ -19,7 +18,7 @@ class ProductSheetBlend extends StatelessWidget {
     this.height = 130,
     this.cornerRadius = 32,
     this.blurSigma = 22,
-    this.sheetColor = AppColors.lightBackground,
+    this.sheetColor,
     this.child,
     this.childPadding = const EdgeInsets.fromLTRB(16, 0, 16, 12),
   });
@@ -27,12 +26,14 @@ class ProductSheetBlend extends StatelessWidget {
   final double height;
   final double cornerRadius;
   final double blurSigma;
-  final Color sheetColor;
+  final Color? sheetColor;
   final Widget? child;
   final EdgeInsetsGeometry childPadding;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedSheet =
+        sheetColor ?? Theme.of(context).scaffoldBackgroundColor;
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(cornerRadius)),
       child: SizedBox(
@@ -51,9 +52,9 @@ class ProductSheetBlend extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       stops: const [0.0, 0.45, 1.0],
                       colors: [
-                        sheetColor.withValues(alpha: 0.0),
-                        sheetColor.withValues(alpha: 0.55),
-                        sheetColor,
+                        resolvedSheet.withValues(alpha: 0.0),
+                        resolvedSheet.withValues(alpha: 0.55),
+                        resolvedSheet,
                       ],
                     ),
                   ),

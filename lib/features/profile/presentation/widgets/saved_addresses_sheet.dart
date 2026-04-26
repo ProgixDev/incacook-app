@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/core/widgets/misc/drag_handle.dart';
 import 'package:homemade/features/orders/domain/saved_address.dart';
@@ -34,13 +34,13 @@ class SavedAddressesSheet extends StatelessWidget {
       maxChildSize: 0.92,
       expand: false,
       builder: (context, scrollCtrl) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.lightBackground,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
-            const DragHandle(color: AppColors.secondary),
+            const DragHandle(),
             _Header(onAdd: () {}),
             Expanded(
               child: addresses.isEmpty
@@ -68,6 +68,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSizes.md,
@@ -86,17 +87,21 @@ class _Header extends StatelessWidget {
             ),
           ),
           Material(
-            color: AppColors.secondary,
+            color: colors.selectedSurface,
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
               onTap: onAdd,
               child: Tooltip(
                 message: AppTexts.addressesAddNew,
-                child: const SizedBox(
+                child: SizedBox(
                   width: 40,
                   height: 40,
-                  child: Icon(Iconsax.add, color: AppColors.white, size: 20),
+                  child: Icon(
+                    Iconsax.add,
+                    color: colors.selectedOnSurface,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -114,6 +119,7 @@ class _AddressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return FrostedSurface(
       borderRadius: BorderRadius.circular(300),
       padding: const EdgeInsets.all(AppSizes.md - 2),
@@ -124,15 +130,11 @@ class _AddressTile extends StatelessWidget {
           SizedBox(
             width: 44,
             height: 44,
-            child: Icon(
-              address.type.icon,
-              size: 20,
-              color: AppColors.secondary,
-            ),
+            child: Icon(address.type.icon, size: 20, color: scheme.onSurface),
           ),
           const Gap(AppSizes.md - 2),
 
-          //* label + lines + out-of-range badge
+          //* label + lines
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,23 +142,22 @@ class _AddressTile extends StatelessWidget {
               children: [
                 Text(
                   address.label,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                 ),
                 const Gap(2),
                 Text(
                   address.line1,
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                  ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                 ),
                 Text(
                   address.line2,
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                  ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -164,11 +165,7 @@ class _AddressTile extends StatelessWidget {
           const Gap(AppSizes.sm),
           IconButton(
             onPressed: () {},
-            icon: const Icon(
-              Iconsax.edit_2,
-              size: 18,
-              color: AppColors.secondary,
-            ),
+            icon: Icon(Iconsax.edit_2, size: 18, color: scheme.onSurface),
           ),
         ],
       ),
@@ -187,9 +184,9 @@ class _EmptyState extends StatelessWidget {
         child: Text(
           AppTexts.addressesEmpty,
           textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );

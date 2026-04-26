@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
@@ -12,6 +11,7 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: AbsorbPointer(
@@ -20,17 +20,17 @@ class HomeSearchBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
           child: TextField(
             onChanged: onChanged,
-            cursorColor: AppColors.secondary,
+            cursorColor: scheme.onSurface,
             style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
               isCollapsed: true,
               hintText: AppTexts.homeSearchHint,
               hintStyle: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
-              prefixIcon: const Icon(
+              ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              prefixIcon: Icon(
                 Iconsax.search_normal_1,
-                color: AppColors.secondary,
+                color: scheme.onSurface,
                 size: 22,
               ),
               filled: true,

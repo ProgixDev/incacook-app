@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/seller/domain/seller_profile.dart';
@@ -54,9 +54,9 @@ class ProfileStatsSection extends StatelessWidget {
             top: 50,
             left: 95,
             child: CustomCircularContainer(
-              backgroundColor: AppColors.primary,
+              backgroundColor: BrandColors.primary,
               size: 40,
-              child: Icon(Icons.check, color: AppColors.white, size: 20),
+              child: Icon(Icons.check, color: Colors.white, size: 20),
             ),
           ),
 
@@ -101,7 +101,7 @@ class ProfileStatsSection extends StatelessWidget {
                                     .textTheme
                                     .headlineMedium!
                                     .copyWith(
-                                      color: AppColors.primary,
+                                      color: Theme.of(context).colorScheme.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),

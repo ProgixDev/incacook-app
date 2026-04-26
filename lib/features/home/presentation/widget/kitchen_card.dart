@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/home/domain/kitchen.dart';
@@ -30,7 +29,7 @@ class KitchenCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
         ),
         clipBehavior: Clip.antiAlias,
@@ -83,10 +82,7 @@ class KitchenCard extends StatelessWidget {
                                 kitchen.name,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.textPrimary,
-                                    ),
+                                    ?.copyWith(fontWeight: FontWeight.w800),
                               ),
                             ),
                             if (kitchen.isVerified) ...[

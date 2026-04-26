@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -11,9 +10,10 @@ class ProductDescriptionBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final bodyStyle = Theme.of(
       context,
-    ).textTheme.bodyMedium?.copyWith(color: AppColors.grey, height: 1.5);
+    ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant, height: 1.5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,7 +21,6 @@ class ProductDescriptionBlock extends StatelessWidget {
         Text(
           AppTexts.productDescription,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -34,7 +33,7 @@ class ProductDescriptionBlock extends StatelessWidget {
               TextSpan(
                 text: AppTexts.productReadMore,
                 style: bodyStyle?.copyWith(
-                  color: AppColors.textPrimary,
+                  color: scheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/chat/presentation/widgets/chat_input_field.dart';
@@ -15,7 +14,6 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Column(

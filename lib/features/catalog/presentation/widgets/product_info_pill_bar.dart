@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -39,17 +38,17 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 16, color: AppColors.secondary),
+        Icon(icon, size: 16, color: scheme.onSurface),
         const Gap(AppSizes.xs),
         Flexible(
           child: Text(
             label,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -67,7 +66,7 @@ class _VerticalDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 24,
-      color: AppColors.grey.withValues(alpha: 0.25),
+      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.25),
     );
   }
 }

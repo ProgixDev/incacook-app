@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -86,9 +85,9 @@ class _FulfillmentChoiceSheetState extends State<FulfillmentChoiceSheet> {
     final opts = widget.options;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.lightBackground,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         top: false,
@@ -109,7 +108,6 @@ class _FulfillmentChoiceSheetState extends State<FulfillmentChoiceSheet> {
                 AppTexts.fulfillmentTitle,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
                   height: 1.25,
                 ),
               ),

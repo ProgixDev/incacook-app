@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 
@@ -26,6 +25,7 @@ class ProductImageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final topPadding = DeviceUtils.getStatusBarHeight() + AppSizes.sm;
 
     return SizedBox(
@@ -53,8 +53,8 @@ class ProductImageHeader extends StatelessWidget {
                 controller: pageController,
                 count: images.length,
                 effect: ExpandingDotsEffect(
-                  activeDotColor: AppColors.secondary,
-                  dotColor: AppColors.secondary.withValues(alpha: 0.3),
+                  activeDotColor: scheme.onSurface,
+                  dotColor: scheme.onSurface.withValues(alpha: 0.3),
                   dotHeight: 6,
                   dotWidth: 6,
                 ),
@@ -70,7 +70,7 @@ class ProductImageHeader extends StatelessWidget {
               onTap: onFavoriteTap,
               child: CustomCircularContainer(
                 size: 44,
-                backgroundColor: AppColors.accent,
+                backgroundColor: scheme.surface,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 220),
                   transitionBuilder: (child, animation) =>
@@ -78,7 +78,7 @@ class ProductImageHeader extends StatelessWidget {
                   child: Icon(
                     isFavorited ? Iconsax.heart5 : Iconsax.heart,
                     key: ValueKey<bool>(isFavorited),
-                    color: isFavorited ? Colors.red : AppColors.secondary,
+                    color: isFavorited ? Colors.red : scheme.onSurface,
                     size: 20,
                   ),
                 ),

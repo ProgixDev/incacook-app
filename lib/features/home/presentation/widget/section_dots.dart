@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class SectionDots extends StatelessWidget {
   const SectionDots({
@@ -13,6 +12,7 @@ class SectionDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(count, (i) {
@@ -25,8 +25,8 @@ class SectionDots extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             color: active
-                ? AppColors.secondary
-                : AppColors.grey.withValues(alpha: 0.25),
+                ? scheme.onSurface
+                : scheme.onSurfaceVariant.withValues(alpha: 0.35),
             borderRadius: BorderRadius.circular(999),
           ),
         );

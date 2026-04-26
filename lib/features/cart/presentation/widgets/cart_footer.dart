@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/styles/shadows_styles.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
@@ -27,7 +26,7 @@ class CartFooter extends StatelessWidget {
         DeviceUtils.getBottomNavigationBarHeight() / 1.5,
       ),
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         boxShadow: [CustomShadowStyle.customCircleShadows()],
       ),

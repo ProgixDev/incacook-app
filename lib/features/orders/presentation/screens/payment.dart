@@ -5,12 +5,12 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/styles/shadows_styles.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/orders/domain/delivery_details.dart';
 import 'package:homemade/features/orders/domain/fulfillment_options.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/orders/domain/payment_method.dart';
 import 'package:homemade/features/orders/presentation/screens/payment_processing.dart';
 
@@ -103,14 +103,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(
           AppTexts.paymentTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
       ),
@@ -129,7 +127,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     AppTexts.paymentMethodLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                   const Gap(AppSizes.md - 4),
@@ -171,13 +168,14 @@ class _TotalHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppTexts.paymentTotalLabel,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.grey,
+            color: scheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -185,7 +183,7 @@ class _TotalHeader extends StatelessWidget {
         Text(
           '€${amount.toStringAsFixed(2)}',
           style: Theme.of(context).textTheme.displaySmall?.copyWith(
-            color: AppColors.primary,
+            color: scheme.primary,
             fontWeight: FontWeight.w800,
             height: 1,
           ),
@@ -202,7 +200,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-      child: Container(height: 1, color: AppColors.lightGrey),
+      child: Container(height: 1, color: Theme.of(context).colorScheme.outline),
     );
   }
 }
@@ -224,6 +222,8 @@ class _MethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: AnimatedContainer(
@@ -231,7 +231,7 @@ class _MethodCard extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.all(AppSizes.md - 2),
         decoration: BoxDecoration(
-          color: selected ? AppColors.secondary : AppColors.accent,
+          color: selected ? colors.selectedSurface : scheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
           boxShadow: [CustomShadowStyle.customCircleShadows()],
         ),
@@ -248,7 +248,7 @@ class _MethodCard extends StatelessWidget {
               ),
             ),
             const Gap(AppSizes.sm),
-            _RadioDot(selected: selected, color: AppColors.primary),
+            _RadioDot(selected: selected, color: scheme.primary),
           ],
         ),
       ),
@@ -273,7 +273,7 @@ class _RadioDot extends StatelessWidget {
         color: selected ? color : Colors.transparent,
         border: selected
             ? null
-            : Border.all(color: AppColors.lightGrey, width: 2),
+            : Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
       ),
     );
   }
@@ -286,13 +286,14 @@ class _MethodLeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     Widget child;
     switch (method) {
       case WalletPaymentMethod():
-        child = const Icon(
+        child = Icon(
           Iconsax.wallet_2,
           size: 22,
-          color: AppColors.secondary,
+          color: scheme.onSurface,
         );
       case SavedCardPaymentMethod(:final brand):
         final asset = _brandAsset(brand);
@@ -301,7 +302,7 @@ class _MethodLeading extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: Image.asset(asset, fit: BoxFit.contain),
               )
-            : const Icon(Iconsax.card, size: 22, color: AppColors.secondary);
+            : Icon(Iconsax.card, size: 22, color: scheme.onSurface);
       case PayPalPaymentMethod():
         child = Padding(
           padding: const EdgeInsets.all(8),
@@ -309,10 +310,10 @@ class _MethodLeading extends StatelessWidget {
         );
       case ApplePayPaymentMethod():
       case GooglePayPaymentMethod():
-        child = const Icon(
+        child = Icon(
           Iconsax.mobile,
           size: 22,
-          color: AppColors.secondary,
+          color: scheme.onSurface,
         );
     }
 
@@ -320,11 +321,11 @@ class _MethodLeading extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -403,11 +404,15 @@ class _MethodInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     final (subtitle, subtitleOverride) = _subtitle();
-    final titleColor = onDark ? AppColors.white : AppColors.textPrimary;
+    final titleColor = onDark ? colors.selectedOnSurface : scheme.onSurface;
     final subColor =
         subtitleOverride ??
-        (onDark ? AppColors.white.withValues(alpha: 0.6) : AppColors.grey);
+        (onDark
+            ? colors.selectedOnSurface.withValues(alpha: 0.6)
+            : scheme.onSurfaceVariant);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,6 +449,7 @@ class _AddCardLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {},
       behavior: HitTestBehavior.opaque,
@@ -451,13 +457,13 @@ class _AddCardLink extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
         child: Row(
           children: [
-            const Icon(Iconsax.add, size: 18, color: AppColors.secondary),
+            Icon(Iconsax.add, size: 18, color: scheme.onSurface),
             const Gap(AppSizes.sm),
             Text(
               AppTexts.paymentAddCard,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.secondary,
+                color: scheme.onSurface,
               ),
             ),
           ],
@@ -472,15 +478,16 @@ class _SecureNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        const Icon(Iconsax.lock_1, size: 14, color: AppColors.grey),
+        Icon(Iconsax.lock_1, size: 14, color: scheme.onSurfaceVariant),
         const Gap(6),
         Flexible(
           child: Text(
             AppTexts.paymentSecureNote,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -495,9 +502,10 @@ class _TermsText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final base = Theme.of(
       context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.grey, height: 1.35);
+    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant, height: 1.35);
     return Text.rich(
       TextSpan(
         children: [
@@ -505,10 +513,10 @@ class _TermsText extends StatelessWidget {
           TextSpan(
             text: AppTexts.paymentTermsLink,
             style: base?.copyWith(
-              color: AppColors.secondary,
+              color: scheme.onSurface,
               fontWeight: FontWeight.w700,
               decoration: TextDecoration.underline,
-              decorationColor: AppColors.secondary,
+              decorationColor: scheme.onSurface,
             ),
           ),
         ],
@@ -533,10 +541,12 @@ class _PayFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.lightBackground,
-        border: Border(top: BorderSide(color: Colors.transparent)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: const Border(top: BorderSide(color: Colors.transparent)),
       ),
       padding: const EdgeInsets.all(AppSizes.md),
       child: SafeArea(
@@ -546,9 +556,9 @@ class _PayFooter extends StatelessWidget {
           child: ElevatedButton(
             onPressed: enabled ? onPay : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.white,
-              disabledBackgroundColor: AppColors.buttonDisabled,
+              backgroundColor: colors.selectedSurface,
+              foregroundColor: colors.selectedOnSurface,
+              disabledBackgroundColor: scheme.onSurface.withValues(alpha: 0.38),
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -559,12 +569,12 @@ class _PayFooter extends StatelessWidget {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             child: processing
-                ? const SizedBox(
+                ? SizedBox(
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.2,
-                      valueColor: AlwaysStoppedAnimation(AppColors.white),
+                      valueColor: AlwaysStoppedAnimation(colors.selectedOnSurface),
                     ),
                   )
                 : Text(

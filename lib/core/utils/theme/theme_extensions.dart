@@ -1,41 +1,94 @@
 import 'package:flutter/material.dart';
 
+/// Project-specific colors that don't fit Material's [ColorScheme].
+///
+/// Carries:
+/// - [frostedTint] — translucent layer painted over the blur in
+///   `FrostedSurface` to keep contrast.
+/// - [decorBlobTint] — fill color for the top-right decorative blob.
+/// - [selectedSurface] / [selectedOnSurface] — solid fill + matching
+///   foreground for "selected" pills/chips (filter button active state,
+///   category pill selected, nav-menu selected item, etc.).
+/// - [barrierOverlay] — modal sheet barrier color paired with
+///   `showBlurredModalBottomSheet`. Dark mode wants a stronger overlay.
+///
+/// Read via the [BuildContext.appColors] extension below for ergonomic access.
+@immutable
 class AppColorExtensions extends ThemeExtension<AppColorExtensions> {
   const AppColorExtensions({
-    required this.success,
-    required this.warning,
-    required this.info,
+    required this.frostedTint,
+    required this.decorBlobTint,
+    required this.selectedSurface,
+    required this.selectedOnSurface,
+    required this.barrierOverlay,
   });
 
-  final Color? success;
-  final Color? warning;
-  final Color? info;
+  final Color frostedTint;
+  final Color decorBlobTint;
+  final Color selectedSurface;
+  final Color selectedOnSurface;
+  final Color barrierOverlay;
+
+  factory AppColorExtensions.light() => const AppColorExtensions(
+    frostedTint: Color(0x66FEFEF3),
+    decorBlobTint: Color(0xFFFAD3BB),
+    selectedSurface: Color(0xFF072646),
+    selectedOnSurface: Color(0xFFFEFEF3),
+    barrierOverlay: Color(0x2E000000),
+  );
+
+  factory AppColorExtensions.dark() => const AppColorExtensions(
+    frostedTint: Color(0x66332821),
+    decorBlobTint: Color(0xFF5C3D2E),
+    selectedSurface: Color(0xFFC5D5E8),
+    selectedOnSurface: Color(0xFF1A1410),
+    barrierOverlay: Color(0x4D000000),
+  );
 
   @override
-  ThemeExtension<AppColorExtensions> copyWith({
-    Color? success,
-    Color? warning,
-    Color? info,
+  AppColorExtensions copyWith({
+    Color? frostedTint,
+    Color? decorBlobTint,
+    Color? selectedSurface,
+    Color? selectedOnSurface,
+    Color? barrierOverlay,
   }) {
     return AppColorExtensions(
-      success: success ?? this.success,
-      warning: warning ?? this.warning,
-      info: info ?? this.info,
+      frostedTint: frostedTint ?? this.frostedTint,
+      decorBlobTint: decorBlobTint ?? this.decorBlobTint,
+      selectedSurface: selectedSurface ?? this.selectedSurface,
+      selectedOnSurface: selectedOnSurface ?? this.selectedOnSurface,
+      barrierOverlay: barrierOverlay ?? this.barrierOverlay,
     );
   }
 
   @override
-  ThemeExtension<AppColorExtensions> lerp(
+  AppColorExtensions lerp(
     covariant ThemeExtension<AppColorExtensions>? other,
     double t,
   ) {
-    if (other is! AppColorExtensions) {
-      return this;
-    }
+    if (other is! AppColorExtensions) return this;
     return AppColorExtensions(
-      success: Color.lerp(success, other.success, t),
-      warning: Color.lerp(warning, other.warning, t),
-      info: Color.lerp(info, other.info, t),
+      frostedTint: Color.lerp(frostedTint, other.frostedTint, t)!,
+      decorBlobTint: Color.lerp(decorBlobTint, other.decorBlobTint, t)!,
+      selectedSurface: Color.lerp(selectedSurface, other.selectedSurface, t)!,
+      selectedOnSurface:
+          Color.lerp(selectedOnSurface, other.selectedOnSurface, t)!,
+      barrierOverlay: Color.lerp(barrierOverlay, other.barrierOverlay, t)!,
     );
   }
+}
+
+/// Ergonomic theme + extension access on [BuildContext].
+///
+/// - `context.appColors.frostedTint` instead of
+///   `Theme.of(context).extension<AppColorExtensions>()!.frostedTint`.
+/// - `context.isDark` replaces the scattered
+///   `Theme.of(context).brightness == Brightness.dark` checks.
+extension AppColorExtensionsX on BuildContext {
+  AppColorExtensions get appColors =>
+      Theme.of(this).extension<AppColorExtensions>() ??
+      AppColorExtensions.light();
+
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
 }

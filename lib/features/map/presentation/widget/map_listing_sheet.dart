@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/enums/food_enums.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
 import 'package:homemade/features/map/presentation/widget/map_pin.dart';
 
@@ -35,10 +35,12 @@ class MapListingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         top: false,
@@ -53,17 +55,6 @@ class MapListingSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //* drag handle
-              // Center(
-              //   child: Container(
-              //     width: 42,
-              //     height: 4,
-              //     decoration: BoxDecoration(
-              //       color: AppColors.lightGrey,
-              //       borderRadius: BorderRadius.circular(4),
-              //     ),
-              //   ),
-              // ),
               const Gap(AppSizes.md),
 
               //* thumb + primary info
@@ -91,7 +82,6 @@ class MapListingSheet extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.textPrimary,
                                 height: 1.15,
                               ),
                         ),
@@ -124,25 +114,23 @@ class MapListingSheet extends StatelessWidget {
                   Text(
                     _portionsLabel(),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.grey,
+                      color: scheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const Gap(AppSizes.sm),
                   Text(
                     '·',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: scheme.onSurfaceVariant),
                   ),
                   const Gap(AppSizes.sm),
-                  const Icon(Iconsax.clock, size: 14, color: AppColors.grey),
+                  Icon(Iconsax.clock, size: 14, color: scheme.onSurfaceVariant),
                   const Gap(4),
                   Text(
                     _expiryLabel(),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: scheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -162,9 +150,9 @@ class MapListingSheet extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onViewDetail,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.secondary,
+                        foregroundColor: scheme.onSurface,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: AppColors.lightGrey),
+                        side: BorderSide(color: scheme.outline),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(999),
                         ),
@@ -179,8 +167,8 @@ class MapListingSheet extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: onOrder,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                        foregroundColor: AppColors.white,
+                        backgroundColor: colors.selectedSurface,
+                        foregroundColor: colors.selectedOnSurface,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -209,9 +197,9 @@ class _SellerLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(
-      context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.grey);
+    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
 
     return Row(
       children: [
@@ -243,9 +231,10 @@ class _RatingLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final subtle = Theme.of(
       context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.grey);
+    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
 
     return Row(
       children: [
@@ -253,10 +242,9 @@ class _RatingLine extends StatelessWidget {
         const Gap(4),
         Text(
           listing.rating.toStringAsFixed(1),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(6),
         Text('·', style: subtle),
@@ -321,6 +309,7 @@ class _PriceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
@@ -329,19 +318,23 @@ class _PriceRow extends StatelessWidget {
           Text(
             '€${originalPrice!.toStringAsFixed(2)}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               decoration: TextDecoration.lineThrough,
-              decorationColor: AppColors.grey,
+              decorationColor: scheme.onSurfaceVariant,
             ),
           ),
           const Gap(AppSizes.sm),
-          const Icon(Iconsax.arrow_right_3, size: 14, color: AppColors.grey),
+          Icon(
+            Iconsax.arrow_right_3,
+            size: 14,
+            color: scheme.onSurfaceVariant,
+          ),
           const Gap(AppSizes.sm),
         ],
         Text(
           '€${price.toStringAsFixed(2)}',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppColors.primary,
+            color: scheme.primary,
             fontWeight: FontWeight.w800,
             height: 1,
           ),

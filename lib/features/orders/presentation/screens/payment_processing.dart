@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/orders/domain/delivery_details.dart';
 import 'package:homemade/features/orders/domain/fulfillment_options.dart';
 import 'package:homemade/features/orders/presentation/screens/order_confirmation.dart';
@@ -86,7 +86,6 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
     return PopScope(
       canPop: !isProcessing,
       child: Scaffold(
-        backgroundColor: AppColors.lightBackground,
         body: SafeArea(
           child: switch (_phase) {
             _PaymentPhase.processing => const _ProcessingView(),
@@ -106,6 +105,7 @@ class _ProcessingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
       child: Column(
@@ -122,19 +122,18 @@ class _ProcessingView extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
             ),
           ),
           const Spacer(flex: 3),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Iconsax.lock_1, size: 14, color: AppColors.grey),
+              Icon(Iconsax.lock_1, size: 14, color: scheme.onSurfaceVariant),
               const Gap(6),
               Text(
                 AppTexts.paymentProcessingSecurity,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.grey,
+                  color: scheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -158,6 +157,8 @@ class _FailedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
       child: Column(
@@ -175,7 +176,6 @@ class _FailedView extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
             ),
           ),
           const Gap(AppSizes.sm + 2),
@@ -183,7 +183,7 @@ class _FailedView extends StatelessWidget {
             AppTexts.paymentErrorBody,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               height: 1.4,
             ),
           ),
@@ -193,8 +193,8 @@ class _FailedView extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onRetry,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: AppColors.white,
+                backgroundColor: colors.selectedSurface,
+                foregroundColor: colors.selectedOnSurface,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -213,9 +213,9 @@ class _FailedView extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onChooseAnotherMethod,
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.secondary,
+                foregroundColor: scheme.onSurface,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                side: const BorderSide(color: AppColors.lightGrey),
+                side: BorderSide(color: scheme.outline),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),

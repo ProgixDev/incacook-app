@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/validators/validators.dart';
@@ -20,16 +19,18 @@ class SignupForm extends StatelessWidget {
     borderSide: BorderSide.none,
   );
 
-  InputDecoration _decoration({
+  InputDecoration _decoration(
+    BuildContext context, {
     required String label,
     required IconData icon,
     Widget? suffixIcon,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return InputDecoration(
       filled: true,
-      fillColor: AppColors.accent,
+      fillColor: scheme.surfaceContainerHigh,
       labelText: label,
-      prefixIcon: Icon(icon, color: AppColors.primary),
+      prefixIcon: Icon(icon, color: scheme.primary),
       suffixIcon: suffixIcon,
       border: _inputBorder,
       enabledBorder: _inputBorder,
@@ -53,6 +54,7 @@ class SignupForm extends StatelessWidget {
                       CustomValidator.validateEmptyText('First name', value),
                   expands: false,
                   decoration: _decoration(
+                    context,
                     label: AppTexts.firstName,
                     icon: Iconsax.user,
                   ),
@@ -66,6 +68,7 @@ class SignupForm extends StatelessWidget {
                       CustomValidator.validateEmptyText('Last name', value),
                   expands: false,
                   decoration: _decoration(
+                    context,
                     label: AppTexts.lastName,
                     icon: Iconsax.user,
                   ),
@@ -82,6 +85,7 @@ class SignupForm extends StatelessWidget {
                 CustomValidator.validateEmptyText('Username', value),
             expands: false,
             decoration: _decoration(
+              context,
               label: AppTexts.username,
               icon: Iconsax.user_edit,
             ),
@@ -93,6 +97,7 @@ class SignupForm extends StatelessWidget {
             controller: controller.email,
             validator: (value) => CustomValidator.validateEmail(value),
             decoration: _decoration(
+              context,
               label: AppTexts.email,
               icon: Iconsax.direct_right,
             ),
@@ -104,6 +109,7 @@ class SignupForm extends StatelessWidget {
             controller: controller.phoneNumber,
             validator: (value) => CustomValidator.validatePhoneNumber(value),
             decoration: _decoration(
+              context,
               label: AppTexts.phoneNumber,
               icon: Iconsax.call,
             ),
@@ -117,6 +123,7 @@ class SignupForm extends StatelessWidget {
               validator: (value) =>
                   CustomValidator.validateEmptyText('Restaurant name', value),
               decoration: _decoration(
+                context,
                 label: AppTexts.restaurantName,
                 icon: Iconsax.shop,
               ),
@@ -129,6 +136,7 @@ class SignupForm extends StatelessWidget {
                 value,
               ),
               decoration: _decoration(
+                context,
                 label: AppTexts.restaurantAddress,
                 icon: Iconsax.location,
               ),
@@ -143,6 +151,7 @@ class SignupForm extends StatelessWidget {
               validator: (value) =>
                   CustomValidator.validateEmptyText('Vehicle type', value),
               decoration: _decoration(
+                context,
                 label: AppTexts.vehicleType,
                 icon: Iconsax.car,
               ),
@@ -153,6 +162,7 @@ class SignupForm extends StatelessWidget {
               validator: (value) =>
                   CustomValidator.validateEmptyText('License number', value),
               decoration: _decoration(
+                context,
                 label: AppTexts.licenseNumber,
                 icon: Iconsax.card,
               ),
@@ -167,6 +177,7 @@ class SignupForm extends StatelessWidget {
               validator: (value) => CustomValidator.validatePassword(value),
               obscureText: controller.hidePassword.value,
               decoration: _decoration(
+                context,
                 label: AppTexts.password,
                 icon: Iconsax.password_check,
                 suffixIcon: IconButton(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
 
@@ -13,6 +12,7 @@ class SettingMenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: item.onTap,
       borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
@@ -25,32 +25,31 @@ class SettingMenuTile extends StatelessWidget {
           children: [
             CustomCircularContainer(
               size: 44,
-              backgroundColor: AppColors.lightBackground,
-              child: Icon(item.icon, size: 20, color: AppColors.secondary),
+              backgroundColor: scheme.surfaceContainerHigh,
+              child: Icon(item.icon, size: 20, color: scheme.onSurface),
             ),
             const Gap(AppSizes.md),
             Expanded(
               child: Text(
                 item.title,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.secondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
               ),
             ),
             if (item.trailingText != null)
               Text(
                 item.trailingText!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.grey,
+                  color: scheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               )
             else if (item.showChevron)
-              const Icon(
+              Icon(
                 Iconsax.arrow_right_3,
                 size: 18,
-                color: AppColors.grey,
+                color: scheme.onSurfaceVariant,
               ),
           ],
         ),

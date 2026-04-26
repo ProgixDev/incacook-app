@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
@@ -14,6 +13,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.only(
         top: DeviceUtils.getStatusBarHeight(),
@@ -24,28 +24,27 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         height: AppSizes.appBarHeight,
         child: Row(
           children: [
-            const CustomCircularContainer(
+            CustomCircularContainer(
               size: 44,
-              backgroundColor: AppColors.accent,
-              child: Icon(Iconsax.user, color: AppColors.secondary, size: 20),
+              backgroundColor: scheme.surfaceContainerHigh,
+              child: Icon(Iconsax.user, color: scheme.onSurface, size: 20),
             ),
             const Gap(AppSizes.sm),
             Text(
               AppTexts.profileTitle,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
             const Spacer(),
             GestureDetector(
               onTap: onNotificationsTap,
-              child: const CustomCircularContainer(
+              child: CustomCircularContainer(
                 size: 44,
-                backgroundColor: AppColors.accent,
+                backgroundColor: scheme.surfaceContainerHigh,
                 child: Icon(
                   Iconsax.notification,
-                  color: AppColors.secondary,
+                  color: scheme.onSurface,
                   size: 20,
                 ),
               ),

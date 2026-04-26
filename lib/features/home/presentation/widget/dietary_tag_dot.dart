@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/enums/food_enums.dart';
 
 class DietaryTagDot extends StatelessWidget {
@@ -15,7 +14,10 @@ class DietaryTagDot extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: tag.color,
-        border: Border.all(color: AppColors.white, width: 1.5),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.surface,
+          width: 1.5,
+        ),
       ),
     );
   }

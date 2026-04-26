@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -15,6 +14,7 @@ class ProfileUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return FrostedSurface(
       borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
       padding: const EdgeInsets.all(AppSizes.md),
@@ -33,14 +33,13 @@ class ProfileUserCard extends StatelessWidget {
                 Text(
                   AppTexts.profileSampleName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.secondary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const Gap(2),
                 Row(
                   children: [
-                    const Icon(Icons.mail, size: 14, color: AppColors.primary),
+                    Icon(Icons.mail, size: 14, color: scheme.primary),
                     const Gap(4),
                     Flexible(
                       child: Text(
@@ -48,7 +47,7 @@ class ProfileUserCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(
                           context,
-                        ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                        ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                       ),
                     ),
                   ],
@@ -61,10 +60,10 @@ class ProfileUserCard extends StatelessWidget {
           IconButton(
             onPressed: onEdit,
             tooltip: AppTexts.profileEditAccount,
-            icon: const Icon(
+            icon: Icon(
               Iconsax.edit_2,
               size: 20,
-              color: AppColors.secondary,
+              color: scheme.onSurface,
             ),
           ),
         ],

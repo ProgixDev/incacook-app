@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/buttons/circular_icon_button.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({
@@ -43,6 +43,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSizes.md,
@@ -62,17 +64,17 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 AppSizes.xs,
               ),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: scheme.surface,
                 borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: Color(0xFFEAEAEA)),
+                border: Border.all(color: scheme.outlineVariant),
               ),
               child: Row(
                 children: [
                   CircularIconButton(
                     icon: Iconsax.add,
                     onPressed: widget.onAttach ?? () {},
-                    backgroundColor: AppColors.white,
-                    iconColor: AppColors.grey,
+                    backgroundColor: scheme.surface,
+                    iconColor: scheme.onSurfaceVariant,
                   ),
                   const Gap(AppSizes.sm),
                   Expanded(
@@ -84,12 +86,12 @@ class _ChatInputFieldState extends State<ChatInputField> {
                       minLines: 1,
                       maxLines: 5,
                       style: Theme.of(context).textTheme.bodyMedium,
-                      cursorColor: AppColors.secondary,
+                      cursorColor: scheme.onSurface,
                       decoration: InputDecoration(
                         hintText: widget.hintText,
                         hintStyle: Theme.of(
                           context,
-                        ).textTheme.bodyMedium?.copyWith(color: AppColors.grey),
+                        ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                         isCollapsed: true,
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -105,8 +107,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   CircularIconButton(
                     icon: Iconsax.microphone,
                     onPressed: widget.onMic ?? () {},
-                    backgroundColor: Color(0xFFF6F6F6),
-                    iconColor: AppColors.grey,
+                    backgroundColor: scheme.surfaceContainerHigh,
+                    iconColor: scheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -118,8 +120,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
             size: 42,
             icon: Iconsax.send_1,
             onPressed: _handleSend,
-            backgroundColor: AppColors.secondary,
-            iconColor: AppColors.white,
+            backgroundColor: colors.selectedSurface,
+            iconColor: colors.selectedOnSurface,
           ),
         ],
       ),

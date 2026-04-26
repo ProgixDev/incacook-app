@@ -2,29 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+/// Persisted tri-state theme preference: System / Light / Dark.
+///
+/// Reads/writes the choice to [GetStorage] so the user's selection survives
+/// app restarts. App-level wiring lives in [App.build].
 class ThemeController extends GetxController {
   static ThemeController get instance => Get.find();
 
+  static const _key = 'themeMode';
   final _storage = GetStorage();
-  final _key = 'isDarkMode';
 
-  /// Get the theme mode from storage or system default
-  ThemeMode get themeMode =>
-      _loadThemeFromBox() ? ThemeMode.dark : ThemeMode.light;
+  late final Rx<ThemeMode> mode = _loadFromStorage().obs;
 
-  /// Load theme from local storage
-  bool _loadThemeFromBox() {
-    return _storage.read(_key) ?? false;
+  ThemeMode _loadFromStorage() {
+    final raw = _storage.read<String>(_key);
+    switch (raw) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'system':
+      default:
+        return ThemeMode.system;
+    }
   }
 
-  /// Save theme to local storage
-  _saveThemeToBox(bool isDarkMode) {
-    _storage.write(_key, isDarkMode);
-  }
-
-  /// Switch between light and dark themes
-  void switchTheme() {
-    Get.changeThemeMode(_loadThemeFromBox() ? ThemeMode.light : ThemeMode.dark);
-    _saveThemeToBox(!_loadThemeFromBox());
+  void setMode(ThemeMode next) {
+    mode.value = next;
+    _storage.write(_key, next.name);
+    Get.changeThemeMode(next);
   }
 }

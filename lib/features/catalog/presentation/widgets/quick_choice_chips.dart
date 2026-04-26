@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class QuickChoiceChips extends StatefulWidget {
   const QuickChoiceChips({
@@ -23,6 +23,8 @@ class _QuickChoiceChipsState extends State<QuickChoiceChips> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 44,
       child: ListView.separated(
@@ -44,10 +46,10 @@ class _QuickChoiceChipsState extends State<QuickChoiceChips> {
                 vertical: AppSizes.sm,
               ),
               decoration: BoxDecoration(
-                color: selected ? AppColors.secondary : Colors.transparent,
+                color: selected ? colors.selectedSurface : Colors.transparent,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: selected ? AppColors.secondary : AppColors.lightGrey,
+                  color: selected ? colors.selectedSurface : scheme.outline,
                   width: 1.2,
                 ),
               ),
@@ -55,7 +57,7 @@ class _QuickChoiceChipsState extends State<QuickChoiceChips> {
               child: Text(
                 widget.choices[index],
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: selected ? AppColors.white : AppColors.textPrimary,
+                  color: selected ? colors.selectedOnSurface : scheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),

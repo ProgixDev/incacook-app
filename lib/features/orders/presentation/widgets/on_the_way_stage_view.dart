@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 
 class OnTheWayStageView extends StatelessWidget {
@@ -18,6 +17,7 @@ class OnTheWayStageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return FlutterMap(
       options: MapOptions(
         initialCenter: _center,
@@ -37,7 +37,7 @@ class OnTheWayStageView extends StatelessWidget {
             Polyline(
               points: [_driver, _destination],
               strokeWidth: 4,
-              color: AppColors.black,
+              color: scheme.onSurface,
             ),
           ],
         ),
@@ -68,25 +68,26 @@ class _DestinationMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 44,
           height: 44,
-          decoration: const BoxDecoration(
-            color: AppColors.black,
+          decoration: BoxDecoration(
+            color: scheme.onSurface,
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
-          child: const Icon(
+          child: Icon(
             Icons.home_rounded,
-            color: AppColors.white,
+            color: scheme.surface,
             size: 22,
           ),
         ),
         //? tiny tail to look like a pin pointing down
-        Container(width: 2, height: 4, color: AppColors.black),
+        Container(width: 2, height: 4, color: scheme.onSurface),
       ],
     );
   }
@@ -97,13 +98,14 @@ class _DriverMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.white, width: 3),
+        border: Border.all(color: scheme.surface, width: 3),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),

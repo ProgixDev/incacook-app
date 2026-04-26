@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/orders/domain/order_stage.dart';
 
@@ -78,12 +77,13 @@ class _StageColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final isActive = state == _StageState.active;
     final isDone = state == _StageState.done;
 
-    final bgColor = (isActive || isDone) ? AppColors.black : AppColors.white;
-    final iconColor = (isActive || isDone) ? AppColors.white : AppColors.grey;
-    final labelColor = isActive ? AppColors.textPrimary : AppColors.grey;
+    final bgColor = (isActive || isDone) ? scheme.onSurface : scheme.surface;
+    final iconColor = (isActive || isDone) ? scheme.surface : scheme.onSurfaceVariant;
+    final labelColor = isActive ? scheme.onSurface : scheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: onTap,
@@ -98,7 +98,7 @@ class _StageColumn extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isActive
-                  ? AppColors.black.withValues(alpha: 0.06)
+                  ? scheme.onSurface.withValues(alpha: 0.06)
                   : Colors.transparent,
             ),
             alignment: Alignment.center,
@@ -110,7 +110,7 @@ class _StageColumn extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: state == _StageState.upcoming
                     ? Border.all(
-                        color: AppColors.grey.withValues(alpha: 0.2),
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.2),
                         width: 1,
                       )
                     : null,
@@ -139,27 +139,36 @@ class _Connector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       //? align with the dot row (ignore the label height below)
       padding: const EdgeInsets.only(bottom: 26),
       child: SizedBox(
         width: 48,
         height: 2,
-        child: CustomPaint(painter: _DashedLinePainter(done: done)),
+        child: CustomPaint(
+          painter: _DashedLinePainter(
+            done: done,
+            doneColor: scheme.onSurface,
+            upcomingColor: scheme.onSurfaceVariant.withValues(alpha: 0.35),
+          ),
+        ),
       ),
     );
   }
 }
 
 class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter({required this.done});
+  _DashedLinePainter({required this.done, required this.doneColor, required this.upcomingColor});
 
   final bool done;
+  final Color doneColor;
+  final Color upcomingColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = done ? AppColors.black : AppColors.grey.withValues(alpha: 0.35)
+      ..color = done ? doneColor : upcomingColor
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
@@ -178,5 +187,7 @@ class _DashedLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DashedLinePainter oldDelegate) =>
-      oldDelegate.done != done;
+      oldDelegate.done != done ||
+      oldDelegate.doneColor != doneColor ||
+      oldDelegate.upcomingColor != upcomingColor;
 }

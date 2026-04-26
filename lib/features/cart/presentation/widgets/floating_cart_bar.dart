@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
 
@@ -16,6 +16,8 @@ class FloatingCartBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = CartController.instance;
+    final colors = context.appColors;
+    final fg = colors.selectedOnSurface;
 
     return Obx(() {
       if (cart.isEmpty) return const SizedBox.shrink();
@@ -38,11 +40,11 @@ class FloatingCartBar extends StatelessWidget {
               vertical: AppSizes.sm + 2,
             ),
             decoration: BoxDecoration(
-              color: AppColors.secondary,
+              color: colors.selectedSurface,
               borderRadius: BorderRadius.circular(999),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.18),
+                  color: Colors.black.withValues(alpha: 0.18),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -50,9 +52,9 @@ class FloatingCartBar extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Iconsax.shopping_bag,
-                  color: AppColors.white,
+                  color: fg,
                   size: 18,
                 ),
                 const Gap(AppSizes.sm),
@@ -64,7 +66,7 @@ class FloatingCartBar extends StatelessWidget {
                       Text(
                         '$count $articleWord',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.white,
+                          color: fg,
                           fontWeight: FontWeight.w700,
                           height: 1.15,
                         ),
@@ -72,7 +74,7 @@ class FloatingCartBar extends StatelessWidget {
                       Text(
                         '${AppTexts.cartFloatingTotalPrefix} €${cart.subtotal.toStringAsFixed(2)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withValues(alpha: 0.85),
+                          color: fg.withValues(alpha: 0.85),
                           height: 1.15,
                         ),
                       ),
@@ -83,14 +85,14 @@ class FloatingCartBar extends StatelessWidget {
                 Text(
                   AppTexts.cartFloatingSeeCart,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.white,
+                    color: fg,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Gap(4),
-                const Icon(
+                Icon(
                   Iconsax.arrow_right_3,
-                  color: AppColors.white,
+                  color: fg,
                   size: 14,
                 ),
               ],

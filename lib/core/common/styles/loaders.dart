@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class CustomLoaders {
   static void hideSnackBar() =>
       ScaffoldMessenger.of(Get.context!).hideCurrentMaterialBanner();
 
   static void customToast({required String message}) {
-    ScaffoldMessenger.of(Get.context!).showSnackBar(
+    final ctx = Get.context!;
+    final scheme = Theme.of(ctx).colorScheme;
+    ScaffoldMessenger.of(ctx).showSnackBar(
       SnackBar(
         elevation: 0,
         duration: const Duration(seconds: 3),
@@ -19,15 +21,12 @@ class CustomLoaders {
           margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            color: Theme.of(Get.context!).brightness == Brightness.dark
-                ? AppColors.darkGrey.withValues(alpha: 0.9)
-                : AppColors.grey.withValues(alpha: 0.9),
+            color: ctx.isDark
+                ? scheme.surfaceContainerHigh.withValues(alpha: 0.9)
+                : scheme.onSurfaceVariant.withValues(alpha: 0.9),
           ),
           child: Center(
-            child: Text(
-              message,
-              style: Theme.of(Get.context!).textTheme.labelLarge,
-            ),
+            child: Text(message, style: Theme.of(ctx).textTheme.labelLarge),
           ),
         ),
       ),
@@ -45,11 +44,11 @@ class CustomLoaders {
       isDismissible: true,
       shouldIconPulse: true,
       colorText: Colors.white,
-      backgroundColor: AppColors.primary,
+      backgroundColor: BrandColors.primary,
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(10),
-      icon: const Icon(Iconsax.check, color: AppColors.white),
+      icon: const Icon(Iconsax.check, color: Colors.white),
     );
   }
 
@@ -64,11 +63,11 @@ class CustomLoaders {
       isDismissible: true,
       shouldIconPulse: true,
       colorText: Colors.white,
-      backgroundColor: Colors.orange,
+      backgroundColor: BrandColors.warning,
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(10),
-      icon: const Icon(Iconsax.warning_2, color: AppColors.white),
+      icon: const Icon(Iconsax.warning_2, color: Colors.white),
     );
   }
 
@@ -83,11 +82,11 @@ class CustomLoaders {
       isDismissible: true,
       shouldIconPulse: true,
       colorText: Colors.white,
-      backgroundColor: Colors.red.shade600,
+      backgroundColor: BrandColors.error,
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(10),
-      icon: const Icon(Iconsax.warning_2, color: AppColors.white),
+      icon: const Icon(Iconsax.warning_2, color: Colors.white),
     );
   }
 }

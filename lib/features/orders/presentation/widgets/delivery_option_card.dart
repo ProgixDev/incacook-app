@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/images/responsive_image_asset.dart';
 
 class DeliveryOptionCard extends StatelessWidget {
@@ -31,6 +31,10 @@ class DeliveryOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
+    final selectedFg = colors.selectedOnSurface;
+    final unselectedFg = scheme.onSurface;
     return Opacity(
       opacity: enabled ? 1.0 : 0.55,
       child: GestureDetector(
@@ -40,7 +44,7 @@ class DeliveryOptionCard extends StatelessWidget {
           curve: Curves.easeOut,
           padding: const EdgeInsets.all(AppSizes.md - 2),
           decoration: BoxDecoration(
-            color: selected ? AppColors.secondary : AppColors.lightGrey,
+            color: selected ? colors.selectedSurface : scheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
           ),
           child: Column(
@@ -56,14 +60,14 @@ class DeliveryOptionCard extends StatelessWidget {
                 label,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: selected ? AppColors.white : AppColors.black,
+                  color: selected ? selectedFg : unselectedFg,
                 ),
               ),
               const Gap(2),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: selected ? AppColors.white : AppColors.black,
+                  color: selected ? selectedFg : unselectedFg,
                 ),
               ),
               const Gap(2),
@@ -73,8 +77,8 @@ class DeliveryOptionCard extends StatelessWidget {
                   color: tertiaryIsHighlight
                       ? const Color(0xFF2E7D32)
                       : selected
-                      ? AppColors.white
-                      : AppColors.black,
+                      ? selectedFg
+                      : unselectedFg,
                   fontWeight: FontWeight.w700,
                 ),
               ),

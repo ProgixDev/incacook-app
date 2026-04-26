@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
@@ -17,13 +16,13 @@ class CartBadge extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          const FrostedSurface(
+          FrostedSurface(
             shape: BoxShape.circle,
             child: SizedBox.expand(
               child: Center(
                 child: Icon(
                   Iconsax.shopping_cart,
-                  color: AppColors.secondary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: AppSizes.lg - 2,
                 ),
               ),
@@ -44,7 +43,7 @@ class CartBadge extends StatelessWidget {
                 child: Text(
                   count.toString(),
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     height: 1,

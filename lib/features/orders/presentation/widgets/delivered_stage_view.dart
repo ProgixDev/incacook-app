@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/orders/presentation/widgets/order_tracking_layout.dart';
@@ -12,10 +11,11 @@ class DeliveredStageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final width = DeviceUtils.getScreenWidth(context);
 
     return Container(
-      color: AppColors.lightBackground,
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.only(bottom: kOrderSheetApproxHeight),
       alignment: Alignment.center,
       child: Column(
@@ -46,7 +46,7 @@ class DeliveredStageView extends StatelessWidget {
             'Tap a star to rate',
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/enums/food_enums.dart';
 import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/misc/drag_handle.dart';
 import 'package:homemade/features/home/controllers/filter_controller.dart';
 
@@ -22,23 +22,24 @@ class FiltersSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = FilterController.instance;
+    final scheme = Theme.of(context).colorScheme;
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
       minChildSize: 0.55,
       maxChildSize: 0.95,
       expand: false,
       builder: (context, scrollCtrl) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.lightBackground,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
-            const DragHandle(color: AppColors.secondary),
+            DragHandle(color: scheme.onSurface),
             const _Header(),
             Divider(
               height: 1,
-              color: AppColors.secondary.withValues(alpha: 0.25),
+              color: scheme.onSurface.withValues(alpha: 0.25),
             ),
             Expanded(
               child: Obx(() {
@@ -321,8 +322,9 @@ class _ResetCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = enabled ? AppColors.secondary : AppColors.grey;
-    final bg = enabled ? AppColors.white : AppColors.lightGrey;
+    final scheme = Theme.of(context).colorScheme;
+    final accent = enabled ? scheme.onSurface : scheme.onSurfaceVariant;
+    final bg = enabled ? scheme.surface : scheme.surfaceContainerLow;
     return Tooltip(
       message: AppTexts.filterReset,
       child: Material(
@@ -366,7 +368,9 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = tint ?? AppColors.secondary;
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
+    final accent = tint ?? colors.selectedSurface;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -376,17 +380,19 @@ class _Chip extends StatelessWidget {
           vertical: AppSizes.sm + 2,
         ),
         decoration: BoxDecoration(
-          color: selected ? accent : AppColors.accent,
+          color: selected ? accent : scheme.surface,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? accent : AppColors.grey.withValues(alpha: 0.25),
+            color: selected
+                ? accent
+                : scheme.onSurfaceVariant.withValues(alpha: 0.25),
             width: selected ? 1.5 : 1,
           ),
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: selected ? AppColors.white : accent,
+            color: selected ? colors.selectedOnSurface : accent,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           ),
         ),

@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/common/widgets/loaders/animation_loader.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class CustomFullscreenLoader {
   static void openLoadingDialog(String text, String animation) {
     showDialog(
       context: Get.overlayContext!,
       barrierDismissible: false,
-      builder: (_) => PopScope(
+      builder: (ctx) => PopScope(
         canPop: false,
         child: Container(
-          color: Theme.of(Get.context!).brightness == Brightness.dark
-              ? AppColors.darkBackground
-              : AppColors.white,
+          color: Theme.of(ctx).colorScheme.surface,
           width: double.infinity,
           height: double.infinity,
           child: Column(

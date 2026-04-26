@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class RatingBadge extends StatelessWidget {
   const RatingBadge({
@@ -20,14 +19,15 @@ class RatingBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(999),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
+            color: scheme.shadow.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -38,10 +38,9 @@ class RatingBadge extends StatelessWidget {
         children: [
           Text(
             rating.toStringAsFixed(1),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const Gap(4),
           const Icon(Iconsax.star1, size: 12, color: Color(0xFFFFC107)),
@@ -49,7 +48,7 @@ class RatingBadge extends StatelessWidget {
           Text(
             _reviewsLabel,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.grey,
+              color: scheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),

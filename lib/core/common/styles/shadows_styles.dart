@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class CustomShadowStyle {
   static BoxShadow customCircleShadows({
@@ -8,7 +7,7 @@ class CustomShadowStyle {
     double blurRadius = 16,
     double alpha = 0.15,
   }) => BoxShadow(
-    color: AppColors.black.withValues(alpha: alpha),
+    color: Colors.black.withValues(alpha: alpha),
     blurRadius: blurRadius,
     offset: Offset(offsetX, offsetY),
   );

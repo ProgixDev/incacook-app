@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 /// Decorative organic blob anchored to the top-right corner of a screen.
 /// Drawn with cubic Béziers — coordinates are normalized to the [SizedBox]
 /// so the shape scales cleanly.
 ///
+/// The fill defaults to [AppColorExtensions.decorBlobTint] so it adapts to
+/// light/dark mode. Pass an explicit [color] to override.
+///
 /// Wrap in [IgnorePointer] when placing — it's purely cosmetic.
 class DecorBlob extends StatelessWidget {
   const DecorBlob({
     super.key,
-    this.color = const Color(0xFFFAD3BB),
+    this.color,
     this.width,
     this.height,
   });
 
-  final Color color;
+  final Color? color;
   final double? width;
   final double? height;
 
   @override
   Widget build(BuildContext context) {
+    final fill = color ?? context.appColors.decorBlobTint;
     return SizedBox(
       width: width ?? DeviceUtils.getScreenWidth(context) * 0.6,
       height: height ?? DeviceUtils.getScreenHeight(context) * 0.36,
-      child: CustomPaint(painter: _DecorBlobPainter(color: color)),
+      child: CustomPaint(painter: _DecorBlobPainter(color: fill)),
     );
   }
 }

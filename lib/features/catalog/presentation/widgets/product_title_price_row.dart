@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 
 class ProductTitlePriceRow extends StatelessWidget {
@@ -27,9 +26,9 @@ class ProductTitlePriceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final base = Theme.of(context).textTheme.headlineSmall?.copyWith(
       fontWeight: FontWeight.w800,
-      color: AppColors.textPrimary,
       height: 1.15,
     );
 
@@ -50,7 +49,7 @@ class ProductTitlePriceRow extends StatelessWidget {
                     TextSpan(
                       text: '$titleMid ',
                       style: base?.copyWith(
-                        color: AppColors.grey.withValues(alpha: 0.55),
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.55),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -63,7 +62,7 @@ class ProductTitlePriceRow extends StatelessWidget {
                 shortDescription,
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -83,7 +82,6 @@ class ProductTitlePriceRow extends StatelessWidget {
                 Text(
                   rating.toStringAsFixed(1),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -92,7 +90,7 @@ class ProductTitlePriceRow extends StatelessWidget {
                   '($reviewsCount+Review)',
                   style: Theme.of(
                     context,
-                  ).textTheme.labelSmall?.copyWith(color: AppColors.grey),
+                  ).textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
                 ),
               ],
             ),

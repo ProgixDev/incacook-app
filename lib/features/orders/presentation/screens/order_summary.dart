@@ -3,9 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
 import 'package:homemade/features/home/domain/food_listing.dart';
@@ -42,15 +42,13 @@ class OrderSummaryScreen extends StatelessWidget {
         .firstWhere((n) => n.trim().isNotEmpty, orElse: () => '');
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(
           AppTexts.checkoutTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
       body: Column(
@@ -130,7 +128,9 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lineColor = AppColors.secondary.withValues(alpha: 0.18);
+    final lineColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.18);
     return Row(
       children: [
         Expanded(child: Container(height: 2, color: lineColor)),
@@ -140,7 +140,6 @@ class _SectionHeader extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
               letterSpacing: 0.2,
             ),
           ),
@@ -158,10 +157,11 @@ class _SummaryItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSizes.sm + 2),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
       child: Row(
@@ -185,10 +185,9 @@ class _SummaryItemCard extends StatelessWidget {
                   item.listing.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 if (item.selectedAddOns.isNotEmpty) ...[
                   const Gap(2),
@@ -198,7 +197,7 @@ class _SummaryItemCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                   ),
                 ],
                 const Gap(AppSizes.sm - 2),
@@ -208,14 +207,13 @@ class _SummaryItemCard extends StatelessWidget {
                       'x${item.quantity}',
                       style: Theme.of(
                         context,
-                      ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                      ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                     ),
                     const Spacer(),
                     Text(
                       '€${item.lineTotal.toStringAsFixed(2)}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -237,6 +235,7 @@ class _EditLinkInline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Align(
       alignment: Alignment.centerLeft,
       child: GestureDetector(
@@ -248,9 +247,9 @@ class _EditLinkInline extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.secondary,
+              color: scheme.onSurface,
               decoration: TextDecoration.underline,
-              decorationColor: AppColors.secondary,
+              decorationColor: scheme.onSurface,
             ),
           ),
         ),
@@ -290,6 +289,7 @@ class _FulfillmentSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final isDelivery = selection.choice == FulfillmentChoice.delivery;
     final icon = isDelivery ? Iconsax.truck_fast : Iconsax.shop;
     final mode = isDelivery
@@ -312,7 +312,7 @@ class _FulfillmentSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSizes.md - 2),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
       child: Column(
@@ -325,10 +325,10 @@ class _FulfillmentSummary extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.accent,
+                  color: scheme.surfaceContainerHigh,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 20, color: AppColors.secondary),
+                child: Icon(icon, size: 20, color: scheme.onSurface),
               ),
               const Gap(AppSizes.md - 2),
               Expanded(
@@ -339,7 +339,6 @@ class _FulfillmentSummary extends StatelessWidget {
                       mode,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                     for (final line in lines) ...[
@@ -348,7 +347,7 @@ class _FulfillmentSummary extends StatelessWidget {
                         line,
                         style: Theme.of(
                           context,
-                        ).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+                        ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                       ),
                     ],
                   ],
@@ -375,10 +374,11 @@ class _SellerSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSizes.md - 2),
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
       child: Column(
@@ -401,10 +401,9 @@ class _SellerSummary extends StatelessWidget {
                   children: [
                     Text(
                       seller.sellerName,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const Gap(2),
                     Row(
@@ -420,14 +419,16 @@ class _SellerSummary extends StatelessWidget {
                         const Gap(4),
                         Text(
                           seller.category.label,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.grey),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                         const Gap(6),
                         Text(
                           '·',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.grey),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                         const Gap(6),
                         const Icon(
@@ -439,10 +440,7 @@ class _SellerSummary extends StatelessWidget {
                         Text(
                           seller.rating.toStringAsFixed(1),
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -465,6 +463,7 @@ class _EditPillLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -473,16 +472,15 @@ class _EditPillLink extends StatelessWidget {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: AppColors.lightGrey),
+          border: Border.all(color: scheme.outline),
         ),
         child: Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.secondary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -506,10 +504,11 @@ class _PriceBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSizes.md - 2),
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       ),
       child: Column(
@@ -521,9 +520,9 @@ class _PriceBreakdown extends StatelessWidget {
           ],
           const Gap(AppSizes.sm),
           _Row(label: AppTexts.checkoutPriceService, amount: serviceFee),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: AppSizes.md - 4),
-            child: Divider(height: 1, color: AppColors.lightGrey),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSizes.md - 4),
+            child: Divider(height: 1, color: scheme.outline),
           ),
           _Row(
             label: AppTexts.checkoutPriceTotal,
@@ -550,21 +549,13 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final labelStyle = emphasized
-        ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          )
-        : theme.textTheme.bodyMedium?.copyWith(color: AppColors.grey);
+        ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
+        : theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
     final amountStyle = emphasized
-        ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          )
-        : theme.textTheme.bodyMedium?.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          );
+        ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
+        : theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -583,10 +574,12 @@ class _ContinueFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.lightBackground,
-        border: Border(top: BorderSide(color: AppColors.lightGrey)),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        border: Border(top: BorderSide(color: scheme.outline)),
       ),
       padding: const EdgeInsets.fromLTRB(
         AppSizes.md,
@@ -601,8 +594,8 @@ class _ContinueFooter extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onContinue,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.white,
+              backgroundColor: colors.selectedSurface,
+              foregroundColor: colors.selectedOnSurface,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(

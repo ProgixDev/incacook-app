@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomCheckboxTheme {
   CustomCheckboxTheme._();
@@ -8,17 +9,15 @@ class CustomCheckboxTheme {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     checkColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return AppColors.white;
-      } else {
-        return AppColors.black;
+        return LightPalette.surface;
       }
+      return LightPalette.onSurface;
     }),
     fillColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return AppColors.primary;
-      } else {
-        return Colors.transparent;
+        return BrandColors.primary;
       }
+      return Colors.transparent;
     }),
   );
 
@@ -26,17 +25,15 @@ class CustomCheckboxTheme {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     checkColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return AppColors.white;
-      } else {
-        return AppColors.black;
+        return DarkPalette.onSurface;
       }
+      return DarkPalette.onSurfaceVariant;
     }),
     fillColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return AppColors.primary;
-      } else {
-        return Colors.transparent;
+        return BrandColors.primary;
       }
+      return Colors.transparent;
     }),
   );
 }

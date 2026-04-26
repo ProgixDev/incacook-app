@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomElevatedButtonTheme {
   CustomElevatedButtonTheme._();
@@ -8,15 +9,15 @@ class CustomElevatedButtonTheme {
   static final lightElevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       elevation: 0,
-      foregroundColor: AppColors.white, //?text color of the button
-      backgroundColor: AppColors.primary,
-      disabledForegroundColor: AppColors.grey,
-      disabledBackgroundColor: AppColors.grey,
-      side: const BorderSide(color: AppColors.primary),
+      foregroundColor: LightPalette.surface, //? button text color
+      backgroundColor: BrandColors.primary,
+      disabledForegroundColor: LightPalette.onSurfaceVariant,
+      disabledBackgroundColor: LightPalette.outline,
+      side: const BorderSide(color: BrandColors.primary),
       padding: const EdgeInsets.symmetric(vertical: 18),
       textStyle: const TextStyle(
         fontSize: 16,
-        color: AppColors.white,
+        color: LightPalette.surface,
         fontWeight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
@@ -27,15 +28,15 @@ class CustomElevatedButtonTheme {
   static final darkElevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       elevation: 0,
-      foregroundColor: AppColors.white,
-      backgroundColor: AppColors.primary,
-      disabledForegroundColor: AppColors.grey,
-      disabledBackgroundColor: AppColors.grey,
-      side: const BorderSide(color: AppColors.primary),
+      foregroundColor: DarkPalette.onSurface,
+      backgroundColor: BrandColors.primary,
+      disabledForegroundColor: DarkPalette.onSurfaceVariant,
+      disabledBackgroundColor: DarkPalette.outline,
+      side: const BorderSide(color: BrandColors.primary),
       padding: const EdgeInsets.symmetric(vertical: 18),
       textStyle: const TextStyle(
         fontSize: 16,
-        color: AppColors.white,
+        color: DarkPalette.onSurface,
         fontWeight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),

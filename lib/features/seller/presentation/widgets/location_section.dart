@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:homemade/core/common/styles/shadows_styles.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -25,9 +24,7 @@ class LocationSection extends StatelessWidget {
       children: [
         Text(
           AppTexts.sellerLocationTitle,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const Gap(AppSizes.md),
         ClipRRect(
@@ -75,14 +72,17 @@ class LocationSection extends StatelessWidget {
         const Gap(AppSizes.sm),
         Row(
           children: [
-            const Icon(Iconsax.location, size: 14, color: AppColors.primary),
+            Icon(
+              Iconsax.location,
+              size: 14,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const Gap(6),
             Text(
               neighborhood,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ],
         ),

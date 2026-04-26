@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/profile/domain/Setting_menu_item.dart';
@@ -32,10 +31,9 @@ class SettingMenuSection extends StatelessWidget {
               ),
               child: Text(
                 title!,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.secondary,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
           for (var i = 0; i < items.length; i++) ...[
@@ -58,7 +56,9 @@ class _Separator extends StatelessWidget {
       child: Divider(
         height: 1,
         thickness: 1,
-        color: AppColors.lightBackground.withValues(alpha: 0.7),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.7),
       ),
     );
   }

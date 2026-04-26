@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/authentication/controllers/user_type_selection_controller.dart';
@@ -18,7 +17,6 @@ class UserTypeSelectionScreen extends StatelessWidget {
     final controller = Get.put(UserTypeSelectionController());
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: const CustomAppBar(showBackArrow: true),
       body: SafeArea(
         child: Column(

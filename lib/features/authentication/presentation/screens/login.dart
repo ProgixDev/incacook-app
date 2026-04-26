@@ -5,7 +5,6 @@ import 'package:homemade/core/common/styles/spacing_styles.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/common/widgets/login_signup/form_divider.dart';
 import 'package:homemade/core/common/widgets/login_signup/social_buttons.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/authentication/presentation/widgets/login_form.dart';
@@ -17,7 +16,6 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(showBackArrow: true),
       body: SingleChildScrollView(
         child: Padding(

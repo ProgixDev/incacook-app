@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class PriceDisplay extends StatelessWidget {
   const PriceDisplay({
@@ -15,6 +14,7 @@ class PriceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final titleMedium = Theme.of(context).textTheme.titleMedium;
     final headlineSmall = Theme.of(context).textTheme.headlineSmall;
 
@@ -25,7 +25,7 @@ class PriceDisplay extends StatelessWidget {
         Text(
           '€',
           style: titleMedium?.copyWith(
-            color: AppColors.primary,
+            color: scheme.primary,
             fontWeight: FontWeight.w700,
             fontSize: currencySize ?? titleMedium.fontSize,
           ),
@@ -33,7 +33,6 @@ class PriceDisplay extends StatelessWidget {
         Text(
           price.toStringAsFixed(2),
           style: headlineSmall?.copyWith(
-            color: AppColors.textPrimary,
             fontWeight: FontWeight.w800,
             fontSize: priceSize ?? headlineSmall.fontSize,
           ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
 
 class FormDivider extends StatelessWidget {
   const FormDivider({super.key, required this.dividerText});
@@ -9,13 +7,13 @@ class FormDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final dividerColor = Theme.of(context).colorScheme.outline;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Flexible(
           child: Divider(
-            color: dark ? AppColors.darkGrey : AppColors.grey,
+            color: dividerColor,
             thickness: 0.5,
             indent: 60,
             endIndent: 5,
@@ -24,7 +22,7 @@ class FormDivider extends StatelessWidget {
         Text(dividerText, style: Theme.of(context).textTheme.labelMedium),
         Flexible(
           child: Divider(
-            color: dark ? AppColors.darkGrey : AppColors.grey,
+            color: dividerColor,
             thickness: 0.5,
             indent: 5,
             endIndent: 60,

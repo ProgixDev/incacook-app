@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/colors.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/utils/theme/palette.dart';
 
 class CustomChipTheme {
   CustomChipTheme._();
 
   static ChipThemeData lightChipTheme = ChipThemeData(
-    disabledColor: AppColors.grey.withOpacity(0.4),
-    labelStyle: const TextStyle(color: AppColors.black),
-    selectedColor: AppColors.primary,
+    disabledColor: LightPalette.outline.withValues(alpha: 0.4),
+    labelStyle: const TextStyle(color: LightPalette.onSurface),
+    selectedColor: BrandColors.primary,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-    checkmarkColor: AppColors.white,
+    checkmarkColor: LightPalette.surface,
   );
 
-  static ChipThemeData darkChipTheme = const ChipThemeData(
-    disabledColor: AppColors.grey,
-    labelStyle: TextStyle(color: AppColors.white),
-    selectedColor: AppColors.primary,
-    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-    checkmarkColor: AppColors.white,
+  static ChipThemeData darkChipTheme = ChipThemeData(
+    disabledColor: DarkPalette.outline.withValues(alpha: 0.4),
+    labelStyle: const TextStyle(color: DarkPalette.onSurface),
+    selectedColor: BrandColors.primary,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    checkmarkColor: DarkPalette.onSurface,
   );
 }

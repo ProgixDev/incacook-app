@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/chat/presentation/screens/chat.dart';
@@ -41,12 +41,14 @@ class SellerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return GestureDetector(
       onTap: onCardTap,
       child: Container(
         padding: const EdgeInsets.all(AppSizes.sm),
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.5),
         ),
         child: Row(
@@ -61,7 +63,6 @@ class SellerCard extends StatelessWidget {
                   Text(
                     name,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -76,7 +77,6 @@ class SellerCard extends StatelessWidget {
                       Text(
                         rating.toStringAsFixed(1),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -85,8 +85,8 @@ class SellerCard extends StatelessWidget {
                       Container(
                         width: 3,
                         height: 3,
-                        decoration: const BoxDecoration(
-                          color: AppColors.grey,
+                        decoration: BoxDecoration(
+                          color: scheme.onSurfaceVariant,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -96,7 +96,7 @@ class SellerCard extends StatelessWidget {
                           '$_formattedOrders ${AppTexts.productSellerOrdersSuffix}',
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.grey),
+                              ?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                       ),
                     ],
@@ -106,10 +106,10 @@ class SellerCard extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () => Get.to(() => const ChatScreen()),
-              child: const CustomCircularContainer(
+              child: CustomCircularContainer(
                 size: 40,
-                backgroundColor: AppColors.secondary,
-                child: Icon(Iconsax.message, color: AppColors.white, size: 18),
+                backgroundColor: colors.selectedSurface,
+                child: Icon(Iconsax.message, color: colors.selectedOnSurface, size: 18),
               ),
             ),
           ],

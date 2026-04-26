@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class EmptyCartState extends StatelessWidget {
   const EmptyCartState({super.key, required this.onGoHome});
@@ -12,6 +12,8 @@ class EmptyCartState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSizes.lg),
@@ -21,14 +23,14 @@ class EmptyCartState extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
-                color: AppColors.accent,
+              decoration: BoxDecoration(
+                color: scheme.surface,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Iconsax.shopping_bag,
                 size: 32,
-                color: AppColors.secondary,
+                color: scheme.onSurface,
               ),
             ),
             const Gap(AppSizes.md),
@@ -37,7 +39,6 @@ class EmptyCartState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
               ),
             ),
             const Gap(AppSizes.lg),
@@ -46,8 +47,8 @@ class EmptyCartState extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onGoHome,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: colors.selectedSurface,
+                  foregroundColor: colors.selectedOnSurface,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

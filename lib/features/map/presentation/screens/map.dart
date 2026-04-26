@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/enums/food_enums.dart';
@@ -301,6 +300,7 @@ class _UserLocationDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -308,7 +308,7 @@ class _UserLocationDot extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.20),
+            color: scheme.primary.withValues(alpha: 0.20),
             shape: BoxShape.circle,
           ),
         ),
@@ -316,12 +316,12 @@ class _UserLocationDot extends StatelessWidget {
           width: 16,
           height: 16,
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: scheme.primary,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.white, width: 2.5),
+            border: Border.all(color: Colors.white, width: 2.5),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),

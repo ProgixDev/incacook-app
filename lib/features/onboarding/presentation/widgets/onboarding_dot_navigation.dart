@@ -1,5 +1,4 @@
 import 'package:homemade/features/onboarding/controllers/onboarding_controller.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -11,7 +10,6 @@ class OnBoardingDotNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = OnBoardingController.instance;
-    final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Positioned(
       bottom: DeviceUtils.getBottomNavigationBarHeight() + 25,
@@ -21,7 +19,7 @@ class OnBoardingDotNavigation extends StatelessWidget {
         onDotClicked: controller.dotNavigationClick,
         count: 3,
         effect: ExpandingDotsEffect(
-          activeDotColor: dark ? AppColors.lightBackground : AppColors.primary,
+          activeDotColor: Theme.of(context).colorScheme.primary,
           dotHeight: 6,
         ),
       ),

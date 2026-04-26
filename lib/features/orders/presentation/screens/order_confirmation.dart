@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
@@ -92,7 +92,6 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: AppColors.lightBackground,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
@@ -143,6 +142,7 @@ class _SuccessHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         SizedBox(
@@ -159,7 +159,6 @@ class _SuccessHeader extends StatelessWidget {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.sm - 2),
@@ -167,7 +166,7 @@ class _SuccessHeader extends StatelessWidget {
           '${AppTexts.successOrderNumberPrefix} #$orderNumber',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: AppColors.grey,
+            color: scheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
           ),
@@ -182,9 +181,10 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-      child: Container(height: 1, color: AppColors.lightGrey),
+      child: Container(height: 1, color: scheme.outline),
     );
   }
 }
@@ -206,14 +206,14 @@ class _StatusBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final isDelivery = selection.choice == FulfillmentChoice.delivery;
     final titleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
       fontWeight: FontWeight.w700,
-      color: AppColors.textPrimary,
     );
     final subStyle = Theme.of(
       context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.grey);
+    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +221,7 @@ class _StatusBlock extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Iconsax.shop, size: 20, color: AppColors.secondary),
+            Icon(Iconsax.shop, size: 20, color: scheme.onSurface),
             const Gap(AppSizes.sm + 2),
             Expanded(
               child: Text(
@@ -238,7 +238,7 @@ class _StatusBlock extends StatelessWidget {
             Icon(
               isDelivery ? Iconsax.truck_fast : Iconsax.location,
               size: 20,
-              color: AppColors.secondary,
+              color: scheme.onSurface,
             ),
             const Gap(AppSizes.sm + 2),
             Expanded(
@@ -265,7 +265,6 @@ class _StatusBlock extends StatelessWidget {
                   Text(
                     '${isDelivery ? AppTexts.successExpectedArrivalPrefix : AppTexts.successExpectedPickupPrefix} $expectedArrivalLabel',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -341,7 +340,6 @@ class _RecapBlock extends StatelessWidget {
           AppTexts.successRecapTitle,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
           ),
         ),
         const Gap(AppSizes.sm + 2),
@@ -352,9 +350,9 @@ class _RecapBlock extends StatelessWidget {
         ],
         const Gap(AppSizes.xs + 2),
         _Row(label: AppTexts.successRecapServiceLabel, amount: serviceFee),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSizes.sm + 2),
-          child: Divider(height: 1, color: AppColors.lightGrey),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm + 2),
+          child: Divider(height: 1, color: Theme.of(context).colorScheme.outline),
         ),
         _Row(
           label: AppTexts.successTotalPaidLabel,
@@ -380,19 +378,17 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final labelStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           )
-        : theme.textTheme.bodyMedium?.copyWith(color: AppColors.grey);
+        : theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
     final amountStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
           )
         : theme.textTheme.bodyMedium?.copyWith(
-            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           );
 
@@ -421,6 +417,8 @@ class _CtaStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
     return Column(
       children: [
         SizedBox(
@@ -428,8 +426,8 @@ class _CtaStack extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onTrack,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.white,
+              backgroundColor: colors.selectedSurface,
+              foregroundColor: colors.selectedOnSurface,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -448,9 +446,9 @@ class _CtaStack extends StatelessWidget {
           child: OutlinedButton(
             onPressed: onGoHome,
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.secondary,
+              foregroundColor: scheme.onSurface,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              side: const BorderSide(color: AppColors.lightGrey),
+              side: BorderSide(color: scheme.outline),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),

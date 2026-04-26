@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:homemade/core/constants/colors.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 class CustomShimmerEffect extends StatelessWidget {
   const CustomShimmerEffect({
@@ -17,7 +16,8 @@ class CustomShimmerEffect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final dark = context.isDark;
+    final scheme = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
       baseColor: dark ? Colors.grey[850]! : Colors.grey[300]!,
       highlightColor: dark ? Colors.grey[700]! : Colors.grey[100]!,
@@ -25,7 +25,7 @@ class CustomShimmerEffect extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: color ?? (dark ? AppColors.darkGrey : AppColors.white),
+          color: color ?? scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(radius),
         ),
       ),

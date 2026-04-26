@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/features/authentication/controllers/signup_controller.dart';
 
 class TermsAndConditionsCheckBox extends StatelessWidget {
@@ -11,7 +9,8 @@ class TermsAndConditionsCheckBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = SignupController.instance;
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final linkColor = scheme.primary;
     return Row(
       children: [
         SizedBox(
@@ -35,9 +34,9 @@ class TermsAndConditionsCheckBox extends StatelessWidget {
               TextSpan(
                 text: AppTexts.privacy,
                 style: Theme.of(context).textTheme.bodyMedium!.apply(
-                  color: dark ? Colors.white : AppColors.primary,
+                  color: linkColor,
                   decoration: TextDecoration.underline,
-                  decorationColor: dark ? Colors.white : AppColors.primary,
+                  decorationColor: linkColor,
                 ),
               ),
               TextSpan(
@@ -47,9 +46,9 @@ class TermsAndConditionsCheckBox extends StatelessWidget {
               TextSpan(
                 text: AppTexts.terms,
                 style: Theme.of(context).textTheme.bodyMedium!.apply(
-                  color: dark ? Colors.white : AppColors.primary,
+                  color: linkColor,
                   decoration: TextDecoration.underline,
-                  decorationColor: dark ? Colors.white : AppColors.primary,
+                  decorationColor: linkColor,
                 ),
               ),
             ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/orders/domain/order_stage.dart';
@@ -28,9 +27,9 @@ class OrderBottomSheet extends StatelessWidget {
     final bottomSafe = MediaQuery.of(context).padding.bottom;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       padding: EdgeInsets.fromLTRB(
         AppSizes.lg,
@@ -67,13 +66,13 @@ class _StageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final titleStyle = Theme.of(context).textTheme.headlineSmall?.copyWith(
-      color: AppColors.textPrimary,
       fontWeight: FontWeight.w800,
     );
     final subtitleStyle = Theme.of(
       context,
-    ).textTheme.bodyMedium?.copyWith(color: AppColors.grey, height: 1.35);
+    ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant, height: 1.35);
 
     late final String title;
     late final String subtitle;

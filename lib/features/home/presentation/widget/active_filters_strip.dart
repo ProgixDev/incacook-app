@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/home/controllers/filter_controller.dart';
@@ -96,7 +95,7 @@ class _RemovableChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = tint ?? AppColors.secondary;
+    final accent = tint ?? Theme.of(context).colorScheme.onSurface;
     return GestureDetector(
       onTap: onRemove,
       child: Container(

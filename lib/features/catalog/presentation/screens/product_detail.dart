@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -157,7 +156,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.lightBackground,
       appBar: CustomAppBar(showBackArrow: true),
       body: Stack(
         children: [
@@ -214,7 +212,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         //? solid sheet body continues below the blend
                         Container(
-                          color: AppColors.lightBackground,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           padding: const EdgeInsets.fromLTRB(
                             AppSizes.md,
                             AppSizes.lg,

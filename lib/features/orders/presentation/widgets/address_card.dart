@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/features/orders/domain/saved_address.dart';
 
 class AddressCard extends StatelessWidget {
@@ -20,6 +20,9 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = context.appColors;
+    final selectedFg = colors.selectedOnSurface;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -27,7 +30,7 @@ class AddressCard extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.all(AppSizes.md - 2),
         decoration: BoxDecoration(
-          color: selected ? AppColors.secondary : AppColors.accent,
+          color: selected ? colors.selectedSurface : scheme.surface,
           borderRadius: BorderRadius.circular(60),
         ),
         child: Row(
@@ -39,7 +42,7 @@ class AddressCard extends StatelessWidget {
               child: Icon(
                 address.type.icon,
                 size: 20,
-                color: selected ? AppColors.primary : AppColors.secondary,
+                color: selected ? scheme.primary : scheme.onSurface,
               ),
             ),
             const Gap(AppSizes.md - 2),
@@ -52,20 +55,20 @@ class AddressCard extends StatelessWidget {
                     address.label,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: selected ? AppColors.white : AppColors.textPrimary,
+                      color: selected ? selectedFg : scheme.onSurface,
                     ),
                   ),
                   const Gap(2),
                   Text(
                     address.line1,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: selected ? AppColors.white : AppColors.grey,
+                      color: selected ? selectedFg : scheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
                     address.line2,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: selected ? AppColors.white : AppColors.grey,
+                      color: selected ? selectedFg : scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -80,14 +83,14 @@ class AddressCard extends StatelessWidget {
                 child: Container(
                   width: 24,
                   height: 24,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
+                  decoration: BoxDecoration(
+                    color: scheme.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.check,
                     size: 14,
-                    color: AppColors.white,
+                    color: Colors.white,
                   ),
                 ),
               ),

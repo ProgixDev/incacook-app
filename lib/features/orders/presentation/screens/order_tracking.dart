@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/features/chat/presentation/screens/chat.dart';
 import 'package:homemade/features/orders/controllers/order_tracking_controller.dart';
 import 'package:homemade/features/orders/domain/order_stage.dart';
@@ -18,7 +17,6 @@ class OrderTrackingScreen extends StatelessWidget {
     final controller = Get.put(OrderTrackingController());
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(showBackArrow: true),
       body: Obx(

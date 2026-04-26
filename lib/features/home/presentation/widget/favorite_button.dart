@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/colors.dart';
 
 class FavoriteButton extends StatelessWidget {
   const FavoriteButton({super.key, required this.isSaved, this.onTap});
@@ -10,17 +9,18 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: scheme.surface,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.08),
+              color: scheme.shadow.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -29,7 +29,7 @@ class FavoriteButton extends StatelessWidget {
         child: Icon(
           isSaved ? Iconsax.heart5 : Iconsax.heart,
           size: 20,
-          color: isSaved ? const Color(0xFFE53935) : AppColors.secondary,
+          color: isSaved ? const Color(0xFFE53935) : scheme.onSurface,
         ),
       ),
     );

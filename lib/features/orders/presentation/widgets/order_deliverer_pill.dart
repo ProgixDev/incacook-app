@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -15,10 +14,11 @@ class OrderDelivererPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: scheme.primary,
         borderRadius: BorderRadius.circular(48),
       ),
       child: Row(
@@ -45,14 +45,14 @@ class OrderDelivererPill extends StatelessWidget {
                 Text(
                   AppTexts.trackingDelivererName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.white,
+                    color: Colors.white,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
                   AppTexts.trackingDelivererMeta,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -62,10 +62,10 @@ class OrderDelivererPill extends StatelessWidget {
           //* call button
           GestureDetector(
             onTap: onCallTap,
-            child: const CustomCircularContainer(
+            child: CustomCircularContainer(
               size: 44,
-              backgroundColor: AppColors.white,
-              child: Icon(Iconsax.call, color: AppColors.primary, size: 18),
+              backgroundColor: Colors.white,
+              child: Icon(Iconsax.call, color: scheme.primary, size: 18),
             ),
           ),
           const Gap(AppSizes.xs + 2),
@@ -76,12 +76,12 @@ class OrderDelivererPill extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                const CustomCircularContainer(
+                CustomCircularContainer(
                   size: 44,
-                  backgroundColor: AppColors.white,
+                  backgroundColor: Colors.white,
                   child: Icon(
                     Iconsax.message,
-                    color: AppColors.primary,
+                    color: scheme.primary,
                     size: 18,
                   ),
                 ),
@@ -94,7 +94,7 @@ class OrderDelivererPill extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFE8823B),
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.white, width: 1.5),
+                      border: Border.all(color: Colors.white, width: 1.5),
                     ),
                   ),
                 ),

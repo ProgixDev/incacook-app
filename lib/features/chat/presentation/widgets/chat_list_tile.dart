@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/colors.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/chat/domain/chat_preview.dart';
@@ -13,13 +12,14 @@ class ChatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.all(AppSizes.sm + 2),
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: scheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
         ),
         child: Row(
@@ -51,7 +51,6 @@ class ChatListTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       height: 1.15,
                     ),
@@ -68,13 +67,13 @@ class ChatListTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: scheme.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${chat.unreadCount}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.white,
+                    color: scheme.onPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -94,8 +93,9 @@ class _Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final style = Theme.of(context).textTheme.bodySmall?.copyWith(
-      color: chat.isTyping ? AppColors.primary : AppColors.grey,
+      color: chat.isTyping ? scheme.primary : scheme.onSurfaceVariant,
       fontWeight: chat.isTyping ? FontWeight.w600 : FontWeight.w500,
       fontStyle: chat.isTyping ? FontStyle.italic : FontStyle.normal,
       height: 1.3,
