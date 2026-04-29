@@ -20,9 +20,10 @@ class App extends StatelessWidget {
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darkTheme,
         initialBinding: GeneralBindings(),
-        home: kDebugMode
-            ? const DeliveryHomeScreen()
-            : const OnBoardingScreen(),
+        // home: kDebugMode
+        //     ? const DeliveryHomeScreen()
+        //     : const OnBoardingScreen(),
+        home: const DeliveryHomeScreen(),
       ),
     );
   }

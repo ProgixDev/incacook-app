@@ -45,22 +45,21 @@ class AppTexts {
 
   //* user type selection
   static const String userTypeHeading =
-      "Comment utiliserez-vous l'application ?";
+      "À table, aux fourneaux ou sur la route ?";
   static const String userTypeSubHeading =
       "Choisissez l'option qui vous convient le mieux. Vous pouvez toujours contacter le support pour la modifier plus tard";
 
-  static const String userTypeSellerTitle = "Je suis un cuisinier";
+  static const String userTypeSellerTitle = "Ma cuisine mérite d'être goûtée";
   static const String userTypeSellerSubtitle =
-      "Vous avez un restaurant ou une boutique ? Listez vos plats et atteignez des clients affamés à proximité";
+      "Cuisinier passionné ou restaurateur ? Partagez vos plats et attirez les gourmands du quartier";
 
-  static const String userTypeClientTitle = "Je suis un client";
+  static const String userTypeClientTitle = "j’ai faim…";
   static const String userTypeClientSubtitle =
-      "Envie de quelque chose de délicieux ? Parcourez les menus et commandez vos plats préférés en quelques clics";
+      "Votre prochain coup de cœur culinaire est à portée de clic — parcourez, choisissez, savourez !";
 
-  static const String userTypeDeliveryTitle =
-      "Je suis un partenaire de livraison";
+  static const String userTypeDeliveryTitle = "C'est moi qui livre !";
   static const String userTypeDeliverySubtitle =
-      "Roulez avec nous pour livrer des plats frais à travers la ville et gagnez de l'argent selon votre propre horaire";
+      "Prenez la route, livrez des plats chauds et gérez votre temps comme vous voulez";
 
   //* seller-specific fields
   static const String restaurantName = "Nom du restaurant";
@@ -324,8 +323,7 @@ class AppTexts {
   static const String dishCocktail = "Cocktail dinatoire";
 
   //* allergens (regulatory declaration on every listing)
-  static const String allergenGluten =
-      "Céréales contenant du gluten";
+  static const String allergenGluten = "Céréales contenant du gluten";
   static const String allergenCrustaceans = "Crustacés";
   static const String allergenEggs = "Œufs";
   static const String allergenFish = "Poissons";

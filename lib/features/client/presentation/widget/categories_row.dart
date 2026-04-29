@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/enums/food_enums.dart';
 import 'package:homemade/features/client/presentation/widget/category_pill.dart';
 
-class CategoriesRow extends StatelessWidget {
-  const CategoriesRow({
+class CategoriesSection extends StatelessWidget {
+  const CategoriesSection({
     super.key,
     required this.selected,
     required this.onSelect,
@@ -18,43 +17,41 @@ class CategoriesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = <(SellerCategory?, String, String?)>[
-      (null, AppTexts.homeCategoryAll, AppImages.all),
-      (
-        SellerCategory.faitMaison,
-        SellerCategory.faitMaison.shortLabel,
-        SellerCategory.faitMaison.imagePath,
-      ),
-      (
-        SellerCategory.traiteur,
-        SellerCategory.traiteur.shortLabel,
-        SellerCategory.traiteur.imagePath,
-      ),
-      (
-        SellerCategory.restaurant,
-        SellerCategory.restaurant.shortLabel,
-        SellerCategory.restaurant.imagePath,
-      ),
-    ];
+    Widget pillFor(SellerCategory cat) => CategoryPill(
+      label: cat.shortLabel,
+      imagePath: cat.imagePath,
+      selected: selected == cat,
+      onTap: () => onSelect(cat),
+    );
 
-    return SizedBox(
-      //* scales with system text size so pill content never clips when the
-      //* user has accessibility text scale > 1.0×.
-      height: MediaQuery.textScalerOf(context).scale(48),
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-        itemCount: items.length,
-        separatorBuilder: (_, _) => const Gap(AppSizes.sm + 2),
-        itemBuilder: (context, index) {
-          final (cat, label, imagePath) = items[index];
-          return CategoryPill(
-            label: label,
-            imagePath: imagePath,
-            selected: selected == cat,
-            onTap: () => onSelect(cat),
-          );
-        },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl),
+      child: GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        //* GridView auto-consumes MediaQuery main-axis padding when null —
+        //* explicit zero stops it from inheriting the screen's safe-area
+        //* insets and adding phantom top/bottom space.
+        padding: EdgeInsets.zero,
+        crossAxisCount: 3,
+        mainAxisSpacing: AppSizes.sm + 2,
+        crossAxisSpacing: AppSizes.sm + 2,
+        childAspectRatio: 1, //* square tiles
+        children: [
+          //* Row 1 — three "active" categories.
+          pillFor(SellerCategory.faitMaison),
+          pillFor(SellerCategory.traiteur),
+          pillFor(SellerCategory.restaurant),
+          //* Row 2 — empty | "all" centered | empty.
+          const SizedBox.shrink(),
+          CategoryPill(
+            label: AppTexts.homeCategoryAll,
+            imagePath: AppImages.all,
+            selected: selected == null,
+            onTap: () => onSelect(null),
+          ),
+          const SizedBox.shrink(),
+        ],
       ),
     );
   }

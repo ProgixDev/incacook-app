@@ -52,4 +52,10 @@ class OnBoardingController extends GetxController {
     currentPageIndex.value = 2; //? values start from 0, 1, 2....
     pageController.jumpToPage(2);
   }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
 }

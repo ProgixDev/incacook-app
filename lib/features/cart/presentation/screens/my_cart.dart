@@ -102,7 +102,7 @@ class MyCartScreen extends StatelessWidget {
                     );
                   },
                   separatorBuilder: (_, _) => const Gap(AppSizes.sm + 4),
-                  itemCount: cart.itemCount,
+                  itemCount: cart.items.length,
                 ),
               ),
             ),

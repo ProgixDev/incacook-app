@@ -11,6 +11,13 @@ class LoginController extends GetxController {
   final rememberMe = false.obs;
   GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
+  @override
+  void onClose() {
+    email.dispose();
+    password.dispose();
+    super.onClose();
+  }
+
   //* email and password sign in
   // Future<void> emailAndPasswordSignIn() async {
   //   try {

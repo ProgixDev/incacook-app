@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
@@ -46,37 +45,57 @@ class CategoryPill extends StatelessWidget {
             colors.selectedOnSurface,
             t,
           )!;
-          final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: contentColor,
-          );
-          return FrostedSurface(
-            borderRadius: BorderRadius.circular(999),
-            tint: bgTint,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.md,
-              vertical: 10,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (imagePath != null) ...[
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: Image.asset(imagePath!, fit: BoxFit.contain),
-                  ),
-                  const Gap(AppSizes.sm),
-                ] else if (icon != null) ...[
-                  Icon(icon, size: 16, color: contentColor),
-                  const Gap(AppSizes.sm - 2),
-                ] else if (emoji != null) ...[
-                  Text(emoji!, style: const TextStyle(fontSize: 16)),
-                  const Gap(AppSizes.sm),
-                ],
-                Text(label, style: textStyle),
-              ],
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              //* Size every internal dimension off the cell's shortest side
+              //* so the pill stays balanced whether the cell is tall+narrow
+              //* or short+wide. Bounds keep things sane at the extremes.
+              final shortSide = constraints.biggest.shortestSide;
+              final pad = (shortSide * 0.08).clamp(4.0, 12.0);
+              final imageSize = (shortSide * 0.55).clamp(16.0, 72.0);
+              final iconSize = (shortSide * 0.50).clamp(14.0, 64.0);
+              final fontSize = (shortSide * 0.18).clamp(9.0, 14.0);
+              final gap = (pad * 0.4).clamp(2.0, 8.0);
+
+              final textStyle = Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: contentColor,
+                    fontSize: fontSize,
+                  );
+
+              return FrostedSurface(
+                borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+                tint: bgTint,
+                padding: EdgeInsets.all(pad),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (imagePath != null)
+                      SizedBox(
+                        width: imageSize,
+                        height: imageSize,
+                        child: Image.asset(imagePath!, fit: BoxFit.contain),
+                      )
+                    else if (icon != null)
+                      Icon(icon, size: iconSize, color: contentColor)
+                    else if (emoji != null)
+                      Text(emoji!, style: TextStyle(fontSize: iconSize)),
+                    SizedBox(height: gap),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),

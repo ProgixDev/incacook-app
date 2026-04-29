@@ -19,16 +19,38 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
   final DraggableScrollableController _controller =
       DraggableScrollableController();
 
+  /// 1 = nav bar fully frosted (sheet collapsed); 0 = solid surface (expanded).
+  /// Driven from [_controller] in [_updateFrostedness].
+  final ValueNotifier<double> _frostedness = ValueNotifier<double>(1.0);
+
+  /// Recomputed in [build] from MediaQuery; the listener reads it.
+  double _collapsedFraction = 0.15;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_updateFrostedness);
+  }
+
   @override
   void dispose() {
+    _controller.removeListener(_updateFrostedness);
     _controller.dispose();
+    _frostedness.dispose();
     super.dispose();
   }
 
-  void _toggle(double collapsedFraction) {
+  void _updateFrostedness() {
+    final range = _expandedFraction - _collapsedFraction;
+    if (range <= 0) return;
+    final t = ((_controller.size - _collapsedFraction) / range).clamp(0.0, 1.0);
+    _frostedness.value = 1 - t;
+  }
+
+  void _toggle() {
     final size = _controller.size;
-    final midpoint = (collapsedFraction + _expandedFraction) / 2;
-    final target = size < midpoint ? _expandedFraction : collapsedFraction;
+    final midpoint = (_collapsedFraction + _expandedFraction) / 2;
+    final target = size < midpoint ? _expandedFraction : _collapsedFraction;
     _controller.animateTo(
       target,
       duration: const Duration(milliseconds: 320),
@@ -40,33 +62,43 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
   Widget build(BuildContext context) {
     //* The collapsed sheet is just tall enough to show the full nav bar
     //* (including its overhang) plus the bottom safe area.
-    final collapsedFraction =
-        (DeliveryNavBar.totalHeight + MediaQuery.of(context).padding.bottom) / MediaQuery.of(context).size.height;
+    _collapsedFraction =
+        (DeliveryNavBar.totalHeight + MediaQuery.of(context).padding.bottom) /
+        MediaQuery.of(context).size.height;
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: collapsedFraction,
-      minChildSize: collapsedFraction,
+      initialChildSize: _collapsedFraction,
+      minChildSize: _collapsedFraction,
       maxChildSize: _expandedFraction,
       snap: true,
-      snapSizes: [collapsedFraction, _expandedFraction],
+      snapSizes: [_collapsedFraction, _expandedFraction],
       builder: (context, scrollController) {
         final scheme = Theme.of(context).colorScheme;
         return Column(
           children: [
             GestureDetector(
-              onTap: () => _toggle(collapsedFraction),
+              onTap: _toggle,
               behavior: HitTestBehavior.opaque,
-              child: const DeliveryNavBar(),
+              child: DeliveryNavBar(frostedness: _frostedness),
             ),
             Expanded(
-              child: Container(
-                color: scheme.surface,
+              //* Body shares the bar's surface tint so they read as one
+              //* continuous panel — alpha tracks `_frostedness` in lockstep
+              //* with the bar (1 = collapsed/over-map, 0 = expanded/solid).
+              child: ValueListenableBuilder<double>(
+                valueListenable: _frostedness,
+                builder: (context, t, child) => ColoredBox(
+                  color: DeliveryNavBar.surfaceTintFor(scheme, t),
+                  child: child,
+                ),
                 child: ListView(
                   controller: scrollController,
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).padding.bottom,
+                  ),
                   children: const [
-                    Gap(AppSizes.lg),
+                    Gap(AppSizes.xl),
                     WeeklyChallengesSection(),
                     Gap(AppSizes.lg),
                     _DailyStatsSection(),

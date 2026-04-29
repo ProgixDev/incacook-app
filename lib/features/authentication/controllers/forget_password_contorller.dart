@@ -8,6 +8,12 @@ class ForgetPasswordController extends GetxController {
   final email = TextEditingController();
   GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
 
+  @override
+  void onClose() {
+    email.dispose();
+    super.onClose();
+  }
+
   //* send reset password email
   // void sendPasswordResetEmail() async {
   //   try {

@@ -25,6 +25,21 @@ class SignupController extends GetxController {
   GlobalKey<FormState> signupFormKey =
       GlobalKey<FormState>(); //? form key for form validation
 
+  @override
+  void onClose() {
+    firstName.dispose();
+    lastName.dispose();
+    userName.dispose();
+    email.dispose();
+    phoneNumber.dispose();
+    password.dispose();
+    restaurantName.dispose();
+    restaurantAddress.dispose();
+    vehicleType.dispose();
+    licenseNumber.dispose();
+    super.onClose();
+  }
+
   //* signup
 
   // void signup() async {

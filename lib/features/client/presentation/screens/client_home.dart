@@ -127,7 +127,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
 
                 //* categories (Tout + 3) — drives filter.category
                 Obx(
-                  () => CategoriesRow(
+                  () => CategoriesSection(
                     selected: _filter.filter.value.category,
                     onSelect: _filter.setCategory,
                   ),
