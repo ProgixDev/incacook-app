@@ -1,19 +1,18 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/features/orders/presentation/screens/order_tracking.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
+import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/services/location/location_service.dart';
 import 'package:homemade/core/services/map/mapbox_directions_client.dart';
 import 'package:homemade/core/services/map/models/map_route.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:homemade/features/delivery/controllers/delivery_driver_controller.dart';
+import 'package:homemade/features/delivery/presentation/widgets/delivery_bottom_sheet.dart';
+import 'package:homemade/features/delivery/presentation/widgets/delivery_top_buttons.dart';
 import 'package:homemade/features/orders/data/order_mock_data.dart';
 import 'package:homemade/features/orders/domain/order_detail.dart';
 
@@ -25,9 +24,7 @@ class DeliveryHomeScreen extends StatefulWidget {
 }
 
 class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
-  //* Mock active order. Replace with real assignment when orders flow
-  //* through the backend. Delivery orders are expected to have a geocoded
-  //* address — this screen would not be reachable for pickup-only orders.
+  //* Mock active order — pickup + dropoff drive the markers and route.
   final OrderDetail _order = OrderMockData.demoOrder();
 
   MapPoint get _pickup => _order.seller.location;
@@ -38,8 +35,6 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   CircleAnnotationManager? _circleManager;
 
   MapRoute? _route;
-  String? _error;
-  bool _loading = true;
 
   //* Off-route detection state.
   static const double _offRouteThresholdMeters = 50;
@@ -47,6 +42,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   Worker? _positionWorker;
   int _offRouteHits = 0;
   bool _refetching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Get.put(DeliveryDriverController());
+  }
 
   @override
   void dispose() {
@@ -93,10 +94,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
 
   Future<void> _bootstrap() async {
     final pos = await LocationService.instance.getCurrent();
-    if (pos == null) {
-      _setState(loading: false, error: "Localisation indisponible");
-      return;
-    }
+    if (pos == null) return;
 
     final origin = MapPoint(lng: pos.longitude, lat: pos.latitude);
     try {
@@ -107,11 +105,11 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       await _drawRoute(route);
       await _drawMarkers();
       await _frameRoute(route);
-      _setState(loading: false, route: route);
+      if (mounted) setState(() => _route = route);
       await LocationService.instance.start();
       _startPositionWatcher();
     } catch (_) {
-      _setState(loading: false, error: "Itinéraire introuvable");
+      //? swallow — no overlay; map still usable without a route.
     }
   }
 
@@ -149,7 +147,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       );
       await _polylineManager?.deleteAll();
       await _drawRoute(route);
-      _setState(route: route);
+      if (mounted) setState(() => _route = route);
     } catch (_) {
       //? swallow — try again on the next off-route trip
     } finally {
@@ -164,8 +162,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     final lat2 = b.lat * math.pi / 180;
     final dLat = (b.lat - a.lat) * math.pi / 180;
     final dLng = (b.lng - a.lng) * math.pi / 180;
-    final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(lat1) * math.cos(lat2) * math.sin(dLng / 2) * math.sin(dLng / 2);
+    final h =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(lat1) *
+            math.cos(lat2) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2);
     return 2 * earthRadius * math.asin(math.sqrt(h));
   }
 
@@ -192,15 +194,6 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       if (d < minDist) minDist = d;
     }
     return minDist;
-  }
-
-  void _setState({bool? loading, MapRoute? route, String? error}) {
-    if (!mounted) return;
-    setState(() {
-      if (loading != null) _loading = loading;
-      if (route != null) _route = route;
-      if (error != null) _error = error;
-    });
   }
 
   Future<void> _drawRoute(MapRoute route) async {
@@ -258,6 +251,18 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     );
   }
 
+  Future<void> _centerOnDriver() async {
+    final pos = LocationService.instance.currentPosition.value;
+    if (pos == null || _map == null) return;
+    await _map!.flyTo(
+      CameraOptions(
+        center: Point(coordinates: Position(pos.longitude, pos.latitude)),
+        zoom: 14.0,
+      ),
+      MapAnimationOptions(duration: 500),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final styleUri = context.isDark ? MapboxStyles.DARK : MapboxStyles.LIGHT;
@@ -276,84 +281,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
             ),
             onMapCreated: _onMapCreated,
           ),
-          Positioned(
-            top: MediaQuery.viewPaddingOf(context).top + 16,
-            left: 16,
-            right: 16,
-            child: _TopOverlay(loading: _loading, error: _error, route: _route),
+          DeliveryTopButtons(
+            onMenuTap: () {},
+            onGpsTap: _centerOnDriver,
+            onSearchTap: () {},
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TopOverlay extends StatelessWidget {
-  const _TopOverlay({
-    required this.loading,
-    required this.error,
-    required this.route,
-  });
-
-  final bool loading;
-  final String? error;
-  final MapRoute? route;
-
-  @override
-  Widget build(BuildContext context) {
-    if (route != null) return _RouteSummaryCard(route: route!);
-    if (error != null) return _Chip(label: error!);
-    if (loading) return const _Chip(label: "Calcul de l'itinéraire…");
-    return const SizedBox.shrink();
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: FrostedSurface(
-        borderRadius: BorderRadius.circular(24),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-      ),
-    );
-  }
-}
-
-class _RouteSummaryCard extends StatelessWidget {
-  const _RouteSummaryCard({required this.route});
-
-  final MapRoute route;
-
-  @override
-  Widget build(BuildContext context) {
-    final mins = (route.durationSeconds / 60).round();
-    final km = (route.distanceMeters / 1000).toStringAsFixed(1);
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return FrostedSurface(
-      borderRadius: BorderRadius.circular(20),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Iconsax.clock, size: 20, color: scheme.onSurface),
-          const Gap(8),
-          Text('$mins min', style: textTheme.titleSmall),
-          const Gap(20),
-          Icon(Iconsax.routing, size: 20, color: scheme.onSurface),
-          const Gap(8),
-          Text('$km km', style: textTheme.titleSmall),
-          IconButton(
-            onPressed: () => Get.to(() => const OrderTrackingScreen()),
-            icon: const Icon(Iconsax.info_circle, size: 20),
-          ),
+          const DeliveryBottomSheet(),
         ],
       ),
     );
