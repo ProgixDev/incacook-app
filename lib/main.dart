@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:homemade/app.dart';
 import 'package:homemade/core/controllers/theme_controller.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 const _mapboxPublicToken = String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
@@ -15,6 +16,9 @@ void main() async {
 
   //* init local storage
   await GetStorage.init();
+
+  //* init French locale data for intl DateFormat (used in seller / order UI)
+  await initializeDateFormatting('fr_FR');
 
   //* mapbox public token from --dart-define=MAPBOX_PUBLIC_TOKEN=...
   if (_mapboxPublicToken.isNotEmpty) {

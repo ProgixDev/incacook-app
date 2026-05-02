@@ -25,6 +25,10 @@ class AppImages {
   static const String stripe = "assets/icons/payment/stripe.png";
   static const String visa = "assets/icons/payment/visa.png";
 
+  //* seller home icons
+  static const String revenue = "assets/icons/seller_home/revenue.svg";
+  static const String orders = "assets/icons/seller_home/order.svg";
+
   //* onboarding illustrations
   static const String onboarding1 = "assets/images/onboarding/cook.png";
   static const String onboarding2 = "assets/images/onboarding/help_others.png";

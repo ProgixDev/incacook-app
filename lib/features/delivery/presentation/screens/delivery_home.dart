@@ -81,9 +81,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
             ),
             onMapCreated: _onMapCreated,
           ),
-          DeliveryTopButtons(
-            onGpsTap: _centerOnDriver,
-          ),
+          DeliveryTopButtons(onGpsTap: _centerOnDriver),
           const DeliveryBottomSheet(),
         ],
       ),

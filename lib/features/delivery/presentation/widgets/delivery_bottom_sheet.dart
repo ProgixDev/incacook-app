@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/features/delivery/data/delivery_driver_mock_data.dart';
 import 'package:homemade/features/delivery/presentation/widgets/delivery_nav_bar.dart';
-import 'package:homemade/features/delivery/presentation/widgets/scheduled_pickups_section.dart';
-import 'package:homemade/features/delivery/presentation/widgets/weekly_challenges_section.dart';
+import 'package:homemade/features/delivery/presentation/widgets/delivery_settings_section.dart';
+import 'package:homemade/features/delivery/presentation/widgets/next_pickup_card.dart';
+import 'package:homemade/features/delivery/presentation/widgets/today_stats_card.dart';
 
 class DeliveryBottomSheet extends StatefulWidget {
   const DeliveryBottomSheet({super.key});
@@ -23,6 +22,10 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
   /// Driven from [_controller] in [_updateFrostedness].
   final ValueNotifier<double> _frostedness = ValueNotifier<double>(1.0);
 
+  /// Currently selected nav-bar tab — drives which body content is shown.
+  final ValueNotifier<DeliveryNavTab> _selectedTab =
+      ValueNotifier<DeliveryNavTab>(DeliveryNavTab.drive);
+
   /// Recomputed in [build] from MediaQuery; the listener reads it.
   double _collapsedFraction = 0.15;
 
@@ -37,6 +40,7 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
     _controller.removeListener(_updateFrostedness);
     _controller.dispose();
     _frostedness.dispose();
+    _selectedTab.dispose();
     super.dispose();
   }
 
@@ -56,6 +60,20 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutCubic,
     );
+  }
+
+  void _selectTab(DeliveryNavTab tab) {
+    _selectedTab.value = tab;
+    //* Tapping a tab while collapsed expands the sheet so the user can
+    //* see the content they just switched to.
+    final midpoint = (_collapsedFraction + _expandedFraction) / 2;
+    if (_controller.size < midpoint) {
+      _controller.animateTo(
+        _expandedFraction,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   @override
@@ -80,7 +98,11 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
             GestureDetector(
               onTap: _toggle,
               behavior: HitTestBehavior.opaque,
-              child: DeliveryNavBar(frostedness: _frostedness),
+              child: DeliveryNavBar(
+                frostedness: _frostedness,
+                selectedTab: _selectedTab,
+                onTabSelected: _selectTab,
+              ),
             ),
             Expanded(
               //* Body shares the bar's surface tint so they read as one
@@ -92,150 +114,37 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
                   color: DeliveryNavBar.surfaceTintFor(scheme, t),
                   child: child,
                 ),
-                child: ListView(
-                  controller: scrollController,
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).padding.bottom,
+                //* Body content swaps based on the active tab. Keyed on the
+                //* tab so the ListView is rebuilt with a clean scroll
+                //* position when the user switches.
+                child: ValueListenableBuilder<DeliveryNavTab>(
+                  valueListenable: _selectedTab,
+                  builder: (context, tab, _) => ListView(
+                    key: ValueKey(tab),
+                    controller: scrollController,
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).padding.bottom,
+                    ),
+                    children: tab == DeliveryNavTab.drive
+                        ? const [
+                            Gap(AppSizes.xl),
+                            NextPickupCard(),
+                            Gap(AppSizes.lg),
+                            TodayStatsCard(),
+                            Gap(AppSizes.lg),
+                          ]
+                        : const [
+                            Gap(AppSizes.xl),
+                            DeliverySettingsSection(),
+                            Gap(AppSizes.lg),
+                          ],
                   ),
-                  children: const [
-                    Gap(AppSizes.xl),
-                    WeeklyChallengesSection(),
-                    Gap(AppSizes.lg),
-                    _DailyStatsSection(),
-                    Gap(AppSizes.md),
-                    _DrivingPreferencesRow(),
-                    Gap(AppSizes.lg),
-                    ScheduledPickupsSection(),
-                    Gap(AppSizes.lg),
-                  ],
                 ),
               ),
             ),
           ],
         );
       },
-    );
-  }
-}
-
-class _DailyStatsSection extends StatelessWidget {
-  const _DailyStatsSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final stats = DeliveryDriverMockData.todayStats();
-    final scheme = Theme.of(context).colorScheme;
-    final hours = stats.onlineTime.inHours;
-    final minutes = stats.onlineTime.inMinutes.remainder(60);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.md,
-          vertical: AppSizes.lg,
-        ),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: _StatCell(
-                label: 'Earnings',
-                value: '\$${stats.earnings.toStringAsFixed(1)}',
-              ),
-            ),
-            Expanded(
-              child: _StatCell(
-                label: 'Online',
-                value: '${hours}hr ${minutes}min',
-              ),
-            ),
-            Expanded(
-              child: _StatCell(
-                label: 'Rides',
-                value: stats.rides.toString().padLeft(2, '0'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatCell extends StatelessWidget {
-  const _StatCell({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-        ),
-        const Gap(AppSizes.xs + 2),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ],
-    );
-  }
-}
-
-class _DrivingPreferencesRow extends StatelessWidget {
-  const _DrivingPreferencesRow();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-      child: Material(
-        color: scheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.md,
-              vertical: AppSizes.md + 2,
-            ),
-            child: Row(
-              children: [
-                Icon(Iconsax.setting_4, size: 22, color: scheme.onSurface),
-                const Gap(AppSizes.md),
-                Expanded(
-                  child: Text(
-                    'Driving Preferences',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Iconsax.arrow_right_3,
-                  size: 18,
-                  color: scheme.onSurfaceVariant,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

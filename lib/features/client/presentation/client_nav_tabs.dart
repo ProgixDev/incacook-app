@@ -9,3 +9,6 @@ const List<NavTab> kClientNavTabs = [
   NavTab(icon: Iconsax.message, label: 'Messages', screen: ChatListScreen()),
   NavTab(icon: Iconsax.user, label: 'Profil', screen: SettingsScreen()),
 ];
+
+
+

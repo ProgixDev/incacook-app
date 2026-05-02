@@ -2,10 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:homemade/bindings/general_bindings.dart';
+import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:homemade/core/controllers/theme_controller.dart';
 import 'package:homemade/core/utils/theme/theme.dart';
 import 'package:homemade/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:homemade/features/onboarding/presentation/screens/onboarding.dart';
+import 'package:homemade/features/seller/presentation/screens/seller_home.dart';
+import 'package:homemade/features/seller/presentation/seller_nav_tabs.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -23,7 +26,7 @@ class App extends StatelessWidget {
         // home: kDebugMode
         //     ? const DeliveryHomeScreen()
         //     : const OnBoardingScreen(),
-        home: const DeliveryHomeScreen(),
+        home: const NavigationMenu(tabs: kSellerNavTabs),
       ),
     );
   }

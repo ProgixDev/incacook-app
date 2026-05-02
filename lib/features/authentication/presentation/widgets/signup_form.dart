@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:homemade/features/seller/presentation/seller_nav_tabs.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:homemade/core/constants/sizes.dart';
@@ -9,6 +10,8 @@ import 'package:homemade/core/utils/validators/validators.dart';
 import 'package:homemade/features/authentication/controllers/signup_controller.dart';
 import 'package:homemade/features/authentication/domain/user_type.dart';
 import 'package:homemade/features/client/presentation/client_nav_tabs.dart';
+import 'package:homemade/features/delivery/presentation/screens/delivery_home.dart';
+import 'package:homemade/features/seller/presentation/screens/seller_home.dart';
 
 class SignupForm extends StatelessWidget {
   const SignupForm({super.key, required this.userType});
@@ -19,6 +22,14 @@ class SignupForm extends StatelessWidget {
     borderRadius: BorderRadius.all(Radius.circular(48.0)),
     borderSide: BorderSide.none,
   );
+
+  Widget _homeForUserType() {
+    return switch (userType) {
+      UserType.client => const NavigationMenu(tabs: kClientNavTabs),
+      UserType.delivery => const DeliveryHomeScreen(),
+      UserType.seller => const NavigationMenu(tabs: kSellerNavTabs),
+    };
+  }
 
   InputDecoration _decoration(
     BuildContext context, {
@@ -199,12 +210,12 @@ class SignupForm extends StatelessWidget {
           // const TermsAndConditionsCheckBox(),
           // const Gap(AppSizes.spaceBtwItems),
 
-          //* sign up button
+          //* sign up button — routes to the home screen matching the
+          //* selected user type.
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () =>
-                  Get.to(() => const NavigationMenu(tabs: kClientNavTabs)),
+              onPressed: () => Get.to(_homeForUserType),
               child: const Text(AppTexts.createAccount),
             ),
           ),

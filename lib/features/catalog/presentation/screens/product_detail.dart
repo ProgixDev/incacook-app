@@ -25,7 +25,7 @@ import 'package:homemade/features/orders/domain/product_add_on.dart';
 import 'package:homemade/features/orders/presentation/widgets/order_customize_sheet.dart';
 import 'package:homemade/features/seller/data/seller_mock_data.dart';
 import 'package:get/get.dart';
-import 'package:homemade/features/seller/presentation/screens/seller_profile2.dart';
+import 'package:homemade/features/seller/presentation/screens/seller_profile.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});

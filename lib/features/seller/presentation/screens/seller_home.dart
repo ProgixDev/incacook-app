@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+
+import 'package:homemade/core/constants/sizes.dart';
+import 'package:homemade/core/widgets/decor/decor_blob.dart';
+import 'package:homemade/features/seller/presentation/widgets/order_requests_section.dart';
+import 'package:homemade/features/seller/presentation/widgets/seller_home_appbar.dart';
+import 'package:homemade/features/seller/presentation/widgets/today_snapshot_card.dart';
+
+class SellerHomeScreen extends StatelessWidget {
+  const SellerHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final appBarHeight =
+        MediaQuery.viewPaddingOf(context).top + AppSizes.appBarHeight;
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: const SellerHomeAppBar(),
+      body: Stack(
+        children: [
+          //* decorative top-right blob (purely cosmetic, no input).
+          const Positioned(
+            top: -8,
+            right: -16,
+            child: IgnorePointer(child: DecorBlob()),
+          ),
+          ListView(
+            padding: EdgeInsets.only(
+              top: appBarHeight + AppSizes.md,
+              bottom: AppSizes.spaceBtwSections,
+            ),
+            children: const [
+              //? today snapshot owns its horizontal padding so order requests
+              //? can run edge-to-edge for the carousel peek.
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: TodaySnapshotCard(),
+              ),
+              Gap(AppSizes.spaceBtwSections),
+              OrderRequestsSection(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -19,6 +19,8 @@ class AppAnimations {
   static const String email = 'assets/animations/email.json';
   static const String forgotPassword = 'assets/animations/forgot_password.json';
   static const String otp = 'assets/animations/otp.json';
+  static const String noResults = 'assets/animations/no_result.json';
+  static const String empty = 'assets/animations/empty.json';
 
   //* order tracking (placeholders — swap with final cooking/delivered anims later)
   static const String orderPreparing = "assets/animations/shopping_cart.json";

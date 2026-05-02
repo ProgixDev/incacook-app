@@ -3,15 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 
+import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/delivery/presentation/widgets/go_online_button.dart';
 
+/// Tab indices for the delivery bottom-sheet body. Drive shows the
+/// pickup/stats cards; settings shows the appearance + logout panel.
+enum DeliveryNavTab { drive, settings }
+
 class DeliveryNavBar extends StatelessWidget {
-  const DeliveryNavBar({super.key, required this.frostedness});
+  const DeliveryNavBar({
+    super.key,
+    required this.frostedness,
+    required this.selectedTab,
+    required this.onTabSelected,
+  });
 
   /// 1.0 → fully frosted (collapsed sheet, blur over the map).
   /// 0.0 → fully solid surface (expanded sheet, blends with content below).
   /// Animations between the two values are interpolated.
   final ValueListenable<double> frostedness;
+
+  /// Currently active tab. The bar listens to this so selected styling
+  /// stays in lockstep with the body content the parent renders.
+  final ValueListenable<DeliveryNavTab> selectedTab;
+
+  final ValueChanged<DeliveryNavTab> onTabSelected;
 
   //* Geometry — derived from the pill button so the notch hugs it exactly.
   static const double _barVisibleHeight = 88;
@@ -35,32 +51,37 @@ class DeliveryNavBar extends StatelessWidget {
           //* Shadow + frosted/solid fill, both following the dipped silhouette.
           _NavBarBackground(frostedness: frostedness),
 
-          //* Drive (left) + Earnings (right) — vertically centered in the
+          //* Drive (left) + Settings (right) — vertically centered in the
           //* visible bar area (below the notch).
           Padding(
             padding: const EdgeInsets.only(top: overhang),
             child: SizedBox(
               height: _barVisibleHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.driver_2,
-                      label: 'Drive',
-                      selected: true,
+              child: ValueListenableBuilder<DeliveryNavTab>(
+                valueListenable: selectedTab,
+                builder: (context, tab, _) => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.driver_2,
+                        label: AppTexts.deliveryDashboardDriveTab,
+                        selected: tab == DeliveryNavTab.drive,
+                        onTap: () => onTabSelected(DeliveryNavTab.drive),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: GoOnlineButton.width),
-                  Expanded(
-                    child: _NavItem(
-                      icon: Iconsax.dollar_circle,
-                      label: 'Earnings',
-                      selected: false,
+                    const SizedBox(width: GoOnlineButton.width),
+                    Expanded(
+                      child: _NavItem(
+                        icon: Iconsax.setting_2,
+                        label: AppTexts.deliveryDashboardSettingsTab,
+                        selected: tab == DeliveryNavTab.settings,
+                        onTap: () => onTabSelected(DeliveryNavTab.settings),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -240,30 +261,38 @@ class _NavItem extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.selected,
+    required this.onTap,
   });
 
   final IconData icon;
   final String label;
   final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final color = selected ? scheme.onSurface : scheme.onSurfaceVariant;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: color, size: 26),
-        const Gap(4),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: color,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+    return GestureDetector(
+      onTap: onTap,
+      //* opaque so taps anywhere in the item's box switch tabs without
+      //* falling through to the outer sheet-toggle gesture.
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 26),
+          const Gap(4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: color,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

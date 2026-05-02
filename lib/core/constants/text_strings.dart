@@ -548,6 +548,55 @@ class AppTexts {
   static String cartDifferentSellerBody(String sellerName) =>
       "Tu as déjà un panier chez $sellerName. Veux-tu le vider et recommencer ?";
 
+  //* seller — home dashboard
+  static const String sellerHomeTodayLabel = "Aujourd'hui";
+  static const String sellerHomeTodayRevenue = "Revenus";
+  static const String sellerHomeTodayOrders = "Commandes";
+  static const String sellerHomeTodayPortions = "Portions";
+  static const String sellerHomeTodayImpact =
+      "Vous avez sauvé 18 portions du gaspillage aujourd'hui";
+
+  //* seller — order requests section
+  static const String sellerOrderRequestsTitle = "Demandes de commande";
+  static const String sellerOrderActionReject = "Refuser";
+  static const String sellerOrderActionAccept = "Accepter";
+  static const String sellerOrderSeeMore = "Voir plus";
+  static const String sellerOrderNotePrefix = "note :";
+  static const String sellerOrderPaymentStatusLabel = "Statut du paiement";
+  static const String sellerOrderDeliverToLabel = "Livrer à";
+  static const String sellerOrderEmptyMessage =
+      "Vous n'avez encore aucune commande";
+
+  //* seller — accepted orders / history screen
+  static const String sellerOrdersTabAccepted = "Acceptées";
+  static const String sellerOrdersTabHistory = "Historique";
+  static const String sellerOrdersFilterAll = "Tout";
+  static const String sellerOrdersFilterReadyToPickup = "Prêt à récupérer";
+  static const String sellerOrdersFilterPreparing = "En préparation";
+  static const String sellerOrdersSortByLabel = "Trier par";
+  static const String sellerOrdersSortAcceptedTime = "Heure d'acceptation";
+  static const String sellerOrdersSortTotalPrice = "Prix total";
+  static const String sellerOrdersMinutesSuffix = "min";
+  static const String sellerOrdersEmptyMessage = "Aucune commande à afficher";
+
+  //* seller — products / catalog screen
+  static const String sellerProductsAddCta = "Ajouter un produit";
+  static const String sellerProductsTabAvailable = "Disponible";
+  static const String sellerProductsTabNotAvailable = "Indisponible";
+  static const String sellerProductsAvailableLabel = "Disponible";
+  static const String sellerProductsNotAvailableLabel = "Indisponible";
+  static const String sellerProductsPrepSuffix = "min";
+  static const String sellerProductsEmptyMessage = "Aucun produit à afficher";
+
+  //* delivery — driver dashboard (Drive sheet + nav bar)
+  static const String deliveryDashboardDriveTab = "Conduire";
+  static const String deliveryDashboardSettingsTab = "Paramètres";
+  static const String deliveryDashboardNextPickupLabel = "Prochain ramassage";
+  static const String deliveryDashboardNavigateCta = "Itinéraire";
+  static const String deliveryDashboardTodayLabel = "Aujourd'hui";
+  static const String deliveryDashboardOnlineLabel = "En ligne";
+  static const String deliveryDashboardDeliveriesLabel = "Livraisons";
+
   //* order — customize sheet
   static const String orderSheetQuantityLabel = "Quantité";
   static const String orderSheetPortionsAvailableSuffix =

@@ -20,7 +20,7 @@ import 'package:homemade/features/client/presentation/widget/client_home_search_
 import 'package:homemade/features/client/presentation/widget/client_home_section.dart';
 import 'package:homemade/features/client/presentation/widget/kitchen_card.dart';
 import 'package:homemade/features/seller/data/seller_mock_data.dart';
-import 'package:homemade/features/seller/presentation/screens/seller_profile2.dart';
+import 'package:homemade/features/seller/presentation/screens/seller_profile.dart';
 
 class ClientHomeScreen extends StatefulWidget {
   const ClientHomeScreen({super.key});
