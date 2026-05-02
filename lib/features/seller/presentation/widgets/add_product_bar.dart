@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class AddProductBar extends StatelessWidget {
   const AddProductBar({super.key, this.onTap});
@@ -15,40 +16,30 @@ class AddProductBar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(80),
-          boxShadow: [
-            BoxShadow(
-              color: scheme.shadow.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.fromLTRB(
-          AppSizes.md,
-          AppSizes.sm,
-          AppSizes.sm,
-          AppSizes.sm,
-        ),
-        child: Row(
-          children: [
-            Icon(Iconsax.box_1, color: scheme.onSurface, size: 24),
-            const Gap(AppSizes.md),
-            Expanded(
-              child: Text(
-                AppTexts.sellerProductsAddCta,
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(80),
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.md,
+        AppSizes.sm,
+        AppSizes.sm,
+        AppSizes.sm,
+      ),
+      child: Row(
+        children: [
+          Icon(Iconsax.box_1, color: scheme.onSurface, size: 24),
+          const Gap(AppSizes.md),
+          Expanded(
+            child: Text(
+              AppTexts.sellerProductsAddCta,
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Container(
+          ),
+          GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
@@ -57,8 +48,8 @@ class AddProductBar extends StatelessWidget {
               ),
               child: Icon(Iconsax.add, color: scheme.onPrimary, size: 24),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

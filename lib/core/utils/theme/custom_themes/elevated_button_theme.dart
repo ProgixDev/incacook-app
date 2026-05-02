@@ -5,6 +5,16 @@ import 'package:homemade/core/utils/theme/palette.dart';
 class CustomElevatedButtonTheme {
   CustomElevatedButtonTheme._();
 
+  //? state-aware side: drop the border entirely when the button is
+  //? disabled so it doesn't read as a brand-blue outline around a
+  //? muted-grey fill.
+  static final WidgetStateProperty<BorderSide?> _stateAwareSide =
+      WidgetStateProperty.resolveWith<BorderSide?>(
+        (states) => states.contains(WidgetState.disabled)
+            ? BorderSide.none
+            : const BorderSide(color: BrandColors.primary),
+      );
+
   //*light theme
   static final lightElevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
@@ -13,7 +23,6 @@ class CustomElevatedButtonTheme {
       backgroundColor: BrandColors.primary,
       disabledForegroundColor: LightPalette.onSurfaceVariant,
       disabledBackgroundColor: LightPalette.outline,
-      side: const BorderSide(color: BrandColors.primary),
       padding: const EdgeInsets.symmetric(vertical: 18),
       textStyle: const TextStyle(
         fontSize: 16,
@@ -21,7 +30,7 @@ class CustomElevatedButtonTheme {
         fontWeight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-    ),
+    ).copyWith(side: _stateAwareSide),
   );
 
   //*dark theme
@@ -32,7 +41,6 @@ class CustomElevatedButtonTheme {
       backgroundColor: BrandColors.primary,
       disabledForegroundColor: DarkPalette.onSurfaceVariant,
       disabledBackgroundColor: DarkPalette.outline,
-      side: const BorderSide(color: BrandColors.primary),
       padding: const EdgeInsets.symmetric(vertical: 18),
       textStyle: const TextStyle(
         fontSize: 16,
@@ -40,6 +48,6 @@ class CustomElevatedButtonTheme {
         fontWeight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-    ),
+    ).copyWith(side: _stateAwareSide),
   );
 }

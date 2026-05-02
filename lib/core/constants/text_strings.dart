@@ -579,6 +579,41 @@ class AppTexts {
   static const String sellerOrdersMinutesSuffix = "min";
   static const String sellerOrdersEmptyMessage = "Aucune commande à afficher";
 
+  //* seller — add product sheet
+  static const String addProductSheetTitle = "Ajouter un produit";
+  static const String addProductSectionPhotos = "Photos";
+  static const String addProductSectionBasic = "Infos de base";
+  static const String addProductSectionClassification = "Classification";
+  static const String addProductSectionAllergens = "Allergènes";
+  static const String addProductSectionAvailability = "Disponibilité";
+  static const String addProductSectionPickup = "Mode de récupération";
+  static const String addProductPhotosHint =
+      "Ajoutez 1 à 4 photos. La première est mise en avant dans le fil.";
+  static const String addProductFieldTitle = "Titre du plat";
+  static const String addProductFieldDescription = "Description";
+  static const String addProductFieldPrice = "Prix";
+  static const String addProductFieldPortions = "Portions disponibles";
+  static const String addProductPriceCapNote =
+      "Plafond : €4,50 pour Le Bon Fait Maison. Libre pour Traiteur et Restaurant.";
+  static const String addProductFieldCategory = "Catégorie";
+  static const String addProductCategoryAutoNote =
+      "Reprise depuis votre profil de cuisinier.";
+  static const String addProductFieldCuisine = "Type de cuisine";
+  static const String addProductFieldDiets = "Régime alimentaire";
+  static const String addProductFieldDishType = "Type de plat";
+  static const String addProductAllergensRequiredHint =
+      "Au moins une case doit être cochée.";
+  static const String addProductAllergenOtherHint = "Précisez l'allergène";
+  static const String addProductFieldPickupStart = "Heure de retrait";
+  static const String addProductFieldPickupEnd = "Heure limite de retrait";
+  static const String addProductPickupTimeNote =
+      "L'heure limite ne peut pas dépasser minuit.";
+  static const String addProductPickupOnSite = "À récupérer sur place";
+  static const String addProductPickupOnSiteHint = "Gratuit";
+  static const String addProductPickupDelivery = "Livraison";
+  static const String addProductPickupDeliveryHint = "€2,50";
+  static const String addProductSaveCta = "Publier le produit";
+
   //* seller — products / catalog screen
   static const String sellerProductsAddCta = "Ajouter un produit";
   static const String sellerProductsTabAvailable = "Disponible";

@@ -27,6 +27,7 @@ class App extends StatelessWidget {
         //     ? const DeliveryHomeScreen()
         //     : const OnBoardingScreen(),
         home: const NavigationMenu(tabs: kSellerNavTabs),
+        // home: const OnBoardingScreen(),
       ),
     );
   }

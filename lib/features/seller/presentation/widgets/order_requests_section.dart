@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/seller/data/order_request_mock_data.dart';
 import 'package:homemade/features/seller/presentation/widgets/order_request_card.dart';
 
@@ -128,18 +129,8 @@ class _EmptyState extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final hint = scheme.onSurfaceVariant.withValues(alpha: 0.5);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(20),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.lg,
         vertical: AppSizes.spaceBtwSections,

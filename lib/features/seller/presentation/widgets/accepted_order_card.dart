@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/seller/domain/accepted_order.dart';
 
 class AcceptedOrderCard extends StatelessWidget {
@@ -23,18 +24,8 @@ class AcceptedOrderCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(40),
-          boxShadow: [
-            BoxShadow(
-              color: scheme.shadow.withValues(alpha: 0.06),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+      child: FrostedSurface(
+        borderRadius: BorderRadius.circular(40),
         padding: const EdgeInsets.all(AppSizes.md),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

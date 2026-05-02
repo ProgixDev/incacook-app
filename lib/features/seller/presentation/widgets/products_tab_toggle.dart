@@ -4,10 +4,11 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 enum ProductsTab { available, notAvailable }
 
-class ProductsTabToggle extends StatelessWidget {
+class ProductsTabToggle extends StatefulWidget {
   const ProductsTabToggle({
     super.key,
     required this.selected,
@@ -20,55 +21,101 @@ class ProductsTabToggle extends StatelessWidget {
   final VoidCallback? onLayoutToggle;
 
   @override
+  State<ProductsTabToggle> createState() => _ProductsTabToggleState();
+}
+
+class _ProductsTabToggleState extends State<ProductsTabToggle> {
+  //? tabs are hidden until the layout button is tapped — reveals them
+  //? sliding in from the right of the row.
+  bool _expanded = false;
+
+  static const _animDuration = Duration(milliseconds: 320);
+  static const _animCurve = Curves.easeOutCubic;
+
+  void _toggleExpanded() {
+    setState(() => _expanded = !_expanded);
+    widget.onLayoutToggle?.call();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final height = DeviceUtils.getScreenHeight(context) * 0.05;
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: height,
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: scheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _TabSegment(
-                    label: AppTexts.sellerProductsTabAvailable,
-                    selected: selected == ProductsTab.available,
-                    onTap: () => onChanged(ProductsTab.available),
+    return SizedBox(
+      height: height,
+      child: Row(
+        children: [
+          Expanded(
+            //? ClipRect keeps the off-screen tabs from leaking past the
+            //? Expanded slot during the slide.
+            child: ClipRect(
+              child: AnimatedSlide(
+                duration: _animDuration,
+                curve: _animCurve,
+                //? Offset.dx == 1 → translated right by full child width
+                //? (parked just off the right edge of the Expanded slot).
+                offset: _expanded ? Offset.zero : const Offset(1.0, 0),
+                child: AnimatedOpacity(
+                  duration: _animDuration,
+                  curve: _animCurve,
+                  opacity: _expanded ? 1.0 : 0.0,
+                  child: FrostedSurface(
+                    borderRadius: BorderRadius.circular(40),
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _TabSegment(
+                            label: AppTexts.sellerProductsTabAvailable,
+                            selected: widget.selected == ProductsTab.available,
+                            onTap: () =>
+                                widget.onChanged(ProductsTab.available),
+                          ),
+                        ),
+                        Expanded(
+                          child: _TabSegment(
+                            label: AppTexts.sellerProductsTabNotAvailable,
+                            selected:
+                                widget.selected == ProductsTab.notAvailable,
+                            onTap: () =>
+                                widget.onChanged(ProductsTab.notAvailable),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: _TabSegment(
-                    label: AppTexts.sellerProductsTabNotAvailable,
-                    selected: selected == ProductsTab.notAvailable,
-                    onTap: () => onChanged(ProductsTab.notAvailable),
+              ),
+            ),
+          ),
+          const Gap(8),
+          GestureDetector(
+            onTap: _toggleExpanded,
+            behavior: HitTestBehavior.opaque,
+            child: SizedBox(
+              width: height,
+              child: FrostedSurface(
+                borderRadius: BorderRadius.circular(40),
+                child: Center(
+                  child: AnimatedRotation(
+                    duration: _animDuration,
+                    curve: _animCurve,
+                    //? quarter-turn cue so the user has feedback that the
+                    //? button is "open" while the tabs are showing.
+                    turns: _expanded ? 0.125 : 0,
+                    child: Icon(
+                      Iconsax.element_3,
+                      color: scheme.onSurface,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-        const Gap(8),
-        GestureDetector(
-          onTap: onLayoutToggle,
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            width: height,
-            height: height,
-            decoration: BoxDecoration(
-              color: scheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Icon(Iconsax.element_3, color: scheme.onSurface, size: 20),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

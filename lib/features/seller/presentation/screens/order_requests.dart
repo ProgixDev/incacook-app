@@ -69,8 +69,7 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                   OrdersFilterPanel(
                     statusFilter: _statusFilter,
                     sortBy: _sortBy,
-                    onStatusChanged: (s) =>
-                        setState(() => _statusFilter = s),
+                    onStatusChanged: (s) => setState(() => _statusFilter = s),
                     onSortChanged: (s) => setState(() => _sortBy = s),
                   ),
                   const Gap(AppSizes.spaceBtwSections),
@@ -82,8 +81,7 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                               bottom: AppSizes.spaceBtwSections,
                             ),
                             itemCount: orders.length,
-                            separatorBuilder: (_, _) =>
-                                const Gap(AppSizes.md),
+                            separatorBuilder: (_, _) => const Gap(AppSizes.md),
                             itemBuilder: (context, i) =>
                                 AcceptedOrderCard(order: orders[i]),
                           ),

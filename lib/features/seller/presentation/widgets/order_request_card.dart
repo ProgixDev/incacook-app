@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/seller/domain/order_request.dart';
 
 class OrderRequestCard extends StatelessWidget {
@@ -26,18 +27,8 @@ class OrderRequestCard extends StatelessWidget {
     final dateLabel = DateFormat('d MMM y', 'fr_FR').format(order.placedAt);
     final timeLabel = DateFormat.jm('fr_FR').format(order.placedAt);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(20),
       padding: const EdgeInsets.all(AppSizes.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

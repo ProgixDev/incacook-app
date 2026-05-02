@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/seller/domain/accepted_order.dart';
 
 enum OrdersSortBy { acceptedTime, totalPrice }
@@ -43,19 +44,8 @@ class _OrdersFilterPanelState extends State<OrdersFilterPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(40),
       padding: const EdgeInsets.all(AppSizes.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

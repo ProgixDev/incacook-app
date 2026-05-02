@@ -29,9 +29,7 @@ class WelcomeScreen extends StatelessWidget {
               sigmaX: FrostedSurface.blurSigma,
               sigmaY: FrostedSurface.blurSigma,
             ),
-            child: Container(
-              color: scheme.surface.withValues(alpha: 0.55),
-            ),
+            child: Container(color: scheme.surface.withValues(alpha: 0.55)),
           ),
 
           //* 3) foreground UI
@@ -50,9 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                   const Gap(AppSizes.sm),
                   Text(
                     AppTexts.welcomeBrand,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -89,12 +85,19 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const Gap(AppSizes.sm + 2),
 
-                  //* primary CTA — sign up with email
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () =>
                           Get.to(() => const UserTypeSelectionScreen()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: scheme.primary,
+                        foregroundColor: scheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
                       child: Text(
                         AppTexts.welcomeSignUpEmail,
                         style: const TextStyle(
@@ -112,8 +115,9 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         AppTexts.welcomeAlreadyAccount,
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: scheme.onSurfaceVariant),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                       TextButton(
                         onPressed: () => Get.to(() => const LoginScreen()),
@@ -150,33 +154,30 @@ class _SocialPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
         height: 48,
-        decoration: BoxDecoration(
-          color: scheme.surface,
+        child: FrostedSurface(
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: scheme.outline.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(logo, height: 22, width: 22),
-            const Gap(AppSizes.sm),
-            Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          border: const Border.fromBorderSide(BorderSide.none),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(logo, height: 22, width: 22),
+                const Gap(AppSizes.sm),
+                Text(
+                  label,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

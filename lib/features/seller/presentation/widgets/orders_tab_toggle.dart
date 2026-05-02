@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 enum OrdersTab { accepted, history }
 
@@ -17,30 +18,29 @@ class OrdersTabToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: DeviceUtils.getScreenHeight(context) * 0.05,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+      child: FrostedSurface(
         borderRadius: BorderRadius.circular(40),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _TabSegment(
-              label: AppTexts.sellerOrdersTabAccepted,
-              selected: selected == OrdersTab.accepted,
-              onTap: () => onChanged(OrdersTab.accepted),
+        padding: const EdgeInsets.all(4),
+        child: Row(
+          children: [
+            Expanded(
+              child: _TabSegment(
+                label: AppTexts.sellerOrdersTabAccepted,
+                selected: selected == OrdersTab.accepted,
+                onTap: () => onChanged(OrdersTab.accepted),
+              ),
             ),
-          ),
-          Expanded(
-            child: _TabSegment(
-              label: AppTexts.sellerOrdersTabHistory,
-              selected: selected == OrdersTab.history,
-              onTap: () => onChanged(OrdersTab.history),
+            Expanded(
+              child: _TabSegment(
+                label: AppTexts.sellerOrdersTabHistory,
+                selected: selected == OrdersTab.history,
+                onTap: () => onChanged(OrdersTab.history),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

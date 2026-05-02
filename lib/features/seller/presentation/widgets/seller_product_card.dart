@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/theme/brand_colors.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/seller/domain/seller_product.dart';
 
 class SellerProductCard extends StatelessWidget {
@@ -31,13 +32,9 @@ class SellerProductCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
+      child: FrostedSurface(
+        borderRadius: BorderRadius.circular(30),
         padding: const EdgeInsets.all(AppSizes.sm),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        clipBehavior: Clip.antiAlias,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

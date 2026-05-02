@@ -55,12 +55,6 @@ class UserTypeSelectionScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
-                  const Gap(AppSizes.sm),
-                  // Text(
-                  //   AppTexts.userTypeSubHeading,
-                  //   style: Theme.of(context).textTheme.bodyMedium,
-                  //   textAlign: TextAlign.center,
-                  // ),
                 ],
               ),
             ),
