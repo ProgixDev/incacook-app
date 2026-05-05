@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class ProductImageHeader extends StatelessWidget {
   const ProductImageHeader({
@@ -68,18 +68,23 @@ class ProductImageHeader extends StatelessWidget {
             right: AppSizes.md,
             child: GestureDetector(
               onTap: onFavoriteTap,
-              child: CustomCircularContainer(
-                size: 44,
-                backgroundColor: scheme.surface,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  transitionBuilder: (child, animation) =>
-                      ScaleTransition(scale: animation, child: child),
-                  child: Icon(
-                    isFavorited ? Iconsax.heart5 : Iconsax.heart,
-                    key: ValueKey<bool>(isFavorited),
-                    color: isFavorited ? Colors.red : scheme.onSurface,
-                    size: 20,
+              child: FrostedSurface(
+                shape: BoxShape.circle,
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Center(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 220),
+                      transitionBuilder: (child, animation) =>
+                          ScaleTransition(scale: animation, child: child),
+                      child: Icon(
+                        isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                        key: ValueKey<bool>(isFavorited),
+                        color: isFavorited ? Colors.red : scheme.onSurface,
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ),
               ),

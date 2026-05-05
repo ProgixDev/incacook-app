@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/constants/sizes.dart';
@@ -43,14 +45,10 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
     ),
   ];
 
-  late String? _selectedId = _addresses.isNotEmpty
-      ? _addresses.first.id
-      : null;
+  late String? _selectedId = _addresses.isNotEmpty ? _addresses.first.id : null;
   final TextEditingController _instructionsController = TextEditingController();
   final DeliveryTiming _timing = DeliveryTiming.asap;
-  final DateTime _scheduledAt = DateTime.now().add(
-    const Duration(minutes: 45),
-  );
+  final DateTime _scheduledAt = DateTime.now().add(const Duration(minutes: 45));
 
   @override
   void initState() {
@@ -90,8 +88,8 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
   void _confirm() {
     final address = _selected;
     if (address == null) return;
-    Navigator.of(context).pop(
-      DeliveryDetails(
+    Get.back<DeliveryDetails>(
+      result: DeliveryDetails(
         address: address,
         instructions: _instructionsController.text.trim(),
         timing: _timing,
@@ -109,9 +107,9 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
         showBackArrow: true,
         title: Text(
           AppTexts.addressTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
       body: Column(
@@ -136,9 +134,7 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
                         Text(
                           AppTexts.addressDeliverTo,
                           style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         IconButton(
                           onPressed: _openAddressSearch,
@@ -196,18 +192,14 @@ class _EmptyAddressState extends StatelessWidget {
               color: scheme.surfaceContainerHigh,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Iconsax.location,
-              size: 24,
-              color: scheme.onSurface,
-            ),
+            child: Icon(Iconsax.location, size: 24, color: scheme.onSurface),
           ),
           const Gap(AppSizes.md),
           Text(
             AppTexts.addressNoSavedTitle,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const Gap(AppSizes.md),
           SizedBox(
@@ -271,33 +263,18 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: const Border(top: BorderSide(color: Colors.transparent)),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSizes.md,
+        AppSizes.sm,
+        AppSizes.md,
+        DeviceUtils.getBottomNavigationBarHeight(),
       ),
-      padding: const EdgeInsets.all(AppSizes.md),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: enabled ? onContinue : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.selectedSurface,
-              foregroundColor: colors.selectedOnSurface,
-              disabledBackgroundColor: scheme.onSurface.withValues(alpha: 0.38),
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
-              textStyle: Theme.of(context).textTheme.titleMedium,
-            ),
-            child: const Text(AppTexts.addressContinueCta),
-          ),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: enabled ? onContinue : null,
+          child: const Text(AppTexts.addressContinueCta),
         ),
       ),
     );

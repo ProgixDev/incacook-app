@@ -56,6 +56,9 @@ flutter:
     - assets/animations/onboarding/
     - assets/animations/user_type/
     - assets/icons/
+    - assets/icons/kitchen_categories/
+    - assets/icons/diet_categories/
+    - assets/icons/dish_type_categories/
     - assets/icons/home_categories/
     - assets/icons/payment/
     - assets/icons/seller_home/

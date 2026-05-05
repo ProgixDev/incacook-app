@@ -240,7 +240,7 @@ class SellerMockData {
         originalPrice: 5.00,
         price: 3.00,
         expiresAt: now.add(const Duration(hours: 6)),
-        dietaryTags: const [DietaryTag.halal, DietaryTag.vegetarien],
+        dietaryTags: const [DietaryTag.halal, DietaryTag.vegan],
         allergens: const [Allergen.gluten, Allergen.fruitsACoque],
       ),
       FoodListing(

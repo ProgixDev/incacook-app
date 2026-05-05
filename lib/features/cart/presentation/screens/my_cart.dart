@@ -5,7 +5,6 @@ import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
-import 'package:homemade/features/cart/presentation/widgets/cart_badge.dart';
 import 'package:homemade/features/cart/presentation/widgets/cart_footer.dart';
 import 'package:homemade/features/cart/presentation/widgets/cart_item_card_dismissible.dart';
 import 'package:homemade/features/cart/presentation/widgets/empty_cart_state.dart';
@@ -73,7 +72,6 @@ class MyCartScreen extends StatelessWidget {
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
-        actions: [Obx(() => CartBadge(count: cart.itemCount))],
       ),
       body: Obx(() {
         if (cart.isEmpty) {
@@ -81,9 +79,12 @@ class MyCartScreen extends StatelessWidget {
         }
 
         final seller = cart.sellerReference!;
-        return Stack(
+        //* Column instead of Stack-overlay: the list scrolls in the
+        //* remaining space and the footer naturally docks at the bottom
+        //* with no fixed height — fixes the overflow on shorter devices.
+        return Column(
           children: [
-            Positioned.fill(
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: AppSizes.md,
@@ -106,14 +107,9 @@ class MyCartScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: CartFooter(
-                enabled: cart.items.every((i) => i.isAvailable),
-                onContinue: () => _continueToFulfillment(context, seller),
-              ),
+            CartFooter(
+              enabled: cart.items.every((i) => i.isAvailable),
+              onContinue: () => _continueToFulfillment(context, seller),
             ),
           ],
         );

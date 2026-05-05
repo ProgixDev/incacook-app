@@ -28,6 +28,11 @@ String pinEmojiFor(SellerCategory category) {
   }
 }
 
+/// A map marker shaped as a price pill with a downward tail.
+///
+/// **Important for positioning:** the widget's intrinsic bottom-center is
+/// the tip of the tail, so callers should anchor the projected screen
+/// coordinate to the bottom-center of this widget's bbox.
 class MapPin extends StatelessWidget {
   const MapPin({
     super.key,
@@ -42,11 +47,57 @@ class MapPin extends StatelessWidget {
   final bool isUrgent;
   final VoidCallback? onTap;
 
+  static const double _tailHeight = 6;
+
   @override
   Widget build(BuildContext context) {
     final color = pinColorFor(listing.category);
     final emoji = pinEmojiFor(listing.category);
     final scale = isSelected ? 1.12 : 1.0;
+
+    final body = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        //* pill
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: Colors.white,
+              width: isSelected ? 2.5 : 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 13)),
+              const Gap(4),
+              Text(
+                '€${listing.price.toStringAsFixed(0)}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+        //* tail — points DOWN at the geographic location
+        CustomPaint(
+          size: const Size(10, _tailHeight),
+          painter: _PinTailPainter(color: color),
+        ),
+      ],
+    );
 
     return GestureDetector(
       onTap: onTap,
@@ -55,56 +106,19 @@ class MapPin extends StatelessWidget {
         scale: scale,
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
+        //* bottomCenter alignment + Clip.none lets the urgent halo grow
+        //* upward behind the pill without affecting the bbox bottom (which
+        //* must stay at the tail tip for correct geo-anchoring).
         child: Stack(
-          alignment: Alignment.center,
+          alignment: Alignment.bottomCenter,
           clipBehavior: Clip.none,
           children: [
-            if (isUrgent) const _UrgentHalo(),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: Colors.white,
-                      width: isSelected ? 2.5 : 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.18),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(emoji, style: const TextStyle(fontSize: 13)),
-                      const Gap(4),
-                      Text(
-                        '€${listing.price.toStringAsFixed(0)}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                //* tail
-                CustomPaint(
-                  size: const Size(10, 6),
-                  painter: _PinTailPainter(color: color),
-                ),
-              ],
-            ),
+            if (isUrgent)
+              const Positioned(
+                bottom: _tailHeight,
+                child: _UrgentHalo(),
+              ),
+            body,
             if (isUrgent)
               Positioned(
                 top: 0,

@@ -5,6 +5,7 @@ import 'package:homemade/bindings/general_bindings.dart';
 import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:homemade/core/controllers/theme_controller.dart';
 import 'package:homemade/core/utils/theme/theme.dart';
+import 'package:homemade/features/client/presentation/client_nav_tabs.dart';
 import 'package:homemade/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:homemade/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:homemade/features/seller/presentation/screens/seller_home.dart';
@@ -23,10 +24,7 @@ class App extends StatelessWidget {
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darkTheme,
         initialBinding: GeneralBindings(),
-        // home: kDebugMode
-        //     ? const DeliveryHomeScreen()
-        //     : const OnBoardingScreen(),
-        home: const NavigationMenu(tabs: kSellerNavTabs),
+        home: const NavigationMenu(tabs: kClientNavTabs),
         // home: const OnBoardingScreen(),
       ),
     );

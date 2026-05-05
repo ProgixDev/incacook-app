@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:homemade/core/constants/image_strings.dart';
@@ -14,26 +15,15 @@ class OrderDelivererPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: scheme.primary,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(48),
       ),
       child: Row(
         children: [
-          //* avatar
-          Container(
-            width: 52,
-            height: 52,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE8823B),
-              shape: BoxShape.circle,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Image.asset(AppImages.profilePic, fit: BoxFit.cover),
-          ),
+          CustomCircularImage(image: AppImages.profilePic),
           const Gap(AppSizes.sm),
 
           //* name + meta
@@ -65,7 +55,11 @@ class OrderDelivererPill extends StatelessWidget {
             child: CustomCircularContainer(
               size: 44,
               backgroundColor: Colors.white,
-              child: Icon(Iconsax.call, color: scheme.primary, size: 18),
+              child: Icon(
+                Iconsax.call,
+                color: Theme.of(context).colorScheme.primary,
+                size: 18,
+              ),
             ),
           ),
           const Gap(AppSizes.xs + 2),
@@ -81,7 +75,7 @@ class OrderDelivererPill extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Icon(
                     Iconsax.message,
-                    color: scheme.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 18,
                   ),
                 ),

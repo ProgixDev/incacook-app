@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class ProductBottomBar extends StatelessWidget {
   const ProductBottomBar({
@@ -26,39 +27,35 @@ class ProductBottomBar extends StatelessWidget {
         right: AppSizes.md,
         bottom: bottomSafe + AppSizes.md,
       ),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(height / 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+      child: FrostedSurface(
+        borderRadius: BorderRadius.circular(height / 2),
         padding: const EdgeInsets.all(6),
-        child: Row(
-          children: [
-            Expanded(
-              child: _PillButton(
-                label: AppTexts.productAddToCart,
-                onTap: onAddToCart,
-                background: scheme.surface,
-                foreground: scheme.onSurface,
+        child: SizedBox(
+          height: height - 12,
+          child: Row(
+            children: [
+              //* "Add to cart" reads as a secondary action — transparent so
+              //* the frosted bar shows through, foreground stays onSurface.
+              Expanded(
+                child: _PillButton(
+                  label: AppTexts.productAddToCart,
+                  onTap: onAddToCart,
+                  background: Colors.transparent,
+                  foreground: scheme.onSurface,
+                ),
               ),
-            ),
-            Expanded(
-              child: _PillButton(
-                label: AppTexts.productOrder,
-                onTap: onOrder,
-                background: colors.selectedSurface,
-                foreground: colors.selectedOnSurface,
+              //* "Order" is the primary CTA — solid selectedSurface fill
+              //* so it pops against the frosted bar.
+              Expanded(
+                child: _PillButton(
+                  label: AppTexts.productOrder,
+                  onTap: onOrder,
+                  background: colors.selectedSurface,
+                  foreground: colors.selectedOnSurface,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -82,6 +79,7 @@ class _PillButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(

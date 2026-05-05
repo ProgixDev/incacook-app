@@ -7,7 +7,7 @@ class AppAnimations {
   //* user type selection animations
   static const String userTypeSeller = "assets/animations/user_type/cook.json";
   static const String userTypeClient =
-      "assets/animations/user_type/customer.json";
+      "assets/animations/user_type/customer2.json";
   static const String userTypeDelivery =
       "assets/animations/user_type/delivery.json";
 

@@ -8,65 +8,139 @@ import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class ProfileUserCard extends StatelessWidget {
-  const ProfileUserCard({super.key, this.onEdit});
+  const ProfileUserCard({
+    super.key,
+    this.onEditProfile,
+    this.onPreferences,
+    this.onPayment,
+  });
 
-  final VoidCallback? onEdit;
+  final VoidCallback? onEditProfile;
+  final VoidCallback? onPreferences;
+  final VoidCallback? onPayment;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return FrostedSurface(
-      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
-      padding: const EdgeInsets.all(AppSizes.md),
-      child: Row(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.5),
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.md,
+        AppSizes.lg,
+        AppSizes.md,
+        AppSizes.md,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           //* avatar
-          CustomCircularImage(image: AppImages.profilePic, size: 64),
+          CustomCircularImage(image: AppImages.profilePic, size: 88),
           const Gap(AppSizes.md),
 
-          //* name + address
-          Expanded(
+          //* name
+          Text(
+            AppTexts.profileSampleName,
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const Gap(AppSizes.xs),
+
+          //* email
+          Text(
+            'arselene.test@gmail.com',
+            style: textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const Gap(AppSizes.lg),
+
+          //* quick-action tiles
+          Row(
+            children: [
+              Expanded(
+                child: _ProfileActionTile(
+                  icon: Iconsax.user_edit,
+                  label: AppTexts.profileActionEditProfile,
+                  onTap: onEditProfile,
+                ),
+              ),
+              const Gap(AppSizes.sm),
+              Expanded(
+                child: _ProfileActionTile(
+                  icon: Iconsax.heart,
+                  label: AppTexts.profileActionPreferences,
+                  onTap: onPreferences,
+                ),
+              ),
+              const Gap(AppSizes.sm),
+              Expanded(
+                child: _ProfileActionTile(
+                  icon: Iconsax.card,
+                  label: AppTexts.profileActionPayment,
+                  onTap: onPayment,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileActionTile extends StatelessWidget {
+  const _ProfileActionTile({
+    required this.icon,
+    required this.label,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final radius = BorderRadius.circular(AppSizes.cardRadiusMd);
+
+    return FrostedSurface(
+      borderRadius: radius,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppSizes.md,
+              horizontal: AppSizes.sm,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Icon(icon, size: 22, color: scheme.onSurface),
+                const Gap(AppSizes.sm),
                 Text(
-                  AppTexts.profileSampleName,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  label,
+                  style: textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                ),
-                const Gap(2),
-                Row(
-                  children: [
-                    Icon(Icons.mail, size: 14, color: scheme.primary),
-                    const Gap(4),
-                    Flexible(
-                      child: Text(
-                        'arselene.test@gmail.com',
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-                      ),
-                    ),
-                  ],
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-
-          //* edit button
-          IconButton(
-            onPressed: onEdit,
-            tooltip: AppTexts.profileEditAccount,
-            icon: Icon(
-              Iconsax.edit_2,
-              size: 20,
-              color: scheme.onSurface,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -21,44 +20,37 @@ class MapFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
         children: [
           CategoryPill(
             label: AppTexts.homeCategoryAll,
-            imagePath: AppImages.all,
+            iconPath: AppImages.all,
             selected: selected == MapFilter.all,
             onTap: () => onSelect(MapFilter.all),
           ),
           const Gap(AppSizes.sm),
           CategoryPill(
             label: AppTexts.homeCategorySocialShort,
-            imagePath: AppImages.homeMade,
+            iconPath: AppImages.homeMade,
             selected: selected == MapFilter.social,
             onTap: () => onSelect(MapFilter.social),
           ),
           const Gap(AppSizes.sm),
           CategoryPill(
             label: AppTexts.homeCategoryTraiteurShort,
-            imagePath: AppImages.bulk,
+            iconPath: AppImages.bulk,
             selected: selected == MapFilter.traiteur,
             onTap: () => onSelect(MapFilter.traiteur),
           ),
           const Gap(AppSizes.sm),
           CategoryPill(
             label: AppTexts.homeCategoryRestaurantShort,
-            imagePath: AppImages.restaurants,
+            iconPath: AppImages.restaurants,
             selected: selected == MapFilter.restaurant,
             onTap: () => onSelect(MapFilter.restaurant),
-          ),
-          const Gap(AppSizes.sm),
-          CategoryPill(
-            label: AppTexts.mapCategoryUrgent,
-            icon: Iconsax.clock,
-            selected: selected == MapFilter.urgent,
-            onTap: () => onSelect(MapFilter.urgent),
           ),
         ],
       ),

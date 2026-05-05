@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/styles/shadows_styles.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/orders/domain/delivery_details.dart';
 import 'package:homemade/features/orders/domain/fulfillment_options.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
@@ -107,9 +108,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         showBackArrow: true,
         title: Text(
           AppTexts.paymentTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
       ),
       body: Column(
@@ -121,14 +122,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _TotalHeader(amount: widget.totalAmount),
-                  // const _Divider(),
                   const Gap(AppSizes.spaceBtwSections),
-                  Text(
-                    AppTexts.paymentMethodLabel,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  _MethodSectionHeader(onAdd: () {}),
                   const Gap(AppSizes.md - 4),
                   for (final method in _methods) ...[
                     _MethodCard(
@@ -140,7 +135,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                     const Gap(AppSizes.sm + 2),
                   ],
-                  const _AddCardLink(),
                   const _Divider(),
                   const _SecureNote(),
                   const Gap(AppSizes.sm + 2),
@@ -180,14 +174,7 @@ class _TotalHeader extends StatelessWidget {
           ),
         ),
         const Gap(AppSizes.xs),
-        Text(
-          '€${amount.toStringAsFixed(2)}',
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-            color: scheme.primary,
-            fontWeight: FontWeight.w800,
-            height: 1,
-          ),
-        ),
+        PriceDisplay(price: amount, currencySize: 33, priceSize: 33),
       ],
     );
   }
@@ -201,6 +188,41 @@ class _Divider extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
       child: Container(height: 1, color: Theme.of(context).colorScheme.outline),
+    );
+  }
+}
+
+class _MethodSectionHeader extends StatelessWidget {
+  const _MethodSectionHeader({required this.onAdd});
+
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Text(
+          AppTexts.paymentMethodLabel,
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: onAdd,
+          child: FrostedSurface(
+            shape: BoxShape.circle,
+            child: SizedBox(
+              width: 32,
+              height: 32,
+              child: Center(
+                child: Icon(Iconsax.add, size: 16, color: scheme.onSurface),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -222,58 +244,42 @@ class _MethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final colors = context.appColors;
     return GestureDetector(
       onTap: enabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.all(AppSizes.md - 2),
-        decoration: BoxDecoration(
-          color: selected ? colors.selectedSurface : scheme.surface,
-          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-          boxShadow: [CustomShadowStyle.customCircleShadows()],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _MethodLeading(method: method),
-            const Gap(AppSizes.md - 2),
-            Expanded(
-              child: _MethodInfo(
-                method: method,
-                totalAmount: totalAmount,
-                onDark: selected,
-              ),
+      //* tween 0 → 1 on selection: lerps the frosted tint into the brand
+      //* "selected" surface so the chosen method visibly fills with the
+      //* brown/cream pill, no radio dot needed.
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: selected ? 1.0 : 0.0),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        builder: (context, t, _) {
+          final bgTint = Color.lerp(
+            colors.frostedTint,
+            colors.selectedSurface,
+            t,
+          );
+          return FrostedSurface(
+            borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+            tint: bgTint,
+            padding: const EdgeInsets.all(AppSizes.md - 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _MethodLeading(method: method),
+                const Gap(AppSizes.md - 2),
+                Expanded(
+                  child: _MethodInfo(
+                    method: method,
+                    totalAmount: totalAmount,
+                    onDark: selected,
+                  ),
+                ),
+              ],
             ),
-            const Gap(AppSizes.sm),
-            _RadioDot(selected: selected, color: scheme.primary),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RadioDot extends StatelessWidget {
-  const _RadioDot({required this.selected, required this.color});
-
-  final bool selected;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: selected ? color : Colors.transparent,
-        border: selected
-            ? null
-            : Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+          );
+        },
       ),
     );
   }
@@ -290,11 +296,7 @@ class _MethodLeading extends StatelessWidget {
     Widget child;
     switch (method) {
       case WalletPaymentMethod():
-        child = Icon(
-          Iconsax.wallet_2,
-          size: 22,
-          color: scheme.onSurface,
-        );
+        child = Icon(Iconsax.wallet_2, size: 22, color: scheme.onSurface);
       case SavedCardPaymentMethod(:final brand):
         final asset = _brandAsset(brand);
         child = asset != null
@@ -309,31 +311,15 @@ class _MethodLeading extends StatelessWidget {
           child: Image.asset(AppImages.paypal, fit: BoxFit.contain),
         );
       case ApplePayPaymentMethod():
-      case GooglePayPaymentMethod():
-        child = Icon(
-          Iconsax.mobile,
-          size: 22,
-          color: scheme.onSurface,
+        child = Padding(
+          padding: const EdgeInsets.all(8),
+          child: Image.asset(AppImages.applePay, fit: BoxFit.contain),
         );
+      case GooglePayPaymentMethod():
+        child = Icon(Iconsax.mobile, size: 22, color: scheme.onSurface);
     }
 
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Center(child: child),
-    );
+    return SizedBox(width: 48, height: 48, child: Center(child: child));
   }
 
   static String? _brandAsset(String brand) {
@@ -444,35 +430,6 @@ class _MethodInfo extends StatelessWidget {
   }
 }
 
-class _AddCardLink extends StatelessWidget {
-  const _AddCardLink();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: () {},
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-        child: Row(
-          children: [
-            Icon(Iconsax.add, size: 18, color: scheme.onSurface),
-            const Gap(AppSizes.sm),
-            Text(
-              AppTexts.paymentAddCard,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: scheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _SecureNote extends StatelessWidget {
   const _SecureNote();
 
@@ -503,9 +460,10 @@ class _TermsText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final base = Theme.of(
-      context,
-    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant, height: 1.35);
+    final base = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: scheme.onSurfaceVariant,
+      height: 1.35,
+    );
     return Text.rich(
       TextSpan(
         children: [
@@ -541,8 +499,6 @@ class _PayFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -555,26 +511,10 @@ class _PayFooter extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: enabled ? onPay : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.selectedSurface,
-              foregroundColor: colors.selectedOnSurface,
-              disabledBackgroundColor: scheme.onSurface.withValues(alpha: 0.38),
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
-              textStyle: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
             child: processing
-                ? SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.2,
-                      valueColor: AlwaysStoppedAnimation(colors.selectedOnSurface),
+                ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(
+                      context.appColors.selectedSurface,
                     ),
                   )
                 : Text(

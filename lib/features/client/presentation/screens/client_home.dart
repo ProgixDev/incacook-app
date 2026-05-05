@@ -10,9 +10,7 @@ import 'package:homemade/features/client/controllers/filter_controller.dart';
 import 'package:homemade/features/client/data/client_mock_data.dart';
 import 'package:homemade/features/client/domain/food_listing.dart';
 import 'package:homemade/features/client/domain/kitchen.dart';
-import 'package:homemade/features/client/presentation/widget/active_filters_strip.dart';
-import 'package:homemade/features/client/presentation/widget/categories_row.dart';
-import 'package:homemade/features/client/presentation/widget/filters_button.dart';
+import 'package:homemade/features/client/presentation/widget/category_hub.dart';
 import 'package:homemade/features/client/presentation/widget/food_listing_card.dart';
 import 'package:homemade/core/widgets/decor/decor_blob.dart';
 import 'package:homemade/features/client/presentation/widget/client_home_appbar.dart';
@@ -115,27 +113,15 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                 //* search bar + Filtres button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: Row(
-                    children: const [
-                      Expanded(child: ClientHomeSearchBar()),
-                      Gap(AppSizes.sm),
-                      FiltersButton(),
-                    ],
-                  ),
+                  child: Expanded(child: ClientHomeSearchBar()),
                 ),
                 const Gap(AppSizes.md + 2),
 
-                //* categories (Tout + 3) — drives filter.category
-                Obx(
-                  () => CategoriesSection(
-                    selected: _filter.filter.value.category,
-                    onSelect: _filter.setCategory,
-                  ),
-                ),
-                const Gap(AppSizes.sm),
+                //* categories — main pills + subcategory circles. Drives
+                //* filter.category, filter.cuisines, filter.diets, and
+                //* filter.dishTypes via FilterController internally.
+                const CategoryHubSection(),
 
-                //* active filter chips (auto-hides when no filters)
-                const ActiveFiltersStrip(),
                 const Gap(AppSizes.spaceBtwSections - AppSizes.sm),
 
                 //* food near you (filtered)
@@ -154,7 +140,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                     ],
                   );
                 }),
-                // const Gap(AppSizes.spaceBtwItems),
+                const Gap(AppSizes.spaceBtwSections),
 
                 //* kitchens near you
                 ClientHomeSection(
@@ -175,6 +161,8 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                   ],
                 ),
 
+                const Gap(AppSizes.spaceBtwSections),
+
                 //* partages solidaires (free food)
                 ClientHomeSection(
                   title: AppTexts.clientHomeSectionSolidarity,
@@ -187,6 +175,8 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                       ),
                   ],
                 ),
+
+                const Gap(AppSizes.spaceBtwSections * 2),
               ],
             ),
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/widgets/images/responsive_image_asset.dart';
 
@@ -50,10 +49,14 @@ class DeliveryOptionCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              //* Fixed image size — small enough to fit two cards side by
+              //* side on narrow phones (~111dp interior on a 320dp device),
+              //* and predictable enough for IntrinsicHeight on the parent
+              //* Row to equalise the two cards' heights.
               ResponsiveImageAsset(
                 assetPath: iconPath,
-                width: DeviceUtils.getScreenWidth(context) * 0.36,
-                height: DeviceUtils.getScreenWidth(context) * 0.36,
+                width: 96,
+                height: 96,
               ),
               const Gap(AppSizes.md - 2),
               Text(

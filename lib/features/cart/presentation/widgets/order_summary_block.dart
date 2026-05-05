@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 
@@ -22,9 +23,9 @@ class OrderSummaryBlock extends StatelessWidget {
       children: [
         Text(
           AppTexts.cartOrderSummaryTitle,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
         const Gap(AppSizes.md),
         _SummaryRow(label: AppTexts.cartSubtotalLabel, value: subtotal),
@@ -58,25 +59,18 @@ class _SummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final labelStyle = emphasize
-        ? Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          )
+        ? Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
         : Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: scheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
-          );
-    final valueStyle = emphasize
-        ? Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          )
-        : Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w700,
           );
     return Row(
       children: [
         Text(label, style: labelStyle),
         const Spacer(),
-        Text('€${value.toStringAsFixed(2)}', style: valueStyle),
+        PriceDisplay(price: value, currencySize: 15, priceSize: 15),
       ],
     );
   }

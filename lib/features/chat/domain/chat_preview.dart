@@ -1,12 +1,10 @@
-import 'package:flutter/painting.dart';
-
 class ChatPreview {
   const ChatPreview({
     required this.id,
     required this.name,
     required this.lastMessage,
     required this.avatarPath,
-    required this.avatarBackground,
+    required this.lastMessageAt,
     this.isTyping = false,
     this.unreadCount = 0,
   });
@@ -15,7 +13,7 @@ class ChatPreview {
   final String name;
   final String lastMessage;
   final String avatarPath;
-  final Color avatarBackground;
+  final DateTime lastMessageAt;
   final bool isTyping;
   final int unreadCount;
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/appbar/appbar.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
 import 'package:homemade/features/client/domain/food_listing.dart';
@@ -59,23 +61,22 @@ class OrderSummaryScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _SectionHeader(title: AppTexts.checkoutOrderSection),
+                  _SectionHeader(
+                    title: AppTexts.checkoutOrderSection,
+                    onEdit: () => Get.back<void>(),
+                  ),
                   const Gap(AppSizes.md),
                   for (final item in cart.items) ...[
                     _SummaryItemCard(item: item),
                     const Gap(AppSizes.sm),
                   ],
-                  const Gap(AppSizes.xs),
-                  _EditLinkInline(
-                    label: AppTexts.checkoutEditCart,
-                    onTap: () => Get.back<void>(),
-                  ),
                   const Gap(AppSizes.lg),
 
                   _SectionHeader(
                     title: selection.choice == FulfillmentChoice.delivery
                         ? AppTexts.checkoutDeliverySection
                         : AppTexts.checkoutPickupSection,
+                    onEdit: () => Get.back<void>(),
                   ),
                   const Gap(AppSizes.md),
                   _FulfillmentSummary(
@@ -101,20 +102,26 @@ class OrderSummaryScreen extends StatelessWidget {
                     isDelivery: selection.choice == FulfillmentChoice.delivery,
                   ),
                   const Gap(AppSizes.lg),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Get.to<void>(
+                        () => PaymentScreen(
+                          totalAmount: total,
+                          selection: selection,
+                          options: options,
+                          deliveryDetails: deliveryDetails,
+                        ),
+                      ),
+                      child: Text(AppTexts.checkoutContinuePayment),
+                    ),
+                  ),
+                  const Gap(AppSizes.spaceBtwSections),
                 ],
               ),
             ),
           ),
-          _ContinueFooter(
-            onContinue: () => Get.to<void>(
-              () => PaymentScreen(
-                totalAmount: total,
-                selection: selection,
-                options: options,
-                deliveryDetails: deliveryDetails,
-              ),
-            ),
-          ),
+
         ],
       ),
     );
@@ -122,29 +129,42 @@ class OrderSummaryScreen extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+  const _SectionHeader({required this.title, this.onEdit});
 
   final String title;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final lineColor = Theme.of(
-      context,
-    ).colorScheme.onSurface.withValues(alpha: 0.18);
+    final scheme = Theme.of(context).colorScheme;
+    final lineColor = scheme.onSurface.withValues(alpha: 0.18);
     return Row(
       children: [
-        Expanded(child: Container(height: 2, color: lineColor)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.md - 2),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.2,
-            ),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
           ),
         ),
+        const Gap(AppSizes.md - 2),
         Expanded(child: Container(height: 2, color: lineColor)),
+        if (onEdit != null) ...[
+          const Gap(AppSizes.sm),
+          GestureDetector(
+            onTap: onEdit,
+            child: FrostedSurface(
+              shape: BoxShape.circle,
+              child: SizedBox(
+                width: 32,
+                height: 32,
+                child: Center(
+                  child: Icon(Icons.edit, size: 16, color: scheme.onSurface),
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -158,12 +178,9 @@ class _SummaryItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       padding: const EdgeInsets.all(AppSizes.sm + 2),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -195,9 +212,9 @@ class _SummaryItemCard extends StatelessWidget {
                     item.selectedAddOns.map((a) => a.label).join(' · '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
                 const Gap(AppSizes.sm - 2),
@@ -205,16 +222,15 @@ class _SummaryItemCard extends StatelessWidget {
                   children: [
                     Text(
                       'x${item.quantity}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
                     const Spacer(),
-                    Text(
-                      '€${item.lineTotal.toStringAsFixed(2)}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                    PriceDisplay(
+                      price: item.lineTotal,
+                      currencySize: 13,
+                      priceSize: 13,
                     ),
                   ],
                 ),
@@ -222,37 +238,6 @@ class _SummaryItemCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _EditLinkInline extends StatelessWidget {
-  const _EditLinkInline({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: scheme.onSurface,
-              decoration: TextDecoration.underline,
-              decorationColor: scheme.onSurface,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -309,26 +294,24 @@ class _FulfillmentSummary extends StatelessWidget {
       lines.add(options.pickupNeighborhood);
     }
 
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       padding: const EdgeInsets.all(AppSizes.md - 2),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHigh,
-                  shape: BoxShape.circle,
+              FrostedSurface(
+                shape: BoxShape.circle,
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Center(
+                    child: Icon(icon, size: 20, color: scheme.onSurface),
+                  ),
                 ),
-                child: Icon(icon, size: 20, color: scheme.onSurface),
               ),
               const Gap(AppSizes.md - 2),
               Expanded(
@@ -345,9 +328,9 @@ class _FulfillmentSummary extends StatelessWidget {
                       const Gap(2),
                       Text(
                         line,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ],
@@ -355,11 +338,11 @@ class _FulfillmentSummary extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(AppSizes.sm),
-          Align(
-            alignment: Alignment.centerRight,
-            child: _EditPillLink(label: AppTexts.checkoutEdit, onTap: onEdit),
-          ),
+          // const Gap(AppSizes.sm),
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: _EditPillLink(label: AppTexts.checkoutEdit, onTap: onEdit),
+          // ),
         ],
       ),
     );
@@ -375,25 +358,15 @@ class _SellerSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       padding: const EdgeInsets.all(AppSizes.md - 2),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              ClipOval(
-                child: Image.asset(
-                  seller.imagePath,
-                  width: 44,
-                  height: 44,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              CustomCircularImage(image: seller.imagePath, size: 44),
               const Gap(AppSizes.md - 2),
               Expanded(
                 child: Column(
@@ -401,9 +374,9 @@ class _SellerSummary extends StatelessWidget {
                   children: [
                     Text(
                       seller.sellerName,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const Gap(2),
                     Row(
@@ -419,16 +392,14 @@ class _SellerSummary extends StatelessWidget {
                         const Gap(4),
                         Text(
                           seller.category.label,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                         const Gap(6),
                         Text(
                           '·',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                         const Gap(6),
                         const Icon(
@@ -455,38 +426,6 @@ class _SellerSummary extends StatelessWidget {
   }
 }
 
-class _EditPillLink extends StatelessWidget {
-  const _EditPillLink({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.md - 2,
-          vertical: 6,
-        ),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: scheme.outline),
-        ),
-        child: Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
-  }
-}
-
 class _PriceBreakdown extends StatelessWidget {
   const _PriceBreakdown({
     required this.subtotal,
@@ -505,12 +444,9 @@ class _PriceBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       padding: const EdgeInsets.all(AppSizes.md - 2),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-      ),
       child: Column(
         children: [
           _Row(label: AppTexts.checkoutPriceArticles, amount: subtotal),
@@ -553,62 +489,13 @@ class _Row extends StatelessWidget {
     final labelStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
         : theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
-    final amountStyle = emphasized
-        ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
-        : theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: labelStyle),
-        Text('€${amount.toStringAsFixed(2)}', style: amountStyle),
+        PriceDisplay(price: amount, currencySize: 15, priceSize: 15),
       ],
-    );
-  }
-}
-
-class _ContinueFooter extends StatelessWidget {
-  const _ContinueFooter({required this.onContinue});
-
-  final VoidCallback onContinue;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        border: Border(top: BorderSide(color: scheme.outline)),
-      ),
-      padding: const EdgeInsets.fromLTRB(
-        AppSizes.md,
-        AppSizes.md,
-        AppSizes.md,
-        AppSizes.md,
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: onContinue,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.selectedSurface,
-              foregroundColor: colors.selectedOnSurface,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
-              textStyle: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            child: const Text(AppTexts.checkoutContinuePayment),
-          ),
-        ),
-      ),
     );
   }
 }

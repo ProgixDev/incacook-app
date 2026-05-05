@@ -105,7 +105,7 @@ class _CountBadge extends StatelessWidget {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: scheme.secondary,
+        color: scheme.primary,
         borderRadius: BorderRadius.circular(40),
       ),
       alignment: Alignment.center,

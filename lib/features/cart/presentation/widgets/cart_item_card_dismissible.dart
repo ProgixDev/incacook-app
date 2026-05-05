@@ -3,7 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
 
 class CartItemCardDismissible extends StatelessWidget {
@@ -42,15 +42,10 @@ class CartItemCardDismissible extends StatelessWidget {
         child: const Icon(Iconsax.trash, color: Color(0xFFE53935), size: 28),
       ),
       onDismissed: (_) => onDismissed,
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        clipBehavior: Clip.antiAlias,
+      child: FrostedSurface(
+        borderRadius: BorderRadius.circular(20),
         child: Column(
           children: [
-            // if (!item.isAvailable) _UnavailableBanner(onRemove: onRemove),
             Opacity(
               opacity: item.isAvailable ? 1.0 : 0.55,
               child: Padding(
@@ -82,28 +77,7 @@ class CartItemCardDismissible extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                          const Gap(4),
-                          Row(
-                            children: [
-                              const Icon(
-                                Iconsax.star1,
-                                size: 14,
-                                color: Color(0xFFF5B800),
-                              ),
-                              const Gap(4),
-                              Text(
-                                '${item.listing.rating.toStringAsFixed(1)}(${item.listing.reviewCount} ${AppTexts.cartReviewSuffix})',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: scheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                              ),
-                            ],
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           const Gap(AppSizes.sm),
                           Row(
@@ -163,10 +137,11 @@ class _CompactQuantity extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _StepButton(
-          icon: Iconsax.add,
-          enabled: enabled && canIncrement,
-          onTap: onIncrement,
+          icon: Iconsax.minus,
+          enabled: enabled && canDecrement,
+          onTap: onDecrement,
         ),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
@@ -178,9 +153,9 @@ class _CompactQuantity extends StatelessWidget {
           ),
         ),
         _StepButton(
-          icon: Iconsax.minus,
-          enabled: enabled && canDecrement,
-          onTap: onDecrement,
+          icon: Iconsax.add,
+          enabled: enabled && canIncrement,
+          onTap: onIncrement,
         ),
       ],
     );

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:homemade/core/widgets/misc/drag_handle.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
 import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/client/domain/food_listing.dart';
 import 'package:homemade/features/orders/domain/order_customization.dart';
 import 'package:homemade/features/orders/domain/product_add_on.dart';
@@ -111,7 +112,6 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
       maxChildSize: 0.95,
       expand: false,
       builder: (_, scrollController) {
-        final scheme = Theme.of(context).colorScheme;
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
@@ -119,20 +119,7 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
           ),
           child: Column(
             children: [
-              //* Drag handle
-              Padding(
-                padding: const EdgeInsets.only(top: AppSizes.sm + 2),
-                child: Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: scheme.onSurface,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
+              const DragHandle(),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -146,7 +133,8 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _Header(listing: widget.listing),
-                      const HorizontalSeparator(),
+                      // const HorizontalSeparator(),
+                      const Gap(AppSizes.spaceBtwItems),
                       _QuantitySection(
                         quantity: _quantity,
                         portionsAvailable: widget.listing.portionsLeft,
@@ -156,14 +144,16 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                         onIncrease: _increase,
                       ),
                       if (widget.addOns.isNotEmpty) ...[
-                        const HorizontalSeparator(),
+                        // const HorizontalSeparator(),
+                        const Gap(AppSizes.spaceBtwItems),
                         _OptionsSection(
                           addOns: widget.addOns,
                           selectedIds: _selectedAddOnIds,
                           onToggle: _toggleAddOn,
                         ),
                       ],
-                      const HorizontalSeparator(),
+                      // const HorizontalSeparator(),
+                      const Gap(AppSizes.spaceBtwItems),
                       _NoteSection(
                         controller: _noteController,
                         maxLength: _noteMaxLength,
@@ -217,10 +207,7 @@ class _Header extends StatelessWidget {
               const Gap(4),
               _SellerRow(listing: listing),
               const Gap(6),
-              _PriceRow(
-                price: listing.price,
-                originalPrice: listing.originalPrice,
-              ),
+              PriceDisplay(price: listing.price, priceSize: 15),
             ],
           ),
         ),
@@ -249,60 +236,13 @@ class _SellerRow extends StatelessWidget {
             ),
           ),
         ),
-        const Gap(6),
-        Text(
-          '·',
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-        ),
-        const Gap(6),
+        const Gap(12),
+
         SizedBox(
           width: 14,
           height: 14,
           child: Image.asset(listing.category.imagePath, fit: BoxFit.contain),
         ),
-        const Gap(4),
-        Flexible(
-          child: Text(
-            listing.category.label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PriceRow extends StatelessWidget {
-  const _PriceRow({required this.price, this.originalPrice});
-
-  final double price;
-  final double? originalPrice;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        if (originalPrice != null) ...[
-          Text(
-            '€${originalPrice!.toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-              decoration: TextDecoration.lineThrough,
-              decorationColor: scheme.onSurfaceVariant,
-            ),
-          ),
-          const Gap(6),
-          Icon(Iconsax.arrow_right_3, size: 12, color: scheme.onSurfaceVariant),
-          const Gap(6),
-        ],
-        PriceDisplay(price: price, priceSize: 15),
       ],
     );
   }
@@ -333,18 +273,14 @@ class _QuantitySection extends StatelessWidget {
       children: [
         Text(
           AppTexts.orderSheetQuantityLabel,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(AppSizes.sm + 2),
-        Container(
+        FrostedSurface(
+          borderRadius: BorderRadius.circular(999),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: scheme.surface,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: scheme.outline),
-          ),
           child: Row(
             children: [
               _QtyButton(
@@ -374,7 +310,9 @@ class _QuantitySection extends StatelessWidget {
         Text(
           '$portionsAvailable ${portionsAvailable == 1 ? AppTexts.orderSheetPortionAvailableSuffix : AppTexts.orderSheetPortionsAvailableSuffix}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: canIncrease ? scheme.onSurfaceVariant : const Color(0xFFC05D3B),
+            color: canIncrease
+                ? scheme.onSurfaceVariant
+                : const Color(0xFFC05D3B),
             fontWeight: canIncrease ? FontWeight.w500 : FontWeight.w600,
           ),
         ),
@@ -435,9 +373,9 @@ class _OptionsSection extends StatelessWidget {
       children: [
         Text(
           AppTexts.orderSheetOptionsLabel,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(AppSizes.sm),
         for (final addOn in addOns)
@@ -486,9 +424,9 @@ class _AddOnRow extends StatelessWidget {
             Expanded(
               child: Text(
                 addOn.label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
             ),
             Text(
@@ -512,22 +450,28 @@ class _Checkbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       width: 22,
       height: 22,
       decoration: BoxDecoration(
-        color: selected ? colors.selectedSurface : scheme.surface,
+        color: selected
+            ? context.appColors.selectedSurface
+            : Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: selected ? colors.selectedSurface : scheme.outline,
+          color: selected
+              ? context.appColors.selectedSurface
+              : Theme.of(context).colorScheme.outline,
           width: 1.5,
         ),
       ),
       child: selected
-          ? Icon(Icons.check, size: 14, color: colors.selectedOnSurface)
+          ? Icon(
+              Icons.check,
+              size: 14,
+              color: context.appColors.selectedOnSurface,
+            )
           : null,
     );
   }
@@ -547,41 +491,31 @@ class _NoteSection extends StatelessWidget {
       children: [
         Text(
           AppTexts.orderSheetNoteLabel,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(AppSizes.sm + 2),
-        TextField(
-          controller: controller,
-          maxLength: maxLength,
-          maxLines: 3,
-          minLines: 2,
-          inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-          style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration(
-            hintText: AppTexts.orderSheetNoteHint,
-            hintStyle: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-            filled: true,
-            fillColor: scheme.surface,
-            counterText: '',
-            contentPadding: const EdgeInsets.all(AppSizes.md - 2),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(
-                color: scheme.onSurface,
-                width: 1,
-              ),
+        FrostedSurface(
+          borderRadius: BorderRadius.circular(20),
+          child: TextField(
+            controller: controller,
+            maxLength: maxLength,
+            maxLines: 3,
+            minLines: 2,
+            inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
+            style: Theme.of(context).textTheme.bodyMedium,
+            decoration: InputDecoration(
+              hintText: AppTexts.orderSheetNoteHint,
+              hintStyle: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              filled: false,
+              counterText: '',
+              contentPadding: const EdgeInsets.all(AppSizes.md - 2),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
             ),
           ),
         ),
@@ -621,24 +555,31 @@ class _TotalAndCta extends StatelessWidget {
               ],
             ),
             const Gap(AppSizes.sm + 2),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onAddToCart,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.selectedSurface,
-                  foregroundColor: colors.selectedOnSurface,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
+            //* Frosted CTA tinted with selectedSurface — keeps the brown
+            //* pill brand identity but joins the rest of the sheet's glass
+            //* aesthetic. Inner Material+InkWell preserves Flutter's tap
+            //* ripple/feedback now that we're not using ElevatedButton.
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              tint: colors.selectedSurface,
+              child: Material(
+                color: Colors.transparent,
+                shape: const StadiumBorder(),
+                child: InkWell(
+                  onTap: onAddToCart,
+                  customBorder: const StadiumBorder(),
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      '${AppTexts.orderSheetAddToCartCta} — €${total.toStringAsFixed(2)}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.selectedOnSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                  textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                child: Text(
-                  '${AppTexts.orderSheetAddToCartCta} — €${total.toStringAsFixed(2)}',
                 ),
               ),
             ),

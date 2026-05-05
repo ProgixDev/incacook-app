@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/chat/domain/chat_preview.dart';
 
 class ChatListTile extends StatelessWidget {
@@ -16,28 +18,14 @@ class ChatListTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
+      child: FrostedSurface(
+        borderRadius: BorderRadius.circular(40),
         padding: const EdgeInsets.all(AppSizes.sm + 2),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg * 1.2),
-        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            //* colored avatar
-            Container(
-              width: 52,
-              height: 52,
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: chat.avatarBackground.withValues(alpha: 0.18),
-                shape: BoxShape.circle,
-              ),
-              child: ClipOval(
-                child: Image.asset(chat.avatarPath, fit: BoxFit.cover),
-              ),
-            ),
+            //* avatar
+            CustomCircularImage(image: chat.avatarPath),
             const Gap(AppSizes.md),
 
             //* name + preview
@@ -61,24 +49,47 @@ class ChatListTile extends StatelessWidget {
               ),
             ),
 
-            //* optional unread badge
-            if (chat.unreadCount > 0) ...[
-              const Gap(AppSizes.sm),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: scheme.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${chat.unreadCount}',
+            //* right rail — last-message time + optional unread badge
+            const Gap(AppSizes.sm),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _formatLastMessageTime(chat.lastMessageAt),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onPrimary,
-                    fontWeight: FontWeight.w700,
+                    color: chat.unreadCount > 0
+                        ? scheme.primary
+                        : scheme.onSurfaceVariant,
+                    fontWeight: chat.unreadCount > 0
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                    height: 1.15,
                   ),
                 ),
-              ),
-            ],
+                if (chat.unreadCount > 0) ...[
+                  const Gap(4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: scheme.primary,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Text(
+                      '${chat.unreadCount}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
@@ -112,4 +123,34 @@ class _Preview extends StatelessWidget {
       style: style,
     );
   }
+}
+
+//* Compact French relative-time label for chat list rows.
+//*   < 1 min  → "À l'instant"
+//*   < 1 h    → "12 min"
+//*   < 1 day  → "3 h"
+//*   yesterday→ "Hier"
+//*   < 7 days → weekday short ("Lun.", "Mar.", ...)
+//*   else     → "DD/MM"
+String _formatLastMessageTime(DateTime when, {DateTime? now}) {
+  final ref = now ?? DateTime.now();
+  final diff = ref.difference(when);
+
+  if (diff.inMinutes < 1) return "À l'instant";
+  if (diff.inHours < 1) return '${diff.inMinutes} min';
+  if (diff.inHours < 24) return '${diff.inHours} h';
+
+  final whenDay = DateTime(when.year, when.month, when.day);
+  final today = DateTime(ref.year, ref.month, ref.day);
+  final dayDiff = today.difference(whenDay).inDays;
+
+  if (dayDiff == 1) return 'Hier';
+  if (dayDiff < 7) {
+    const names = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+    return names[when.weekday - 1];
+  }
+
+  final dd = when.day.toString().padLeft(2, '0');
+  final mm = when.month.toString().padLeft(2, '0');
+  return '$dd/$mm';
 }

@@ -149,9 +149,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: CustomAppBar(
             title: Text(
               AppTexts.profileTitle,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             actions: [
               GestureDetector(
@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: Column(
               children: [
-                ProfileUserCard(onEdit: () {}),
+                const ProfileUserCard(),
                 const Gap(AppSizes.md),
                 SettingMenuSection(
                   title: AppTexts.profileSectionSettings,

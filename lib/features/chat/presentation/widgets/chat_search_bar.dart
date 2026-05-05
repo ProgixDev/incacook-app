@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 
 class ChatSearchBar extends StatelessWidget {
   const ChatSearchBar({super.key, this.onChanged, this.controller});
@@ -12,11 +12,8 @@ class ChatSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(32),
-      ),
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(32),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
@@ -28,25 +25,26 @@ class ChatSearchBar extends StatelessWidget {
           hintStyle: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: AppSizes.md, right: AppSizes.sm),
-            child: Icon(
-              Iconsax.search_normal_1,
-              color: scheme.onSurfaceVariant,
-              size: 20,
-            ),
+          prefixIcon: Icon(
+            Iconsax.search_normal_1,
+            color: scheme.onSurface,
+            size: 22,
           ),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 0,
-            minHeight: 0,
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.md,
-            vertical: 18,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide.none,
           ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );

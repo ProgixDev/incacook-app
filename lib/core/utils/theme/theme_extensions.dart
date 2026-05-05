@@ -30,18 +30,28 @@ class AppColorExtensions extends ThemeExtension<AppColorExtensions> {
   final Color barrierOverlay;
 
   factory AppColorExtensions.light() => const AppColorExtensions(
-    frostedTint: Color(0x66FEFEF3),
-    decorBlobTint: Color(0xFFFAD3BB),
-    selectedSurface: Color(0xFF072646),
-    selectedOnSurface: Color(0xFFFEFEF3),
+    //? frostedTint: cream surface @ ~40% so frosted blur reads as
+    //? "more cream" over varied content (decor blob, photos).
+    frostedTint: Color(0x66FFF8F4),
+    //? decorBlobTint: peach — harmonizes with cream base and green CTAs,
+    //? carries warmth without competing with the brand green.
+    decorBlobTint: Color(0xFF00C263),
+    //? selectedSurface uses the dark logo-brown so "selected" pills are
+    //? distinct from primary green CTAs and from terracotta secondary
+    //? accents — three brand colors with three clear roles.
+    selectedSurface: Color(0xFF00C263),
+    selectedOnSurface: Color(0xFFFFF8F4),
     barrierOverlay: Color(0x2E000000),
   );
 
   factory AppColorExtensions.dark() => const AppColorExtensions(
-    frostedTint: Color(0x66332821),
-    decorBlobTint: Color(0xFF5C3D2E),
-    selectedSurface: Color(0xFFC5D5E8),
-    selectedOnSurface: Color(0xFF1A1410),
+    frostedTint: Color(0x66332A22),
+    //? darker green so the brand reads as the same hue family as light
+    //? mode without blasting saturated #00C263 against a dark backdrop.
+    decorBlobTint: Color(0xFF0E8E4E),
+    //? Inverted: cream "selected" pill on warm-dark surface.
+    selectedSurface: Color(0xFFFFF0E0),
+    selectedOnSurface: Color(0xFF0E8E4E),
     barrierOverlay: Color(0x4D000000),
   );
 
@@ -72,8 +82,11 @@ class AppColorExtensions extends ThemeExtension<AppColorExtensions> {
       frostedTint: Color.lerp(frostedTint, other.frostedTint, t)!,
       decorBlobTint: Color.lerp(decorBlobTint, other.decorBlobTint, t)!,
       selectedSurface: Color.lerp(selectedSurface, other.selectedSurface, t)!,
-      selectedOnSurface:
-          Color.lerp(selectedOnSurface, other.selectedOnSurface, t)!,
+      selectedOnSurface: Color.lerp(
+        selectedOnSurface,
+        other.selectedOnSurface,
+        t,
+      )!,
       barrierOverlay: Color.lerp(barrierOverlay, other.barrierOverlay, t)!,
     );
   }

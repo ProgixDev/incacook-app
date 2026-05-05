@@ -1,14 +1,13 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:homemade/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:homemade/core/constants/animations.dart';
 import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/domain/cart_item.dart';
@@ -89,45 +88,40 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSizes.md,
-              AppSizes.lg,
-              AppSizes.md,
-              AppSizes.lg,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _SuccessHeader(orderNumber: _orderNumber),
-                const _Divider(),
-                _StatusBlock(
-                  sellerName: _seller.sellerName,
-                  selection: widget.selection,
-                  options: widget.options,
-                  deliveryDetails: widget.deliveryDetails,
-                  expectedArrivalLabel: _formatTime(_expectedArrival),
-                ),
-                const _Divider(),
-                const _ImpactBanner(),
-                const _Divider(),
-                _RecapBlock(
-                  itemsSummary: _itemsSummary(),
-                  subtotal: _subtotal,
-                  deliveryFee: widget.selection.fee,
-                  serviceFee: _serviceFee,
-                  total: widget.totalAmount,
-                  isDelivery:
-                      widget.selection.choice == FulfillmentChoice.delivery,
-                ),
-                const Gap(AppSizes.lg),
-                _CtaStack(onTrack: _goToTracking, onGoHome: _goHome),
-              ],
-            ),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSizes.md,
+            AppSizes.lg,
+            AppSizes.md,
+            AppSizes.lg,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _SuccessHeader(orderNumber: _orderNumber),
+              const _Divider(),
+              _StatusBlock(
+                sellerName: _seller.sellerName,
+                selection: widget.selection,
+                options: widget.options,
+                deliveryDetails: widget.deliveryDetails,
+                expectedArrivalLabel: _formatTime(_expectedArrival),
+              ),
+              const _Divider(),
+              _RecapBlock(
+                itemsSummary: _itemsSummary(),
+                subtotal: _subtotal,
+                deliveryFee: widget.selection.fee,
+                serviceFee: _serviceFee,
+                total: widget.totalAmount,
+                isDelivery:
+                    widget.selection.choice == FulfillmentChoice.delivery,
+              ),
+              const Gap(AppSizes.lg),
+              _CtaStack(onTrack: _goToTracking, onGoHome: _goHome),
+            ],
           ),
         ),
       ),
@@ -157,9 +151,9 @@ class _SuccessHeader extends StatelessWidget {
         Text(
           AppTexts.successTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
         ),
         const Gap(AppSizes.sm - 2),
         Text(
@@ -208,9 +202,9 @@ class _StatusBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDelivery = selection.choice == FulfillmentChoice.delivery;
-    final titleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.w700,
-    );
+    final titleStyle = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700);
     final subStyle = Theme.of(
       context,
     ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
@@ -278,42 +272,6 @@ class _StatusBlock extends StatelessWidget {
   }
 }
 
-class _ImpactBanner extends StatelessWidget {
-  const _ImpactBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    const accentGreen = Color(0xFF2E7D32);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.md - 2,
-        vertical: AppSizes.md - 2,
-      ),
-      decoration: BoxDecoration(
-        color: accentGreen.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-        border: Border.all(color: accentGreen.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Iconsax.heart5, size: 18, color: accentGreen),
-          const Gap(AppSizes.sm + 2),
-          Expanded(
-            child: Text(
-              AppTexts.successImpactMessage,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: accentGreen,
-                fontWeight: FontWeight.w700,
-                height: 1.35,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _RecapBlock extends StatelessWidget {
   const _RecapBlock({
     required this.itemsSummary,
@@ -338,9 +296,9 @@ class _RecapBlock extends StatelessWidget {
       children: [
         Text(
           AppTexts.successRecapTitle,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(AppSizes.sm + 2),
         _Row(label: itemsSummary, amount: subtotal),
@@ -352,7 +310,10 @@ class _RecapBlock extends StatelessWidget {
         _Row(label: AppTexts.successRecapServiceLabel, amount: serviceFee),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSizes.sm + 2),
-          child: Divider(height: 1, color: Theme.of(context).colorScheme.outline),
+          child: Divider(
+            height: 1,
+            color: Theme.of(context).colorScheme.outline,
+          ),
         ),
         _Row(
           label: AppTexts.successTotalPaidLabel,
@@ -380,18 +341,9 @@ class _Row extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final labelStyle = emphasized
-        ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          )
+        ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
         : theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
-    final amountStyle = emphasized
-        ? theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-          )
-        : theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          );
-
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -403,7 +355,7 @@ class _Row extends StatelessWidget {
           ),
         ),
         const Gap(AppSizes.md),
-        Text('€${amount.toStringAsFixed(2)}', style: amountStyle),
+        PriceDisplay(price: amount, currencySize: 14, priceSize: 14),
       ],
     );
   }
@@ -418,25 +370,12 @@ class _CtaStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return Column(
       children: [
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: onTrack,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.selectedSurface,
-              foregroundColor: colors.selectedOnSurface,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
-              textStyle: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
             child: const Text(AppTexts.successTrackOrderCta),
           ),
         ),

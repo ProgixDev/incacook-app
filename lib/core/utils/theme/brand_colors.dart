@@ -10,11 +10,13 @@ import 'package:flutter/material.dart';
 class BrandColors {
   BrandColors._();
 
-  static const Color primary = Color(0xFF2E81E6);
-  static const Color secondary = Color(0xFF072646);
+  //* IncaCook brand
+  static const Color primary = Color(0xFF00C263); // vibrant green
+  static const Color secondary = Color(0xFFC8553D); // terracotta accent
 
-  //* semantic
-  static const Color success = Color(0xFF4CAF50);
+  //* semantic — success uses a deeper emerald so it stays distinct from
+  //* the brand primary green ("brand green" vs "system success green").
+  static const Color success = Color(0xFF0E8E4E);
   static const Color warning = Color(0xFFFFC107);
   static const Color error = Color(0xFFF44336);
   static const Color info = Color(0xFF2196F3);

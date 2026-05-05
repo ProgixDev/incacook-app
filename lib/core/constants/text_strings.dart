@@ -1,6 +1,6 @@
 class AppTexts {
   //* welcome screen
-  static const String welcomeBrand = "HomeMade";
+  static const String welcomeBrand = "IncaCook";
   static const String welcomeTagline = "Le goût de chez toi, près de chez toi";
   static const String welcomeSkip = "Passer";
   static const String welcomeContinueWith = "Continuer";
@@ -104,6 +104,9 @@ class AppTexts {
   static const String profileSectionSettings = "Paramètres";
   static const String profileSectionSupport = "Support";
   static const String profileEditAccount = "Modifier le compte";
+  static const String profileActionEditProfile = "Profil";
+  static const String profileActionPreferences = "Préférences";
+  static const String profileActionPayment = "Paiement";
 
   //* Settings menu — account
   static const String settingsWallet = "Mon portefeuille";
@@ -264,6 +267,11 @@ class AppTexts {
   static const String homeCategoryTraiteur = "L'Atelier Traiteur";
   static const String homeCategoryRestaurant = "Sauve Ton Panier";
 
+  //* home — subcategory group titles
+  static const String categoryGroupCuisine = "Type de cuisine";
+  static const String categoryGroupDiet = "Régime alimentaire";
+  static const String categoryGroupDish = "Type de plat";
+
   //* home — section titles
   static const String clientHomeSectionFoodNearYou = "Plats près de toi";
   static const String clientHomeSectionKitchensNearYou = "Cuisines près de toi";
@@ -282,7 +290,6 @@ class AppTexts {
 
   //* home — dietary tag labels
   static const String dietaryHalal = "Halal";
-  static const String dietaryVegetarian = "Végétarien";
   static const String dietaryVegan = "Végan";
   static const String dietaryGlutenFree = "Sans gluten";
   static const String dietaryKosher = "Casher";

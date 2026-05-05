@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
@@ -115,10 +116,7 @@ class KitchenCard extends StatelessWidget {
                     ),
                   ),
                   const Gap(AppSizes.sm),
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundImage: AssetImage(kitchen.chefImagePath),
-                  ),
+                  CustomCircularImage(image: kitchen.chefImagePath),
                 ],
               ),
             ),

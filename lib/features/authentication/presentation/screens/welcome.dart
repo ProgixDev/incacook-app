@@ -1,11 +1,11 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:homemade/core/constants/image_strings.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
+import 'package:homemade/core/utils/theme/brand_colors.dart';
 import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/authentication/presentation/screens/login.dart';
 import 'package:homemade/features/authentication/presentation/screens/user_type_selection.dart';
@@ -15,7 +15,6 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -29,7 +28,11 @@ class WelcomeScreen extends StatelessWidget {
               sigmaX: FrostedSurface.blurSigma,
               sigmaY: FrostedSurface.blurSigma,
             ),
-            child: Container(color: scheme.surface.withValues(alpha: 0.55)),
+            child: Container(
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.55),
+            ),
           ),
 
           //* 3) foreground UI
@@ -46,8 +49,25 @@ class WelcomeScreen extends StatelessWidget {
                   //* logo + brand
                   Image.asset(AppImages.appLogo, height: 72),
                   const Gap(AppSizes.sm),
-                  Text(
-                    AppTexts.welcomeBrand,
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'In',
+                          style: TextStyle(color: BrandColors.primary),
+                        ),
+                        TextSpan(
+                          text: 'ca',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: 'Cook',
+                          style: TextStyle(color: BrandColors.primary),
+                        ),
+                      ],
+                    ),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -91,8 +111,10 @@ class WelcomeScreen extends StatelessWidget {
                       onPressed: () =>
                           Get.to(() => const UserTypeSelectionScreen()),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: scheme.primary,
-                        foregroundColor: scheme.onPrimary,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(999),
@@ -116,7 +138,7 @@ class WelcomeScreen extends StatelessWidget {
                       Text(
                         AppTexts.welcomeAlreadyAccount,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       TextButton(
@@ -124,7 +146,7 @@ class WelcomeScreen extends StatelessWidget {
                         child: Text(
                           AppTexts.signIn,
                           style: TextStyle(
-                            color: scheme.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),

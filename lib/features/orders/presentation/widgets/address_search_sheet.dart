@@ -7,6 +7,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/services/map/mapbox_search_client.dart';
 import 'package:homemade/core/services/map/models/place_suggestion.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/orders/domain/saved_address.dart';
 
 class AddressSearchSheet extends StatefulWidget {
@@ -124,26 +125,19 @@ class _AddressSearchSheetState extends State<AddressSearchSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              onChanged: _onChanged,
-              decoration: InputDecoration(
-                hintText: 'Chercher une adresse',
-                prefixIcon: Icon(Iconsax.search_normal, color: scheme.primary),
-                filled: true,
-                fillColor: scheme.surfaceContainerHigh,
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(48)),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(48)),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(48)),
-                  borderSide: BorderSide.none,
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(48),
+              child: TextField(
+                controller: _controller,
+                autofocus: true,
+                onChanged: _onChanged,
+                decoration: InputDecoration(
+                  hintText: 'Chercher une adresse',
+                  prefixIcon: Icon(Iconsax.search_normal, color: scheme.primary),
+                  filled: false,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                 ),
               ),
             ),

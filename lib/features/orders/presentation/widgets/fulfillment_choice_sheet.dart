@@ -113,42 +113,50 @@ class _FulfillmentChoiceSheetState extends State<FulfillmentChoiceSheet> {
               ),
               const Gap(AppSizes.md),
 
-              Row(
-                children: [
-                  if (opts.deliveryAvailable)
-                    DeliveryOptionCard(
-                      iconPath: AppImages.delivery,
-                      label: AppTexts.fulfillmentDeliveryLabel,
-                      subtitle: AppTexts.fulfillmentDeliveryWindow(
-                        opts.deliveryMinMinutes,
-                        opts.deliveryMaxMinutes,
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (opts.deliveryAvailable)
+                      Expanded(
+                        child: DeliveryOptionCard(
+                          iconPath: AppImages.delivery,
+                          label: AppTexts.fulfillmentDeliveryLabel,
+                          subtitle: AppTexts.fulfillmentDeliveryWindow(
+                            opts.deliveryMinMinutes,
+                            opts.deliveryMaxMinutes,
+                          ),
+                          tertiary:
+                              '${AppTexts.fulfillmentDeliveryFeePrefix} €${opts.deliveryFee.toStringAsFixed(2)}',
+                          selected: _selected == FulfillmentChoice.delivery,
+                          enabled: opts.deliverySelectable,
+                          disabledMessage: opts.userHasAddress
+                              ? null
+                              : AppTexts.fulfillmentNoAddress,
+                          onTap: () => setState(
+                            () => _selected = FulfillmentChoice.delivery,
+                          ),
+                        ),
                       ),
-                      tertiary:
-                          '${AppTexts.fulfillmentDeliveryFeePrefix} €${opts.deliveryFee.toStringAsFixed(2)}',
-                      selected: _selected == FulfillmentChoice.delivery,
-                      enabled: opts.deliverySelectable,
-                      disabledMessage: opts.userHasAddress
-                          ? null
-                          : AppTexts.fulfillmentNoAddress,
-                      onTap: () => setState(
-                        () => _selected = FulfillmentChoice.delivery,
+                    if (opts.deliveryAvailable && opts.pickupAvailable)
+                      const Gap(AppSizes.sm + 2),
+                    if (opts.pickupAvailable)
+                      Expanded(
+                        child: DeliveryOptionCard(
+                          iconPath: AppImages.pickup,
+                          label: AppTexts.fulfillmentPickupLabel,
+                          subtitle: opts.pickupNeighborhood,
+                          tertiary: AppTexts.fulfillmentPickupFree,
+                          tertiaryIsHighlight: true,
+                          selected: _selected == FulfillmentChoice.pickup,
+                          enabled: true,
+                          onTap: () => setState(
+                            () => _selected = FulfillmentChoice.pickup,
+                          ),
+                        ),
                       ),
-                    ),
-                  if (opts.deliveryAvailable && opts.pickupAvailable)
-                    const Gap(AppSizes.sm + 2),
-                  if (opts.pickupAvailable)
-                    DeliveryOptionCard(
-                      iconPath: AppImages.pickup,
-                      label: AppTexts.fulfillmentPickupLabel,
-                      subtitle: opts.pickupNeighborhood,
-                      tertiary: AppTexts.fulfillmentPickupFree,
-                      tertiaryIsHighlight: true,
-                      selected: _selected == FulfillmentChoice.pickup,
-                      enabled: true,
-                      onTap: () =>
-                          setState(() => _selected = FulfillmentChoice.pickup),
-                    ),
-                ],
+                  ],
+                ),
               ),
               const Gap(AppSizes.lg),
               SizedBox(

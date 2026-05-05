@@ -16,54 +16,60 @@ class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
 
   //? placeholder chats — swap for a real data source once the chat
-  //? backend is wired
-  static const List<ChatPreview> _chats = [
-    ChatPreview(
-      id: 'fresh-mart',
-      name: AppTexts.chatSample1Name,
-      lastMessage: AppTexts.chatSample1Msg,
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFFE8823B),
-      unreadCount: 2,
-    ),
-    ChatPreview(
-      id: 'daily-grocery',
-      name: AppTexts.chatSample2Name,
-      lastMessage: AppTexts.chatSample2Msg,
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFF4CAF50),
-    ),
-    ChatPreview(
-      id: 'green-cart',
-      name: AppTexts.chatSample3Name,
-      lastMessage: AppTexts.chatSample3Msg,
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFF2E81E6),
-    ),
-    ChatPreview(
-      id: 'duck-support-1',
-      name: AppTexts.chatSample4Name,
-      lastMessage: AppTexts.chatSample4Msg,
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFFFFC107),
-      unreadCount: 1,
-    ),
-    ChatPreview(
-      id: 'pharmacy-care',
-      name: AppTexts.chatSample5Name,
-      lastMessage: AppTexts.chatSample5Msg,
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFFE53935),
-    ),
-    ChatPreview(
-      id: 'shopnest',
-      name: AppTexts.chatSample6Name,
-      lastMessage: '',
-      avatarPath: AppImages.foodTest,
-      avatarBackground: Color(0xFFF06292),
-      isTyping: true,
-    ),
-  ];
+  //? backend is wired. Times are computed at first access (relative to
+  //? the moment the user opens the screen) so the labels look "live".
+  static final List<ChatPreview> _chats = _buildMockChats();
+
+  static List<ChatPreview> _buildMockChats() {
+    final now = DateTime.now();
+    return [
+      ChatPreview(
+        id: 'fresh-mart',
+        name: AppTexts.chatSample1Name,
+        lastMessage: AppTexts.chatSample1Msg,
+        avatarPath: AppImages.foodTest,
+        unreadCount: 2,
+        lastMessageAt: now.subtract(const Duration(minutes: 3)),
+      ),
+      ChatPreview(
+        id: 'daily-grocery',
+        name: AppTexts.chatSample2Name,
+        lastMessage: AppTexts.chatSample2Msg,
+        avatarPath: AppImages.foodTest,
+        lastMessageAt: now.subtract(const Duration(minutes: 42)),
+      ),
+      ChatPreview(
+        id: 'green-cart',
+        name: AppTexts.chatSample3Name,
+        lastMessage: AppTexts.chatSample3Msg,
+        avatarPath: AppImages.foodTest,
+        lastMessageAt: now.subtract(const Duration(hours: 5)),
+      ),
+      ChatPreview(
+        id: 'duck-support-1',
+        name: AppTexts.chatSample4Name,
+        lastMessage: AppTexts.chatSample4Msg,
+        avatarPath: AppImages.foodTest,
+        unreadCount: 1,
+        lastMessageAt: now.subtract(const Duration(days: 1, hours: 2)),
+      ),
+      ChatPreview(
+        id: 'pharmacy-care',
+        name: AppTexts.chatSample5Name,
+        lastMessage: AppTexts.chatSample5Msg,
+        avatarPath: AppImages.foodTest,
+        lastMessageAt: now.subtract(const Duration(days: 3)),
+      ),
+      ChatPreview(
+        id: 'shopnest',
+        name: AppTexts.chatSample6Name,
+        lastMessage: '',
+        avatarPath: AppImages.foodTest,
+        isTyping: true,
+        lastMessageAt: now.subtract(const Duration(days: 12)),
+      ),
+    ];
+  }
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -113,9 +119,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
             showBackArrow: false,
             title: Text(
               AppTexts.chatListTitle,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ),

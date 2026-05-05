@@ -1,6 +1,6 @@
 class AppImages {
   //* logos
-  static const String appLogo = "assets/logos/appLogo.png";
+  static const String appLogo = "assets/logos/app_logo.png";
   static const String googleLogo = "assets/logos/google.png";
   static const String facebookLogo = "assets/logos/facebook.png";
 
@@ -11,6 +11,28 @@ class AppImages {
   static const String restaurants =
       "assets/icons/home_categories/restaurant.png";
 
+  //* kitchen category icons
+  static const String african = "assets/icons/kitchen_categories/africa.png";
+  static const String french = "assets/icons/kitchen_categories/france.png";
+  static const String italian = "assets/icons/kitchen_categories/italy.png";
+  static const String latin = "assets/icons/kitchen_categories/latine.png";
+  static const String eastern = "assets/icons/kitchen_categories/middle-east.png";
+  static const String portuguese = "assets/icons/kitchen_categories/portugal.png";
+  static const String spanish = "assets/icons/kitchen_categories/spain.png";
+
+  //* diet category icons
+  static const String casher = "assets/icons/diet_categories/casher.png";
+  static const String glutenFree = "assets/icons/diet_categories/gluten.png";
+  static const String halal = "assets/icons/diet_categories/halal.png";
+  static const String vegan = "assets/icons/diet_categories/vegan.png";
+
+  //* dish type category icons
+  static const String appetizer = "assets/icons/dish_type_categories/appetizer.png";
+  static const String cocktail = "assets/icons/dish_type_categories/cocktail.png";
+  static const String dessert = "assets/icons/dish_type_categories/dessert.png";
+    static const String dish = "assets/icons/dish_type_categories/dish.png";
+
+
   static const String welcome = "assets/images/welcome.jpg";
 
   //* order delivery options
@@ -19,6 +41,7 @@ class AppImages {
   static const String pickup = "assets/images/delivery_options/pickup.png";
 
   //* payment method icons
+  static const String applePay = "assets/icons/payment/apple-pay.png";
   static const String creditCard = "assets/icons/payment/credit_card.png";
   static const String mastercard = "assets/icons/payment/mastercard.png";
   static const String paypal = "assets/icons/payment/paypal.png";

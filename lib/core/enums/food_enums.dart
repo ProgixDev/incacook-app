@@ -51,7 +51,6 @@ enum CuisineType {
 
 enum DietaryTag {
   halal(label: AppTexts.dietaryHalal, color: Color(0xFF8E44AD)),
-  vegetarien(label: AppTexts.dietaryVegetarian, color: Color(0xFF558B2F)),
   vegan(label: AppTexts.dietaryVegan, color: Color(0xFF2E7D32)),
   glutenFree(label: AppTexts.dietaryGlutenFree, color: Color(0xFF1976D2)),
   casher(label: AppTexts.dietaryKosher, color: Color(0xFF6A1B9A));

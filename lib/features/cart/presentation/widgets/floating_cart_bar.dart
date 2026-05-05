@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
 import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:homemade/core/widgets/effects/frosted_surface.dart';
 import 'package:homemade/features/cart/controllers/cart_controller.dart';
 import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
 
@@ -34,21 +35,15 @@ class FloatingCartBar extends StatelessWidget {
         ),
         child: GestureDetector(
           onTap: () => Get.to(() => const MyCartScreen()),
-          child: Container(
+          //* frosted bar tinted with the brand's "selected" surface — keeps
+          //* the strong brown/cream cart pill identity while adopting the
+          //* glass aesthetic of the rest of the app.
+          child: FrostedSurface(
+            borderRadius: BorderRadius.circular(999),
+            tint: colors.selectedSurface,
             padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.md,
               vertical: AppSizes.sm + 2,
-            ),
-            decoration: BoxDecoration(
-              color: colors.selectedSurface,
-              borderRadius: BorderRadius.circular(999),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
             child: Row(
               children: [
