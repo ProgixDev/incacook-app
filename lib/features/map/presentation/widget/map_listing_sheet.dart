@@ -166,17 +166,6 @@ class MapListingSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: onOrder,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.selectedSurface,
-                        foregroundColor: colors.selectedOnSurface,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        textStyle: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                      ),
                       child: const Text(AppTexts.mapSheetOrderCta),
                     ),
                   ),

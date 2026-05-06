@@ -23,13 +23,13 @@ class CustomElevatedButtonTheme {
       backgroundColor: BrandColors.primary,
       disabledForegroundColor: LightPalette.onSurfaceVariant,
       disabledBackgroundColor: LightPalette.outline,
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       textStyle: const TextStyle(
         fontSize: 16,
         color: LightPalette.surface,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     ).copyWith(side: _stateAwareSide),
   );
 
@@ -41,13 +41,13 @@ class CustomElevatedButtonTheme {
       backgroundColor: BrandColors.primary,
       disabledForegroundColor: DarkPalette.onSurfaceVariant,
       disabledBackgroundColor: DarkPalette.outline,
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       textStyle: const TextStyle(
         fontSize: 16,
         color: DarkPalette.onSurface,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     ).copyWith(side: _stateAwareSide),
   );
 }

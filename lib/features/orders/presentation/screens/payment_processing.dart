@@ -192,18 +192,6 @@ class _FailedView extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: onRetry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.selectedSurface,
-                foregroundColor: colors.selectedOnSurface,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
               child: const Text(AppTexts.paymentErrorRetry),
             ),
           ),

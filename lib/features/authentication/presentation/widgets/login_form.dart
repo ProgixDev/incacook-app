@@ -149,8 +149,9 @@ class LoginForm extends StatelessWidget {
             SizedBox(
               width: double.infinity, //? to make the sized button full width
               child: ElevatedButton(
-                onPressed: () =>
-                    Get.offAll(() => const NavigationMenu(tabs: kClientNavTabs)),
+                onPressed: () => Get.offAll(
+                  () => const NavigationMenu(tabs: kClientNavTabs),
+                ),
                 child: const Text(AppTexts.signIn),
               ),
             ),
@@ -158,16 +159,19 @@ class LoginForm extends StatelessWidget {
 
             //* create account button — frosted to match the form fields.
             FrostedSurface(
-              borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+              borderRadius: BorderRadius.circular(999),
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () => Get.to(() => const UserTypeSelectionScreen()),
+                  onPressed: () =>
+                      Get.to(() => const UserTypeSelectionScreen()),
                   style: TextButton.styleFrom(
                     foregroundColor: scheme.onSurface,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.buttonRadius),
+                      borderRadius: BorderRadius.circular(
+                        AppSizes.buttonRadius,
+                      ),
                     ),
                   ),
                   child: const Text(AppTexts.createAccount),

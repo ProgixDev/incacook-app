@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:homemade/core/constants/sizes.dart';
 import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
 
 /// Asks the user whether to clear the existing cart when adding an item from
 /// a different seller. Resolves to `true` if they confirm.
@@ -27,7 +26,6 @@ class DifferentSellerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return Dialog(
       backgroundColor: scheme.surface,
       shape: RoundedRectangleBorder(
@@ -76,17 +74,6 @@ class DifferentSellerDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.selectedSurface,
-                      foregroundColor: colors.selectedOnSurface,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      textStyle: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                    ),
                     child: const Text(AppTexts.cartDifferentSellerConfirm),
                   ),
                 ),

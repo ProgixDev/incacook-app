@@ -23,8 +23,6 @@ class SignupForm extends StatelessWidget {
     borderSide: BorderSide.none,
   );
 
-  static final _fieldRadius = BorderRadius.circular(48);
-
   Widget _homeForUserType() {
     return switch (userType) {
       UserType.client => const NavigationMenu(tabs: kClientNavTabs),
@@ -52,9 +50,6 @@ class SignupForm extends StatelessWidget {
     );
   }
 
-  Widget _frosted(Widget child) =>
-      FrostedSurface(borderRadius: _fieldRadius, child: child);
-
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SignupController());
@@ -65,13 +60,12 @@ class SignupForm extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _frosted(
-                  TextFormField(
+                child: FrostedSurface(
+                  borderRadius: BorderRadius.circular(999),
+                  child: TextFormField(
                     controller: controller.firstName,
-                    validator: (value) => CustomValidator.validateEmptyText(
-                      'First name',
-                      value,
-                    ),
+                    validator: (value) =>
+                        CustomValidator.validateEmptyText('First name', value),
                     decoration: _decoration(
                       context,
                       label: AppTexts.firstName,
@@ -82,13 +76,12 @@ class SignupForm extends StatelessWidget {
               ),
               const Gap(AppSizes.spaceBtwInputFields),
               Expanded(
-                child: _frosted(
-                  TextFormField(
+                child: FrostedSurface(
+                  borderRadius: BorderRadius.circular(999),
+                  child: TextFormField(
                     controller: controller.lastName,
-                    validator: (value) => CustomValidator.validateEmptyText(
-                      'Last name',
-                      value,
-                    ),
+                    validator: (value) =>
+                        CustomValidator.validateEmptyText('Last name', value),
                     decoration: _decoration(
                       context,
                       label: AppTexts.lastName,
@@ -102,8 +95,9 @@ class SignupForm extends StatelessWidget {
           const Gap(AppSizes.sm),
 
           //* username
-          _frosted(
-            TextFormField(
+          FrostedSurface(
+            borderRadius: BorderRadius.circular(999),
+            child: TextFormField(
               controller: controller.userName,
               validator: (value) =>
                   CustomValidator.validateEmptyText('Username', value),
@@ -117,8 +111,9 @@ class SignupForm extends StatelessWidget {
           const Gap(AppSizes.sm),
 
           //* email
-          _frosted(
-            TextFormField(
+          FrostedSurface(
+            borderRadius: BorderRadius.circular(999),
+            child: TextFormField(
               controller: controller.email,
               validator: (value) => CustomValidator.validateEmail(value),
               decoration: _decoration(
@@ -131,8 +126,9 @@ class SignupForm extends StatelessWidget {
           const Gap(AppSizes.sm),
 
           //* phone number
-          _frosted(
-            TextFormField(
+          FrostedSurface(
+            borderRadius: BorderRadius.circular(999),
+            child: TextFormField(
               controller: controller.phoneNumber,
               validator: (value) => CustomValidator.validatePhoneNumber(value),
               decoration: _decoration(
@@ -146,13 +142,12 @@ class SignupForm extends StatelessWidget {
 
           //* seller-specific fields
           if (userType == UserType.seller) ...[
-            _frosted(
-              TextFormField(
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              child: TextFormField(
                 controller: controller.restaurantName,
-                validator: (value) => CustomValidator.validateEmptyText(
-                  'Restaurant name',
-                  value,
-                ),
+                validator: (value) =>
+                    CustomValidator.validateEmptyText('Restaurant name', value),
                 decoration: _decoration(
                   context,
                   label: AppTexts.restaurantName,
@@ -161,8 +156,9 @@ class SignupForm extends StatelessWidget {
               ),
             ),
             const Gap(AppSizes.sm),
-            _frosted(
-              TextFormField(
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              child: TextFormField(
                 controller: controller.restaurantAddress,
                 validator: (value) => CustomValidator.validateEmptyText(
                   'Restaurant address',
@@ -180,8 +176,9 @@ class SignupForm extends StatelessWidget {
 
           //* delivery-specific fields
           if (userType == UserType.delivery) ...[
-            _frosted(
-              TextFormField(
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              child: TextFormField(
                 controller: controller.vehicleType,
                 validator: (value) =>
                     CustomValidator.validateEmptyText('Vehicle type', value),
@@ -193,8 +190,9 @@ class SignupForm extends StatelessWidget {
               ),
             ),
             const Gap(AppSizes.sm),
-            _frosted(
-              TextFormField(
+            FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              child: TextFormField(
                 controller: controller.licenseNumber,
                 validator: (value) =>
                     CustomValidator.validateEmptyText('License number', value),
@@ -210,8 +208,9 @@ class SignupForm extends StatelessWidget {
 
           //* password
           Obx(
-            () => _frosted(
-              TextFormField(
+            () => FrostedSurface(
+              borderRadius: BorderRadius.circular(999),
+              child: TextFormField(
                 controller: controller.password,
                 validator: (value) => CustomValidator.validatePassword(value),
                 obscureText: controller.hidePassword.value,

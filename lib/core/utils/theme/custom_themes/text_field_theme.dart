@@ -7,6 +7,7 @@ class CustomTextFormFieldTheme {
 
   static InputDecorationTheme lightInputDecorationTheme = InputDecorationTheme(
     errorMaxLines: 3,
+    floatingLabelBehavior: FloatingLabelBehavior.never,
     prefixIconColor: LightPalette.onSurfaceVariant,
     suffixIconColor: LightPalette.onSurfaceVariant,
     labelStyle: const TextStyle().copyWith(
@@ -18,9 +19,6 @@ class CustomTextFormFieldTheme {
       color: LightPalette.onSurfaceVariant,
     ),
     errorStyle: const TextStyle().copyWith(fontStyle: FontStyle.normal),
-    floatingLabelStyle: const TextStyle().copyWith(
-      color: LightPalette.onSurface.withValues(alpha: 0.8),
-    ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(40),
       borderSide: const BorderSide(width: 1, color: LightPalette.outline),
@@ -45,6 +43,7 @@ class CustomTextFormFieldTheme {
 
   static InputDecorationTheme darkInputDecorationTheme = InputDecorationTheme(
     errorMaxLines: 3,
+    floatingLabelBehavior: FloatingLabelBehavior.never,
     prefixIconColor: DarkPalette.onSurfaceVariant,
     suffixIconColor: DarkPalette.onSurfaceVariant,
     labelStyle: const TextStyle().copyWith(
@@ -56,9 +55,6 @@ class CustomTextFormFieldTheme {
       color: DarkPalette.onSurfaceVariant,
     ),
     errorStyle: const TextStyle().copyWith(fontStyle: FontStyle.normal),
-    floatingLabelStyle: const TextStyle().copyWith(
-      color: DarkPalette.onSurface.withValues(alpha: 0.8),
-    ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(40),
       borderSide: const BorderSide(width: 1, color: DarkPalette.outline),
