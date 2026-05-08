@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/features/catalog/presentation/screens/product_detail.dart';
-import 'package:homemade/features/map/controllers/map_controller.dart';
-import 'package:homemade/features/map/domain/map_entry.dart';
-import 'package:homemade/features/map/presentation/widget/center_on_user_button.dart';
-import 'package:homemade/features/map/presentation/widget/map_filter_bar.dart';
-import 'package:homemade/features/map/presentation/widget/map_listing_sheet.dart';
-import 'package:homemade/features/map/presentation/widget/map_pin.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/features/catalog/presentation/screens/product_detail.dart';
+import 'package:incacook/features/map/controllers/map_controller.dart';
+import 'package:incacook/features/map/domain/map_entry.dart';
+import 'package:incacook/features/map/presentation/widget/center_on_user_button.dart';
+import 'package:incacook/features/map/presentation/widget/map_filter_bar.dart';
+import 'package:incacook/features/map/presentation/widget/map_listing_sheet.dart';
+import 'package:incacook/features/map/presentation/widget/map_pin.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});

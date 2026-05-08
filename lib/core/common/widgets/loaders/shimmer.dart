@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 class CustomShimmerEffect extends StatelessWidget {
   const CustomShimmerEffect({

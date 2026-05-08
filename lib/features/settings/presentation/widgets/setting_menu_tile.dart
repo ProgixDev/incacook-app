@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/features/settings/domain/setting_menu_item.dart';
+import 'package:incacook/features/settings/domain/setting_menu_item.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 class SettingMenuTile extends StatelessWidget {
   const SettingMenuTile({super.key, required this.item});

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/delivery/presentation/widgets/go_online_button.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/delivery/presentation/widgets/go_online_button.dart';
 
 /// Tab indices for the delivery bottom-sheet body. Drive shows the
 /// pickup/stats cards; settings shows the appearance + logout panel.

@@ -1,11 +1,11 @@
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/enums/order_enums.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/seller/domain/seller_rating.dart';
-import 'package:homemade/features/seller/domain/seller_profile.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/enums/order_enums.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/seller/domain/seller_rating.dart';
+import 'package:incacook/features/seller/domain/seller_profile.dart';
 
 /// Comprehensive mock seller — every [SellerProfile] field is filled in
 /// with realistic data so screens can be tested directly.

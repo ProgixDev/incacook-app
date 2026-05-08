@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/features/orders/presentation/widgets/order_tracking_layout.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/features/orders/presentation/widgets/order_tracking_layout.dart';
 
 class DeliveredStageView extends StatelessWidget {
   const DeliveredStageView({super.key});

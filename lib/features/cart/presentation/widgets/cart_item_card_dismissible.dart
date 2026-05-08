@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/cart/domain/cart_item.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/cart/domain/cart_item.dart';
 
 class CartItemCardDismissible extends StatelessWidget {
   const CartItemCardDismissible({

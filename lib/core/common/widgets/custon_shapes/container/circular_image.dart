@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:homemade/core/common/widgets/loaders/shimmer.dart';
+import 'package:incacook/core/common/widgets/loaders/shimmer.dart';
 
 class CustomCircularImage extends StatelessWidget {
   const CustomCircularImage({

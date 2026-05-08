@@ -1,8 +1,8 @@
-import 'package:homemade/core/common/widgets/navigation/nav_tab.dart';
-import 'package:homemade/features/seller/presentation/screens/order_requests.dart';
-import 'package:homemade/features/seller/presentation/screens/seller_home.dart';
-import 'package:homemade/features/seller/presentation/screens/seller_products.dart';
-import 'package:homemade/features/settings/presentation/screens/settings.dart';
+import 'package:incacook/core/common/widgets/navigation/nav_tab.dart';
+import 'package:incacook/features/seller/presentation/screens/order_requests.dart';
+import 'package:incacook/features/seller/presentation/screens/seller_home.dart';
+import 'package:incacook/features/seller/presentation/screens/seller_products.dart';
+import 'package:incacook/features/settings/presentation/screens/settings.dart';
 import 'package:iconsax/iconsax.dart';
 
 const List<NavTab> kSellerNavTabs = [

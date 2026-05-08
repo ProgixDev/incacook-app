@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/utils/theme/brand_colors.dart';
-import 'package:homemade/core/utils/theme/palette.dart';
+import 'package:incacook/core/utils/theme/brand_colors.dart';
+import 'package:incacook/core/utils/theme/palette.dart';
 
 class CustomElevatedButtonTheme {
   CustomElevatedButtonTheme._();

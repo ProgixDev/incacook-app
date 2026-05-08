@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/widgets/misc/drag_handle.dart';
+import 'package:incacook/core/widgets/misc/drag_handle.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/orders/domain/order_customization.dart';
-import 'package:homemade/features/orders/domain/product_add_on.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/orders/domain/order_customization.dart';
+import 'package:incacook/features/orders/domain/product_add_on.dart';
 
 class OrderCustomizeSheet extends StatefulWidget {
   const OrderCustomizeSheet({

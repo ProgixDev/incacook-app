@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/common/styles/spacing_styles.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
+import 'package:incacook/core/common/styles/spacing_styles.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({

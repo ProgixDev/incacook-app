@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "HomeMade (debug)",
+      "name": "IncaCook (debug)",
       "type": "dart",
       "request": "launch",
       "toolArgs": [
@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "HomeMade (profile)",
+      "name": "IncaCook (profile)",
       "type": "dart",
       "request": "launch",
       "flutterMode": "profile",
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "name": "HomeMade (release)",
+      "name": "IncaCook (release)",
       "type": "dart",
       "request": "launch",
       "flutterMode": "release",

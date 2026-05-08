@@ -3,10 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/seller/domain/accepted_order.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/seller/domain/accepted_order.dart';
 
 class AcceptedOrderCard extends StatelessWidget {
   const AcceptedOrderCard({super.key, required this.order, this.onTap});

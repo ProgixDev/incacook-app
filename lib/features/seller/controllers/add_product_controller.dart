@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:homemade/core/enums/food_enums.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 
 /// Owns every piece of state for the [AddProductSheet] form. The sheet
 /// itself stays stateless — sections read/write through this controller

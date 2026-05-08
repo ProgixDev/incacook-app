@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/client/controllers/filter_controller.dart';
-import 'package:homemade/features/client/presentation/widget/category_pill.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/client/controllers/filter_controller.dart';
+import 'package:incacook/features/client/presentation/widget/category_pill.dart';
 
 //* Category browse hub: a horizontal pill strip for the 3 main "kitchen
 //* style" categories (+ Tout), and below it a circular-icon strip per

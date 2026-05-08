@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/widgets/decor/decor_blob.dart';
-import 'package:homemade/features/seller/presentation/widgets/order_requests_section.dart';
-import 'package:homemade/features/seller/presentation/widgets/seller_home_appbar.dart';
-import 'package:homemade/features/seller/presentation/widgets/today_snapshot_card.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/features/seller/presentation/widgets/order_requests_section.dart';
+import 'package:incacook/features/seller/presentation/widgets/seller_home_appbar.dart';
+import 'package:incacook/features/seller/presentation/widgets/today_snapshot_card.dart';
 
 class SellerHomeScreen extends StatelessWidget {
   const SellerHomeScreen({super.key});

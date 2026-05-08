@@ -1,4 +1,4 @@
-import 'package:homemade/core/utils/validation_utils.dart';
+import 'package:incacook/core/utils/validation_utils.dart';
 
 extension StringExtensions on String {
   bool get isEmail => ValidationUtils.isValidEmail(this);

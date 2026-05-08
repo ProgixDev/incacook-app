@@ -1,8 +1,8 @@
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/enums/order_enums.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/client/domain/kitchen.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/enums/order_enums.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/client/domain/kitchen.dart';
 
 class ClientMockData {
   ClientMockData._();

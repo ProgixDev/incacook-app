@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:homemade/features/cart/domain/cart_item.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/orders/domain/order_customization.dart';
+import 'package:incacook/features/cart/domain/cart_item.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/orders/domain/order_customization.dart';
 
 /// Session-scoped cart state. Items are locked to a single seller: trying to
 /// add from another seller surfaces a conflict that the caller resolves via

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/cart/controllers/cart_controller.dart';
-import 'package:homemade/features/cart/presentation/widgets/cart_footer.dart';
-import 'package:homemade/features/cart/presentation/widgets/cart_item_card_dismissible.dart';
-import 'package:homemade/features/cart/presentation/widgets/empty_cart_state.dart';
-import 'package:homemade/core/enums/order_enums.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/orders/domain/delivery_details.dart';
-import 'package:homemade/features/orders/domain/fulfillment_options.dart';
-import 'package:homemade/features/orders/presentation/screens/delivery_address.dart';
-import 'package:homemade/features/orders/presentation/screens/order_summary.dart';
-import 'package:homemade/features/orders/presentation/widgets/fulfillment_choice_sheet.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/cart/controllers/cart_controller.dart';
+import 'package:incacook/features/cart/presentation/widgets/cart_footer.dart';
+import 'package:incacook/features/cart/presentation/widgets/cart_item_card_dismissible.dart';
+import 'package:incacook/features/cart/presentation/widgets/empty_cart_state.dart';
+import 'package:incacook/core/enums/order_enums.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/orders/domain/delivery_details.dart';
+import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/features/orders/presentation/screens/delivery_address.dart';
+import 'package:incacook/features/orders/presentation/screens/order_summary.dart';
+import 'package:incacook/features/orders/presentation/widgets/fulfillment_choice_sheet.dart';
 
 class MyCartScreen extends StatelessWidget {
   const MyCartScreen({super.key});

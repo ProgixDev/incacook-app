@@ -1,4 +1,4 @@
-import 'package:homemade/core/enums/food_enums.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 
 class ListingFilter {
   const ListingFilter({

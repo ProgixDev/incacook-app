@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/enums/food_enums.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 
 class DietaryTagDot extends StatelessWidget {
   const DietaryTagDot({super.key, required this.tag});

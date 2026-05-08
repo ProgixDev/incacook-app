@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/images/responsive_image_asset.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/images/responsive_image_asset.dart';
 
 class DeliveryOptionCard extends StatelessWidget {
   const DeliveryOptionCard({

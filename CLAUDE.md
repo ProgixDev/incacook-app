@@ -1,4 +1,4 @@
-# HomeMade — contributor notes
+# IncaCook — contributor notes
 
 ## Theming
 

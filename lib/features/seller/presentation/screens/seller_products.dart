@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/decor/decor_blob.dart';
-import 'package:homemade/features/catalog/presentation/screens/product_detail.dart';
-import 'package:homemade/features/seller/data/seller_product_mock_data.dart';
-import 'package:homemade/features/seller/domain/seller_product.dart';
-import 'package:homemade/features/seller/presentation/widgets/add_product_bar.dart';
-import 'package:homemade/features/seller/presentation/widgets/add_product_sheet.dart';
-import 'package:homemade/features/seller/presentation/widgets/products_tab_toggle.dart';
-import 'package:homemade/features/seller/presentation/widgets/seller_product_card.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/features/catalog/presentation/screens/product_detail.dart';
+import 'package:incacook/features/seller/data/seller_product_mock_data.dart';
+import 'package:incacook/features/seller/domain/seller_product.dart';
+import 'package:incacook/features/seller/presentation/widgets/add_product_bar.dart';
+import 'package:incacook/features/seller/presentation/widgets/add_product_sheet.dart';
+import 'package:incacook/features/seller/presentation/widgets/products_tab_toggle.dart';
+import 'package:incacook/features/seller/presentation/widgets/seller_product_card.dart';
 
 class SellerProductsScreen extends StatefulWidget {
   const SellerProductsScreen({super.key});

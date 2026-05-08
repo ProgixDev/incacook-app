@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 /// Decorative organic blob anchored to the top-right corner of a screen.
 /// Drawn with cubic Béziers — coordinates are normalized to the [SizedBox]

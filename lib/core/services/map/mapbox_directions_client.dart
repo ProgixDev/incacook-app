@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 class MapboxDirectionsClient {
   MapboxDirectionsClient({Dio? dio, String? accessToken})

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 /// A drop-in replacement for [showModalBottomSheet] that paints a frosted
 /// blur of the underlying screen behind the sheet content.

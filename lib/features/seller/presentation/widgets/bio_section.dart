@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/styles/shadows_styles.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/common/styles/shadows_styles.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class BioSection extends StatelessWidget {
   const BioSection({super.key});

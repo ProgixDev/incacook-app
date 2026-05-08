@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/features/orders/controllers/order_tracking_controller.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/features/orders/controllers/order_tracking_controller.dart';
 
 class OnTheWayStageView extends StatefulWidget {
   const OnTheWayStageView({super.key});

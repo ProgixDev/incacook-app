@@ -1,9 +1,9 @@
-import 'package:homemade/features/cart/domain/cart_item.dart';
-import 'package:homemade/features/orders/domain/delivery_details.dart';
-import 'package:homemade/features/orders/domain/fulfillment_options.dart';
-import 'package:homemade/features/orders/domain/order_stage.dart';
-import 'package:homemade/features/orders/domain/payment_method.dart';
-import 'package:homemade/features/seller/domain/seller_profile.dart';
+import 'package:incacook/features/cart/domain/cart_item.dart';
+import 'package:incacook/features/orders/domain/delivery_details.dart';
+import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/features/orders/domain/payment_method.dart';
+import 'package:incacook/features/seller/domain/seller_profile.dart';
 
 /// Snapshot of a single placed order. Bundles every piece of data the
 /// post-checkout screens need (confirmation, tracking, history).

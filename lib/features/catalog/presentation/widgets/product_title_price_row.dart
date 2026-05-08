@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 class ProductTitlePriceRow extends StatelessWidget {
   const ProductTitlePriceRow({

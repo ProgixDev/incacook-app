@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/features/client/presentation/widget/section_dots.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/features/client/presentation/widget/section_dots.dart';
 
 class ClientHomeSection extends StatefulWidget {
   const ClientHomeSection({

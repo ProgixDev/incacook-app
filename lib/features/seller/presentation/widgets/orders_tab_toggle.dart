@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 enum OrdersTab { accepted, history }
 

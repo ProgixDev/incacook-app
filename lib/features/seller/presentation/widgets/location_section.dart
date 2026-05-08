@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:homemade/core/common/styles/shadows_styles.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/common/styles/shadows_styles.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 class LocationSection extends StatefulWidget {
   const LocationSection({

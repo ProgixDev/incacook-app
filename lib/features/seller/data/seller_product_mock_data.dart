@@ -1,5 +1,5 @@
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/features/seller/domain/seller_product.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/features/seller/domain/seller_product.dart';
 
 class SellerProductMockData {
   SellerProductMockData._();

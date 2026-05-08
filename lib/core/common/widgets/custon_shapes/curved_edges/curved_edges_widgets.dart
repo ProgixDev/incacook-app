@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/curved_edges/curved_edges.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/curved_edges/curved_edges.dart';
 
 class CurvedEdgesWidget extends StatelessWidget {
   const CurvedEdgesWidget({super.key, this.child});

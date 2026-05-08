@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/misc/drag_handle.dart';
-import 'package:homemade/features/client/controllers/filter_controller.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/misc/drag_handle.dart';
+import 'package:incacook/features/client/controllers/filter_controller.dart';
 
 class FiltersSheet extends StatelessWidget {
   const FiltersSheet({super.key});

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 /// Frosted-glass surface used across the app (search bar, filter button,
 /// appbar buttons, cart badge, address tiles, settings cards…).

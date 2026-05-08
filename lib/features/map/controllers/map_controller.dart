@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/features/map/data/map_mock_data.dart';
-import 'package:homemade/features/map/domain/map_entry.dart';
-import 'package:homemade/features/map/presentation/widget/map_filter_bar.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/features/map/data/map_mock_data.dart';
+import 'package:incacook/features/map/domain/map_entry.dart';
+import 'package:incacook/features/map/presentation/widget/map_filter_bar.dart';
 
 /// Owns map state for [MapScreen]: the static demo data, the selected
 /// filter, the currently-tapped pin, and the projected screen coords for

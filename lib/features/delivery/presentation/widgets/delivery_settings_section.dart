@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/settings/domain/setting_menu_item.dart';
-import 'package:homemade/features/settings/presentation/widgets/appearance_sheet.dart';
-import 'package:homemade/features/settings/presentation/widgets/profile_menu_card.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/settings/domain/setting_menu_item.dart';
+import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
+import 'package:incacook/features/settings/presentation/widgets/profile_menu_card.dart';
 
 /// Settings panel shown in the delivery sheet's body when the
 /// [DeliveryNavTab.settings] tab is selected. Reuses the client's

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/utils/image_utils.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/utils/image_utils.dart';
 
 class ResponsiveImageAsset extends StatelessWidget {
   const ResponsiveImageAsset({

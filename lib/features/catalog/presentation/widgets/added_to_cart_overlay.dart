@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
 
 /// Full-screen confirmation overlay shown when an item is added to the cart.
 ///

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:homemade/core/services/map/models/map_route.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 /// Great-circle distance (Haversine) between two points, in meters.
 double greatCircleDistance(MapPoint a, MapPoint b) {

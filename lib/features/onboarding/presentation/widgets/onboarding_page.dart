@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
 
 class OnBoardingPage extends StatelessWidget {
   const OnBoardingPage({

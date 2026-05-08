@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/features/seller/domain/seller_rating.dart';
-import 'package:homemade/features/seller/presentation/widgets/profile_stats_section.dart';
+import 'package:incacook/features/seller/domain/seller_rating.dart';
+import 'package:incacook/features/seller/presentation/widgets/profile_stats_section.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/common/widgets/buttons/circular_icon_button.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/features/seller/domain/seller_profile.dart';
-import 'package:homemade/features/seller/presentation/widgets/bio_section.dart';
-import 'package:homemade/features/seller/presentation/widgets/location_section.dart';
-import 'package:homemade/features/seller/presentation/widgets/reviews_section.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/common/widgets/buttons/circular_icon_button.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/features/seller/domain/seller_profile.dart';
+import 'package:incacook/features/seller/presentation/widgets/bio_section.dart';
+import 'package:incacook/features/seller/presentation/widgets/location_section.dart';
+import 'package:incacook/features/seller/presentation/widgets/reviews_section.dart';
 
 class SellerProfileScreen extends StatelessWidget {
   const SellerProfileScreen({super.key, required this.profile});

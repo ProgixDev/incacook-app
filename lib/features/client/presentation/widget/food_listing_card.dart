@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
 
 class FoodListingCard extends StatelessWidget {
   const FoodListingCard({super.key, required this.listing, this.onTap});

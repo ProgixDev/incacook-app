@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/utils/theme/palette.dart';
+import 'package:incacook/core/utils/theme/palette.dart';
 
 class CustomBottomSheetTheme {
   CustomBottomSheetTheme._();

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/brand_colors.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/seller/domain/seller_product.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/theme/brand_colors.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/seller/domain/seller_product.dart';
 
 class SellerProductCard extends StatelessWidget {
   const SellerProductCard({

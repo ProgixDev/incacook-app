@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 enum SavedAddressType {
   home(label: AppTexts.addressTypeHome, icon: Iconsax.home_2),

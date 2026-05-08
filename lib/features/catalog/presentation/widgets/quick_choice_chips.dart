@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
 
 class QuickChoiceChips extends StatefulWidget {
   const QuickChoiceChips({

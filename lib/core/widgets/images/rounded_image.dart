@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
 
 class CustomRoundedImage extends StatelessWidget {
   const CustomRoundedImage({

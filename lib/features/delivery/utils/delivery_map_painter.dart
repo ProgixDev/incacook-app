@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 /// Owns the polyline/circle annotation managers for the delivery map and
 /// renders routes, markers, and camera framing. Stateless beyond the managers

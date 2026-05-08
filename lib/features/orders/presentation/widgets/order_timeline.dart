@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/orders/domain/order_stage.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/orders/domain/order_stage.dart';
 
 class OrderTimeline extends StatelessWidget {
   const OrderTimeline({super.key, required this.currentStage, this.onStageTap});

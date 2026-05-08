@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/text_strings.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 
 /// How a [RatingCriterion]'s value is expressed and rendered.
 enum RatingValueType {

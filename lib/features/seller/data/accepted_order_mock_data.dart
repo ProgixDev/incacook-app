@@ -1,4 +1,4 @@
-import 'package:homemade/features/seller/domain/accepted_order.dart';
+import 'package:incacook/features/seller/domain/accepted_order.dart';
 
 class AcceptedOrderMockData {
   AcceptedOrderMockData._();

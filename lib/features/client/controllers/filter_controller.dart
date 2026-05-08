@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/models/listing_filter.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/listing_filter.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
 
 class FilterController extends GetxController {
   static FilterController get instance => Get.isRegistered<FilterController>()

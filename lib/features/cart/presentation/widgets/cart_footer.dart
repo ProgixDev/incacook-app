@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/cart/controllers/cart_controller.dart';
-import 'package:homemade/features/cart/presentation/widgets/cart_seller_card.dart';
-import 'package:homemade/features/cart/presentation/widgets/order_summary_block.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/cart/controllers/cart_controller.dart';
+import 'package:incacook/features/cart/presentation/widgets/cart_seller_card.dart';
+import 'package:incacook/features/cart/presentation/widgets/order_summary_block.dart';
 
 class CartFooter extends StatelessWidget {
   const CartFooter({super.key, required this.onContinue, this.enabled = true});

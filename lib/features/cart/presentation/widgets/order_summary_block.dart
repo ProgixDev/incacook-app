@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/misc/horizontal_separator.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
+import 'package:incacook/core/common/widgets/misc/horizontal_separator.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 
 class OrderSummaryBlock extends StatelessWidget {
   const OrderSummaryBlock({

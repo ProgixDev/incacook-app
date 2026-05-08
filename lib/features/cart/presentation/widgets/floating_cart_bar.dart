@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/cart/controllers/cart_controller.dart';
-import 'package:homemade/features/cart/presentation/screens/my_cart.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/cart/controllers/cart_controller.dart';
+import 'package:incacook/features/cart/presentation/screens/my_cart.dart';
 
 /// Compact pill that floats at the bottom of seller-browsing screens while
 /// the cart has items. Tap to open [MyCartScreen].

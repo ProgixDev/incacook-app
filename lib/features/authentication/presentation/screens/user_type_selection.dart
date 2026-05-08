@@ -3,15 +3,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/widgets/decor/decor_blob.dart';
-import 'package:homemade/features/authentication/controllers/user_type_selection_controller.dart';
-import 'package:homemade/features/authentication/domain/user_type.dart';
-import 'package:homemade/features/authentication/presentation/widgets/user_type_card.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/features/authentication/controllers/user_type_selection_controller.dart';
+import 'package:incacook/features/authentication/domain/user_type.dart';
+import 'package:incacook/features/authentication/presentation/widgets/user_type_card.dart';
 
 class UserTypeSelectionScreen extends StatelessWidget {
   const UserTypeSelectionScreen({super.key});

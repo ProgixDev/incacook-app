@@ -2,15 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/utils/theme/brand_colors.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/features/seller/domain/seller_profile.dart';
-import 'package:homemade/features/seller/domain/seller_rating.dart';
-import 'package:homemade/features/seller/presentation/widgets/seller_rating_row.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/utils/theme/brand_colors.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/features/seller/domain/seller_profile.dart';
+import 'package:incacook/features/seller/domain/seller_rating.dart';
+import 'package:incacook/features/seller/presentation/widgets/seller_rating_row.dart';
 
 class ProfileStatsSection extends StatelessWidget {
   const ProfileStatsSection({

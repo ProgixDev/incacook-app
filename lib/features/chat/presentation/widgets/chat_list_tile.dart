@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/chat/domain/chat_preview.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/chat/domain/chat_preview.dart';
 
 class ChatListTile extends StatelessWidget {
   const ChatListTile({super.key, required this.chat, this.onTap});

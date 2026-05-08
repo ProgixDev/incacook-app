@@ -1,14 +1,14 @@
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/features/cart/domain/cart_item.dart';
-import 'package:homemade/features/orders/domain/delivery_details.dart';
-import 'package:homemade/features/orders/domain/fulfillment_options.dart';
-import 'package:homemade/features/orders/domain/order_detail.dart';
-import 'package:homemade/features/orders/domain/order_stage.dart';
-import 'package:homemade/features/orders/domain/payment_method.dart';
-import 'package:homemade/features/orders/domain/product_add_on.dart';
-import 'package:homemade/features/orders/domain/saved_address.dart';
-import 'package:homemade/features/seller/data/seller_mock_data.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/features/cart/domain/cart_item.dart';
+import 'package:incacook/features/orders/domain/delivery_details.dart';
+import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/features/orders/domain/order_detail.dart';
+import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/features/orders/domain/payment_method.dart';
+import 'package:incacook/features/orders/domain/product_add_on.dart';
+import 'package:incacook/features/orders/domain/saved_address.dart';
+import 'package:incacook/features/seller/data/seller_mock_data.dart';
 
 /// Comprehensive mock order — every [OrderDetail] field is filled in.
 /// Built from [SellerMockData.demoSeller] so seller/listing references stay

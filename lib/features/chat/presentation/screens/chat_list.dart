@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/decor/decor_blob.dart';
-import 'package:homemade/features/chat/domain/chat_preview.dart';
-import 'package:homemade/features/chat/presentation/screens/chat.dart';
-import 'package:homemade/features/chat/presentation/widgets/chat_list_tile.dart';
-import 'package:homemade/features/chat/presentation/widgets/chat_search_bar.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/features/chat/domain/chat_preview.dart';
+import 'package:incacook/features/chat/presentation/screens/chat.dart';
+import 'package:incacook/features/chat/presentation/widgets/chat_list_tile.dart';
+import 'package:incacook/features/chat/presentation/widgets/chat_search_bar.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});

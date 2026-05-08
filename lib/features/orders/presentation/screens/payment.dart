@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/orders/domain/delivery_details.dart';
-import 'package:homemade/features/orders/domain/fulfillment_options.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/features/orders/domain/payment_method.dart';
-import 'package:homemade/features/orders/presentation/screens/payment_processing.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/orders/domain/delivery_details.dart';
+import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/features/orders/domain/payment_method.dart';
+import 'package:incacook/features/orders/presentation/screens/payment_processing.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({

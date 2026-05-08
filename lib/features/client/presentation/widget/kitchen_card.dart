@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/client/domain/kitchen.dart';
-import 'package:homemade/features/client/presentation/widget/favorite_button.dart';
-import 'package:homemade/features/client/presentation/widget/kitchen_meta_item.dart';
-import 'package:homemade/features/client/presentation/widget/kitchen_tag_chip.dart';
-import 'package:homemade/features/client/presentation/widget/rating_badge.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/client/domain/kitchen.dart';
+import 'package:incacook/features/client/presentation/widget/favorite_button.dart';
+import 'package:incacook/features/client/presentation/widget/kitchen_meta_item.dart';
+import 'package:incacook/features/client/presentation/widget/kitchen_tag_chip.dart';
+import 'package:incacook/features/client/presentation/widget/rating_badge.dart';
 
 class KitchenCard extends StatelessWidget {
   const KitchenCard({

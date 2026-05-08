@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/text_strings.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 
 enum SellerCategory {
   faitMaison(

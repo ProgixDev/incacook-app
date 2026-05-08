@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/features/authentication/controllers/signup_controller.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/features/authentication/controllers/signup_controller.dart';
 
 class TermsAndConditionsCheckBox extends StatelessWidget {
   const TermsAndConditionsCheckBox({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 class HorizontalSeparator extends StatelessWidget {
   const HorizontalSeparator({

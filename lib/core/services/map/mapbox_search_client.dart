@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/core/services/map/models/place_suggestion.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/core/services/map/models/place_suggestion.dart';
 
 class MapboxSearchClient {
   MapboxSearchClient({Dio? dio, String? accessToken})

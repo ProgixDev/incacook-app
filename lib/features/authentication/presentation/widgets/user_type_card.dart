@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class UserTypeCard extends StatelessWidget {
   const UserTypeCard({

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/buttons/circular_icon_button.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/common/widgets/buttons/circular_icon_button.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({

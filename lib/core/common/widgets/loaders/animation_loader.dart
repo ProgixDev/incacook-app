@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 //? a widget for displaying an animated loading indicator with optional text and action button
 class CustomAnimationLoader extends StatelessWidget {

@@ -2,13 +2,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/brand_colors.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/authentication/presentation/screens/login.dart';
-import 'package:homemade/features/authentication/presentation/screens/user_type_selection.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/theme/brand_colors.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/authentication/presentation/screens/login.dart';
+import 'package:incacook/features/authentication/presentation/screens/user_type_selection.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

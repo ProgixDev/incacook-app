@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/settings/domain/setting_menu_item.dart';
-import 'package:homemade/features/settings/presentation/widgets/setting_menu_tile.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/settings/domain/setting_menu_item.dart';
+import 'package:incacook/features/settings/presentation/widgets/setting_menu_tile.dart';
 
 class SettingMenuSection extends StatelessWidget {
   const SettingMenuSection({super.key, this.title, required this.items});

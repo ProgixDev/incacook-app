@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'package:homemade/core/constants/api_constants.dart';
+import 'package:incacook/core/constants/api_constants.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();

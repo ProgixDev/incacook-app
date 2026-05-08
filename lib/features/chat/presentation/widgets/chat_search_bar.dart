@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class ChatSearchBar extends StatelessWidget {
   const ChatSearchBar({super.key, this.onChanged, this.controller});

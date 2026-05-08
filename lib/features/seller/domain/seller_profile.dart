@@ -1,7 +1,7 @@
-import 'package:homemade/core/enums/food_enums.dart';
-import 'package:homemade/core/services/map/models/map_route.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/seller/domain/seller_rating.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/seller/domain/seller_rating.dart';
 
 class SellerProfile {
   const SellerProfile({

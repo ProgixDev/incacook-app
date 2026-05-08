@@ -3,13 +3,13 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:homemade/core/constants/animations.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/theme/theme_extensions.dart';
-import 'package:homemade/features/orders/domain/delivery_details.dart';
-import 'package:homemade/features/orders/domain/fulfillment_options.dart';
-import 'package:homemade/features/orders/presentation/screens/order_confirmation.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/features/orders/domain/delivery_details.dart';
+import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/features/orders/presentation/screens/order_confirmation.dart';
 
 enum _PaymentPhase { processing, failed }
 

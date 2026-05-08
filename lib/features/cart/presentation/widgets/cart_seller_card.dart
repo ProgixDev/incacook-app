@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/features/client/domain/food_listing.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
 
 class CartSellerCard extends StatelessWidget {
   const CartSellerCard({super.key, required this.listing});

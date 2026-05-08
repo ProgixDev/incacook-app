@@ -1,5 +1,5 @@
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/orders/domain/product_add_on.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/orders/domain/product_add_on.dart';
 
 class OrderCustomization {
   const OrderCustomization({

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 
 /// Mock QR-handoff confirmation. Shown before pickup and dropoff handoffs;
 /// the seller / customer would scan the rendered QR in production. Resolves

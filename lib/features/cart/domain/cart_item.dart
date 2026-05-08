@@ -1,5 +1,5 @@
-import 'package:homemade/features/client/domain/food_listing.dart';
-import 'package:homemade/features/orders/domain/product_add_on.dart';
+import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/features/orders/domain/product_add_on.dart';
 
 /// One line in the cart. Two buys of the same dish with different options
 /// produce two separate line items so their state stays independent.

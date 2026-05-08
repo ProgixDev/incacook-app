@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:homemade/core/common/widgets/appbar/appbar.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_container.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/image_strings.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
-import 'package:homemade/core/widgets/decor/decor_blob.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/chat/presentation/widgets/chat_input_field.dart';
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_container.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/chat/presentation/widgets/chat_input_field.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});

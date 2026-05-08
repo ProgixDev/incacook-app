@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:homemade/core/constants/image_strings.dart';
+import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 class DeliveryTopButtons extends StatelessWidget {
   const DeliveryTopButtons({

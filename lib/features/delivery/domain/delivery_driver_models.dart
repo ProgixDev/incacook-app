@@ -1,4 +1,4 @@
-import 'package:homemade/core/services/map/models/map_route.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 class WeeklyChallenge {
   const WeeklyChallenge({

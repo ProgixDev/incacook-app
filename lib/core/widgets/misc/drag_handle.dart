@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homemade/core/constants/sizes.dart';
+import 'package:incacook/core/constants/sizes.dart';
 
 /// Bottom-sheet grabber bar. Default color follows
 /// `Theme.of(context).colorScheme.outline` so it adapts to light/dark.

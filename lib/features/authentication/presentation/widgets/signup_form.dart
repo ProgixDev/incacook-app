@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:homemade/features/seller/presentation/seller_nav_tabs.dart';
+import 'package:incacook/features/seller/presentation/seller_nav_tabs.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:homemade/core/common/widgets/navigation/navigation_menu.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/constants/text_strings.dart';
-import 'package:homemade/core/utils/validators/validators.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
-import 'package:homemade/features/authentication/controllers/signup_controller.dart';
-import 'package:homemade/features/authentication/domain/user_type.dart';
-import 'package:homemade/features/client/presentation/client_nav_tabs.dart';
-import 'package:homemade/features/delivery/presentation/screens/delivery_home.dart';
+import 'package:incacook/core/common/widgets/navigation/navigation_menu.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/utils/validators/validators.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/authentication/controllers/signup_controller.dart';
+import 'package:incacook/features/authentication/domain/user_type.dart';
+import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
+import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 
 class SignupForm extends StatelessWidget {
   const SignupForm({super.key, required this.userType});

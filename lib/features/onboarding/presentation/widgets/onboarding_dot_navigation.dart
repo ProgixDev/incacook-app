@@ -1,9 +1,9 @@
-import 'package:homemade/features/onboarding/controllers/onboarding_controller.dart';
-import 'package:homemade/core/utils/device/device_utility.dart';
+import 'package:incacook/features/onboarding/controllers/onboarding_controller.dart';
+import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:homemade/core/constants/sizes.dart';
-import 'package:homemade/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class OnBoardingDotNavigation extends StatelessWidget {
   const OnBoardingDotNavigation({super.key});
