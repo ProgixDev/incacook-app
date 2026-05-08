@@ -40,9 +40,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 GestureDetector(onTap: leadingOnPressed, child: leading)
               else if (showBackArrow)
                 GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
+                  // Honor an explicit override (e.g. signup flow's
+                  // PageView previousPage) — otherwise default to
+                  // popping the route via Get.back().
+                  onTap: leadingOnPressed ?? () => Get.back<void>(),
                   child: FrostedSurface(
                     shape: BoxShape.circle,
                     child: SizedBox(

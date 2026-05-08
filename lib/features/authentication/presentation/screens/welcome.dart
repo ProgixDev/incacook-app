@@ -8,7 +8,6 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/authentication/presentation/screens/login.dart';
-import 'package:incacook/features/authentication/presentation/screens/user_type_selection.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -108,8 +107,7 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () =>
-                          Get.to(() => const UserTypeSelectionScreen()),
+                      onPressed: () => Get.toNamed<void>('/signup'),
                       child: Text(
                         AppTexts.welcomeSignUpEmail,
                         style: const TextStyle(

@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:lottie/lottie.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
+/// Frosted role / vehicle / option card used by the welcome user-type
+/// picker, the signup role page, and the driver vehicle page.
+///
+/// [media] is the visual element rendered above the title — a
+/// [Lottie] for animated illustrations or an [Image] for PNG icons.
+/// Selection swaps the soft frosted border for a primary-green ring
+/// while keeping the same widget identity (so any animation in [media]
+/// keeps playing through selection toggles).
 class UserTypeCard extends StatelessWidget {
   const UserTypeCard({
     super.key,
-    required this.animation,
+    required this.media,
     required this.title,
     required this.selected,
     required this.onTap,
   });
 
-  final String animation;
+  final Widget media;
   final String title;
   final bool selected;
   final VoidCallback onTap;
@@ -30,9 +37,6 @@ class UserTypeCard extends StatelessWidget {
       onTap: onTap,
       child: FrostedSurface(
         borderRadius: radius,
-        //* selected state: swap the soft frosted border for a primary-green
-        //* ring so the chosen card pops without changing widget identity
-        //* (keeps the Lottie animation playing through selection toggles).
         border: selected ? Border.all(color: scheme.primary, width: 1.5) : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
@@ -45,7 +49,7 @@ class UserTypeCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: Lottie.asset(animation, fit: BoxFit.contain)),
+              Expanded(child: media),
               const Gap(AppSizes.sm),
               Text(
                 title,

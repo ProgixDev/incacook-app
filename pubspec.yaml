@@ -62,6 +62,7 @@ flutter:
     - assets/icons/home_categories/
     - assets/icons/payment/
     - assets/icons/seller_home/
+    - assets/icons/vehicule_types/
     - assets/images/
     - assets/images/categories/
     - assets/images/delivery_options/

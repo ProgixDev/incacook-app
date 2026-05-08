@@ -5,6 +5,8 @@ import 'package:incacook/bindings/general_bindings.dart';
 import 'package:incacook/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:incacook/core/controllers/theme_controller.dart';
 import 'package:incacook/core/utils/theme/theme.dart';
+import 'package:incacook/features/authentication/controllers/signup_flow_binding.dart';
+import 'package:incacook/features/authentication/presentation/screens/signup_flow/signup_shell_screen.dart';
 import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
 import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:incacook/features/onboarding/presentation/screens/onboarding.dart';
@@ -24,9 +26,15 @@ class App extends StatelessWidget {
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darkTheme,
         initialBinding: GeneralBindings(),
-        // home: const NavigationMenu(tabs: kClientNavTabs),
-        // home: const OnBoardingScreen(),
-        home: DeliveryHomeScreen(),
+        getPages: [
+          GetPage<void>(
+            name: '/signup',
+            page: () => const SignupShellScreen(),
+            binding: SignupFlowBinding(),
+            transition: Transition.fadeIn,
+          ),
+        ],
+        home: const OnBoardingScreen(),
       ),
     );
   }

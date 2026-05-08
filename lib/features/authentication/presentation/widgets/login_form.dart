@@ -9,7 +9,6 @@ import 'package:incacook/core/utils/validators/validators.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/authentication/controllers/login_controller.dart';
 import 'package:incacook/features/authentication/presentation/screens/forget_password.dart';
-import 'package:incacook/features/authentication/presentation/screens/user_type_selection.dart';
 import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
 
 class LoginForm extends StatelessWidget {
@@ -21,13 +20,17 @@ class LoginForm extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final fieldRadius = BorderRadius.circular(48);
 
+    // Use [hintText] (not [labelText]) so the InputDecorator doesn't
+    // reserve geometry for the floating-label slot — that's what was
+    // making the field visibly shrink when focus toggled the border
+    // from InputBorder.none to the brand-green OutlineInputBorder.
     InputDecoration decoration({
       required String label,
       required IconData prefixIcon,
       Widget? suffixIcon,
     }) {
       return InputDecoration(
-        labelText: label,
+        hintText: label,
         prefixIcon: Icon(prefixIcon),
         suffixIcon: suffixIcon,
       );
@@ -155,8 +158,7 @@ class LoginForm extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () =>
-                      Get.to(() => const UserTypeSelectionScreen()),
+                  onPressed: () => Get.toNamed<void>('/signup'),
                   style: TextButton.styleFrom(
                     foregroundColor: scheme.onSurface,
                     padding: const EdgeInsets.symmetric(vertical: 14),

@@ -32,6 +32,11 @@ class AppImages {
   static const String dessert = "assets/icons/dish_type_categories/dessert.png";
     static const String dish = "assets/icons/dish_type_categories/dish.png";
 
+  //* vehicle type icons (folder name kept as-is to match the asset path)
+  static const String vehicleBicycle = "assets/icons/vehicule_types/bycicle.png";
+  static const String vehicleScooter = "assets/icons/vehicule_types/motorcycle.png";
+  static const String vehicleCar = "assets/icons/vehicule_types/car.png";
+
 
   static const String welcome = "assets/images/welcome.jpg";
 

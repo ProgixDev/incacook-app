@@ -1,0 +1,11 @@
+import 'package:get/get.dart';
+import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
+import 'package:incacook/features/authentication/data/repositories/signup_repository.dart';
+
+class SignupFlowBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<SignupRepository>(SignupRepository.new, fenix: true);
+    Get.lazyPut<SignupFlowController>(SignupFlowController.new);
+  }
+}

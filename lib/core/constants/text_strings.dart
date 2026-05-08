@@ -55,7 +55,7 @@ class AppTexts {
 
   static const String userTypeClientTitle = "j’ai faim…";
   static const String userTypeClientSubtitle =
-      "Votre prochain coup de cœur culinaire est à portée de clic — parcourez, choisissez, savourez !";
+      "Votre prochain coup de cœur culinaire est à portée de clic !";
 
   static const String userTypeDeliveryTitle = "C'est moi qui livre !";
   static const String userTypeDeliverySubtitle =
@@ -693,6 +693,361 @@ class AppTexts {
   static const String incomingOrderItemSuffix = "article";
   static const String incomingOrderAcceptCta = "Accepter";
   static const String incomingOrderDeclineCta = "Refuser";
+
+  //* signup flow — shell + chrome
+  static const String signupExitDialogTitle = "Quitter l'inscription ?";
+  static const String signupExitDialogBody =
+      "Tes informations seront perdues. Tu pourras recommencer plus tard.";
+  static const String signupExitCancel = "Annuler";
+  static const String signupExitConfirm = "Quitter";
+  static const String signupContinueCta = "Continuer";
+  static const String signupFinishCta = "Terminer";
+  static const String signupSkipCta = "Passer";
+
+  //* signup flow — basic info page
+  static const String signupBasicInfoTitle = "Créons ton compte";
+  static const String signupBasicInfoSubtitle =
+      "On a besoin de quelques infos pour commencer.";
+  static const String signupFirstNameLabel = "Prénom";
+  static const String signupFirstNameHint = "Ex. Camille";
+  static const String signupLastNameLabel = "Nom";
+  static const String signupLastNameHint = "Ex. Dupont";
+  static const String signupEmailLabel = "Email";
+  static const String signupEmailHint = "tu@exemple.com";
+  static const String signupEmailError = "Email invalide";
+  static const String signupPhoneLabel = "Numéro de téléphone";
+  static const String signupPhoneHint = "6 12 34 56 78";
+  static const String signupPhoneHelper = "+33 — 9 chiffres après le préfixe";
+  static const String signupPhoneError = "Format invalide";
+  static const String signupPasswordLabel = "Mot de passe";
+  static const String signupPasswordHint =
+      "8+ caractères, 1 majuscule, 1 chiffre";
+  static const String signupPasswordError = "Mot de passe trop faible";
+  static const String signupConfirmPasswordLabel = "Confirme le mot de passe";
+  static const String signupConfirmPasswordError =
+      "Les mots de passe ne correspondent pas";
+  static const String signupPasswordStrengthWeak = "Faible";
+  static const String signupPasswordStrengthMedium = "Moyen";
+  static const String signupPasswordStrengthGood = "Bon";
+  static const String signupPasswordStrengthExcellent = "Excellent";
+
+  //* signup flow — phone verification page
+  static const String signupOtpTitle = "Vérifie ton numéro";
+  static const String signupOtpDefaultPhone = "ton numéro";
+  static const String signupOtpVerifying = "Vérification…";
+  static const String signupOtpResendNow = "Renvoyer le code";
+  static const String signupOtpEditNumber = "Modifier le numéro";
+  static const String signupOtpResentTitle = "Code renvoyé";
+  static const String signupOtpResentBody =
+      "On t'a renvoyé un nouveau code par SMS.";
+  static const String signupOtpDemoHint = "Mode démo : utilise le code 123456.";
+  static const String signupOtpInvalid = "Code invalide. Réessaie.";
+  static String signupOtpSubtitle(String phone) =>
+      "On t'envoie un code à 6 chiffres au $phone.";
+  static String signupOtpResendIn(int seconds) => "Renvoyer dans ${seconds}s";
+
+  //* signup flow — biometric setup page
+  static const String signupBiometricTitle = "Active la connexion rapide";
+  static const String signupBiometricSubtitle =
+      "Connecte-toi avec FaceID ou ton empreinte digitale.";
+  static const String signupBiometricCta = "Activer la connexion biométrique";
+  static const String signupBiometricFooter =
+      "Tu pourras toujours te connecter avec ton mot de passe.";
+  static const String signupBiometricEnabledToast =
+      "Connexion biométrique activée";
+
+  //* signup flow — legal acceptance page
+  static const String signupLegalTitle = "Conditions d'utilisation";
+  static const String signupLegalSubtitle =
+      "Lis et accepte avant de continuer.";
+  static const String signupLegalAcceptCgu = "J'ai lu et j'accepte les CGU";
+  static const String signupLegalAcceptCgv = "J'ai lu et j'accepte les CGV";
+  static const String signupLegalFooter =
+      "Tu pourras consulter ces documents à tout moment dans tes paramètres.";
+
+  //* signup flow — role selection page
+  static const String signupRoleTitle = "Comment veux-tu utiliser CULINEA ?";
+  static const String signupRoleSubtitle =
+      "Tu pourras changer ce choix plus tard.";
+  static const String signupRoleBuyerTitle = "Acheter des plats";
+  static const String signupRoleBuyerSubtitle =
+      "Découvre les plats près de toi";
+  static const String signupRoleSellerTitle = "Vendre mes plats";
+  static const String signupRoleSellerSubtitle =
+      "Partage ta cuisine et fais des économies";
+  static const String signupRoleDriverTitle = "Livrer des commandes";
+  static const String signupRoleDriverSubtitle = "Gagne de l'argent en livrant";
+
+  //* signup flow — seller subtype page
+  static const String signupSubtypeTitle = "Quel type de cuisinier es-tu ?";
+  static const String signupSubtypeSubtitle =
+      "Cela détermine les règles qui s'appliquent à toi.";
+  static const String signupSubtypeFaitMaisonTitle = "Le Bon Fait Maison";
+  static const String signupSubtypeFaitMaisonSubtitle =
+      "Particulier qui cuisine à la maison";
+  static const String signupSubtypeFaitMaisonNote = "Prix max 4,50 €";
+  static const String signupSubtypeTraiteurTitle = "L'Atelier Traiteur";
+  static const String signupSubtypeTraiteurSubtitle =
+      "Traiteur professionnel — SIRET requis";
+  static const String signupSubtypeRestaurantTitle = "Sauve Ton Panier";
+  static const String signupSubtypeRestaurantSubtitle =
+      "Restaurant qui vend ses surplus";
+
+  //* signup flow — buyer pages
+  static const String signupBuyerAddressTitle = "Où veux-tu être livré ?";
+  static const String signupBuyerAddressSubtitle =
+      "Tu pourras ajouter d'autres adresses plus tard.";
+  static const String signupBuyerAddressDetailsToggle =
+      "Détails supplémentaires";
+  static const String signupBuyerApartmentLabel = "Appartement";
+  static const String signupBuyerApartmentHint = "Ex. 4B";
+  static const String signupBuyerFloorLabel = "Étage";
+  static const String signupBuyerFloorHint = "Ex. 3";
+  static const String signupBuyerDigicodeLabel = "Digicode";
+  static const String signupBuyerDigicodeHint = "Ex. 1234A";
+  static const String signupBuyerInstructionsLabel =
+      "Instructions de livraison";
+  static const String signupBuyerInstructionsHint =
+      "Sonnez deux fois, laisser au gardien…";
+  static const String signupBuyerDietaryTitle = "Tes préférences alimentaires";
+  static const String signupBuyerDietarySubtitle =
+      "On adaptera ton fil pour toi.";
+  static const String signupBuyerDietaryDietSection = "Régime alimentaire";
+  static const String signupBuyerDietaryAllergiesSection = "Allergies";
+  static const String signupBuyerDietaryAllergiesHint =
+      "Si tu es allergique, on te préviendra des plats à éviter.";
+  static const String signupBuyerDoneSubtitle = "Ton compte est prêt.";
+  static const String signupBuyerDoneImpact =
+      "Tu vas pouvoir découvrir des plats faits maison près de chez toi et contribuer à réduire le gaspillage alimentaire 🌱";
+  static const String signupBuyerDoneCta = "Découvrir les plats";
+  static String signupBuyerDoneTitle(String firstName) {
+    final suffix = firstName.isEmpty ? '' : ', $firstName';
+    return "Bienvenue dans IncaCook$suffix";
+  }
+
+  //* signup flow — seller pages
+  static const String signupSellerProfileTitle = "Crée ton profil";
+  static const String signupSellerProfileSubtitle =
+      "C'est ce que verront tes clients.";
+  static const String signupSellerDisplayNameLabel = "Nom affiché";
+  static const String signupSellerDisplayNameLabelPro =
+      "Nom commercial affiché";
+  static const String signupSellerDisplayNameHint = "Ex. La cuisine de Léa";
+  static const String signupSellerDisplayNameHintPro = "Ex. Le Comptoir de Léa";
+  static const String signupSellerBioLabel = "Bio";
+  static const String signupSellerBioHint = "Présente-toi en quelques mots…";
+  static String signupSellerBioCounter(int used) => "$used / 200 caractères";
+
+  static const String signupSellerDobAddressTitle =
+      "Quelques infos personnelles";
+  static const String signupSellerDobAddressSubtitle =
+      "Ces infos restent privées.";
+  static const String signupSellerDobLabel = "Date de naissance";
+  static const String signupSellerDobPlaceholder =
+      "Sélectionne ta date de naissance";
+  static const String signupSellerDobAdultRequired = "18+ requis";
+  static const String signupSellerDobHelp = "Ta date de naissance";
+  static const String signupSellerPickupLabel = "Adresse de retrait";
+  static const String signupSellerPickupHint = "Cherche ton adresse de retrait";
+  static const String signupSellerPickupHelper =
+      "C'est l'adresse où les clients viennent chercher ou où le livreur récupère.";
+
+  static const String signupSellerBusinessTitle = "Infos professionnelles";
+  static const String signupSellerBusinessSubtitle =
+      "Pour vérifier que tu es bien enregistré.";
+  static const String signupSellerBusinessNameLabel = "Nom de l'entreprise";
+  static const String signupSellerBusinessNameHint = "Ex. Atelier des Saveurs";
+  static const String signupSellerSiretLabel = "SIRET";
+  static const String signupSellerSiretHint = "000 000 000 00000";
+  static const String signupSellerSiretError =
+      "SIRET invalide (14 chiffres + Luhn)";
+  static const String signupSellerFacadeLabel = "Photo de la façade";
+  static const String signupSellerHoursLabel = "Horaires d'ouverture";
+  static const String signupSellerHoursClosed = "Fermé";
+
+  static const String signupSellerCuisineTitle = "Quelle cuisine fais-tu ?";
+  static const String signupSellerCuisineSubtitle =
+      "Sélectionne tout ce qui s'applique.";
+  static const String signupSellerCuisineSection = "Type de cuisine";
+  static const String signupSellerCourseSection = "Type de plat";
+
+  static const String signupKycIdTitle = "Vérifions ton identité";
+  static const String signupKycIdSubtitle =
+      "Carte d'identité, passeport ou titre de séjour.";
+  static const String signupKycIdDocTypeLabel = "Type de document";
+  static const String signupKycIdRecto = "Recto";
+  static const String signupKycIdVerso = "Verso";
+  static const String signupKycIdTip =
+      "Photo claire, pas de flash, document à plat.";
+
+  static const String signupKycSelfieTitle = "Selfie de vérification";
+  static const String signupKycSelfieSubtitle =
+      "On compare avec ta pièce d'identité.";
+  static const String signupKycSelfieCta = "Prendre un selfie maintenant";
+  static const String signupKycSelfieRetakeCta = "Refaire le selfie";
+  static const String signupKycSelfieFooter =
+      "Capture en direct uniquement — pas de galerie.";
+
+  static const String signupSellerCharterTitle = "Charte d'hygiène";
+  static const String signupSellerCharterSubtitle =
+      "Engage-toi à respecter les règles d'hygiène.";
+  static const String signupSellerCommitmentFaitMaison =
+      "Je m'engage à cuisiner des plats faits maison uniquement.";
+  static const String signupSellerCommitmentHygiene =
+      "Je m'engage à respecter les règles d'hygiène.";
+  static const String signupCharterScrollHint =
+      "Lis jusqu'au bas pour continuer";
+
+  //* signup flow — driver pages
+  static const String signupDriverVehicleTitle = "Quel véhicule utilises-tu ?";
+  static const String signupDriverVehicleSubtitle =
+      "Tu pourras en ajouter d'autres plus tard.";
+  static const String signupDriverVehicleBicycleTitle = "Vélo";
+  static const String signupDriverVehicleBicycleSubtitle =
+      "Pas de permis requis — démarrage rapide";
+  static const String signupDriverVehicleScooterTitle = "Scooter ou moto";
+  static const String signupDriverVehicleScooterSubtitle =
+      "Permis et assurance requis";
+  static const String signupDriverVehicleCarTitle = "Voiture";
+  static const String signupDriverVehicleCarSubtitle =
+      "Permis et assurance requis";
+
+  static const String signupDriverDocsTitle = "Documents véhicule";
+  static const String signupDriverDocsSubtitle =
+      "Permis, carte grise et assurance.";
+  static const String signupDriverLicenseLabel = "Permis de conduire";
+  static const String signupDriverLicenseHelper = "Recto-verso, lisible.";
+  static const String signupDriverCarteGriseLabel = "Carte grise";
+  static const String signupDriverCarteGriseHelper =
+      "Au nom du conducteur ou avec autorisation.";
+  static const String signupDriverDocsSecurityNote =
+      "Tes documents sont chiffrés et confidentiels.";
+
+  static const String signupDriverZoneTitle = "Dans quelles zones livres-tu ?";
+  static const String signupDriverZoneSubtitle =
+      "Tu peux choisir plusieurs villes ou quartiers.";
+  static const String signupDriverZoneSearchHint =
+      "Cherche une ville ou un quartier";
+  static const String signupDriverZoneEmpty = "Sélectionne au moins une zone";
+  static String signupDriverZoneCount(int count) =>
+      "$count zone(s) sélectionnée(s)";
+
+  static const String signupDriverIbanTitle =
+      "Compte bancaire pour les paiements";
+  static const String signupDriverIbanSubtitle =
+      "Tes gains seront virés sur ce compte.";
+  static const String signupDriverIbanLabel = "IBAN";
+  static const String signupDriverIbanHint =
+      "FR76 1234 5678 9012 3456 7890 123";
+  static const String signupDriverIbanError = "IBAN invalide";
+  static const String signupDriverIbanHolderLabel = "Titulaire du compte";
+  static const String signupDriverIbanHolderHint = "Prénom Nom";
+  static const String signupDriverIbanFooter =
+      "Tu peux modifier ce compte plus tard dans tes paramètres.";
+  static const String signupDriverIbanSecure =
+      "Tes données bancaires sont sécurisées.";
+
+  static const String signupDriverCharterTitle = "Charte du livreur";
+  static const String signupDriverCharterSubtitle =
+      "Engage-toi à suivre les règles de qualité.";
+  static const String signupDriverCommitmentPunctuality =
+      "Je m'engage à respecter les délais de livraison.";
+  static const String signupDriverCommitmentCare =
+      "Je manipule les produits avec soin.";
+
+  //* signup flow — image picker sheet
+  static const String signupImagePickerCamera = "Prendre une photo";
+  static const String signupImagePickerGallery = "Choisir depuis la galerie";
+  static const String signupImagePickerRemove = "Supprimer";
+
+  //* signup flow — address picker
+  static const String signupAddressSearchHint = "Cherche une adresse…";
+  static const String signupAddressConfirmed = "Adresse confirmée";
+
+  //* signup flow — long charter / legal text
+  static const String signupCguText = '''
+Conditions Générales d'Utilisation — CULINEA
+
+1. Objet
+Les présentes conditions régissent l'utilisation de la plateforme CULINEA, un service de mise en relation entre cuisiniers, livreurs et acheteurs de plats faits maison.
+
+2. Inscription
+L'utilisateur s'engage à fournir des informations exactes lors de son inscription. CULINEA se réserve le droit de suspendre tout compte ne respectant pas les présentes conditions.
+
+3. Utilisation
+La plateforme est destinée à un usage personnel. Toute utilisation commerciale non autorisée est strictement interdite.
+
+4. Responsabilité
+CULINEA agit en tant qu'intermédiaire technique. Les vendeurs sont responsables de la qualité et de la conformité de leurs produits.
+
+5. Données personnelles
+Les données collectées sont traitées conformément à notre politique de confidentialité et au RGPD.
+
+6. Modification
+CULINEA se réserve le droit de modifier les présentes conditions à tout moment.
+
+En cochant ci-dessous, tu confirmes avoir lu et accepté l'intégralité de ces conditions.
+''';
+
+  static const String signupCgvText = '''
+Conditions Générales de Vente — CULINEA
+
+1. Prix
+Les prix sont indiqués en euros et toutes taxes comprises. Pour Le Bon Fait Maison, le prix maximum par plat est plafonné à 4,50 €.
+
+2. Commande
+Toute commande passée sur la plateforme est ferme et définitive. Le paiement est effectué au moment de la commande.
+
+3. Livraison
+Les délais de livraison sont indicatifs. CULINEA s'engage à mettre en œuvre les moyens raisonnables pour respecter les délais annoncés.
+
+4. Annulation
+Une commande peut être annulée jusqu'à acceptation par le vendeur. Au-delà, aucun remboursement n'est garanti.
+
+5. Litiges
+En cas de litige, CULINEA propose un service de médiation. À défaut d'accord, les tribunaux français sont compétents.
+
+6. Hygiène
+Les vendeurs s'engagent à respecter les règles d'hygiène en vigueur. Tout manquement constaté entraîne la suspension du compte.
+
+En cochant ci-dessous, tu confirmes avoir lu et accepté l'intégralité de ces conditions.
+''';
+
+  static const String signupSellerCharterText = '''
+Charte d'hygiène — Vendeurs CULINEA
+
+1. Tu cuisines des plats faits maison à partir d'ingrédients frais et de qualité.
+
+2. Tu respectes la chaîne du froid : les plats sont conservés à la bonne température jusqu'au retrait par l'acheteur ou le livreur.
+
+3. Tu te laves les mains régulièrement et travailles dans un environnement propre.
+
+4. Tu ne réutilises pas les conserves ni les plats déjà préparés depuis plus de 24h.
+
+5. Tu signales clairement les ingrédients allergènes dans la description de chaque plat.
+
+6. Tu acceptes les contrôles ponctuels de CULINEA.
+
+Le non-respect de cette charte peut entraîner la suspension immédiate de ton compte.
+''';
+
+  static const String signupDriverCharterText = '''
+Charte du livreur — CULINEA
+
+1. Tu respectes les délais de livraison annoncés et préviens le client en cas de retard.
+
+2. Tu manipules les plats avec soin et conserves la chaîne du froid pendant le trajet.
+
+3. Tu te présentes proprement et adoptes une attitude polie envers les vendeurs et les clients.
+
+4. Tu ne consommes ni ne modifies le contenu des commandes.
+
+5. Tu vérifies le bon état du véhicule avant chaque tournée.
+
+6. Tu signales tout incident à CULINEA dans les meilleurs délais.
+
+Le non-respect de cette charte peut entraîner la suspension immédiate de ton compte livreur.
+''';
 
   //* order — customize sheet
   static const String orderSheetQuantityLabel = "Quantité";

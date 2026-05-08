@@ -12,12 +12,23 @@ class CustomTextFormFieldTheme {
   //? wrapping FrostedSurface's exact radius (32, 48, 999, …).
   static final OutlineInputBorder _focusedBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(999),
-    borderSide: const BorderSide(width: 1.5, color: BrandColors.primary),
+    borderSide: const BorderSide(width: 0.5, color: BrandColors.primary),
+  );
+
+  //? Lock the content insets so they don't change when focus toggles
+  //? between [InputBorder.none] (unfocused/error) and the outline-style
+  //? [_focusedBorder]. Flutter picks different default insets per border
+  //? *type*, which would otherwise pull the text leftward when the field
+  //? loses focus.
+  static const EdgeInsets _contentPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 14,
   );
 
   static InputDecorationTheme lightInputDecorationTheme = InputDecorationTheme(
     errorMaxLines: 3,
     floatingLabelBehavior: FloatingLabelBehavior.never,
+    contentPadding: _contentPadding,
     prefixIconColor: BrandColors.primary,
     suffixIconColor: BrandColors.primary,
     labelStyle: const TextStyle().copyWith(
@@ -39,6 +50,7 @@ class CustomTextFormFieldTheme {
   static InputDecorationTheme darkInputDecorationTheme = InputDecorationTheme(
     errorMaxLines: 3,
     floatingLabelBehavior: FloatingLabelBehavior.never,
+    contentPadding: _contentPadding,
     prefixIconColor: BrandColors.primary,
     suffixIconColor: BrandColors.primary,
     labelStyle: const TextStyle().copyWith(
