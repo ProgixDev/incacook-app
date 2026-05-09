@@ -13,7 +13,6 @@ import 'package:incacook/features/authentication/presentation/screens/signup_flo
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_charter_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_dob_address_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_documents_page.dart';
-import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_iban_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_kyc_id_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_kyc_selfie_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/driver/driver_vehicle_page.dart';
@@ -83,8 +82,6 @@ class SignupShellScreen extends GetView<SignupFlowController> {
         return const DriverDocumentsPage();
       case SignupStep.driverZone:
         return const DriverZonePage();
-      case SignupStep.driverIban:
-        return const DriverIbanPage();
       case SignupStep.driverCharter:
         return const DriverCharterPage();
     }

@@ -112,8 +112,6 @@ class SignupFlowController extends GetxController {
   final operatingZones = <String>[].obs;
   final drivingLicenseUrl = ''.obs;
   final carteGriseUrl = ''.obs;
-  final iban = ''.obs;
-  final ibanHolderName = ''.obs;
   final driverCharterAccepted = false.obs;
   final driverPunctualityCommitment = false.obs;
   final driverCareCommitment = false.obs;
@@ -226,7 +224,6 @@ class SignupFlowController extends GetxController {
         }
         list.addAll([
           SignupStep.driverZone,
-          SignupStep.driverIban,
           SignupStep.driverCharter,
         ]);
       case null:
@@ -323,12 +320,6 @@ class SignupFlowController extends GetxController {
     return sum % 10 == 0;
   }
 
-  bool get isIbanValid {
-    final v = iban.value.replaceAll(RegExp(r'\s'), '').toUpperCase();
-    // Lightweight format check; a strict ISO 13616 mod-97 lives in the API.
-    return RegExp(r'^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$').hasMatch(v);
-  }
-
   /// Returns whether the Continue button should be enabled for the current
   /// step. A step that needs no validation (purely informational) returns
   /// true unconditionally.
@@ -400,8 +391,6 @@ class SignupFlowController extends GetxController {
             carteGriseUrl.value.isNotEmpty;
       case SignupStep.driverZone:
         return operatingZones.isNotEmpty;
-      case SignupStep.driverIban:
-        return isIbanValid && ibanHolderName.value.trim().length >= 2;
       case SignupStep.driverCharter:
         return driverPunctualityCommitment.value &&
             driverCareCommitment.value;

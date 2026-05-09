@@ -932,20 +932,23 @@ class AppTexts {
   static String signupDriverZoneCount(int count) =>
       "$count zone(s) sélectionnée(s)";
 
-  static const String signupDriverIbanTitle =
-      "Compte bancaire pour les paiements";
-  static const String signupDriverIbanSubtitle =
-      "Tes gains seront virés sur ce compte.";
-  static const String signupDriverIbanLabel = "IBAN";
-  static const String signupDriverIbanHint =
-      "FR76 1234 5678 9012 3456 7890 123";
-  static const String signupDriverIbanError = "IBAN invalide";
-  static const String signupDriverIbanHolderLabel = "Titulaire du compte";
-  static const String signupDriverIbanHolderHint = "Prénom Nom";
-  static const String signupDriverIbanFooter =
-      "Tu peux modifier ce compte plus tard dans tes paramètres.";
-  static const String signupDriverIbanSecure =
-      "Tes données bancaires sont sécurisées.";
+  // Payout setup banner — shown on seller / driver home until Stripe Connect
+  // onboarding is complete. Replaces the deleted IBAN signup step.
+  static const String payoutSetupBannerTitle = "Configure les paiements";
+  static const String payoutSetupBannerSubtitle =
+      "2 minutes pour recevoir tes gains sur ton compte bancaire.";
+  static const String payoutSetupBannerCta = "Commencer";
+  static const String payoutOnboardingScreenTitle =
+      "Configurer les paiements";
+  static const String payoutStatusActive = "Paiements actifs";
+  static const String payoutStatusPending = "Configuration en cours";
+  static const String payoutStatusFailed =
+      "Configuration interrompue — réessaie";
+  static const String payoutSettingsMenuItem = "Paiements";
+  static const String payoutGatingSnackbarSeller =
+      "Tes annonces sont en ligne mais les paiements sont en attente.";
+  static const String payoutGatingSnackbarDriver =
+      "Tu peux accepter des courses, mais les paiements sont en attente.";
 
   static const String signupDriverCharterTitle = "Charte du livreur";
   static const String signupDriverCharterSubtitle =

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/features/delivery/controllers/delivery_driver_controller.dart';
@@ -12,6 +14,7 @@ import 'package:incacook/features/delivery/presentation/widgets/delivery_top_but
 import 'package:incacook/features/delivery/presentation/widgets/incoming_order_sheet.dart';
 import 'package:incacook/features/delivery/utils/delivery_map_painter.dart';
 import 'package:incacook/core/models/order_detail.dart';
+import 'package:incacook/features/payments/presentation/widgets/payout_setup_banner.dart';
 
 class DeliveryHomeScreen extends StatefulWidget {
   const DeliveryHomeScreen({super.key});
@@ -109,8 +112,39 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
             onMapCreated: _onMapCreated,
           ),
           DeliveryTopButtons(onGpsTap: _centerOnDriver),
+          //* Payout setup nudge — sits just under the top buttons until the
+          //* driver completes Stripe Connect Express onboarding. Tap is
+          //* stubbed until the StripeConnectService lands.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSizes.md,
+                  72,
+                  AppSizes.md,
+                  0,
+                ),
+                child: PayoutSetupBanner(
+                  onTap: () => _onPayoutSetupTap(context),
+                ),
+              ),
+            ),
+          ),
           const DeliveryBottomSheet(),
         ],
+      ),
+    );
+  }
+
+  void _onPayoutSetupTap(BuildContext context) {
+    // Stub — replace with the Stripe Connect onboarding flow once the
+    // StripeConnectService + PayoutOnboardingScreen ship.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(AppTexts.payoutGatingSnackbarDriver),
       ),
     );
   }

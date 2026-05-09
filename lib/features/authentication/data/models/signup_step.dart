@@ -28,6 +28,5 @@ enum SignupStep {
   driverKycSelfie,
   driverDocuments,
   driverZone,
-  driverIban,
   driverCharter,
 }
