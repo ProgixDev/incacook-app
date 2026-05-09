@@ -19,9 +19,9 @@ import 'package:incacook/features/catalog/presentation/widgets/product_title_pri
 import 'package:incacook/features/catalog/presentation/widgets/seller_card.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/enums/order_enums.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/orders/domain/order_customization.dart';
-import 'package:incacook/features/orders/domain/product_add_on.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/product_add_on.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_customize_sheet.dart';
 import 'package:incacook/features/seller/data/seller_mock_data.dart';
 import 'package:get/get.dart';
@@ -57,7 +57,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   static final FoodListing _demoListing = FoodListing(
     id: 'demo-product-1',
     name: 'Tajine poulet olives',
-    imagePath: AppImages.foodTest,
+    imageUrl: AppImages.foodTest,
     sellerName: 'Fatima K.',
     category: SellerCategory.faitMaison,
     distanceKm: 0.3,
@@ -81,15 +81,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   ];
 
   Future<void> _openOrderSheet() async {
-    final customization = await OrderCustomizeSheet.show(
+    final draft = await OrderCustomizeSheet.show(
       context,
       listing: _demoListing,
       addOns: _demoAddOns,
     );
-    if (customization == null || !mounted) return;
+    if (draft == null || !mounted) return;
 
     await CartController.instance.tryAdd(
-      customization,
+      draft,
       resolveConflict: (currentSellerName) => DifferentSellerDialog.show(
         context,
         currentSellerName: currentSellerName,
@@ -99,16 +99,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   //? quick-add: no customize sheet, default quantity 1, no add-ons, no note
   Future<void> _quickAddToCart() async {
-    final customization = OrderCustomization(
+    // Empty id — CartController assigns it on insert.
+    final draft = CartItem(
+      id: '',
       listing: _demoListing,
       quantity: 1,
       selectedAddOns: const [],
       note: '',
-      totalPrice: _demoListing.price,
     );
 
     final added = await CartController.instance.tryAdd(
-      customization,
+      draft,
       resolveConflict: (currentSellerName) => DifferentSellerDialog.show(
         context,
         currentSellerName: currentSellerName,
@@ -123,21 +124,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   static const List<ProductReview> _sampleReviews = [
     ProductReview(
       author: AppTexts.productReview1Author,
-      avatarPath: AppImages.profilePic,
+      avatarUrl: AppImages.profilePic,
       rating: 5,
       body: AppTexts.productReview1Body,
       time: AppTexts.productReview1Time,
     ),
     ProductReview(
       author: AppTexts.productReview2Author,
-      avatarPath: AppImages.profilePic,
+      avatarUrl: AppImages.profilePic,
       rating: 5,
       body: AppTexts.productReview2Body,
       time: AppTexts.productReview2Time,
     ),
     ProductReview(
       author: AppTexts.productReview3Author,
-      avatarPath: AppImages.profilePic,
+      avatarUrl: AppImages.profilePic,
       rating: 4,
       body: AppTexts.productReview3Body,
       time: AppTexts.productReview3Time,

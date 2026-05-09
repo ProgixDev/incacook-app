@@ -11,7 +11,7 @@ import 'package:incacook/features/delivery/presentation/widgets/delivery_bottom_
 import 'package:incacook/features/delivery/presentation/widgets/delivery_top_buttons.dart';
 import 'package:incacook/features/delivery/presentation/widgets/incoming_order_sheet.dart';
 import 'package:incacook/features/delivery/utils/delivery_map_painter.dart';
-import 'package:incacook/features/orders/domain/order_detail.dart';
+import 'package:incacook/core/models/order_detail.dart';
 
 class DeliveryHomeScreen extends StatefulWidget {
   const DeliveryHomeScreen({super.key});

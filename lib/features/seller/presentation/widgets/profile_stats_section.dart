@@ -8,8 +8,8 @@ import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
-import 'package:incacook/features/seller/domain/seller_profile.dart';
-import 'package:incacook/features/seller/domain/seller_rating.dart';
+import 'package:incacook/core/models/seller_profile.dart';
+import 'package:incacook/core/models/seller_rating.dart';
 import 'package:incacook/features/seller/presentation/widgets/seller_rating_row.dart';
 
 class ProfileStatsSection extends StatelessWidget {

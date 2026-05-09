@@ -5,7 +5,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/features/map/presentation/widget/map_pin.dart';
 
 class MapListingSheet extends StatelessWidget {
@@ -64,7 +64,7 @@ class MapListingSheet extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
                     child: Image.asset(
-                      listing.imagePath,
+                      listing.imageUrl,
                       width: 88,
                       height: 88,
                       fit: BoxFit.cover,

@@ -11,7 +11,7 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/geo/distance.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/orders/domain/order_detail.dart';
+import 'package:incacook/core/models/order_detail.dart';
 
 const Duration _kCountdown = Duration(seconds: 25);
 const Duration _kHapticInterval = Duration(seconds: 4);

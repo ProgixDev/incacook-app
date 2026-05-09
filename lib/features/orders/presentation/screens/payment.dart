@@ -9,10 +9,10 @@ import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/models/delivery_details.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
-import 'package:incacook/features/orders/domain/payment_method.dart';
+import 'package:incacook/core/models/payment_method.dart';
 import 'package:incacook/features/orders/presentation/screens/payment_processing.dart';
 
 class PaymentScreen extends StatefulWidget {

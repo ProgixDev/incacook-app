@@ -3,9 +3,9 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/enums/order_enums.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/seller/domain/seller_rating.dart';
-import 'package:incacook/features/seller/domain/seller_profile.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/seller_rating.dart';
+import 'package:incacook/core/models/seller_profile.dart';
 
 /// Comprehensive mock seller — every [SellerProfile] field is filled in
 /// with realistic data so screens can be tested directly.
@@ -16,25 +16,13 @@ class SellerMockData {
     final now = DateTime.now();
     final listings = _buildListings(now);
 
-    return SellerProfile(
-      id: 'aicha-b',
-      name: 'Aïcha Benali',
-      avatarPath: AppImages.profilePic,
-      category: SellerCategory.faitMaison,
-      categoryTag: 'Cuisinière à domicile',
-      cuisineType: 'Cuisine nord-africaine et méditerranéenne',
+    const stats = SellerStats(
       rating: 4.9,
       reviewCount: 312,
-      distanceKm: 0.6,
-      neighborhood: 'Bastille, Paris 11ème',
-      prepMinMinutes: 25,
-      prepMaxMinutes: 40,
-      deliveryFee: 2.50,
-      responseRatePercent: 98,
       mealsSold: 412,
       mealsSaved: 528,
-      promoText: AppTexts.sellerProfileFirstOrderPromo,
-      ratings: const [
+      responseRatePercent: 98,
+      criteriaRatings: [
         SellerRating(
           criterion: RatingCriterion.hygiene,
           value: 100,
@@ -51,6 +39,31 @@ class SellerMockData {
           sampleCount: 312,
         ),
       ],
+      ratingDistribution: {5: 268, 4: 32, 3: 8, 2: 3, 1: 1},
+      sentimentTags: [
+        SentimentTag(label: 'Délicieux', count: 154),
+        SentimentTag(label: 'Authentique', count: 121),
+        SentimentTag(label: 'Copieux', count: 98),
+        SentimentTag(label: "À l'heure", count: 87),
+        SentimentTag(label: 'Bien emballé', count: 64),
+        SentimentTag(label: 'Épicé', count: 41),
+      ],
+    );
+
+    return SellerProfile(
+      id: 'aicha-b',
+      name: 'Aïcha Benali',
+      avatarUrl: AppImages.profilePic,
+      category: SellerCategory.faitMaison,
+      categoryTag: 'Cuisinière à domicile',
+      cuisineType: 'Cuisine nord-africaine et méditerranéenne',
+      distanceKm: 0.6,
+      neighborhood: 'Bastille, Paris 11ème',
+      prepMinMinutes: 25,
+      prepMaxMinutes: 40,
+      deliveryFee: 2.50,
+      promoText: AppTexts.sellerProfileFirstOrderPromo,
+      stats: stats,
       menuCategories: const [
         'Tout',
         'Entrées',
@@ -74,19 +87,10 @@ class SellerMockData {
         AppTexts.sellerVerificationPhone,
         AppTexts.sellerVerificationAddress,
       ],
-      ratingDistribution: const {5: 268, 4: 32, 3: 8, 2: 3, 1: 1},
-      sentimentTags: const [
-        SentimentTag(label: 'Délicieux', count: 154),
-        SentimentTag(label: 'Authentique', count: 121),
-        SentimentTag(label: 'Copieux', count: 98),
-        SentimentTag(label: "À l'heure", count: 87),
-        SentimentTag(label: 'Bien emballé', count: 64),
-        SentimentTag(label: 'Épicé', count: 41),
-      ],
       recentReviews: const [
         SellerReview(
           authorName: 'Marie D.',
-          avatarPath: AppImages.profilePic,
+          avatarUrl: AppImages.profilePic,
           rating: 5,
           body:
               "Tajine d'exception, vraiment comme à la maison. Aïcha "
@@ -96,7 +100,7 @@ class SellerMockData {
         ),
         SellerReview(
           authorName: 'Karim B.',
-          avatarPath: AppImages.profilePic,
+          avatarUrl: AppImages.profilePic,
           rating: 5,
           body:
               "Portions généreuses, livraison à l'heure, emballage soigné. "
@@ -106,7 +110,7 @@ class SellerMockData {
         ),
         SellerReview(
           authorName: 'Sophie L.',
-          avatarPath: AppImages.profilePic,
+          avatarUrl: AppImages.profilePic,
           rating: 4,
           body:
               "Très bon, juste un poil trop épicé pour mes enfants. Aïcha a "
@@ -116,7 +120,7 @@ class SellerMockData {
         ),
         SellerReview(
           authorName: 'Hugo M.',
-          avatarPath: AppImages.profilePic,
+          avatarUrl: AppImages.profilePic,
           rating: 5,
           body:
               "La pastilla est une tuerie. Saveurs équilibrées, présentation "
@@ -126,7 +130,7 @@ class SellerMockData {
         ),
         SellerReview(
           authorName: 'Camille P.',
-          avatarPath: AppImages.profilePic,
+          avatarUrl: AppImages.profilePic,
           rating: 5,
           body:
               "Cuisine maison authentique, prix très raisonnables. Bonne "
@@ -147,7 +151,7 @@ class SellerMockData {
       FoodListing(
         id: 'sg-1',
         name: 'Couscous royal aux 7 légumes',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,
@@ -166,7 +170,7 @@ class SellerMockData {
       FoodListing(
         id: 'sg-2',
         name: 'Pastilla au poulet et amandes',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,
@@ -189,7 +193,7 @@ class SellerMockData {
       FoodListing(
         id: 'sg-3',
         name: 'Salade Mechouia',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,
@@ -203,12 +207,12 @@ class SellerMockData {
         price: 2.50,
         expiresAt: now.add(const Duration(hours: 3)),
         dietaryTags: const [DietaryTag.vegan, DietaryTag.glutenFree],
-        allergens: const [Allergen.aucun],
+        allergens: const [],
       ),
       FoodListing(
         id: 'sg-4',
         name: 'Chorba beïda',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,
@@ -227,7 +231,7 @@ class SellerMockData {
       FoodListing(
         id: 'sg-5',
         name: 'Briouates aux amandes',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,
@@ -246,7 +250,7 @@ class SellerMockData {
       FoodListing(
         id: 'sg-6',
         name: 'Méfouf aux raisins',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: sellerName,
         category: SellerCategory.faitMaison,
         cuisineType: CuisineType.orientale,

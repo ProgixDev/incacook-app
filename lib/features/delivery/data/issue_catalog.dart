@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:iconsax/iconsax.dart';
 
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/core/enums/order_stage.dart';
 
 /// How an issue resolves once confirmed.
 /// - [abort]  → cancels the active job (advances to [OrderStage.failed]).

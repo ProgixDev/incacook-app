@@ -1,13 +1,13 @@
 import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
-import 'package:incacook/features/cart/domain/cart_item.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
-import 'package:incacook/features/orders/domain/order_detail.dart';
-import 'package:incacook/features/orders/domain/order_stage.dart';
-import 'package:incacook/features/orders/domain/payment_method.dart';
-import 'package:incacook/features/orders/domain/product_add_on.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/delivery_details.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
+import 'package:incacook/core/models/order_detail.dart';
+import 'package:incacook/core/enums/order_stage.dart';
+import 'package:incacook/core/models/payment_method.dart';
+import 'package:incacook/core/models/product_add_on.dart';
 import 'package:incacook/features/seller/data/seller_mock_data.dart';
 
 /// Comprehensive mock order — every [OrderDetail] field is filled in.
@@ -96,11 +96,12 @@ class OrderMockData {
         brand: 'Visa',
       ),
       deliveryDetails: const DeliveryDetails(
-        address: SavedAddress(
+        address: Address(
           id: 'addr-home',
           type: SavedAddressType.home,
-          line1: '12 rue Saint-Sabin',
-          line2: '75011 Paris, France',
+          fullAddress: '12 rue Saint-Sabin',
+          city: 'Paris',
+          postalCode: '75011',
           coordinate: MapPoint(lng: 2.3719, lat: 48.8587),
         ),
         instructions: 'Code 1234, 3e étage gauche. Sonnez fort.',
@@ -109,7 +110,7 @@ class OrderMockData {
       deliverer: const DelivererInfo(
         id: 'rider-jd',
         name: 'Jean Dupont',
-        avatarPath: AppImages.profilePic,
+        avatarUrl: AppImages.profilePic,
         rating: 4.9,
         completedDeliveries: 1284,
         vehicleType: 'Vélo électrique',

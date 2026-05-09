@@ -13,8 +13,8 @@ import 'package:incacook/features/delivery/controllers/delivery_route_controller
 import 'package:incacook/features/delivery/data/issue_catalog.dart';
 import 'package:incacook/features/delivery/presentation/widgets/issue_report_sheet.dart';
 import 'package:incacook/features/delivery/presentation/widgets/qr_handoff_sheet.dart';
-import 'package:incacook/features/orders/domain/order_detail.dart';
-import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/core/models/order_detail.dart';
+import 'package:incacook/core/enums/order_stage.dart';
 
 /// State-aware card that walks the driver through the active job. Reads
 /// [DeliveryRouteController.currentJob] / [DeliveryRouteController.currentStage]

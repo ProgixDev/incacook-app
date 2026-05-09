@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
-import 'package:incacook/features/cart/domain/cart_item.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/orders/domain/order_customization.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 /// Session-scoped cart state. Items are locked to a single seller: trying to
 /// add from another seller surfaces a conflict that the caller resolves via
@@ -32,34 +31,35 @@ class CartController extends GetxController {
   bool _sameSeller(FoodListing listing) =>
       sellerName == null || sellerName == listing.sellerName;
 
-  /// Adds [customization] to the cart. If the cart already contains items
-  /// from a different seller, [resolveConflict] is awaited — return `true`
-  /// to clear and proceed, `false` to cancel.
+  /// Adds [draft] to the cart. The caller passes a [CartItem] with an
+  /// empty `id` — the controller assigns a sequence-based id on insert.
+  /// If the cart already contains items from a different seller,
+  /// [resolveConflict] is awaited — return `true` to clear and proceed,
+  /// `false` to cancel.
   ///
   /// Returns `true` if the item was added, `false` if the caller cancelled.
   Future<bool> tryAdd(
-    OrderCustomization customization, {
+    CartItem draft, {
     required Future<bool> Function(String currentSellerName) resolveConflict,
   }) async {
-    final incoming = customization.listing;
-    if (!_sameSeller(incoming)) {
+    if (!_sameSeller(draft.listing)) {
       final confirmed = await resolveConflict(sellerName!);
       if (!confirmed) return false;
       clear();
     }
-    _addInternal(customization);
+    _addInternal(draft);
     return true;
   }
 
-  void _addInternal(OrderCustomization c) {
+  void _addInternal(CartItem draft) {
     _sequence++;
     items.add(
       CartItem(
-        id: '${c.listing.id}-$_sequence',
-        listing: c.listing,
-        quantity: c.quantity,
-        selectedAddOns: List.unmodifiable(c.selectedAddOns),
-        note: c.note,
+        id: '${draft.listing.id}-$_sequence',
+        listing: draft.listing,
+        quantity: draft.quantity,
+        selectedAddOns: List.unmodifiable(draft.selectedAddOns),
+        note: draft.note,
       ),
     );
   }

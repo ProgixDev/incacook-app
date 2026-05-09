@@ -9,9 +9,9 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/orders/domain/order_customization.dart';
-import 'package:incacook/features/orders/domain/product_add_on.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/product_add_on.dart';
 
 class OrderCustomizeSheet extends StatefulWidget {
   const OrderCustomizeSheet({
@@ -23,12 +23,12 @@ class OrderCustomizeSheet extends StatefulWidget {
   final FoodListing listing;
   final List<ProductAddOn> addOns;
 
-  static Future<OrderCustomization?> show(
+  static Future<CartItem?> show(
     BuildContext context, {
     required FoodListing listing,
     List<ProductAddOn> addOns = const [],
   }) {
-    return showBlurredModalBottomSheet<OrderCustomization>(
+    return showBlurredModalBottomSheet<CartItem>(
       context: context,
       builder: (_) => OrderCustomizeSheet(listing: listing, addOns: addOns),
     );
@@ -93,13 +93,14 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
     final selectedAddOns = widget.addOns
         .where((a) => _selectedAddOnIds.contains(a.id))
         .toList(growable: false);
+    // Empty id — CartController assigns the sequence-based id on insert.
     Navigator.of(context).pop(
-      OrderCustomization(
+      CartItem(
+        id: '',
         listing: widget.listing,
         quantity: _quantity,
         selectedAddOns: selectedAddOns,
         note: _noteController.text.trim(),
-        totalPrice: _total,
       ),
     );
   }
@@ -184,7 +185,7 @@ class _Header extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
           child: Image.asset(
-            listing.imagePath,
+            listing.imageUrl,
             width: 64,
             height: 64,
             fit: BoxFit.cover,

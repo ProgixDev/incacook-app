@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/sizes.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 class CartSellerCard extends StatelessWidget {
   const CartSellerCard({super.key, required this.listing});
@@ -14,7 +14,7 @@ class CartSellerCard extends StatelessWidget {
       children: [
         ClipOval(
           child: Image.asset(
-            listing.imagePath,
+            listing.imageUrl,
             width: 40,
             height: 40,
             fit: BoxFit.cover,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
 
 class AddressCard extends StatelessWidget {
   const AddressCard({
@@ -14,7 +14,7 @@ class AddressCard extends StatelessWidget {
     required this.onEdit,
   });
 
-  final SavedAddress address;
+  final Address address;
   final bool selected;
   final VoidCallback onTap;
   final VoidCallback onEdit;
@@ -61,7 +61,7 @@ class AddressCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   child: Icon(
-                    address.type.icon,
+                    (address.type ?? SavedAddressType.other).icon,
                     size: 20,
                     color: selected ? scheme.primary : scheme.onSurface,
                   ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 class FoodListingCard extends StatelessWidget {
   const FoodListingCard({super.key, required this.listing, this.onTap});
@@ -25,7 +25,7 @@ class FoodListingCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(listing.imagePath, fit: BoxFit.cover),
+              Image.asset(listing.imageUrl, fit: BoxFit.cover),
 
               //* gradient for text legibility
               const IgnorePointer(

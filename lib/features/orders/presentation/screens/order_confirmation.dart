@@ -10,10 +10,10 @@ import 'package:incacook/core/constants/animations.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/features/cart/controllers/cart_controller.dart';
-import 'package:incacook/features/cart/domain/cart_item.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/delivery_details.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/features/orders/presentation/screens/order_tracking.dart';
 
 class OrderConfirmationScreen extends StatefulWidget {

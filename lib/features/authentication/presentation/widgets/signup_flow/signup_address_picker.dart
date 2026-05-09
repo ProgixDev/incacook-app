@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/authentication/data/models/address.dart';
+import 'package:incacook/core/models/address.dart';
+import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/features/authentication/data/repositories/signup_repository.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_text_field.dart';
 
@@ -68,8 +69,7 @@ class _SignupAddressPickerState extends State<SignupAddressPicker> {
       fullAddress: suggestion,
       city: city,
       postalCode: postal,
-      latitude: 48.8566,
-      longitude: 2.3522,
+      coordinate: const MapPoint(lng: 2.3522, lat: 48.8566),
     );
     _controller.text = suggestion;
     setState(() => _suggestions = const []);

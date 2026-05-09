@@ -4,7 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/cart/domain/cart_item.dart';
+import 'package:incacook/core/models/cart_item.dart';
 
 class CartItemCardDismissible extends StatelessWidget {
   const CartItemCardDismissible({
@@ -62,7 +62,7 @@ class CartItemCardDismissible extends StatelessWidget {
                         height: 80,
                         color: scheme.surfaceContainerLow,
                         child: Image.asset(
-                          item.listing.imagePath,
+                          item.listing.imageUrl,
                           fit: BoxFit.cover,
                         ),
                       ),

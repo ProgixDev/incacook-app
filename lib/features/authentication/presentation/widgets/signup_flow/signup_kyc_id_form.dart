@@ -35,7 +35,7 @@ class SignupKycIdForm extends GetView<SignupFlowController> {
             singleSelect: true,
             onToggle: (t) {
               controller.idDocumentType.value = t;
-              if (!t.requiresVerso) controller.idBackPath.value = '';
+              if (!t.requiresVerso) controller.idBackUrl.value = '';
             },
           ),
         ),
@@ -48,8 +48,8 @@ class SignupKycIdForm extends GetView<SignupFlowController> {
             children: [
               Expanded(
                 child: SignupImagePicker(
-                  path: controller.idFrontPath.value,
-                  onChanged: (p) => controller.idFrontPath.value = p,
+                  path: controller.idFrontUrl.value,
+                  onChanged: (p) => controller.idFrontUrl.value = p,
                   variant: SignupImagePickerVariant.rectangular,
                   size: 120,
                   label: AppTexts.signupKycIdRecto,
@@ -59,8 +59,8 @@ class SignupKycIdForm extends GetView<SignupFlowController> {
                 const Gap(AppSizes.sm + 4),
                 Expanded(
                   child: SignupImagePicker(
-                    path: controller.idBackPath.value,
-                    onChanged: (p) => controller.idBackPath.value = p,
+                    path: controller.idBackUrl.value,
+                    onChanged: (p) => controller.idBackUrl.value = p,
                     variant: SignupImagePickerVariant.rectangular,
                     size: 120,
                     label: AppTexts.signupKycIdVerso,

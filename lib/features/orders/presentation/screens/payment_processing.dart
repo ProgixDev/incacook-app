@@ -7,8 +7,8 @@ import 'package:incacook/core/constants/animations.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/models/delivery_details.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/features/orders/presentation/screens/order_confirmation.dart';
 
 enum _PaymentPhase { processing, failed }

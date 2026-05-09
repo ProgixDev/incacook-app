@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/features/chat/presentation/screens/chat.dart';
 import 'package:incacook/features/orders/controllers/order_tracking_controller.dart';
-import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/core/enums/order_stage.dart';
 import 'package:incacook/features/orders/presentation/widgets/delivered_stage_view.dart';
 import 'package:incacook/features/orders/presentation/widgets/on_the_way_stage_view.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_bottom_sheet.dart';

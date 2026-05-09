@@ -7,7 +7,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/seller/domain/seller_product.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 class SellerProductCard extends StatelessWidget {
   const SellerProductCard({
@@ -17,7 +17,7 @@ class SellerProductCard extends StatelessWidget {
     this.onTap,
   });
 
-  final SellerProduct product;
+  final FoodListing product;
   final ValueChanged<bool> onAvailabilityChanged;
   final VoidCallback? onTap;
 
@@ -39,8 +39,8 @@ class SellerProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _ProductImage(
-              imagePath: product.imagePath,
-              prepMinutes: product.prepMinutes,
+              imageUrl: product.imageUrl,
+              prepMinutes: product.prepMinutes ?? 0,
             ),
             const Gap(AppSizes.md),
             Expanded(
@@ -75,7 +75,7 @@ class SellerProductCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              product.category,
+                              product.menuCategory ?? '',
                               style: textTheme.bodySmall?.copyWith(
                                 color: scheme.onSurfaceVariant,
                               ),
@@ -118,9 +118,9 @@ class SellerProductCard extends StatelessWidget {
 }
 
 class _ProductImage extends StatelessWidget {
-  const _ProductImage({required this.imagePath, required this.prepMinutes});
+  const _ProductImage({required this.imageUrl, required this.prepMinutes});
 
-  final String imagePath;
+  final String imageUrl;
   final int prepMinutes;
 
   @override
@@ -135,7 +135,7 @@ class _ProductImage extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(imagePath, fit: BoxFit.cover),
+            Image.asset(imageUrl, fit: BoxFit.cover),
             // Positioned(
             //   top: 0,
             //   left: 0,

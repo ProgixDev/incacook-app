@@ -1,5 +1,5 @@
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 /// Bundle of a [FoodListing] with the geographic [Position] where it should
 /// be pinned on the map. Lives in the map feature because the pairing only

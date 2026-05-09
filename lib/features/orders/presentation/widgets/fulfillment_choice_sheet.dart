@@ -5,7 +5,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/widgets/misc/drag_handle.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/features/orders/presentation/widgets/delivery_option_card.dart';
 
 class FulfillmentChoiceSheet extends StatefulWidget {

@@ -9,10 +9,10 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/cart/controllers/cart_controller.dart';
-import 'package:incacook/features/cart/domain/cart_item.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/fulfillment_options.dart';
+import 'package:incacook/core/models/cart_item.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/delivery_details.dart';
+import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/features/orders/presentation/screens/payment.dart';
 
 class OrderSummaryScreen extends StatelessWidget {
@@ -187,7 +187,7 @@ class _SummaryItemCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
             child: Image.asset(
-              item.listing.imagePath,
+              item.listing.imageUrl,
               width: 56,
               height: 56,
               fit: BoxFit.cover,
@@ -366,7 +366,7 @@ class _SellerSummary extends StatelessWidget {
         children: [
           Row(
             children: [
-              CustomCircularImage(image: seller.imagePath, size: 44),
+              CustomCircularImage(image: seller.imageUrl, size: 44),
               const Gap(AppSizes.md - 2),
               Expanded(
                 child: Column(

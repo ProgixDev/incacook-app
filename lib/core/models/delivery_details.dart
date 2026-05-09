@@ -1,4 +1,4 @@
-import 'package:incacook/features/orders/domain/saved_address.dart';
+import 'package:incacook/core/models/address.dart';
 
 enum DeliveryTiming { asap, scheduled }
 
@@ -10,7 +10,7 @@ class DeliveryDetails {
     this.scheduledAt,
   });
 
-  final SavedAddress address;
+  final Address address;
   final String instructions;
   final DeliveryTiming timing;
   final DateTime? scheduledAt;

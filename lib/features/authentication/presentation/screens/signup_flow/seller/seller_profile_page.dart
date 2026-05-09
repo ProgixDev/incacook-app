@@ -3,8 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
-import 'package:incacook/features/authentication/data/models/seller_sub_type.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_text_field.dart';
@@ -16,7 +16,7 @@ class SellerProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<SignupFlowController>();
     final isProfessional =
-        controller.sellerSubType.value != SellerSubType.faitMaison;
+        controller.sellerCategory.value != SellerCategory.faitMaison;
 
     return SignupStepLayout(
       title: AppTexts.signupSellerProfileTitle,
@@ -27,8 +27,8 @@ class SellerProfilePage extends StatelessWidget {
           Center(
             child: Obx(
               () => SignupImagePicker(
-                path: controller.profilePhotoPath.value,
-                onChanged: (p) => controller.profilePhotoPath.value = p,
+                path: controller.profilePhotoUrl.value,
+                onChanged: (p) => controller.profilePhotoUrl.value = p,
                 size: 112,
               ),
             ),

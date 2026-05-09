@@ -1,8 +1,8 @@
 import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/enums/order_enums.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
-import 'package:incacook/features/client/domain/kitchen.dart';
+import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/core/models/kitchen.dart';
 
 class ClientMockData {
   ClientMockData._();
@@ -13,7 +13,7 @@ class ClientMockData {
       FoodListing(
         id: 'f1',
         name: 'Tajine poulet aux olives',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Fatima K.',
         category: SellerCategory.faitMaison,
         distanceKm: 0.3,
@@ -30,7 +30,7 @@ class ClientMockData {
       FoodListing(
         id: 'f2',
         name: 'Lasagne maison',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Chez Luigi',
         category: SellerCategory.traiteur,
         distanceKm: 0.8,
@@ -47,7 +47,7 @@ class ClientMockData {
       FoodListing(
         id: 'f3',
         name: 'Buddha bowl végé',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Green Kitchen',
         category: SellerCategory.restaurant,
         distanceKm: 1.1,
@@ -65,7 +65,7 @@ class ClientMockData {
       FoodListing(
         id: 'f4',
         name: 'Quiche lorraine',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Marc',
         category: SellerCategory.faitMaison,
         distanceKm: 0.5,
@@ -81,7 +81,7 @@ class ClientMockData {
       FoodListing(
         id: 'f5',
         name: 'Poke bowl saumon',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Sushi Corner',
         category: SellerCategory.restaurant,
         distanceKm: 1.4,
@@ -105,7 +105,7 @@ class ClientMockData {
       FoodListing(
         id: 's1',
         name: 'Pain frais du jour',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Boulangerie Maurice',
         category: SellerCategory.traiteur,
         distanceKm: 0.4,
@@ -119,7 +119,7 @@ class ClientMockData {
       FoodListing(
         id: 's2',
         name: 'Soupe de légumes maison',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Claire',
         category: SellerCategory.faitMaison,
         distanceKm: 0.7,
@@ -134,7 +134,7 @@ class ClientMockData {
       FoodListing(
         id: 's3',
         name: 'Fruits de saison',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Marché bio Nation',
         category: SellerCategory.traiteur,
         distanceKm: 1.2,
@@ -149,7 +149,7 @@ class ClientMockData {
       FoodListing(
         id: 's4',
         name: 'Riz cuit en trop',
-        imagePath: AppImages.foodTest,
+        imageUrl: AppImages.foodTest,
         sellerName: 'Amir',
         category: SellerCategory.faitMaison,
         distanceKm: 0.6,
@@ -176,8 +176,8 @@ class ClientMockData {
       Kitchen(
         id: 'k1',
         name: 'Aliva Kitchen',
-        imagePath: AppImages.foodTest,
-        chefImagePath: AppImages.profilePic,
+        imageUrl: AppImages.foodTest,
+        chefImageUrl: AppImages.profilePic,
         rating: 4.5,
         reviewCount: 25,
         isVerified: true,
@@ -188,8 +188,8 @@ class ClientMockData {
       Kitchen(
         id: 'k2',
         name: 'Eckart Kitchen',
-        imagePath: AppImages.foodTest,
-        chefImagePath: AppImages.profilePic,
+        imageUrl: AppImages.foodTest,
+        chefImageUrl: AppImages.profilePic,
         rating: 4.7,
         reviewCount: 52,
         isVerified: true,
@@ -200,8 +200,8 @@ class ClientMockData {
       Kitchen(
         id: 'k3',
         name: 'Fatima\'s Corner',
-        imagePath: AppImages.foodTest,
-        chefImagePath: AppImages.profilePic,
+        imageUrl: AppImages.foodTest,
+        chefImageUrl: AppImages.profilePic,
         rating: 4.9,
         reviewCount: 89,
         isVerified: true,
@@ -212,8 +212,8 @@ class ClientMockData {
       Kitchen(
         id: 'k4',
         name: 'Green Bowl',
-        imagePath: AppImages.foodTest,
-        chefImagePath: AppImages.profilePic,
+        imageUrl: AppImages.foodTest,
+        chefImageUrl: AppImages.profilePic,
         rating: 4.6,
         reviewCount: 41,
         isVerified: false,

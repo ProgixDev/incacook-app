@@ -8,14 +8,14 @@ import 'package:incacook/core/constants/text_strings.dart';
 class ProductReview {
   const ProductReview({
     required this.author,
-    required this.avatarPath,
+    required this.avatarUrl,
     required this.rating,
     required this.body,
     required this.time,
   });
 
   final String author;
-  final String avatarPath;
+  final String avatarUrl;
   final double rating;
   final String body;
   final String time;
@@ -156,7 +156,7 @@ class _ReviewCard extends StatelessWidget {
           //* header: avatar + name + time
           Row(
             children: [
-              CustomCircularImage(image: review.avatarPath, size: 36),
+              CustomCircularImage(image: review.avatarUrl, size: 36),
               const Gap(AppSizes.sm),
               Expanded(
                 child: Column(

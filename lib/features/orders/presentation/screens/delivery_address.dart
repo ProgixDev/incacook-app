@@ -6,10 +6,10 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
-import 'package:incacook/features/orders/domain/delivery_details.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
+import 'package:incacook/core/models/delivery_details.dart';
 import 'package:incacook/features/orders/presentation/widgets/address_card.dart';
 import 'package:incacook/features/orders/presentation/widgets/address_search_sheet.dart';
 
@@ -22,25 +22,28 @@ class DeliveryAddressScreen extends StatefulWidget {
 
 class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
   //? demo addresses — swap for CRUD against a real source later
-  final List<SavedAddress> _addresses = [
-    const SavedAddress(
+  final List<Address> _addresses = [
+    const Address(
       id: 'home',
       type: SavedAddressType.home,
-      line1: '12 Rue de la Roquette',
-      line2: '75011 Paris',
+      fullAddress: '12 Rue de la Roquette',
+      city: 'Paris',
+      postalCode: '75011',
     ),
-    const SavedAddress(
+    const Address(
       id: 'work',
       type: SavedAddressType.work,
-      line1: '45 Avenue de la République',
-      line2: '75011 Paris',
+      fullAddress: '45 Avenue de la République',
+      city: 'Paris',
+      postalCode: '75011',
     ),
-    const SavedAddress(
+    const Address(
       id: 'family',
       type: SavedAddressType.other,
       customLabel: 'Famille',
-      line1: '50 Rue de Saint-Germain',
-      line2: '92500 Rueil-Malmaison',
+      fullAddress: '50 Rue de Saint-Germain',
+      city: 'Rueil-Malmaison',
+      postalCode: '92500',
       inRange: false,
     ),
   ];
@@ -62,7 +65,7 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
     super.dispose();
   }
 
-  SavedAddress? get _selected =>
+  Address? get _selected =>
       _addresses.where((a) => a.id == _selectedId).firstOrNull;
 
   bool get _canContinue {
@@ -73,7 +76,7 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
   }
 
   Future<void> _openAddressSearch() async {
-    final picked = await showBlurredModalBottomSheet<SavedAddress>(
+    final picked = await showBlurredModalBottomSheet<Address>(
       context: context,
       isScrollControlled: true,
       builder: (_) => const AddressSearchSheet(),

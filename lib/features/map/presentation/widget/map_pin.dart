@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 
 //? category-to-color mapping local to the map feature — semantic markers,
 //? not app-wide tokens

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/sizes.dart';
-import 'package:incacook/features/seller/domain/seller_rating.dart';
+import 'package:incacook/core/models/seller_rating.dart';
 
 /// Renders a single criterion: emoji + label + value on the top row,
 /// a filled bar in the middle, and a small caption beneath.

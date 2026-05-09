@@ -3,10 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
-import 'package:incacook/features/authentication/data/models/course_type.dart';
-import 'package:incacook/features/authentication/data/models/cuisine_type.dart';
-import 'package:incacook/features/authentication/data/models/seller_sub_type.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_chip_group.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 
@@ -16,12 +14,14 @@ class SellerCuisinePage extends GetView<SignupFlowController> {
   @override
   Widget build(BuildContext context) {
     final isProfessional =
-        controller.sellerSubType.value != SellerSubType.faitMaison;
+        controller.sellerCategory.value != SellerCategory.faitMaison;
 
-    final courseOptions =
-        controller.sellerSubType.value == SellerSubType.traiteur
-        ? CourseType.values
-        : CourseType.values.where((c) => c != CourseType.cocktail).toList();
+    // DishType.valuesFor already gates by SellerCategory: traiteur sees
+    // cocktailDinatoire, restaurant doesn't.
+    final dishOptions =
+        controller.sellerCategory.value == SellerCategory.traiteur
+        ? DishType.valuesFor(SellerCategory.traiteur)
+        : DishType.valuesFor(SellerCategory.restaurant);
 
     return SignupStepLayout(
       title: AppTexts.signupSellerCuisineTitle,
@@ -61,16 +61,16 @@ class SellerCuisinePage extends GetView<SignupFlowController> {
             ),
             const Gap(AppSizes.sm + 4),
             Obx(
-              () => SignupChipGroup<CourseType>(
-                options: courseOptions,
-                selected: controller.courseTypes.toList(),
-                labelOf: (c) => c.label,
-                leadingOf: (c) => Image.asset(c.iconPath),
-                onToggle: (c) {
-                  if (controller.courseTypes.contains(c)) {
-                    controller.courseTypes.remove(c);
+              () => SignupChipGroup<DishType>(
+                options: dishOptions,
+                selected: controller.dishTypes.toList(),
+                labelOf: (d) => d.label,
+                leadingOf: (d) => Image.asset(d.iconPath),
+                onToggle: (d) {
+                  if (controller.dishTypes.contains(d)) {
+                    controller.dishTypes.remove(d);
                   } else {
-                    controller.courseTypes.add(c);
+                    controller.dishTypes.add(d);
                   }
                 },
               ),

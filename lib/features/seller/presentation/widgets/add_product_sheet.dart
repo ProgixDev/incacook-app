@@ -330,19 +330,14 @@ class AllergensSection extends StatelessWidget {
             ],
           ),
         ),
-        Obx(() {
-          if (!controller.allergens.contains(Allergen.autres)) {
-            return const SizedBox.shrink();
-          }
-          return Padding(
-            padding: const EdgeInsets.only(top: AppSizes.sm + 2),
-            child: _FrostedField(
-              controller: controller.otherAllergenController,
-              icon: Iconsax.edit,
-              label: AppTexts.addProductAllergenOtherHint,
-            ),
-          );
-        }),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSizes.sm + 2),
+          child: _FrostedField(
+            controller: controller.otherAllergenController,
+            icon: Iconsax.edit,
+            label: AppTexts.addProductAllergenOtherHint,
+          ),
+        ),
       ],
     );
   }

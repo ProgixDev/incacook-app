@@ -5,9 +5,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/data/models/day_of_week.dart';
-import 'package:incacook/features/authentication/data/models/seller_sub_type.dart';
 import 'package:incacook/features/authentication/data/models/time_range.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
@@ -19,7 +19,7 @@ class SellerBusinessInfoPage extends GetView<SignupFlowController> {
   @override
   Widget build(BuildContext context) {
     final isRestaurant =
-        controller.sellerSubType.value == SellerSubType.restaurant;
+        controller.sellerCategory.value == SellerCategory.restaurant;
 
     return SignupStepLayout(
       title: AppTexts.signupSellerBusinessTitle,
@@ -62,9 +62,9 @@ class SellerBusinessInfoPage extends GetView<SignupFlowController> {
             ),
             const Gap(AppSizes.sm),
             Obx(() => SignupImagePicker(
-                  path: controller.restaurantFacadePhotoPath.value,
+                  path: controller.restaurantFacadeUrl.value,
                   onChanged: (p) =>
-                      controller.restaurantFacadePhotoPath.value = p,
+                      controller.restaurantFacadeUrl.value = p,
                   variant: SignupImagePickerVariant.rectangular,
                   size: 160,
                 )),

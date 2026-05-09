@@ -25,7 +25,7 @@ class ChatListTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //* avatar
-            CustomCircularImage(image: chat.avatarPath),
+            CustomCircularImage(image: chat.avatarUrl),
             const Gap(AppSizes.md),
 
             //* name + preview

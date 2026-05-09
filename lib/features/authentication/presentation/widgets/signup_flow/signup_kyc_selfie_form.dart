@@ -33,7 +33,7 @@ class SignupKycSelfieForm extends StatelessWidget {
             ),
           ),
           child: Obx(() {
-            if (controller.selfiePath.value.isNotEmpty) {
+            if (controller.selfieUrl.value.isNotEmpty) {
               return Icon(
                 Icons.check_circle,
                 color: scheme.primary,
@@ -49,7 +49,7 @@ class SignupKycSelfieForm extends StatelessWidget {
         ),
         const Gap(AppSizes.lg),
         Obx(() {
-          final has = controller.selfiePath.value.isNotEmpty;
+          final has = controller.selfieUrl.value.isNotEmpty;
           return SizedBox(
             width: double.infinity,
             height: 52,
@@ -68,8 +68,8 @@ class SignupKycSelfieForm extends StatelessWidget {
         Offstage(
           offstage: true,
           child: SignupImagePicker(
-            path: controller.selfiePath.value,
-            onChanged: (p) => controller.selfiePath.value = p,
+            path: controller.selfieUrl.value,
+            onChanged: (p) => controller.selfieUrl.value = p,
             cameraOnly: true,
           ),
         ),
@@ -88,7 +88,7 @@ class SignupKycSelfieForm extends StatelessWidget {
 /// Stub camera trigger — production camera plugin would replace this.
 class _SelfiePicker {
   static void open(SignupFlowController controller) {
-    controller.selfiePath.value =
+    controller.selfieUrl.value =
         'stub://camera/${DateTime.now().millisecondsSinceEpoch}';
   }
 }

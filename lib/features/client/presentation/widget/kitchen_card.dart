@@ -4,7 +4,7 @@ import 'package:incacook/core/common/widgets/custon_shapes/container/circular_im
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/client/domain/kitchen.dart';
+import 'package:incacook/core/models/kitchen.dart';
 import 'package:incacook/features/client/presentation/widget/favorite_button.dart';
 import 'package:incacook/features/client/presentation/widget/kitchen_meta_item.dart';
 import 'package:incacook/features/client/presentation/widget/kitchen_tag_chip.dart';
@@ -45,7 +45,7 @@ class KitchenCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(kitchen.imagePath, fit: BoxFit.cover),
+                  Image.asset(kitchen.imageUrl, fit: BoxFit.cover),
                   Positioned(
                     top: AppSizes.md - 4,
                     left: AppSizes.md - 4,
@@ -116,7 +116,7 @@ class KitchenCard extends StatelessWidget {
                     ),
                   ),
                   const Gap(AppSizes.sm),
-                  CustomCircularImage(image: kitchen.chefImagePath),
+                  CustomCircularImage(image: kitchen.chefImageUrl),
                 ],
               ),
             ),

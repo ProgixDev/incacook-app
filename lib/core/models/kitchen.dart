@@ -2,8 +2,8 @@ class Kitchen {
   const Kitchen({
     required this.id,
     required this.name,
-    required this.imagePath,
-    required this.chefImagePath,
+    required this.imageUrl,
+    required this.chefImageUrl,
     required this.rating,
     required this.reviewCount,
     required this.isVerified,
@@ -14,8 +14,8 @@ class Kitchen {
 
   final String id;
   final String name;
-  final String imagePath;
-  final String chefImagePath;
+  final String imageUrl;
+  final String chefImageUrl;
   final double rating;
   final int reviewCount;
   final bool isVerified;

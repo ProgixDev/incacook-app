@@ -4,21 +4,21 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/core/widgets/misc/drag_handle.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
 
 /// Bottom sheet showing the user's saved addresses. Opens with a frosted
 /// blur via [showBlurredModalBottomSheet].
 class SavedAddressesSheet extends StatelessWidget {
   const SavedAddressesSheet({super.key, required this.addresses});
 
-  final List<SavedAddress> addresses;
+  final List<Address> addresses;
 
   static Future<void> show(
     BuildContext context, {
-    required List<SavedAddress> addresses,
+    required List<Address> addresses,
   }) {
     return showBlurredModalBottomSheet<void>(
       context: context,
@@ -115,7 +115,7 @@ class _Header extends StatelessWidget {
 class _AddressTile extends StatelessWidget {
   const _AddressTile({required this.address});
 
-  final SavedAddress address;
+  final Address address;
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +130,11 @@ class _AddressTile extends StatelessWidget {
           SizedBox(
             width: 44,
             height: 44,
-            child: Icon(address.type.icon, size: 20, color: scheme.onSurface),
+            child: Icon(
+              (address.type ?? SavedAddressType.other).icon,
+              size: 20,
+              color: scheme.onSurface,
+            ),
           ),
           const Gap(AppSizes.md - 2),
 

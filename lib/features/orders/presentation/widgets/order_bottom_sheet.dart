@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/orders/domain/order_stage.dart';
+import 'package:incacook/core/enums/order_stage.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_deliverer_pill.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_timeline.dart';
 

@@ -22,8 +22,8 @@ class DriverDocumentsPage extends StatelessWidget {
         children: [
           Obx(
             () => SignupImagePicker(
-              path: controller.drivingLicensePath.value,
-              onChanged: (p) => controller.drivingLicensePath.value = p,
+              path: controller.drivingLicenseUrl.value,
+              onChanged: (p) => controller.drivingLicenseUrl.value = p,
               variant: SignupImagePickerVariant.rectangular,
               size: 140,
               label: AppTexts.signupDriverLicenseLabel,
@@ -33,8 +33,8 @@ class DriverDocumentsPage extends StatelessWidget {
           const Gap(AppSizes.md),
           Obx(
             () => SignupImagePicker(
-              path: controller.carteGrisePath.value,
-              onChanged: (p) => controller.carteGrisePath.value = p,
+              path: controller.carteGriseUrl.value,
+              onChanged: (p) => controller.carteGriseUrl.value = p,
               variant: SignupImagePickerVariant.rectangular,
               size: 140,
               label: AppTexts.signupDriverCarteGriseLabel,

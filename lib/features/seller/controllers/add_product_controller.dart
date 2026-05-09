@@ -81,11 +81,8 @@ class AddProductController extends GetxController {
     if (isFaitMaison && price > faitMaisonPriceCap) return false;
     final portions = int.tryParse(portionsController.text);
     if (portions == null || portions <= 0) return false;
-    if (allergens.isEmpty) return false;
-    if (allergens.contains(Allergen.autres) &&
-        otherAllergenController.text.trim().isEmpty) {
-      return false;
-    }
+    // Allergens are optional: an empty list means the listing declares
+    // none. The free-text otherAllergenController is also optional.
     if (!onSite.value && !delivery.value) return false;
     return true;
   }
@@ -102,21 +99,8 @@ class AddProductController extends GetxController {
     if (!dishTypes.add(d)) dishTypes.remove(d);
   }
 
-  /// "Aucun" is exclusive — picking it clears everything else; picking
-  /// anything else removes "Aucun".
   void toggleAllergen(Allergen a) {
-    if (a.isExclusive) {
-      if (allergens.contains(a)) {
-        allergens.remove(a);
-      } else {
-        allergens
-          ..clear()
-          ..add(a);
-      }
-    } else {
-      allergens.remove(Allergen.aucun);
-      if (!allergens.add(a)) allergens.remove(a);
-    }
+    if (!allergens.add(a)) allergens.remove(a);
   }
 
   void setPickupStart(TimeOfDay v) => pickupStart.value = v;

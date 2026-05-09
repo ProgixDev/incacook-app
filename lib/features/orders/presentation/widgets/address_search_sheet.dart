@@ -5,10 +5,10 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/services/map/mapbox_search_client.dart';
 import 'package:incacook/core/services/map/models/place_suggestion.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
 
 class AddressSearchSheet extends StatefulWidget {
   const AddressSearchSheet({super.key});
@@ -86,16 +86,30 @@ class _AddressSearchSheetState extends State<AddressSearchSheet> {
       );
       if (!mounted) return;
 
-      final lines = (place.fullAddress ?? place.placeFormatted).split(', ');
-      final line1 = lines.isNotEmpty ? lines.first : place.name;
-      final line2 = lines.length > 1 ? lines.sublist(1).join(', ') : '';
+      // Parse a structured Address out of the Mapbox formatted string.
+      // The street part is `place.name`; the postal/city are extracted
+      // from the formatted full address (5-digit FR postal regex).
+      final formatted = place.fullAddress ?? place.placeFormatted;
+      final postalMatch = RegExp(r'\b(\d{5})\b').firstMatch(formatted);
+      final postal = postalMatch?.group(1) ?? '';
+      // City sits between the postal and the country segment, e.g.
+      // "12 rue X, 75011 Paris, France" → "Paris".
+      final segments = formatted.split(',').map((s) => s.trim()).toList();
+      final cityFromFormatted = segments
+          .firstWhere(
+            (s) => s.startsWith(postal) && postal.isNotEmpty,
+            orElse: () => '',
+          )
+          .replaceFirst(postal, '')
+          .trim();
 
       Navigator.of(context).pop(
-        SavedAddress(
+        Address(
           id: 'mb-${place.mapboxId}',
           type: SavedAddressType.other,
-          line1: line1,
-          line2: line2,
+          fullAddress: place.name,
+          city: cityFromFormatted,
+          postalCode: postal,
           coordinate: place.coordinate,
         ),
       );

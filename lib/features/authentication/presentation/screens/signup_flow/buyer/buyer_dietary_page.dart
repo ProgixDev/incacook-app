@@ -3,9 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
-import 'package:incacook/features/authentication/data/models/allergen.dart';
-import 'package:incacook/features/authentication/data/models/dietary.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_chip_group.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 
@@ -28,8 +27,8 @@ class BuyerDietaryPage extends GetView<SignupFlowController> {
           ),
           const Gap(AppSizes.sm + 4),
           Obx(
-            () => SignupChipGroup<Dietary>(
-              options: Dietary.values,
+            () => SignupChipGroup<DietaryTag>(
+              options: DietaryTag.values,
               selected: controller.dietaryPreferences.toList(),
               labelOf: (d) => d.label,
               leadingOf: (d) => Image.asset(d.iconPath),

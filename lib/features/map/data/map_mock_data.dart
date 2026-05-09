@@ -2,7 +2,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/enums/order_enums.dart';
-import 'package:incacook/features/client/domain/food_listing.dart';
+import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/features/map/domain/map_entry.dart';
 
 class MapMockData {
@@ -18,7 +18,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm1',
           name: 'Tajine poulet olives',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Fatima',
           category: SellerCategory.faitMaison,
           distanceKm: 0.3,
@@ -37,7 +37,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm2',
           name: 'Lasagne maison',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Chez Luigi',
           category: SellerCategory.traiteur,
           distanceKm: 0.8,
@@ -55,7 +55,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm3',
           name: 'Buddha bowl végé',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Green Kitchen',
           category: SellerCategory.restaurant,
           distanceKm: 1.1,
@@ -74,7 +74,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm4',
           name: 'Soupe de légumes',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Chez Anna',
           category: SellerCategory.traiteur,
           distanceKm: 1.0,
@@ -91,7 +91,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm5',
           name: 'Quiche lorraine',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Marc',
           category: SellerCategory.faitMaison,
           distanceKm: 0.5,
@@ -108,7 +108,7 @@ class MapMockData {
         listing: FoodListing(
           id: 'm6',
           name: 'Tarte aux pommes',
-          imagePath: AppImages.foodTest,
+          imageUrl: AppImages.foodTest,
           sellerName: 'Boulangerie Paul',
           category: SellerCategory.restaurant,
           distanceKm: 0.7,

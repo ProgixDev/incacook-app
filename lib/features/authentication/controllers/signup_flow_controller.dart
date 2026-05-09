@@ -6,15 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/authentication/data/models/address.dart';
-import 'package:incacook/features/authentication/data/models/allergen.dart';
-import 'package:incacook/features/authentication/data/models/course_type.dart';
-import 'package:incacook/features/authentication/data/models/cuisine_type.dart';
+import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/features/authentication/data/models/day_of_week.dart';
-import 'package:incacook/features/authentication/data/models/dietary.dart';
 import 'package:incacook/features/authentication/data/models/driver_vehicle_type.dart';
 import 'package:incacook/features/authentication/data/models/id_document_type.dart';
-import 'package:incacook/features/authentication/data/models/seller_sub_type.dart';
 import 'package:incacook/features/authentication/data/models/signup_step.dart';
 import 'package:incacook/features/authentication/data/models/time_range.dart';
 import 'package:incacook/features/authentication/data/models/user_role.dart';
@@ -79,34 +75,34 @@ class SignupFlowController extends GetxController {
   // Step 1 — role choice
   // ---------------------------------------------------------------------------
   final Rxn<UserRole> role = Rxn<UserRole>();
-  final Rxn<SellerSubType> sellerSubType = Rxn<SellerSubType>();
+  final Rxn<SellerCategory> sellerCategory = Rxn<SellerCategory>();
   final Rxn<DriverVehicleType> vehicleType = Rxn<DriverVehicleType>();
 
   // ---------------------------------------------------------------------------
   // Buyer-specific
   // ---------------------------------------------------------------------------
   final Rxn<Address> deliveryAddress = Rxn<Address>();
-  final dietaryPreferences = <Dietary>[].obs;
+  final dietaryPreferences = <DietaryTag>[].obs;
   final allergies = <Allergen>[].obs;
 
   // ---------------------------------------------------------------------------
   // Seller-specific
   // ---------------------------------------------------------------------------
-  final profilePhotoPath = ''.obs;
+  final profilePhotoUrl = ''.obs;
   final displayName = ''.obs;
   final bio = ''.obs;
   final Rxn<DateTime> dateOfBirth = Rxn<DateTime>();
   final Rxn<Address> pickupAddress = Rxn<Address>();
   final businessName = ''.obs;
   final siret = ''.obs;
-  final restaurantFacadePhotoPath = ''.obs;
+  final restaurantFacadeUrl = ''.obs;
   final openingHours = <DayOfWeek, DailyTimeRange>{}.obs;
   final cuisineTypes = <CuisineType>[].obs;
-  final courseTypes = <CourseType>[].obs;
+  final dishTypes = <DishType>[].obs;
   final Rxn<IdDocumentType> idDocumentType = Rxn<IdDocumentType>();
-  final idFrontPath = ''.obs;
-  final idBackPath = ''.obs;
-  final selfiePath = ''.obs;
+  final idFrontUrl = ''.obs;
+  final idBackUrl = ''.obs;
+  final selfieUrl = ''.obs;
   final hygieneCommitmentChecked = false.obs;
   final faitMaisonCommitmentChecked = false.obs;
 
@@ -114,8 +110,8 @@ class SignupFlowController extends GetxController {
   // Driver-specific
   // ---------------------------------------------------------------------------
   final operatingZones = <String>[].obs;
-  final drivingLicensePath = ''.obs;
-  final carteGrisePath = ''.obs;
+  final drivingLicenseUrl = ''.obs;
+  final carteGriseUrl = ''.obs;
   final iban = ''.obs;
   final ibanHolderName = ''.obs;
   final driverCharterAccepted = false.obs;
@@ -139,7 +135,7 @@ class SignupFlowController extends GetxController {
     // Whenever role / sub-type / vehicle changes, the steps list shifts —
     // re-emit currentPage so anything bound to `totalPages` repaints.
     ever<UserRole?>(role, (_) => currentPage.refresh());
-    ever<SellerSubType?>(sellerSubType, (_) => currentPage.refresh());
+    ever<SellerCategory?>(sellerCategory, (_) => currentPage.refresh());
     ever<DriverVehicleType?>(vehicleType, (_) => currentPage.refresh());
 
     // In debug builds, prefill the basic-info form with random sample
@@ -210,8 +206,8 @@ class SignupFlowController extends GetxController {
         // null — which means the business-info step is skipped and the
         // seller is treated as a generic professional downstream
         // (auto-approval and SIRET collection both off).
-        if (sellerSubType.value != null &&
-            sellerSubType.value != SellerSubType.faitMaison) {
+        if (sellerCategory.value != null &&
+            sellerCategory.value != SellerCategory.faitMaison) {
           list.add(SignupStep.sellerBusinessInfo);
         }
         list.add(SignupStep.sellerCuisine);
@@ -355,16 +351,16 @@ class SignupFlowController extends GetxController {
       case SignupStep.buyerDone:
         return true;
       case SignupStep.sellerProfile:
-        return profilePhotoPath.value.isNotEmpty &&
+        return profilePhotoUrl.value.isNotEmpty &&
             displayName.value.trim().length >= 2;
       case SignupStep.sellerDobAddress:
         return isAdult && pickupAddress.value != null;
       case SignupStep.sellerBusinessInfo:
         final base =
             businessName.value.trim().length >= 2 && isSiretValid;
-        if (sellerSubType.value == SellerSubType.restaurant) {
+        if (sellerCategory.value == SellerCategory.restaurant) {
           return base &&
-              restaurantFacadePhotoPath.value.isNotEmpty &&
+              restaurantFacadeUrl.value.isNotEmpty &&
               openingHours.values.any(
                 (range) => range.start != range.end,
               );
@@ -372,18 +368,18 @@ class SignupFlowController extends GetxController {
         return base;
       case SignupStep.sellerCuisine:
         if (cuisineTypes.isEmpty) return false;
-        if (sellerSubType.value != SellerSubType.faitMaison) {
-          return courseTypes.isNotEmpty;
+        if (sellerCategory.value != SellerCategory.faitMaison) {
+          return dishTypes.isNotEmpty;
         }
         return true;
       case SignupStep.sellerKycId:
         if (idDocumentType.value == null) return false;
         if (idDocumentType.value!.requiresVerso) {
-          return idFrontPath.value.isNotEmpty && idBackPath.value.isNotEmpty;
+          return idFrontUrl.value.isNotEmpty && idBackUrl.value.isNotEmpty;
         }
-        return idFrontPath.value.isNotEmpty;
+        return idFrontUrl.value.isNotEmpty;
       case SignupStep.sellerKycSelfie:
-        return selfiePath.value.isNotEmpty;
+        return selfieUrl.value.isNotEmpty;
       case SignupStep.sellerCharter:
         return hygieneCommitmentChecked.value &&
             faitMaisonCommitmentChecked.value;
@@ -394,14 +390,14 @@ class SignupFlowController extends GetxController {
       case SignupStep.driverKycId:
         if (idDocumentType.value == null) return false;
         if (idDocumentType.value!.requiresVerso) {
-          return idFrontPath.value.isNotEmpty && idBackPath.value.isNotEmpty;
+          return idFrontUrl.value.isNotEmpty && idBackUrl.value.isNotEmpty;
         }
-        return idFrontPath.value.isNotEmpty;
+        return idFrontUrl.value.isNotEmpty;
       case SignupStep.driverKycSelfie:
-        return selfiePath.value.isNotEmpty;
+        return selfieUrl.value.isNotEmpty;
       case SignupStep.driverDocuments:
-        return drivingLicensePath.value.isNotEmpty &&
-            carteGrisePath.value.isNotEmpty;
+        return drivingLicenseUrl.value.isNotEmpty &&
+            carteGriseUrl.value.isNotEmpty;
       case SignupStep.driverZone:
         return operatingZones.isNotEmpty;
       case SignupStep.driverIban:
@@ -500,7 +496,7 @@ class SignupFlowController extends GetxController {
     // Clear forward-looking state from a previously chosen role so
     // switching choices doesn't leak validation state into the new
     // branch of the page list.
-    sellerSubType.value = null;
+    sellerCategory.value = null;
     vehicleType.value = null;
     // No auto-advance — the role selection page uses the bottom bar
     // Continue button as its navigation, mirroring the existing
@@ -566,7 +562,7 @@ class SignupFlowController extends GetxController {
         'firstName': firstName.value,
         'lastName': lastName.value,
         'role': role.value?.name,
-        'sellerSubType': sellerSubType.value?.name,
+        'sellerCategory': sellerCategory.value?.name,
         'vehicleType': vehicleType.value?.name,
       });
     } finally {

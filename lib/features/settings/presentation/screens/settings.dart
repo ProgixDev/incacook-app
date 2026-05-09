@@ -7,8 +7,8 @@ import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
-import 'package:incacook/features/orders/domain/saved_address.dart';
 import 'package:incacook/features/settings/presentation/widgets/profile_menu_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/profile_user_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
@@ -22,32 +22,36 @@ class SettingsScreen extends StatefulWidget {
 }
 
 //* placeholder addresses — swap for a real source once persistence lands.
-const List<SavedAddress> _mockSavedAddresses = [
-  SavedAddress(
+const List<Address> _mockSavedAddresses = [
+  Address(
     id: 'addr-home',
     type: SavedAddressType.home,
-    line1: '12 rue Saint-Sabin',
-    line2: '75011 Paris, France',
+    fullAddress: '12 rue Saint-Sabin',
+    city: 'Paris',
+    postalCode: '75011',
   ),
-  SavedAddress(
+  Address(
     id: 'addr-work',
     type: SavedAddressType.work,
-    line1: '24 rue Lafayette',
-    line2: '75009 Paris, France',
+    fullAddress: '24 rue Lafayette',
+    city: 'Paris',
+    postalCode: '75009',
   ),
-  SavedAddress(
+  Address(
     id: 'addr-sister',
     type: SavedAddressType.other,
     customLabel: 'Chez ma sœur',
-    line1: '47 boulevard Voltaire',
-    line2: '75011 Paris, France',
+    fullAddress: '47 boulevard Voltaire',
+    city: 'Paris',
+    postalCode: '75011',
   ),
-  SavedAddress(
+  Address(
     id: 'addr-parents',
     type: SavedAddressType.other,
     customLabel: 'Maison parents',
-    line1: '8 rue de la Paix',
-    line2: '92500 Rueil-Malmaison, France',
+    fullAddress: '8 rue de la Paix',
+    city: 'Rueil-Malmaison',
+    postalCode: '92500',
     inRange: false,
   ),
 ];

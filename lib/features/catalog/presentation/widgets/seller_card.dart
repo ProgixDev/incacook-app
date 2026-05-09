@@ -14,7 +14,7 @@ class SellerCard extends StatelessWidget {
   const SellerCard({
     super.key,
     this.name = AppTexts.productSampleSellerName,
-    this.imagePath = AppImages.profilePic,
+    this.imageUrl = AppImages.profilePic,
     this.rating = AppTexts.productSampleSellerRating,
     this.ordersCompleted = AppTexts.productSampleSellerOrdersCompleted,
     this.onCallTap,
@@ -22,7 +22,7 @@ class SellerCard extends StatelessWidget {
   });
 
   final String name;
-  final String imagePath;
+  final String imageUrl;
   final double rating;
   final int ordersCompleted;
   final VoidCallback? onCallTap;
@@ -53,7 +53,7 @@ class SellerCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CustomCircularImage(image: imagePath, size: 48),
+            CustomCircularImage(image: imageUrl, size: 48),
             const Gap(AppSizes.sm),
             Expanded(
               child: Column(
