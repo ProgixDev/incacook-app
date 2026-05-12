@@ -71,9 +71,9 @@ Map<String, dynamic> _$FoodListingToJson(
 };
 
 const _$SellerCategoryEnumMap = {
-  SellerCategory.faitMaison: 'faitMaison',
-  SellerCategory.traiteur: 'traiteur',
-  SellerCategory.restaurant: 'restaurant',
+  SellerCategory.faitMaison: 'FAIT_MAISON',
+  SellerCategory.traiteur: 'TRAITEUR',
+  SellerCategory.restaurant: 'RESTAURANT',
 };
 
 const _$FulfillmentEnumMap = {
@@ -83,42 +83,42 @@ const _$FulfillmentEnumMap = {
 };
 
 const _$DietaryTagEnumMap = {
-  DietaryTag.halal: 'halal',
-  DietaryTag.vegan: 'vegan',
-  DietaryTag.glutenFree: 'glutenFree',
-  DietaryTag.casher: 'casher',
+  DietaryTag.halal: 'HALAL',
+  DietaryTag.vegan: 'VEGAN',
+  DietaryTag.glutenFree: 'GLUTEN_FREE',
+  DietaryTag.casher: 'CASHER',
 };
 
 const _$CuisineTypeEnumMap = {
-  CuisineType.orientale: 'orientale',
-  CuisineType.francaise: 'francaise',
-  CuisineType.africaine: 'africaine',
-  CuisineType.portugaise: 'portugaise',
-  CuisineType.italienne: 'italienne',
-  CuisineType.espagnole: 'espagnole',
-  CuisineType.latine: 'latine',
+  CuisineType.orientale: 'ORIENTALE',
+  CuisineType.francaise: 'FRANCAISE',
+  CuisineType.africaine: 'AFRICAINE',
+  CuisineType.portugaise: 'PORTUGAISE',
+  CuisineType.italienne: 'ITALIENNE',
+  CuisineType.espagnole: 'ESPAGNOLE',
+  CuisineType.latine: 'LATINE',
 };
 
 const _$DishTypeEnumMap = {
-  DishType.entree: 'entree',
-  DishType.plat: 'plat',
-  DishType.dessert: 'dessert',
-  DishType.cocktailDinatoire: 'cocktailDinatoire',
+  DishType.entree: 'ENTREE',
+  DishType.plat: 'PLAT',
+  DishType.dessert: 'DESSERT',
+  DishType.cocktailDinatoire: 'COCKTAIL_DINATOIRE',
 };
 
 const _$AllergenEnumMap = {
-  Allergen.gluten: 'gluten',
-  Allergen.crustaces: 'crustaces',
-  Allergen.oeufs: 'oeufs',
-  Allergen.poissons: 'poissons',
-  Allergen.arachides: 'arachides',
-  Allergen.soja: 'soja',
-  Allergen.lait: 'lait',
-  Allergen.fruitsACoque: 'fruitsACoque',
-  Allergen.celeri: 'celeri',
-  Allergen.moutarde: 'moutarde',
-  Allergen.sesame: 'sesame',
-  Allergen.sulfites: 'sulfites',
-  Allergen.lupin: 'lupin',
-  Allergen.mollusques: 'mollusques',
+  Allergen.gluten: 'GLUTEN',
+  Allergen.crustaces: 'CRUSTACES',
+  Allergen.oeufs: 'OEUFS',
+  Allergen.poissons: 'POISSONS',
+  Allergen.arachides: 'ARACHIDES',
+  Allergen.soja: 'SOJA',
+  Allergen.lait: 'LAIT',
+  Allergen.fruitsACoque: 'FRUITS_A_COQUE',
+  Allergen.celeri: 'CELERI',
+  Allergen.moutarde: 'MOUTARDE',
+  Allergen.sesame: 'SESAME',
+  Allergen.sulfites: 'SULFITES',
+  Allergen.lupin: 'LUPIN',
+  Allergen.mollusques: 'MOLLUSQUES',
 };

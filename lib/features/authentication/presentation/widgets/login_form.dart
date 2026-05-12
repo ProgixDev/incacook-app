@@ -144,9 +144,7 @@ class LoginForm extends StatelessWidget {
             SizedBox(
               width: double.infinity, //? to make the sized button full width
               child: ElevatedButton(
-                onPressed: () => Get.offAll(
-                  () => const NavigationMenu(tabs: kClientNavTabs),
-                ),
+                onPressed: () => controller.emailAndPasswordSignIn(),
                 child: const Text(AppTexts.signIn),
               ),
             ),

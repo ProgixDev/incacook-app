@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
@@ -24,6 +25,7 @@ class DriverDocumentsPage extends StatelessWidget {
             () => SignupImagePicker(
               path: controller.drivingLicenseUrl.value,
               onChanged: (p) => controller.drivingLicenseUrl.value = p,
+              purpose: UploadPurpose.kycDocument,
               variant: SignupImagePickerVariant.rectangular,
               size: 140,
               label: AppTexts.signupDriverLicenseLabel,
@@ -35,6 +37,7 @@ class DriverDocumentsPage extends StatelessWidget {
             () => SignupImagePicker(
               path: controller.carteGriseUrl.value,
               onChanged: (p) => controller.carteGriseUrl.value = p,
+              purpose: UploadPurpose.kycDocument,
               variant: SignupImagePickerVariant.rectangular,
               size: 140,
               label: AppTexts.signupDriverCarteGriseLabel,

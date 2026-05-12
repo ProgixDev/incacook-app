@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/data/models/id_document_type.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_chip_group.dart';
@@ -50,6 +51,7 @@ class SignupKycIdForm extends GetView<SignupFlowController> {
                 child: SignupImagePicker(
                   path: controller.idFrontUrl.value,
                   onChanged: (p) => controller.idFrontUrl.value = p,
+                  purpose: UploadPurpose.kycDocument,
                   variant: SignupImagePickerVariant.rectangular,
                   size: 120,
                   label: AppTexts.signupKycIdRecto,
@@ -61,6 +63,7 @@ class SignupKycIdForm extends GetView<SignupFlowController> {
                   child: SignupImagePicker(
                     path: controller.idBackUrl.value,
                     onChanged: (p) => controller.idBackUrl.value = p,
+                    purpose: UploadPurpose.kycDocument,
                     variant: SignupImagePickerVariant.rectangular,
                     size: 120,
                     label: AppTexts.signupKycIdVerso,

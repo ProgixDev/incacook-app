@@ -38,6 +38,9 @@ dependencies:
   geolocator: ^13.0.0
   rename_app: ^1.6.5
   flutter_launcher_icons: ^0.14.4
+  flutter_secure_storage: ^10.2.0
+  ulid: ^2.0.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

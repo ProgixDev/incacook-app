@@ -1,3 +1,4 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 
@@ -5,16 +6,19 @@ import 'package:incacook/core/constants/text_strings.dart';
 /// icon, display title, and one-line subtitle so the picker page can
 /// render entirely off the enum.
 enum DriverVehicleType {
+  @JsonValue('BICYCLE')
   bicycle(
     AppImages.vehicleBicycle,
     AppTexts.signupDriverVehicleBicycleTitle,
     AppTexts.signupDriverVehicleBicycleSubtitle,
   ),
+  @JsonValue('SCOOTER')
   scooter(
     AppImages.vehicleScooter,
     AppTexts.signupDriverVehicleScooterTitle,
     AppTexts.signupDriverVehicleScooterSubtitle,
   ),
+  @JsonValue('CAR')
   car(
     AppImages.vehicleCar,
     AppTexts.signupDriverVehicleCarTitle,

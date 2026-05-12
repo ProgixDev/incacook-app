@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:incacook/core/common/widgets/navigation/navigation_menu.dart';
 import 'package:incacook/core/constants/animations.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
-import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
 
 class BuyerDonePage extends StatelessWidget {
   const BuyerDonePage({super.key});
@@ -60,12 +58,7 @@ class BuyerDonePage extends StatelessWidget {
                 () => ElevatedButton(
                   onPressed: controller.isLoading.value
                       ? null
-                      : () async {
-                          await controller.submitSignup();
-                          Get.offAll<void>(
-                            () => const NavigationMenu(tabs: kClientNavTabs),
-                          );
-                        },
+                      : () => controller.nextPage(),
                   child: controller.isLoading.value
                       ? const SizedBox(
                           width: 20,

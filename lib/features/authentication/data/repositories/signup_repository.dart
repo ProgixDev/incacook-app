@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
 
-/// Stub repository for signup operations. All methods return mocked
-/// responses with simulated network delays so the flow can be exercised
-/// end-to-end without a backend.
+/// Stub repository for signup-flow side effects that don't yet have a
+/// documented backend endpoint: phone OTP, document uploads, address
+/// search.
 ///
-/// Replace each method with a real Dio call when the API is available.
+/// Auth + profile creation moved to [AuthRepository] / [UsersRepository].
+/// As role-specific finalizer endpoints land (KYC, business info,
+/// vehicle, etc.), pull each one out into its own typed repository and
+/// shrink this file further.
 class SignupRepository extends GetxService {
   /// Sends an OTP to the given phone. Stubbed: always succeeds, expected
   /// code is `123456`.
@@ -29,14 +32,4 @@ class SignupRepository extends GetxService {
     ];
   }
 
-  /// Stub document upload. Returns a fake remote path.
-  Future<String> uploadDocument(String localPath) async {
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    return 'https://cdn.culinea.local/uploads/${DateTime.now().millisecondsSinceEpoch}';
-  }
-
-  /// Final signup submission. Stubbed: always succeeds after a short delay.
-  Future<void> submitSignup(Map<String, dynamic> payload) async {
-    await Future<void>.delayed(const Duration(milliseconds: 1200));
-  }
 }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
@@ -29,6 +30,7 @@ class SellerProfilePage extends StatelessWidget {
               () => SignupImagePicker(
                 path: controller.profilePhotoUrl.value,
                 onChanged: (p) => controller.profilePhotoUrl.value = p,
+                purpose: UploadPurpose.avatar,
                 size: 112,
               ),
             ),

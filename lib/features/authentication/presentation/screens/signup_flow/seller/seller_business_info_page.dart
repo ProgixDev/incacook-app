@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/data/models/day_of_week.dart';
 import 'package:incacook/features/authentication/data/models/time_range.dart';
@@ -65,6 +66,7 @@ class SellerBusinessInfoPage extends GetView<SignupFlowController> {
                   path: controller.restaurantFacadeUrl.value,
                   onChanged: (p) =>
                       controller.restaurantFacadeUrl.value = p,
+                  purpose: UploadPurpose.sellerFacade,
                   variant: SignupImagePickerVariant.rectangular,
                   size: 160,
                 )),

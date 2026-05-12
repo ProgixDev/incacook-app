@@ -111,9 +111,9 @@ Map<String, dynamic> _$SellerProfileToJson(_SellerProfile instance) =>
     };
 
 const _$SellerCategoryEnumMap = {
-  SellerCategory.faitMaison: 'faitMaison',
-  SellerCategory.traiteur: 'traiteur',
-  SellerCategory.restaurant: 'restaurant',
+  SellerCategory.faitMaison: 'FAIT_MAISON',
+  SellerCategory.traiteur: 'TRAITEUR',
+  SellerCategory.restaurant: 'RESTAURANT',
 };
 
 _SentimentTag _$SentimentTagFromJson(Map<String, dynamic> json) =>
