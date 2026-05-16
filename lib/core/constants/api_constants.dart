@@ -13,7 +13,8 @@ class ApiConstants {
 
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:3001',
+    // defaultValue: 'http://127.0.0.1:3001',
+    defaultValue: 'https://incacook-api-production.up.railway.app',
   );
 
   static const String apiPrefix = '/v1';
