@@ -11,7 +11,7 @@ class AddProductController extends GetxController {
 
   final SellerCategory sellerCategory;
 
-  static const int maxPhotos = 4;
+  static const int maxPhotos = 3;
   static const double faitMaisonPriceCap = 4.5;
 
   //* Text fields — listeners drive reactive validation via [_textVersion].
@@ -19,6 +19,7 @@ class AddProductController extends GetxController {
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
   final portionsController = TextEditingController();
+  final prepMinutesController = TextEditingController();
   final otherAllergenController = TextEditingController();
 
   //* Reactive state.
@@ -44,6 +45,7 @@ class AddProductController extends GetxController {
     descriptionController.addListener(_onTextChanged);
     priceController.addListener(_onTextChanged);
     portionsController.addListener(_onTextChanged);
+    prepMinutesController.addListener(_onTextChanged);
     otherAllergenController.addListener(_onTextChanged);
   }
 
@@ -55,6 +57,7 @@ class AddProductController extends GetxController {
     descriptionController.dispose();
     priceController.dispose();
     portionsController.dispose();
+    prepMinutesController.dispose();
     otherAllergenController.dispose();
     super.onClose();
   }
@@ -81,6 +84,8 @@ class AddProductController extends GetxController {
     if (isFaitMaison && price > faitMaisonPriceCap) return false;
     final portions = int.tryParse(portionsController.text);
     if (portions == null || portions <= 0) return false;
+    final prepMinutes = int.tryParse(prepMinutesController.text);
+    if (prepMinutes == null || prepMinutes < 0) return false;
     // Allergens are optional: an empty list means the listing declares
     // none. The free-text otherAllergenController is also optional.
     if (!onSite.value && !delivery.value) return false;

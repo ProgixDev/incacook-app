@@ -77,9 +77,9 @@ const _$SellerCategoryEnumMap = {
 };
 
 const _$FulfillmentEnumMap = {
-  Fulfillment.delivery: 'delivery',
-  Fulfillment.pickup: 'pickup',
-  Fulfillment.both: 'both',
+  Fulfillment.delivery: 'DELIVERY',
+  Fulfillment.pickup: 'PICKUP',
+  Fulfillment.both: 'BOTH',
 };
 
 const _$DietaryTagEnumMap = {
@@ -104,6 +104,7 @@ const _$DishTypeEnumMap = {
   DishType.plat: 'PLAT',
   DishType.dessert: 'DESSERT',
   DishType.cocktailDinatoire: 'COCKTAIL_DINATOIRE',
+  DishType.boisson: 'BOISSON',
 };
 
 const _$AllergenEnumMap = {

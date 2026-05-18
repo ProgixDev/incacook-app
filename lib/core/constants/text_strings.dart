@@ -333,6 +333,7 @@ class AppTexts {
   static const String dishMain = "Plat";
   static const String dishDessert = "Desserts";
   static const String dishCocktail = "Cocktail dinatoire";
+  static const String dishDrink = "Boisson";
 
   //* allergens (regulatory declaration on every listing)
   static const String allergenGluten = "Céréales contenant du gluten";

@@ -122,6 +122,12 @@ enum DishType {
     label: AppTexts.dishCocktail,
     iconPath: AppImages.cocktail,
     availableFor: {SellerCategory.traiteur},
+  ),
+  @JsonValue('BOISSON')
+  boisson(
+    label: AppTexts.dishDrink,
+    iconPath: AppImages.cocktail,
+    availableFor: {SellerCategory.traiteur, SellerCategory.restaurant},
   );
 
   const DishType({

@@ -75,6 +75,7 @@ const _$DishTypeEnumMap = {
   DishType.plat: 'PLAT',
   DishType.dessert: 'DESSERT',
   DishType.cocktailDinatoire: 'COCKTAIL_DINATOIRE',
+  DishType.boisson: 'BOISSON',
 };
 
 const _$AllergenEnumMap = {
