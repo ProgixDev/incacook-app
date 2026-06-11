@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
-import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/features/map/presentation/widget/map_pin.dart';
 
@@ -36,7 +36,6 @@ class MapListingSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
         color: scheme.surface,
@@ -63,12 +62,25 @@ class MapListingSheet extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
-                    child: Image.asset(
-                      listing.imageUrl,
-                      width: 88,
-                      height: 88,
-                      fit: BoxFit.cover,
-                    ),
+                    child: listing.imageUrl.startsWith('http')
+                        ? Image.network(
+                            listing.imageUrl,
+                            width: 88,
+                            height: 88,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => Image.asset(
+                              AppImages.foodTest,
+                              width: 88,
+                              height: 88,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Image.asset(
+                            listing.imageUrl,
+                            width: 88,
+                            height: 88,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   const Gap(AppSizes.md),
                   Expanded(

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
-import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/api_constants.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
@@ -38,11 +37,26 @@ class ProfileUserCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //* avatar — still the placeholder asset; `user.avatarPath` is
-          //  a storage path that needs to be resolved to a signed URL
-          //  via UploadsRepository before it can render. Wire when the
-          //  profile-edit flow lands.
-          CustomCircularImage(image: AppImages.profilePic, size: 88),
+          //* avatar — shows the photo the user registered with (buyer/driver
+          //  via `avatarPath`, seller via `sellerProfile.profilePhotoUrl`),
+          //  resolved to a public URL. Falls back to a generic default
+          //  avatar when no photo was provided (or it fails to load).
+          Obx(() {
+            final u = userController.user.value;
+            final url = _resolveAvatarUrl(
+              u?.avatarPath ?? u?.sellerAccount?.profilePhotoUrl,
+            );
+            if (url == null) return const _DefaultAvatar(size: 88);
+            return ClipOval(
+              child: Image.network(
+                url,
+                width: 88,
+                height: 88,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const _DefaultAvatar(size: 88),
+              ),
+            );
+          }),
           const Gap(AppSizes.md),
 
           //* name + email — bound to UserController. Empty string while
@@ -99,6 +113,42 @@ class ProfileUserCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Resolves a stored avatar value to a fetchable URL. Storage object keys
+/// go through [ApiConstants.publicImageUrl]; already-absolute URLs pass
+/// through untouched. Returns null for empty/missing values.
+String? _resolveAvatarUrl(String? value) {
+  if (value == null || value.isEmpty) return null;
+  if (value.startsWith('http')) return value;
+  return ApiConstants.publicImageUrl(value);
+}
+
+/// Generic placeholder shown when a user has no profile photo — a person
+/// silhouette on a soft tinted circle.
+class _DefaultAvatar extends StatelessWidget {
+  const _DefaultAvatar({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: scheme.primary.withValues(alpha: 0.10),
+      ),
+      alignment: Alignment.center,
+      child: Icon(
+        Iconsax.user,
+        size: size * 0.5,
+        color: scheme.primary.withValues(alpha: 0.65),
       ),
     );
   }

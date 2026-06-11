@@ -31,6 +31,7 @@ _UpdateListingRequest _$UpdateListingRequestFromJson(
       ?.map((e) => $enumDecode(_$AllergenEnumMap, e))
       .toList(),
   otherAllergens: json['otherAllergens'] as String?,
+  declaresNoAllergens: json['declaresNoAllergens'] as bool?,
   isAvailable: json['isAvailable'] as bool?,
   isVeg: json['isVeg'] as bool?,
   menuCategory: json['menuCategory'] as String?,
@@ -63,6 +64,7 @@ Map<String, dynamic> _$UpdateListingRequestToJson(
       .toList(),
   'allergens': ?instance.allergens?.map((e) => _$AllergenEnumMap[e]!).toList(),
   'otherAllergens': ?instance.otherAllergens,
+  'declaresNoAllergens': ?instance.declaresNoAllergens,
   'isAvailable': ?instance.isAvailable,
   'isVeg': ?instance.isVeg,
   'menuCategory': ?instance.menuCategory,

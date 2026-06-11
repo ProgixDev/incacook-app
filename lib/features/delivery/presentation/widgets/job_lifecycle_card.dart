@@ -6,9 +6,11 @@ import 'package:intl/intl.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/services/realtime/chat_message.dart';
 import 'package:incacook/core/utils/geo/distance.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/core/constants/text_strings.dart' show AppTexts;
+import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 import 'package:incacook/features/delivery/controllers/delivery_route_controller.dart';
 import 'package:incacook/features/delivery/data/issue_catalog.dart';
 import 'package:incacook/features/delivery/presentation/widgets/issue_report_sheet.dart';
@@ -84,6 +86,20 @@ class _Card extends StatelessWidget {
               ],
               const Gap(AppSizes.md),
               _OrderMeta(job: job),
+              // Chat with the client (livreur ↔ buyer), scoped to this
+              // order. The server derives the buyer from the order id;
+              // hidden once the job reaches a terminal stage.
+              if (!spec.isTerminal) ...[
+                const Gap(AppSizes.md),
+                _ContactClientButton(
+                  onPressed: () => ChatNavigator.openBuyerDelivery(
+                    context: context,
+                    peerName: 'Client',
+                    orderId: job.id,
+                    myRole: ParticipantRole.delivery,
+                  ),
+                ),
+              ],
               const Gap(AppSizes.lg),
               _PrimaryCta(
                 spec: spec,
@@ -111,7 +127,19 @@ class _Card extends StatelessWidget {
     final next = spec.nextStage;
     if (next == null) return;
     if (spec.requiresQrHandoff) {
-      final confirmed = await showQrHandoffModal(context);
+      // Encode the handoff target in the QR — the seller (at pickup)
+      // or buyer (at dropoff) would scan it; on emulator the modal's
+      // Continue button is the tap-instead-of-scan fallback.
+      final orderId = route.currentJob.value?.id ?? 'unknown';
+      final action = next == OrderStage.delivered ? 'delivery' : 'pickup';
+      final title = next == OrderStage.delivered
+          ? 'Montre le code au client'
+          : 'Montre le code au vendeur';
+      final confirmed = await showQrHandoffModal(
+        context,
+        qrData: 'incacook://handoff?orderId=$orderId&action=$action',
+        title: title,
+      );
       if (confirmed != true) return;
     }
     await route.advanceStage(next);
@@ -444,6 +472,34 @@ class _PrimaryCta extends StatelessWidget {
         ),
         icon: const Icon(Iconsax.arrow_right_3, size: 18),
         label: Text(spec.cta),
+      ),
+    );
+  }
+}
+
+class _ContactClientButton extends StatelessWidget {
+  const _ContactClientButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          textStyle: textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        icon: const Icon(Iconsax.message, size: 18),
+        label: const Text('Discuter avec le client'),
       ),
     );
   }

@@ -93,37 +93,43 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
               borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg + 4),
             ),
             padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _SheetTile(
-                  icon: Icons.photo_camera_outlined,
-                  label: AppTexts.signupImagePickerCamera,
-                  onTap: () {
-                    Navigator.of(ctx).pop();
-                    _pickAndUpload(ImageSource.camera);
-                  },
-                ),
-                if (!widget.cameraOnly)
+            // Transparent Material so each ListTile paints its background and
+            // ink ripple above the container's surface color instead of behind
+            // it (the container's DecoratedBox would otherwise hide them).
+            child: Material(
+              type: MaterialType.transparency,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   _SheetTile(
-                    icon: Icons.photo_library_outlined,
-                    label: AppTexts.signupImagePickerGallery,
+                    icon: Icons.photo_camera_outlined,
+                    label: AppTexts.signupImagePickerCamera,
                     onTap: () {
                       Navigator.of(ctx).pop();
-                      _pickAndUpload(ImageSource.gallery);
+                      _pickAndUpload(ImageSource.camera);
                     },
                   ),
-                if (_hasImage)
-                  _SheetTile(
-                    icon: Icons.delete_outline,
-                    label: AppTexts.signupImagePickerRemove,
-                    destructive: true,
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      _clear();
-                    },
-                  ),
-              ],
+                  if (!widget.cameraOnly)
+                    _SheetTile(
+                      icon: Icons.photo_library_outlined,
+                      label: AppTexts.signupImagePickerGallery,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        _pickAndUpload(ImageSource.gallery);
+                      },
+                    ),
+                  if (_hasImage)
+                    _SheetTile(
+                      icon: Icons.delete_outline,
+                      label: AppTexts.signupImagePickerRemove,
+                      destructive: true,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        _clear();
+                      },
+                    ),
+                ],
+              ),
             ),
           ),
         );

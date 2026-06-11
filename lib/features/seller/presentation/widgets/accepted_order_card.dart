@@ -128,6 +128,13 @@ class _StatusBadge extends StatelessWidget {
         scheme.onInverseSurface,
         AppTexts.sellerOrdersFilterPreparing,
       ),
+      AcceptedOrderStatus.completed => (
+        //? muted surface for historic orders — signals "finished, no
+        //? further action" without competing visually with active badges.
+        scheme.surfaceContainerHighest,
+        scheme.onSurfaceVariant,
+        AppTexts.sellerOrdersFilterCompleted,
+      ),
     };
 
     return Container(

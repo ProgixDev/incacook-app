@@ -4,15 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/listing.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/core/widgets/misc/drag_handle.dart';
+import 'package:incacook/features/legal/presentation/legal_terms_screen.dart';
 import 'package:incacook/features/seller/controllers/add_product_controller.dart';
 
 /// Bottom sheet for creating a new product. State lives in
@@ -22,21 +25,32 @@ class AddProductSheet extends StatefulWidget {
   const AddProductSheet({
     super.key,
     this.sellerCategory = SellerCategory.faitMaison,
+    this.existing,
   });
 
   final SellerCategory sellerCategory;
+
+  /// When non-null the sheet opens in **edit mode**: the form is pre-filled
+  /// from this listing and Save sends `PATCH /v1/listings/:id` instead of
+  /// creating a new one. Returns `true` from `show()` on a successful save
+  /// so callers (e.g. the detail screen) can refresh.
+  final Listing? existing;
 
   /// GetX tag — sheet-scoped so we can `Get.delete` the controller on close
   /// without colliding with any other instance that might be live.
   static const _tag = 'add-product-sheet';
 
-  static Future<void> show(
+  static Future<bool?> show(
     BuildContext context, {
     SellerCategory sellerCategory = SellerCategory.faitMaison,
+    Listing? existing,
   }) {
-    return showBlurredModalBottomSheet<void>(
+    return showBlurredModalBottomSheet<bool>(
       context: context,
-      builder: (_) => AddProductSheet(sellerCategory: sellerCategory),
+      builder: (_) => AddProductSheet(
+        sellerCategory: sellerCategory,
+        existing: existing,
+      ),
     );
   }
 
@@ -51,7 +65,10 @@ class _AddProductSheetState extends State<AddProductSheet> {
   void initState() {
     super.initState();
     _controller = Get.put(
-      AddProductController(sellerCategory: widget.sellerCategory),
+      AddProductController(
+        sellerCategory: widget.sellerCategory,
+        existing: widget.existing,
+      ),
       tag: AddProductSheet._tag,
     );
   }
@@ -113,13 +130,31 @@ class _AddProductSheetState extends State<AddProductSheet> {
                   const Gap(AppSizes.spaceBtwSections),
                   PickupModeSection(controller: _controller),
                   const Gap(AppSizes.spaceBtwSections),
+                  // CGU/CGV consent — required to publish a NEW dish (the
+                  // publish button is gated on it). Hidden when editing.
+                  if (!_controller.isEditing) ...[
+                    Obx(
+                      () => TermsConsentTile(
+                        value: _controller.termsAccepted.value,
+                        onChanged: (v) => _controller.termsAccepted.value = v,
+                      ),
+                    ),
+                    const Gap(AppSizes.spaceBtwSections),
+                  ],
                 ],
               ),
             ),
             Obx(
               () => _SaveBar(
-                enabled: _controller.canSubmit,
-                onSave: () => Navigator.of(context).pop(),
+                enabled: _controller.canSubmit && !_controller.isSubmitting.value,
+                loading: _controller.isSubmitting.value,
+                ctaLabel: _controller.isEditing
+                    ? AppTexts.addProductEditCta
+                    : AppTexts.addProductSaveCta,
+                onSave: () async {
+                  final ok = await _controller.submit();
+                  if (ok && context.mounted) Navigator.of(context).pop(true);
+                },
               ),
             ),
           ],
@@ -139,6 +174,12 @@ class PhotosSection extends StatelessWidget {
 
   final AddProductController controller;
 
+  Future<void> _onPick(BuildContext context, int index) async {
+    final source = await _showPhotoSourceSheet(context);
+    if (source == null) return;
+    await controller.pickPhoto(index, source);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -152,7 +193,7 @@ class PhotosSection extends StatelessWidget {
         Obx(
           () => _PhotoGrid(
             photos: controller.photos.toList(),
-            onAdd: controller.addPhoto,
+            onPick: (i) => _onPick(context, i),
             onRemove: controller.removePhoto,
           ),
         ),
@@ -217,9 +258,24 @@ class BaseInfoSection extends StatelessWidget {
             ),
           ],
         ),
+        const Gap(AppSizes.sm + 2),
+        _FrostedField(
+          controller: controller.prepMinutesController,
+          icon: Iconsax.clock,
+          label: AppTexts.addProductFieldPrepMinutes,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
         if (controller.isFaitMaison) ...[
           const Gap(AppSizes.sm),
-          const _HelperNote(text: AppTexts.addProductPriceCapNote),
+          //? Reactive: once the price crosses the €4.50 fait-maison cap we
+          //? swap the neutral hint for a red error so the rule is explained
+          //? rather than silently blocking the publish button.
+          Obx(
+            () => controller.priceCapExceeded
+                ? const _ErrorNote(text: AppTexts.addProductPriceCapError)
+                : const _HelperNote(text: AppTexts.addProductPriceCapNote),
+          ),
         ],
       ],
     );
@@ -327,17 +383,34 @@ class AllergensSection extends StatelessWidget {
                   selected: controller.allergens.contains(a),
                   onTap: () => controller.toggleAllergen(a),
                 ),
+              //* "Autres" — reveals a required free-text field.
+              _SelectableChip(
+                label: AppTexts.allergenOther,
+                selected: controller.otherSelected.value,
+                onTap: controller.toggleOtherAllergen,
+              ),
+              //* "Aucun" — explicit "no allergens"; clears all others.
+              _SelectableChip(
+                label: AppTexts.allergenNone,
+                selected: controller.noAllergens.value,
+                onTap: controller.toggleNoAllergens,
+              ),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: AppSizes.sm + 2),
-          child: _FrostedField(
-            controller: controller.otherAllergenController,
-            icon: Iconsax.edit,
-            label: AppTexts.addProductAllergenOtherHint,
-          ),
-        ),
+        //* The free-text precision is only shown (and required) once
+        //* "Autres" is selected.
+        Obx(() {
+          if (!controller.otherSelected.value) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.only(top: AppSizes.sm + 2),
+            child: _FrostedField(
+              controller: controller.otherAllergenController,
+              icon: Iconsax.edit,
+              label: AppTexts.addProductAllergenOtherHint,
+            ),
+          );
+        }),
       ],
     );
   }
@@ -521,6 +594,32 @@ class _HelperNote extends StatelessWidget {
       style: Theme.of(
         context,
       ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+    );
+  }
+}
+
+class _ErrorNote extends StatelessWidget {
+  const _ErrorNote({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Iconsax.warning_2, size: 14, color: BrandColors.error),
+        const Gap(AppSizes.xs),
+        Expanded(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: BrandColors.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -800,12 +899,12 @@ class _PickupOption extends StatelessWidget {
 class _PhotoGrid extends StatelessWidget {
   const _PhotoGrid({
     required this.photos,
-    required this.onAdd,
+    required this.onPick,
     required this.onRemove,
   });
 
-  final List<String?> photos;
-  final ValueChanged<int> onAdd;
+  final List<ProductPhoto> photos;
+  final ValueChanged<int> onPick;
   final ValueChanged<int> onRemove;
 
   @override
@@ -822,8 +921,9 @@ class _PhotoGrid extends StatelessWidget {
             for (int i = 0; i < photos.length; i++)
               _PhotoTile(
                 size: tile,
-                filled: photos[i] != null,
-                onTap: () => photos[i] == null ? onAdd(i) : onRemove(i),
+                photo: photos[i],
+                onPick: () => onPick(i),
+                onRemove: () => onRemove(i),
               ),
           ],
         );
@@ -835,39 +935,131 @@ class _PhotoGrid extends StatelessWidget {
 class _PhotoTile extends StatelessWidget {
   const _PhotoTile({
     required this.size,
-    required this.filled,
-    required this.onTap,
+    required this.photo,
+    required this.onPick,
+    required this.onRemove,
   });
 
   final double size;
-  final bool filled;
-  final VoidCallback onTap;
+  final ProductPhoto photo;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final height = size * 1.2;
+    final radius = BorderRadius.circular(16);
+
+    // Filled slot — show the local preview with a remove affordance.
+    if (photo.file != null) {
+      return SizedBox(
+        width: size,
+        height: height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: radius,
+              child: Image.file(photo.file!, fit: BoxFit.cover),
+            ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Iconsax.close_circle,
+                      color: Colors.white, size: 18),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Edit-mode "kept" slot — we have a committed Supabase path but no local
+    // file. Real network display isn't wired yet, so show an "uploaded"
+    // placeholder with the same remove affordance; the path is still
+    // included in `uploadedImagePaths` until the seller removes it.
+    if (photo.path != null) {
+      return SizedBox(
+        width: size,
+        height: height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            FrostedSurface(
+              borderRadius: radius,
+              tint: scheme.primary.withValues(alpha: 0.12),
+              border: Border.all(
+                color: scheme.primary.withValues(alpha: 0.5),
+                width: 1,
+              ),
+              child: Center(
+                child: Icon(Iconsax.gallery_tick,
+                    color: scheme.primary, size: 26),
+              ),
+            ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Iconsax.close_circle,
+                      color: Colors.white, size: 18),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Empty / uploading / error — a tappable frosted placeholder.
+    final isError = photo.error != null;
     return GestureDetector(
-      onTap: onTap,
+      onTap: photo.uploading ? null : onPick,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: size,
-        height: size * 1.2,
+        height: height,
         child: FrostedSurface(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: radius,
           //? sheet sits on top of a blurred app screenshot, but the sheet
           //? itself is flat — bump the tint so the tile reads as a glass
           //? surface even without varied content directly behind it.
           tint: scheme.onSurface.withValues(alpha: 0.06),
           border: Border.all(
-            color: scheme.outlineVariant.withValues(alpha: 0.6),
+            color: isError
+                ? BrandColors.error.withValues(alpha: 0.6)
+                : scheme.outlineVariant.withValues(alpha: 0.6),
             width: 1,
           ),
           child: Center(
-            child: Icon(
-              filled ? Iconsax.gallery_tick : Iconsax.add,
-              color: filled ? scheme.primary : scheme.onSurfaceVariant,
-              size: 26,
-            ),
+            child: photo.uploading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    isError ? Iconsax.refresh : Iconsax.add,
+                    color: isError ? BrandColors.error : scheme.onSurfaceVariant,
+                    size: 26,
+                  ),
           ),
         ),
       ),
@@ -875,10 +1067,51 @@ class _PhotoTile extends StatelessWidget {
   }
 }
 
+/// Camera-or-gallery chooser for an add-product photo slot. Returns the
+/// selected [ImageSource], or null if dismissed.
+Future<ImageSource?> _showPhotoSourceSheet(BuildContext context) {
+  return showBlurredModalBottomSheet<ImageSource>(
+    context: context,
+    builder: (ctx) {
+      final scheme = Theme.of(ctx).colorScheme;
+      return SafeArea(
+        top: false,
+        // Transparent Material so the ListTiles paint their ink ripple above
+        // the sheet surface instead of behind it.
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Iconsax.camera, color: scheme.onSurface),
+                title: const Text(AppTexts.signupImagePickerCamera),
+                onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(Iconsax.gallery, color: scheme.onSurface),
+                title: const Text(AppTexts.signupImagePickerGallery),
+                onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 class _SaveBar extends StatelessWidget {
-  const _SaveBar({required this.enabled, required this.onSave});
+  const _SaveBar({
+    required this.enabled,
+    required this.onSave,
+    required this.ctaLabel,
+    this.loading = false,
+  });
 
   final bool enabled;
+  final bool loading;
+  final String ctaLabel;
   final VoidCallback onSave;
 
   @override
@@ -896,7 +1129,16 @@ class _SaveBar extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: enabled ? onSave : null,
-            child: const Text(AppTexts.addProductSaveCta),
+            child: loading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(ctaLabel),
           ),
         ),
       ),

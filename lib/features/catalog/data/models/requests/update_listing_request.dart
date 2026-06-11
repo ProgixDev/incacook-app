@@ -31,6 +31,9 @@ abstract class UpdateListingRequest with _$UpdateListingRequest {
     List<DietaryTag>? dietaryTags,
     List<Allergen>? allergens,
     String? otherAllergens,
+
+    /// Explicit "Aucun" — lets the server accept an empty allergen list.
+    bool? declaresNoAllergens,
     bool? isAvailable,
     bool? isVeg,
     String? menuCategory,

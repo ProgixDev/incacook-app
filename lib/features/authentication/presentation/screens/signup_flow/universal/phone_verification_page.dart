@@ -130,9 +130,11 @@ class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
   }
 
   String _formatPhone(String raw) {
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    if (digits.isEmpty) return AppTexts.signupOtpDefaultPhone;
-    return '+33 $digits';
+    final v = raw.trim();
+    if (v.isEmpty) return AppTexts.signupOtpDefaultPhone;
+    // Full international number → show as typed; else assume French (+33).
+    if (v.startsWith('+')) return v;
+    return '+33 ${v.replaceAll(RegExp(r'\D'), '')}';
   }
 
   String _formatEmail(String raw) {

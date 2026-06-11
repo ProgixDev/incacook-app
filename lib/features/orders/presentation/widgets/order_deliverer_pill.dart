@@ -8,7 +8,21 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 
 class OrderDelivererPill extends StatelessWidget {
-  const OrderDelivererPill({super.key, this.onCallTap, this.onChatTap});
+  const OrderDelivererPill({
+    super.key,
+    required this.name,
+    this.avatarUrl,
+    this.onCallTap,
+    this.onChatTap,
+  });
+
+  /// Real assigned driver's display name. The pill is only shown once a
+  /// driver is assigned, so this is never a placeholder.
+  final String name;
+
+  /// Resolved avatar URL (from the driver's avatarPath); null falls back to
+  /// the default profile asset.
+  final String? avatarUrl;
 
   final VoidCallback? onCallTap;
   final VoidCallback? onChatTap;
@@ -23,7 +37,10 @@ class OrderDelivererPill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CustomCircularImage(image: AppImages.profilePic),
+          CustomCircularImage(
+            image: avatarUrl ?? AppImages.profilePic,
+            isNetworkImage: avatarUrl != null,
+          ),
           const Gap(AppSizes.sm),
 
           //* name + meta
@@ -33,7 +50,7 @@ class OrderDelivererPill extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppTexts.trackingDelivererName,
+                  name,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,

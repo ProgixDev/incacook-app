@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
@@ -38,7 +39,24 @@ class ProductImageHeader extends StatelessWidget {
               controller: pageController,
               itemCount: images.length,
               itemBuilder: (context, index) {
-                return Image.asset(images[index], fit: BoxFit.cover);
+                final src = images[index];
+                // Real backend listings pass http(s) URLs; legacy demo
+                // entries still pass asset keys. The network path falls
+                // back to the placeholder asset on load failure so the
+                // header never reads as empty.
+                if (src.startsWith('http')) {
+                  return Image.network(
+                    src,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) =>
+                        Image.asset(AppImages.foodTest, fit: BoxFit.cover),
+                    loadingBuilder: (ctx, child, progress) {
+                      if (progress == null) return child;
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  );
+                }
+                return Image.asset(src, fit: BoxFit.cover);
               },
             ),
           ),

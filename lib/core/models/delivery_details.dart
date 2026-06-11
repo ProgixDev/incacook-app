@@ -13,6 +13,9 @@ abstract class DeliveryDetails with _$DeliveryDetails {
     required String instructions,
     required DeliveryTiming timing,
     DateTime? scheduledAt,
+    /// Buyer's display name — shown to the driver as the recipient at
+    /// the dropoff. Null when not resolved (e.g. buyer-side views).
+    String? recipientName,
   }) = _DeliveryDetails;
 
   factory DeliveryDetails.fromJson(Map<String, dynamic> json) =>

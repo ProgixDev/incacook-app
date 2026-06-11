@@ -26,6 +26,12 @@ migrate_working_dir/
 # Per-developer dart-define values (e.g. Mapbox public token). Keep secrets out of git.
 .vscode/dart_defines.json
 
+# Environment files (tokens, keys). Never commit real values; .env.example is tracked.
+.env
+*.env
+.env.*
+!.env.example
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

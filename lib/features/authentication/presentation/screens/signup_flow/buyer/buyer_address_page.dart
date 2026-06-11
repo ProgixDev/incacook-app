@@ -3,8 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_address_picker.dart';
+import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_text_field.dart';
 
@@ -29,6 +31,16 @@ class _BuyerAddressPageState extends State<BuyerAddressPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //* Optional profile photo — persisted to the User row on Continue.
+          Center(
+            child: Obx(() => SignupImagePicker(
+                  path: controller.avatarPath.value,
+                  purpose: UploadPurpose.avatar,
+                  helper: 'Photo de profil (optionnel)',
+                  onChanged: (path) => controller.avatarPath.value = path,
+                )),
+          ),
+          const Gap(AppSizes.lg),
           Obx(() => SignupAddressPicker(
                 value: controller.deliveryAddress.value,
                 onChanged: (a) => controller.deliveryAddress.value = a,

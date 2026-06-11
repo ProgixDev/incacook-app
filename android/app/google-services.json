@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "723681508646",
+    "project_id": "incacook-d9601",
+    "storage_bucket": "incacook-d9601.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723681508646:android:c1864cfaf00aff8a7955e7",
+        "android_client_info": {
+          "package_name": "com.progix.incacook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9nhBQg88I3Kw2or8j7kHkdzM5hiJ_33g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

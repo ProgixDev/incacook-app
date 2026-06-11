@@ -1,0 +1,355 @@
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
+
+import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/network/api_response.dart';
+import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/wallet/data/wallet_models.dart';
+import 'package:incacook/features/wallet/data/wallet_repository.dart';
+
+/// Seller / driver wallet: real balance from `GET /v1/wallet/me`, ledger, and a
+/// withdrawal request (enabled only when available >= the server minimum, 50 €).
+class WalletScreen extends StatefulWidget {
+  const WalletScreen({super.key});
+
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  late Future<WalletSummary> _future;
+  bool _withdrawing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = WalletRepository().getSummary();
+  }
+
+  Future<void> _refresh() async {
+    final next = WalletRepository().getSummary();
+    setState(() => _future = next);
+    await next;
+  }
+
+  Future<void> _withdraw() async {
+    setState(() => _withdrawing = true);
+    try {
+      await WalletRepository().withdraw();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Demande de retrait envoyée.')),
+      );
+      await _refresh();
+    } on ApiFailure catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('$e')));
+    } finally {
+      if (mounted) setState(() => _withdrawing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Scaffold(
+      appBar: CustomAppBar(
+        showBackArrow: true,
+        title: Text(
+          'Portefeuille',
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: FutureBuilder<WalletSummary>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return _ScrollMessage(
+                child: _ErrorState(
+                  error: '${snapshot.error}',
+                  onRetry: _refresh,
+                ),
+              );
+            }
+            final s = snapshot.data!;
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(AppSizes.md),
+              children: [
+                _BalanceCard(summary: s),
+                const Gap(AppSizes.md),
+                _WithdrawSection(
+                  summary: s,
+                  withdrawing: _withdrawing,
+                  onWithdraw: _withdraw,
+                ),
+                const Gap(AppSizes.lg),
+                Text(
+                  'Transactions',
+                  style:
+                      textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const Gap(AppSizes.sm),
+                if (s.entries.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+                    child: Text(
+                      'Aucune transaction pour le moment.',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                else
+                  for (final e in s.entries) ...[
+                    _EntryTile(entry: e),
+                    const Gap(AppSizes.sm),
+                  ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _BalanceCard extends StatelessWidget {
+  const _BalanceCard({required this.summary});
+
+  final WalletSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final currency = NumberFormat.currency(locale: 'fr_FR', symbol: '€');
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      padding: const EdgeInsets.all(AppSizes.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Solde disponible',
+            style: textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Gap(AppSizes.xs),
+          Text(
+            currency.format(summary.availableEuros),
+            style: textTheme.displaySmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: scheme.onSurface,
+            ),
+          ),
+          const Gap(AppSizes.md),
+          Row(
+            children: [
+              _MiniStat(
+                label: 'En attente',
+                value: currency.format(summary.heldEuros),
+              ),
+              const Gap(AppSizes.lg),
+              _MiniStat(
+                label: 'Déjà versé',
+                value: currency.format(summary.paidOutEuros),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  const _MiniStat({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
+        ),
+        const Gap(2),
+        Text(
+          value,
+          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+}
+
+class _WithdrawSection extends StatelessWidget {
+  const _WithdrawSection({
+    required this.summary,
+    required this.withdrawing,
+    required this.onWithdraw,
+  });
+
+  final WalletSummary summary;
+  final bool withdrawing;
+  final VoidCallback onWithdraw;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final enabled = summary.canWithdraw && !withdrawing;
+    final minLabel = summary.minWithdrawalEuros.toStringAsFixed(0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ElevatedButton(
+          onPressed: enabled ? onWithdraw : null,
+          child: withdrawing
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Demander un retrait'),
+        ),
+        if (!summary.canWithdraw) ...[
+          const Gap(AppSizes.xs),
+          Text(
+            'Retrait disponible à partir de $minLabel €',
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _EntryTile extends StatelessWidget {
+  const _EntryTile({required this.entry});
+
+  final WalletEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final currency = NumberFormat.currency(locale: 'fr_FR', symbol: '€');
+    final date = DateFormat('d MMM yyyy', 'fr_FR').format(entry.createdAt);
+    final isDebit = entry.amountCents < 0;
+    final amountColor = isDebit
+        ? scheme.error
+        : const Color(0xFF1FA463); // credit green (semantic)
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.label,
+                  style:
+                      textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const Gap(2),
+                Text(
+                  '$date · ${_statusLabel(entry.status)}',
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: scheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '${isDebit ? '' : '+'}${currency.format(entry.amountEuros)}',
+            style: textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800, color: amountColor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'AVAILABLE':
+        return 'Disponible';
+      case 'PENDING':
+        return 'En attente';
+      case 'HELD':
+        return 'Bloqué';
+      case 'PAID_OUT':
+        return 'Versé';
+      case 'CANCELLED':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  }
+}
+
+class _ScrollMessage extends StatelessWidget {
+  const _ScrollMessage({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        const SizedBox(height: 120),
+        Padding(
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Center(child: child),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.error, required this.onRetry});
+
+  final String error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.error_outline, color: scheme.error, size: 40),
+        const Gap(AppSizes.sm),
+        Text(error, textAlign: TextAlign.center),
+        const Gap(AppSizes.md),
+        OutlinedButton(onPressed: onRetry, child: const Text('Réessayer')),
+      ],
+    );
+  }
+}

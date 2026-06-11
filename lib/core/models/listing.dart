@@ -78,6 +78,11 @@ abstract class Listing with _$Listing {
     bool? inRange,
     double? rating,
     int? reviewCount,
+
+    //* Seller pickup coordinates — buyer-feed only, used to place real
+    //* map pins. Null when the seller has no geocoded location.
+    double? lat,
+    double? lng,
   }) = _Listing;
 
   factory Listing.fromJson(Map<String, dynamic> json) =>

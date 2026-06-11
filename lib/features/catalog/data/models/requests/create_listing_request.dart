@@ -35,6 +35,9 @@ abstract class CreateListingRequest with _$CreateListingRequest {
     @Default(<DietaryTag>[]) List<DietaryTag> dietaryTags,
     @Default(<Allergen>[]) List<Allergen> allergens,
     String? otherAllergens,
+
+    /// Explicit "Aucun" — lets the server accept an empty allergen list.
+    @Default(false) bool declaresNoAllergens,
     bool? isAvailable,
     bool? isVeg,
     String? menuCategory,
@@ -42,6 +45,9 @@ abstract class CreateListingRequest with _$CreateListingRequest {
     required int prepMinutes,
     DateTime? expiresAt,
     @Default(<ListingExtraRequest>[]) List<ListingExtraRequest> extras,
+
+    /// Seller's CGU/CGV consent at publication (server requires `true`).
+    @Default(false) bool termsAccepted,
   }) = _CreateListingRequest;
 
   factory CreateListingRequest.fromJson(Map<String, dynamic> json) =>

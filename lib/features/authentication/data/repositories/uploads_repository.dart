@@ -54,7 +54,7 @@ class UploadsRepository extends GetxService {
   }) async {
     try {
       final response = await _rawDio.put<dynamic>(
-        uploadUrl,
+        _reachableUploadUrl(uploadUrl),
         data: Stream.fromIterable([bytes]),
         options: Options(
           headers: {
@@ -76,6 +76,28 @@ class UploadsRepository extends GetxService {
         statusCode: e.response?.statusCode ?? 0,
       );
     }
+  }
+
+  /// Loopback hosts that are only reachable from the machine running the
+  /// backend — never from an emulator or a physical device.
+  static const _loopbackHosts = {'127.0.0.1', 'localhost', '0.0.0.0', '::1'};
+
+  /// In local dev the signed Supabase URL is built from the backend's
+  /// `SUPABASE_URL`, a loopback host (e.g. `127.0.0.1:54331`). That host is
+  /// unreachable from the device — on the Android emulator `127.0.0.1` is the
+  /// emulator itself, so the PUT is refused. When the app talks to the backend
+  /// through a non-loopback host (`10.0.2.2` on the emulator, a LAN IP on a
+  /// real device), point the upload at that same host, keeping the storage
+  /// port and signing query intact. Production URLs (`*.supabase.co`) aren't
+  /// loopback, so they pass through untouched.
+  String _reachableUploadUrl(String uploadUrl) {
+    final target = Uri.parse(uploadUrl);
+    if (!_loopbackHosts.contains(target.host)) return uploadUrl;
+
+    final apiHost = Uri.parse(ApiConstants.baseUrl).host;
+    if (_loopbackHosts.contains(apiHost)) return uploadUrl; // e.g. iOS simulator
+
+    return target.replace(host: apiHost).toString();
   }
 
   /// Convenience that does steps 1 + 2 and returns the storage path

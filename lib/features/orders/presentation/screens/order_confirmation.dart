@@ -19,12 +19,17 @@ import 'package:incacook/features/orders/presentation/screens/order_tracking.dar
 class OrderConfirmationScreen extends StatefulWidget {
   const OrderConfirmationScreen({
     super.key,
+    required this.orderId,
     required this.totalAmount,
     required this.selection,
     required this.options,
     this.deliveryDetails,
   });
 
+  /// Server-issued order id (ULID) from `POST /v1/orders`. Threaded
+  /// through to the tracking screen so it can subscribe to the live
+  /// driver-position socket for this delivery.
+  final String orderId;
   final double totalAmount;
   final FulfillmentSelection selection;
   final FulfillmentOptions options;
@@ -79,7 +84,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
   void _goToTracking() {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Get.to<void>(() => const OrderTrackingScreen());
+    Get.to<void>(() => OrderTrackingScreen(orderId: widget.orderId));
   }
 
   void _goHome() {

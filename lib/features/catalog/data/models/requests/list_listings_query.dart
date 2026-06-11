@@ -37,6 +37,7 @@ class ListListingsQuery {
     this.minPriceCents,
     this.maxPriceCents,
     this.maxDistanceKm,
+    this.inStockOnly,
     this.search,
     this.lat,
     this.lng,
@@ -55,6 +56,9 @@ class ListListingsQuery {
   final int? minPriceCents;
   final int? maxPriceCents;
   final double? maxDistanceKm;
+
+  /// When true, the server hides sold-out listings (`portionsLeft = 0`).
+  final bool? inStockOnly;
   final String? search;
   final double? lat;
   final double? lng;
@@ -87,6 +91,7 @@ class ListListingsQuery {
     if (maxDistanceKm != null) {
       params['maxDistanceKm'] = maxDistanceKm!.toStringAsFixed(1);
     }
+    if (inStockOnly == true) params['inStockOnly'] = true;
     if (search != null && search!.isNotEmpty) params['search'] = search;
     if (lat != null) params['lat'] = lat;
     if (lng != null) params['lng'] = lng;

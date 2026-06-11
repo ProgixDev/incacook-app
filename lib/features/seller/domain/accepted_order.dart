@@ -1,4 +1,4 @@
-enum AcceptedOrderStatus { readyToPickup, preparing }
+enum AcceptedOrderStatus { readyToPickup, preparing, completed }
 
 class AcceptedOrder {
   const AcceptedOrder({

@@ -60,6 +60,8 @@ _Listing _$ListingFromJson(Map<String, dynamic> json) => _Listing(
   inRange: json['inRange'] as bool?,
   rating: (json['rating'] as num?)?.toDouble(),
   reviewCount: (json['reviewCount'] as num?)?.toInt(),
+  lat: (json['lat'] as num?)?.toDouble(),
+  lng: (json['lng'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$ListingToJson(_Listing instance) => <String, dynamic>{
@@ -96,6 +98,8 @@ Map<String, dynamic> _$ListingToJson(_Listing instance) => <String, dynamic>{
   'inRange': ?instance.inRange,
   'rating': ?instance.rating,
   'reviewCount': ?instance.reviewCount,
+  'lat': ?instance.lat,
+  'lng': ?instance.lng,
 };
 
 const _$CuisineTypeEnumMap = {

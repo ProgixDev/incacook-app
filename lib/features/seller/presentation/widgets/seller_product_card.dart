@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
-import 'package:iconsax/iconsax.dart';
 
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
@@ -135,7 +135,31 @@ class _ProductImage extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(imageUrl, fit: BoxFit.cover),
+            // Real listing images come through as HTTP(S) URLs (resolved
+            // from Supabase storage paths upstream); legacy mock entries
+            // still pass an asset key. On a network failure or while
+            // loading we fall through to the placeholder asset so the
+            // card slot never reads as empty.
+            imageUrl.startsWith('http')
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Image.asset(
+                      AppImages.foodTest,
+                      fit: BoxFit.cover,
+                    ),
+                    loadingBuilder: (ctx, child, progress) {
+                      if (progress == null) return child;
+                      return const Center(
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    },
+                  )
+                : Image.asset(imageUrl, fit: BoxFit.cover),
             // Positioned(
             //   top: 0,
             //   left: 0,
@@ -169,67 +193,6 @@ class _ProductImage extends StatelessWidget {
   }
 }
 
-class _RatingChip extends StatelessWidget {
-  const _RatingChip({required this.rating});
-
-  final double rating;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm, vertical: 4),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.6)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            rating.toStringAsFixed(1),
-            style: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const Gap(2),
-          //? rating star is a regulatory-style accent — brand-stable amber.
-          const Icon(Icons.star_rounded, color: BrandColors.warning, size: 14),
-        ],
-      ),
-    );
-  }
-}
-
-class _VegIndicator extends StatelessWidget {
-  const _VegIndicator({required this.isVeg});
-
-  final bool isVeg;
-
-  @override
-  Widget build(BuildContext context) {
-    //? veg / non-veg dot is a regulatory indicator — brand-stable across
-    //? modes, same convention as the order request quantity pill.
-    final color = isVeg ? BrandColors.success : BrandColors.error;
-    return Container(
-      width: 16,
-      height: 16,
-      decoration: BoxDecoration(
-        border: Border.all(color: color, width: 1.5),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Center(
-        child: Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-      ),
-    );
-  }
-}
-
 class _AvailabilitySwitch extends StatelessWidget {
   const _AvailabilitySwitch({required this.value, required this.onChanged});
 
@@ -252,49 +215,6 @@ class _AvailabilitySwitch extends StatelessWidget {
           inactiveThumbColor: Colors.white,
           trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
         ),
-      ),
-    );
-  }
-}
-
-class _DiscountBadge extends StatelessWidget {
-  const _DiscountBadge({required this.percent});
-
-  final int percent;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    //? disabled treatment when there's no discount keeps the row's vertical
-    //? rhythm without misleading users into thinking 0% is an offer.
-    final hasDiscount = percent > 0;
-    final bg = hasDiscount
-        ? scheme.primary
-        : scheme.primary.withValues(alpha: 0.4);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.sm + 2,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Iconsax.discount_shape, color: scheme.onPrimary, size: 12),
-          const Gap(4),
-          Text(
-            '$percent% OFF',
-            style: textTheme.labelSmall?.copyWith(
-              color: scheme.onPrimary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
       ),
     );
   }

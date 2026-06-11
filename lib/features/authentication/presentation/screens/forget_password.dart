@@ -55,7 +55,7 @@ class ForgetPasswordScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: controller.sendPasswordResetEmail,
                   child: const Text(AppTexts.submit),
                 ),
               ),

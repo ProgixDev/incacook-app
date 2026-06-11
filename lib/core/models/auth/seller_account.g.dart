@@ -6,37 +6,39 @@ part of 'seller_account.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_SellerAccount _$SellerAccountFromJson(Map<String, dynamic> json) =>
-    _SellerAccount(
-      category: $enumDecodeNullable(_$SellerCategoryEnumMap, json['category']),
-      displayName: json['displayName'] as String?,
-      bio: json['bio'] as String?,
-      profilePhotoUrl: json['profilePhotoUrl'] as String?,
-      dateOfBirth: json['dateOfBirth'] as String?,
-      neighborhood: json['neighborhood'] as String?,
-      deliveryRadiusKm: (json['deliveryRadiusKm'] as num?)?.toInt(),
-      deliveryFeeCents: (json['deliveryFeeCents'] as num?)?.toInt(),
-      prepMinMinutes: (json['prepMinMinutes'] as num?)?.toInt(),
-      prepMaxMinutes: (json['prepMaxMinutes'] as num?)?.toInt(),
-      hygieneCommitment: json['hygieneCommitment'] as bool?,
-      faitMaisonCommitment: json['faitMaisonCommitment'] as bool?,
-      business: json['business'] == null
-          ? null
-          : SellerBusinessRecord.fromJson(
-              json['business'] as Map<String, dynamic>,
-            ),
-      cuisines:
-          (json['cuisines'] as List<dynamic>?)
-              ?.map((e) => $enumDecode(_$CuisineTypeEnumMap, e))
-              .toList() ??
-          const <CuisineType>[],
-      dishTypes:
-          (json['dishTypes'] as List<dynamic>?)
-              ?.map((e) => $enumDecode(_$DishTypeEnumMap, e))
-              .toList() ??
-          const <DishType>[],
-      canList: json['canList'] as bool? ?? false,
-    );
+_SellerAccount _$SellerAccountFromJson(
+  Map<String, dynamic> json,
+) => _SellerAccount(
+  category: $enumDecodeNullable(_$SellerCategoryEnumMap, json['category']),
+  displayName: json['displayName'] as String?,
+  bio: json['bio'] as String?,
+  profilePhotoUrl: json['profilePhotoUrl'] as String?,
+  dateOfBirth: json['dateOfBirth'] as String?,
+  neighborhood: json['neighborhood'] as String?,
+  deliveryRadiusKm: (json['deliveryRadiusKm'] as num?)?.toInt(),
+  deliveryFeeCents: (json['deliveryFeeCents'] as num?)?.toInt(),
+  prepMinMinutes: (json['prepMinMinutes'] as num?)?.toInt(),
+  prepMaxMinutes: (json['prepMaxMinutes'] as num?)?.toInt(),
+  hygieneCommitment: json['hygieneCommitment'] as bool?,
+  faitMaisonCommitment: json['faitMaisonCommitment'] as bool?,
+  business: json['business'] == null
+      ? null
+      : SellerBusinessRecord.fromJson(json['business'] as Map<String, dynamic>),
+  cuisines:
+      (json['cuisines'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$CuisineTypeEnumMap, e))
+          .toList() ??
+      const <CuisineType>[],
+  dishTypes:
+      (json['dishTypes'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$DishTypeEnumMap, e))
+          .toList() ??
+      const <DishType>[],
+  canList: json['canList'] as bool? ?? false,
+  subscriptionStatus: json['subscriptionStatus'] as String? ?? 'NONE',
+  subscriptionActive: json['subscriptionActive'] as bool? ?? false,
+  subscriptionCurrentPeriodEnd: json['subscriptionCurrentPeriodEnd'] as String?,
+);
 
 Map<String, dynamic> _$SellerAccountToJson(
   _SellerAccount instance,
@@ -57,6 +59,9 @@ Map<String, dynamic> _$SellerAccountToJson(
   'cuisines': instance.cuisines.map((e) => _$CuisineTypeEnumMap[e]!).toList(),
   'dishTypes': instance.dishTypes.map((e) => _$DishTypeEnumMap[e]!).toList(),
   'canList': instance.canList,
+  'subscriptionStatus': instance.subscriptionStatus,
+  'subscriptionActive': instance.subscriptionActive,
+  'subscriptionCurrentPeriodEnd': ?instance.subscriptionCurrentPeriodEnd,
 };
 
 const _$SellerCategoryEnumMap = {

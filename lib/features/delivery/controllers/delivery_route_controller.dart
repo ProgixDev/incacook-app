@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:get/get.dart';
 
+import 'package:incacook/core/enums/order_stage.dart';
+import 'package:incacook/core/models/order_detail.dart';
 import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/map/mapbox_directions_client.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/core/utils/geo/distance.dart';
-import 'package:incacook/core/models/order_detail.dart';
-import 'package:incacook/core/enums/order_stage.dart';
+import 'package:incacook/features/authentication/data/repositories/drivers_repository.dart';
+import 'package:incacook/features/delivery/data/deliveries_repository.dart';
 
 /// Owns the active delivery's route state and the position-driven re-fetch
 /// logic. Created when the delivery screen mounts; auto-disposed when the
@@ -62,28 +66,71 @@ class DeliveryRouteController extends GetxController {
   static const double _offRouteThresholdMeters = 50;
   static const int _offRouteHitsBeforeReroute = 3;
 
+  //* Location-push throttle. Push at most once per [_minPushIntervalMs],
+  //* and only when the driver has moved at least [_minPushDistanceM] OR
+  //* it's been [_keepaliveMs] since the last push (so a stopped driver
+  //* still emits a heartbeat).
+  static const int _minPushIntervalMs = 3000;
+  static const double _minPushDistanceM = 10;
+  static const int _keepaliveMs = 15000;
+
   int _offRouteHits = 0;
   bool _refetching = false;
   Worker? _positionWorker;
 
-  /// Sets the active job and triggers route bootstrap. Replaces any in-flight
-  /// job; callers should confirm before switching.
-  Future<void> acceptJob(OrderDetail job) async {
+  DateTime? _lastPushAt;
+  MapPoint? _lastPushedPoint;
+  bool _pushingLocation = false;
+
+  /// Backend delivery id from the available-deliveries claim. Null
+  /// when the job is mock/demo — in that case backend transitions are
+  /// skipped silently.
+  String? _deliveryId;
+
+  /// Sets the active job and triggers route bootstrap. [deliveryId] is
+  /// the backend Delivery row id (returned by listAvailable / claim);
+  /// pass null for demo flows. Replaces any in-flight job.
+  Future<void> acceptJob(OrderDetail job, {String? deliveryId}) async {
+    _deliveryId = deliveryId;
     currentJob.value = job;
     currentStage.value = OrderStage.prepared;
     await bootstrap();
   }
 
-  /// Advances the lifecycle to [next]. When the destination flips
-  /// (arrivedPickup → onTheWay), re-fetches the route to [currentDestination].
+  /// Advances the lifecycle to [next]. Also fires the matching backend
+  /// transition when we have a real [_deliveryId]:
+  ///   prepared        -> arrivedPickup    : POST arrive-pickup
+  ///   arrivedPickup   -> onTheWay         : POST confirm-pickup
+  ///   arrivedDropoff  -> delivered        : POST confirm-delivery
+  /// Backend errors don't block the local UI advance (kept best-effort
+  /// so the demo doesn't lock up on a transient network blip).
   Future<void> advanceStage(OrderStage next) async {
     final prev = currentStage.value;
     currentStage.value = next;
+    await _syncBackendTransition(prev, next);
+
     final destinationFlipped =
         prev == OrderStage.arrivedPickup && next == OrderStage.onTheWay;
     if (destinationFlipped) {
       final origin = currentDriverPosition;
       if (origin != null) await _refetchRoute(origin);
+    }
+  }
+
+  Future<void> _syncBackendTransition(OrderStage? prev, OrderStage next) async {
+    final id = _deliveryId;
+    if (id == null) return;
+    final repo = DeliveriesRepository.instance;
+    try {
+      if (prev == OrderStage.prepared && next == OrderStage.arrivedPickup) {
+        await repo.arrivePickup(id);
+      } else if (prev == OrderStage.arrivedPickup && next == OrderStage.onTheWay) {
+        await repo.confirmPickup(id);
+      } else if (prev == OrderStage.arrivedDropoff && next == OrderStage.delivered) {
+        await repo.confirmDelivery(id);
+      }
+    } catch (_) {
+      //? swallow — local UI keeps moving, server can resync on retry
     }
   }
 
@@ -96,6 +143,9 @@ class DeliveryRouteController extends GetxController {
     currentJob.value = null;
     currentStage.value = null;
     _offRouteHits = 0;
+    _lastPushAt = null;
+    _lastPushedPoint = null;
+    _deliveryId = null;
   }
 
   /// Reads the driver's current position, fetches the initial route to
@@ -107,19 +157,41 @@ class DeliveryRouteController extends GetxController {
     if (destination == null) return;
 
     final pos = await LocationService.instance.getCurrent();
-    if (pos == null) return;
+    final origin =
+        pos == null ? null : MapPoint(lng: pos.longitude, lat: pos.latitude);
 
-    final origin = MapPoint(lng: pos.longitude, lat: pos.latitude);
-    try {
-      route.value = await Get.find<MapboxDirectionsClient>().getRoute(
-        origin: origin,
-        destination: destination,
-      );
-      await LocationService.instance.start();
-      _startPositionWatcher();
-    } catch (_) {
-      //? swallow — no overlay; map still usable without a route.
+    route.value = await _computeRoute(origin, destination);
+    await LocationService.instance.start();
+    _startPositionWatcher();
+  }
+
+  /// Best-effort route for the current leg: driver → [destination]. When the
+  /// driver's position is unknown or unroutable to the destination (e.g. an
+  /// emulator's default GPS sitting far from the order), it falls back to
+  /// the seller→client trip so the map still shows a sensible route between
+  /// the two stops, and finally to a straight line. Null only if the stops
+  /// themselves are unknown.
+  Future<MapRoute?> _computeRoute(
+    MapPoint? origin,
+    MapPoint destination,
+  ) async {
+    final client = Get.find<MapboxDirectionsClient>();
+    if (origin != null) {
+      try {
+        return await client.getRoute(origin: origin, destination: destination);
+      } catch (_) {
+        //? fall through to the stop-to-stop fallback below
+      }
     }
+    final p = pickup, d = dropoff;
+    if (p != null && d != null) {
+      try {
+        return await client.getRoute(origin: p, destination: d);
+      } catch (_) {
+        return MapRoute(points: [p, d], distanceMeters: 0, durationSeconds: 0);
+      }
+    }
+    return null;
   }
 
   void _startPositionWatcher() {
@@ -131,10 +203,16 @@ class DeliveryRouteController extends GetxController {
   }
 
   Future<void> _onPositionUpdate(geo.Position? pos) async {
-    final current = route.value;
-    if (pos == null || current == null || _refetching) return;
-
+    if (pos == null) return;
     final point = MapPoint(lng: pos.longitude, lat: pos.latitude);
+
+    // Push first — the buyer's tracking screen wants the freshest fix
+    // even if we're off-route and about to recompute.
+    unawaited(_maybePushLocation(point, pos));
+
+    final current = route.value;
+    if (current == null || _refetching) return;
+
     final distance = distanceToPolyline(point, current.points);
     if (distance > _offRouteThresholdMeters) {
       _offRouteHits++;
@@ -147,17 +225,49 @@ class DeliveryRouteController extends GetxController {
     }
   }
 
+  /// Pushes the driver's fix to `POST /v1/drivers/me/location` so the
+  /// backend can fan it out to the buyer's tracking socket. Throttled
+  /// to at most one request per [_minPushIntervalMs], and skipped
+  /// entirely when the driver hasn't moved [_minPushDistanceM] unless
+  /// it's been [_keepaliveMs] since the last push.
+  Future<void> _maybePushLocation(MapPoint point, geo.Position pos) async {
+    if (_pushingLocation) return;
+    if (currentJob.value == null) return;
+    final now = DateTime.now();
+    final lastAt = _lastPushAt;
+    if (lastAt != null) {
+      final sinceMs = now.difference(lastAt).inMilliseconds;
+      if (sinceMs < _minPushIntervalMs) return;
+      final lastP = _lastPushedPoint;
+      final movedEnough =
+          lastP == null || greatCircleDistance(lastP, point) >= _minPushDistanceM;
+      final keepalive = sinceMs >= _keepaliveMs;
+      if (!movedEnough && !keepalive) return;
+    }
+    _pushingLocation = true;
+    try {
+      await Get.find<DriversRepository>().pushLocation(
+        lat: point.lat,
+        lng: point.lng,
+        headingDeg: pos.heading >= 0 ? pos.heading : null,
+        speedMps: pos.speed >= 0 ? pos.speed : null,
+        accuracyM: pos.accuracy,
+      );
+      _lastPushAt = now;
+      _lastPushedPoint = point;
+    } catch (_) {
+      //? swallow — transient miss is harmless, next tick retries
+    } finally {
+      _pushingLocation = false;
+    }
+  }
+
   Future<void> _refetchRoute(MapPoint origin) async {
     final destination = currentDestination;
     if (destination == null) return;
     _refetching = true;
     try {
-      route.value = await Get.find<MapboxDirectionsClient>().getRoute(
-        origin: origin,
-        destination: destination,
-      );
-    } catch (_) {
-      //? swallow — try again on the next off-route trip
+      route.value = await _computeRoute(origin, destination);
     } finally {
       _refetching = false;
     }

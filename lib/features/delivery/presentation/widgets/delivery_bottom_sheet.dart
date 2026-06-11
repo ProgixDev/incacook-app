@@ -6,7 +6,6 @@ import 'package:incacook/features/delivery/controllers/delivery_route_controller
 import 'package:incacook/features/delivery/presentation/widgets/delivery_nav_bar.dart';
 import 'package:incacook/features/delivery/presentation/widgets/delivery_settings_section.dart';
 import 'package:incacook/features/delivery/presentation/widgets/job_lifecycle_card.dart';
-import 'package:incacook/features/delivery/presentation/widgets/next_pickup_card.dart';
 import 'package:incacook/features/delivery/presentation/widgets/today_stats_card.dart';
 
 class DeliveryBottomSheet extends StatefulWidget {
@@ -154,10 +153,12 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
                                 JobLifecycleCard(),
                                 Gap(AppSizes.lg),
                               ]
+                            // Scheduled-pickups ("Prochain retrait") section
+                            // removed: it had no backend and rendered mock
+                            // ScheduledPickup data with a mock-accept button.
+                            // The real flow is the live incoming-order modal.
                             : const [
                                 Gap(AppSizes.xl),
-                                NextPickupCard(),
-                                Gap(AppSizes.lg),
                                 TodayStatsCard(),
                                 Gap(AppSizes.lg),
                               ],

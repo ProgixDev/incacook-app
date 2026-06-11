@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DeliveryDetails {
 
- Address get address; String get instructions; DeliveryTiming get timing; DateTime? get scheduledAt;
+ Address get address; String get instructions; DeliveryTiming get timing; DateTime? get scheduledAt;/// Buyer's display name — shown to the driver as the recipient at
+/// the dropoff. Null when not resolved (e.g. buyer-side views).
+ String? get recipientName;
 /// Create a copy of DeliveryDetails
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $DeliveryDetailsCopyWith<DeliveryDetails> get copyWith => _$DeliveryDetailsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryDetails&&(identical(other.address, address) || other.address == address)&&(identical(other.instructions, instructions) || other.instructions == instructions)&&(identical(other.timing, timing) || other.timing == timing)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryDetails&&(identical(other.address, address) || other.address == address)&&(identical(other.instructions, instructions) || other.instructions == instructions)&&(identical(other.timing, timing) || other.timing == timing)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.recipientName, recipientName) || other.recipientName == recipientName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,address,instructions,timing,scheduledAt);
+int get hashCode => Object.hash(runtimeType,address,instructions,timing,scheduledAt,recipientName);
 
 @override
 String toString() {
-  return 'DeliveryDetails(address: $address, instructions: $instructions, timing: $timing, scheduledAt: $scheduledAt)';
+  return 'DeliveryDetails(address: $address, instructions: $instructions, timing: $timing, scheduledAt: $scheduledAt, recipientName: $recipientName)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $DeliveryDetailsCopyWith<$Res>  {
   factory $DeliveryDetailsCopyWith(DeliveryDetails value, $Res Function(DeliveryDetails) _then) = _$DeliveryDetailsCopyWithImpl;
 @useResult
 $Res call({
- Address address, String instructions, DeliveryTiming timing, DateTime? scheduledAt
+ Address address, String instructions, DeliveryTiming timing, DateTime? scheduledAt, String? recipientName
 });
 
 
@@ -65,13 +67,14 @@ class _$DeliveryDetailsCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryDetails
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? address = null,Object? instructions = null,Object? timing = null,Object? scheduledAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? address = null,Object? instructions = null,Object? timing = null,Object? scheduledAt = freezed,Object? recipientName = freezed,}) {
   return _then(_self.copyWith(
 address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as Address,instructions: null == instructions ? _self.instructions : instructions // ignore: cast_nullable_to_non_nullable
 as String,timing: null == timing ? _self.timing : timing // ignore: cast_nullable_to_non_nullable
 as DeliveryTiming,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,recipientName: freezed == recipientName ? _self.recipientName : recipientName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of DeliveryDetails
@@ -165,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt,  String? recipientName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeliveryDetails() when $default != null:
-return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt);case _:
+return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt,_that.recipientName);case _:
   return orElse();
 
 }
@@ -186,10 +189,10 @@ return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt,  String? recipientName)  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryDetails():
-return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt);case _:
+return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt,_that.recipientName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +209,10 @@ return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Address address,  String instructions,  DeliveryTiming timing,  DateTime? scheduledAt,  String? recipientName)?  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryDetails() when $default != null:
-return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt);case _:
+return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt,_that.recipientName);case _:
   return null;
 
 }
@@ -221,13 +224,16 @@ return $default(_that.address,_that.instructions,_that.timing,_that.scheduledAt)
 @JsonSerializable()
 
 class _DeliveryDetails implements DeliveryDetails {
-  const _DeliveryDetails({required this.address, required this.instructions, required this.timing, this.scheduledAt});
+  const _DeliveryDetails({required this.address, required this.instructions, required this.timing, this.scheduledAt, this.recipientName});
   factory _DeliveryDetails.fromJson(Map<String, dynamic> json) => _$DeliveryDetailsFromJson(json);
 
 @override final  Address address;
 @override final  String instructions;
 @override final  DeliveryTiming timing;
 @override final  DateTime? scheduledAt;
+/// Buyer's display name — shown to the driver as the recipient at
+/// the dropoff. Null when not resolved (e.g. buyer-side views).
+@override final  String? recipientName;
 
 /// Create a copy of DeliveryDetails
 /// with the given fields replaced by the non-null parameter values.
@@ -242,16 +248,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryDetails&&(identical(other.address, address) || other.address == address)&&(identical(other.instructions, instructions) || other.instructions == instructions)&&(identical(other.timing, timing) || other.timing == timing)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryDetails&&(identical(other.address, address) || other.address == address)&&(identical(other.instructions, instructions) || other.instructions == instructions)&&(identical(other.timing, timing) || other.timing == timing)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.recipientName, recipientName) || other.recipientName == recipientName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,address,instructions,timing,scheduledAt);
+int get hashCode => Object.hash(runtimeType,address,instructions,timing,scheduledAt,recipientName);
 
 @override
 String toString() {
-  return 'DeliveryDetails(address: $address, instructions: $instructions, timing: $timing, scheduledAt: $scheduledAt)';
+  return 'DeliveryDetails(address: $address, instructions: $instructions, timing: $timing, scheduledAt: $scheduledAt, recipientName: $recipientName)';
 }
 
 
@@ -262,7 +268,7 @@ abstract mixin class _$DeliveryDetailsCopyWith<$Res> implements $DeliveryDetails
   factory _$DeliveryDetailsCopyWith(_DeliveryDetails value, $Res Function(_DeliveryDetails) _then) = __$DeliveryDetailsCopyWithImpl;
 @override @useResult
 $Res call({
- Address address, String instructions, DeliveryTiming timing, DateTime? scheduledAt
+ Address address, String instructions, DeliveryTiming timing, DateTime? scheduledAt, String? recipientName
 });
 
 
@@ -279,13 +285,14 @@ class __$DeliveryDetailsCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryDetails
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? address = null,Object? instructions = null,Object? timing = null,Object? scheduledAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? address = null,Object? instructions = null,Object? timing = null,Object? scheduledAt = freezed,Object? recipientName = freezed,}) {
   return _then(_DeliveryDetails(
 address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as Address,instructions: null == instructions ? _self.instructions : instructions // ignore: cast_nullable_to_non_nullable
 as String,timing: null == timing ? _self.timing : timing // ignore: cast_nullable_to_non_nullable
 as DeliveryTiming,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,recipientName: freezed == recipientName ? _self.recipientName : recipientName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

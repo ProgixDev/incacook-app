@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UpdateListingRequest {
 
- String? get name; String? get description; List<String>? get imageUrls; int? get priceCents; int? get originalPriceCents; int? get discountPercent; int? get portionsLeft; List<CuisineType>? get cuisineTypes; List<DishType>? get dishTypes; List<DietaryTag>? get dietaryTags; List<Allergen>? get allergens; String? get otherAllergens; bool? get isAvailable; bool? get isVeg; String? get menuCategory; Fulfillment? get fulfillment; int? get prepMinutes; DateTime? get expiresAt; List<ListingExtraRequest>? get extras;
+ String? get name; String? get description; List<String>? get imageUrls; int? get priceCents; int? get originalPriceCents; int? get discountPercent; int? get portionsLeft; List<CuisineType>? get cuisineTypes; List<DishType>? get dishTypes; List<DietaryTag>? get dietaryTags; List<Allergen>? get allergens; String? get otherAllergens;/// Explicit "Aucun" — lets the server accept an empty allergen list.
+ bool? get declaresNoAllergens; bool? get isAvailable; bool? get isVeg; String? get menuCategory; Fulfillment? get fulfillment; int? get prepMinutes; DateTime? get expiresAt; List<ListingExtraRequest>? get extras;
 /// Create a copy of UpdateListingRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $UpdateListingRequestCopyWith<UpdateListingRequest> get copyWith => _$UpdateList
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateListingRequest&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls)&&(identical(other.priceCents, priceCents) || other.priceCents == priceCents)&&(identical(other.originalPriceCents, originalPriceCents) || other.originalPriceCents == originalPriceCents)&&(identical(other.discountPercent, discountPercent) || other.discountPercent == discountPercent)&&(identical(other.portionsLeft, portionsLeft) || other.portionsLeft == portionsLeft)&&const DeepCollectionEquality().equals(other.cuisineTypes, cuisineTypes)&&const DeepCollectionEquality().equals(other.dishTypes, dishTypes)&&const DeepCollectionEquality().equals(other.dietaryTags, dietaryTags)&&const DeepCollectionEquality().equals(other.allergens, allergens)&&(identical(other.otherAllergens, otherAllergens) || other.otherAllergens == otherAllergens)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isVeg, isVeg) || other.isVeg == isVeg)&&(identical(other.menuCategory, menuCategory) || other.menuCategory == menuCategory)&&(identical(other.fulfillment, fulfillment) || other.fulfillment == fulfillment)&&(identical(other.prepMinutes, prepMinutes) || other.prepMinutes == prepMinutes)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&const DeepCollectionEquality().equals(other.extras, extras));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateListingRequest&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls)&&(identical(other.priceCents, priceCents) || other.priceCents == priceCents)&&(identical(other.originalPriceCents, originalPriceCents) || other.originalPriceCents == originalPriceCents)&&(identical(other.discountPercent, discountPercent) || other.discountPercent == discountPercent)&&(identical(other.portionsLeft, portionsLeft) || other.portionsLeft == portionsLeft)&&const DeepCollectionEquality().equals(other.cuisineTypes, cuisineTypes)&&const DeepCollectionEquality().equals(other.dishTypes, dishTypes)&&const DeepCollectionEquality().equals(other.dietaryTags, dietaryTags)&&const DeepCollectionEquality().equals(other.allergens, allergens)&&(identical(other.otherAllergens, otherAllergens) || other.otherAllergens == otherAllergens)&&(identical(other.declaresNoAllergens, declaresNoAllergens) || other.declaresNoAllergens == declaresNoAllergens)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isVeg, isVeg) || other.isVeg == isVeg)&&(identical(other.menuCategory, menuCategory) || other.menuCategory == menuCategory)&&(identical(other.fulfillment, fulfillment) || other.fulfillment == fulfillment)&&(identical(other.prepMinutes, prepMinutes) || other.prepMinutes == prepMinutes)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&const DeepCollectionEquality().equals(other.extras, extras));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,name,description,const DeepCollectionEquality().hash(imageUrls),priceCents,originalPriceCents,discountPercent,portionsLeft,const DeepCollectionEquality().hash(cuisineTypes),const DeepCollectionEquality().hash(dishTypes),const DeepCollectionEquality().hash(dietaryTags),const DeepCollectionEquality().hash(allergens),otherAllergens,isAvailable,isVeg,menuCategory,fulfillment,prepMinutes,expiresAt,const DeepCollectionEquality().hash(extras)]);
+int get hashCode => Object.hashAll([runtimeType,name,description,const DeepCollectionEquality().hash(imageUrls),priceCents,originalPriceCents,discountPercent,portionsLeft,const DeepCollectionEquality().hash(cuisineTypes),const DeepCollectionEquality().hash(dishTypes),const DeepCollectionEquality().hash(dietaryTags),const DeepCollectionEquality().hash(allergens),otherAllergens,declaresNoAllergens,isAvailable,isVeg,menuCategory,fulfillment,prepMinutes,expiresAt,const DeepCollectionEquality().hash(extras)]);
 
 @override
 String toString() {
-  return 'UpdateListingRequest(name: $name, description: $description, imageUrls: $imageUrls, priceCents: $priceCents, originalPriceCents: $originalPriceCents, discountPercent: $discountPercent, portionsLeft: $portionsLeft, cuisineTypes: $cuisineTypes, dishTypes: $dishTypes, dietaryTags: $dietaryTags, allergens: $allergens, otherAllergens: $otherAllergens, isAvailable: $isAvailable, isVeg: $isVeg, menuCategory: $menuCategory, fulfillment: $fulfillment, prepMinutes: $prepMinutes, expiresAt: $expiresAt, extras: $extras)';
+  return 'UpdateListingRequest(name: $name, description: $description, imageUrls: $imageUrls, priceCents: $priceCents, originalPriceCents: $originalPriceCents, discountPercent: $discountPercent, portionsLeft: $portionsLeft, cuisineTypes: $cuisineTypes, dishTypes: $dishTypes, dietaryTags: $dietaryTags, allergens: $allergens, otherAllergens: $otherAllergens, declaresNoAllergens: $declaresNoAllergens, isAvailable: $isAvailable, isVeg: $isVeg, menuCategory: $menuCategory, fulfillment: $fulfillment, prepMinutes: $prepMinutes, expiresAt: $expiresAt, extras: $extras)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $UpdateListingRequestCopyWith<$Res>  {
   factory $UpdateListingRequestCopyWith(UpdateListingRequest value, $Res Function(UpdateListingRequest) _then) = _$UpdateListingRequestCopyWithImpl;
 @useResult
 $Res call({
- String? name, String? description, List<String>? imageUrls, int? priceCents, int? originalPriceCents, int? discountPercent, int? portionsLeft, List<CuisineType>? cuisineTypes, List<DishType>? dishTypes, List<DietaryTag>? dietaryTags, List<Allergen>? allergens, String? otherAllergens, bool? isAvailable, bool? isVeg, String? menuCategory, Fulfillment? fulfillment, int? prepMinutes, DateTime? expiresAt, List<ListingExtraRequest>? extras
+ String? name, String? description, List<String>? imageUrls, int? priceCents, int? originalPriceCents, int? discountPercent, int? portionsLeft, List<CuisineType>? cuisineTypes, List<DishType>? dishTypes, List<DietaryTag>? dietaryTags, List<Allergen>? allergens, String? otherAllergens, bool? declaresNoAllergens, bool? isAvailable, bool? isVeg, String? menuCategory, Fulfillment? fulfillment, int? prepMinutes, DateTime? expiresAt, List<ListingExtraRequest>? extras
 });
 
 
@@ -65,7 +66,7 @@ class _$UpdateListingRequestCopyWithImpl<$Res>
 
 /// Create a copy of UpdateListingRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? description = freezed,Object? imageUrls = freezed,Object? priceCents = freezed,Object? originalPriceCents = freezed,Object? discountPercent = freezed,Object? portionsLeft = freezed,Object? cuisineTypes = freezed,Object? dishTypes = freezed,Object? dietaryTags = freezed,Object? allergens = freezed,Object? otherAllergens = freezed,Object? isAvailable = freezed,Object? isVeg = freezed,Object? menuCategory = freezed,Object? fulfillment = freezed,Object? prepMinutes = freezed,Object? expiresAt = freezed,Object? extras = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? description = freezed,Object? imageUrls = freezed,Object? priceCents = freezed,Object? originalPriceCents = freezed,Object? discountPercent = freezed,Object? portionsLeft = freezed,Object? cuisineTypes = freezed,Object? dishTypes = freezed,Object? dietaryTags = freezed,Object? allergens = freezed,Object? otherAllergens = freezed,Object? declaresNoAllergens = freezed,Object? isAvailable = freezed,Object? isVeg = freezed,Object? menuCategory = freezed,Object? fulfillment = freezed,Object? prepMinutes = freezed,Object? expiresAt = freezed,Object? extras = freezed,}) {
   return _then(_self.copyWith(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -79,7 +80,8 @@ as List<CuisineType>?,dishTypes: freezed == dishTypes ? _self.dishTypes : dishTy
 as List<DishType>?,dietaryTags: freezed == dietaryTags ? _self.dietaryTags : dietaryTags // ignore: cast_nullable_to_non_nullable
 as List<DietaryTag>?,allergens: freezed == allergens ? _self.allergens : allergens // ignore: cast_nullable_to_non_nullable
 as List<Allergen>?,otherAllergens: freezed == otherAllergens ? _self.otherAllergens : otherAllergens // ignore: cast_nullable_to_non_nullable
-as String?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
+as String?,declaresNoAllergens: freezed == declaresNoAllergens ? _self.declaresNoAllergens : declaresNoAllergens // ignore: cast_nullable_to_non_nullable
+as bool?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,isVeg: freezed == isVeg ? _self.isVeg : isVeg // ignore: cast_nullable_to_non_nullable
 as bool?,menuCategory: freezed == menuCategory ? _self.menuCategory : menuCategory // ignore: cast_nullable_to_non_nullable
 as String?,fulfillment: freezed == fulfillment ? _self.fulfillment : fulfillment // ignore: cast_nullable_to_non_nullable
@@ -171,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? declaresNoAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UpdateListingRequest() when $default != null:
-return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
+return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.declaresNoAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
   return orElse();
 
 }
@@ -192,10 +194,10 @@ return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? declaresNoAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)  $default,) {final _that = this;
 switch (_that) {
 case _UpdateListingRequest():
-return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
+return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.declaresNoAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +214,10 @@ return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  String? description,  List<String>? imageUrls,  int? priceCents,  int? originalPriceCents,  int? discountPercent,  int? portionsLeft,  List<CuisineType>? cuisineTypes,  List<DishType>? dishTypes,  List<DietaryTag>? dietaryTags,  List<Allergen>? allergens,  String? otherAllergens,  bool? declaresNoAllergens,  bool? isAvailable,  bool? isVeg,  String? menuCategory,  Fulfillment? fulfillment,  int? prepMinutes,  DateTime? expiresAt,  List<ListingExtraRequest>? extras)?  $default,) {final _that = this;
 switch (_that) {
 case _UpdateListingRequest() when $default != null:
-return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
+return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_that.originalPriceCents,_that.discountPercent,_that.portionsLeft,_that.cuisineTypes,_that.dishTypes,_that.dietaryTags,_that.allergens,_that.otherAllergens,_that.declaresNoAllergens,_that.isAvailable,_that.isVeg,_that.menuCategory,_that.fulfillment,_that.prepMinutes,_that.expiresAt,_that.extras);case _:
   return null;
 
 }
@@ -227,7 +229,7 @@ return $default(_that.name,_that.description,_that.imageUrls,_that.priceCents,_t
 @JsonSerializable()
 
 class _UpdateListingRequest implements UpdateListingRequest {
-  const _UpdateListingRequest({this.name, this.description, final  List<String>? imageUrls, this.priceCents, this.originalPriceCents, this.discountPercent, this.portionsLeft, final  List<CuisineType>? cuisineTypes, final  List<DishType>? dishTypes, final  List<DietaryTag>? dietaryTags, final  List<Allergen>? allergens, this.otherAllergens, this.isAvailable, this.isVeg, this.menuCategory, this.fulfillment, this.prepMinutes, this.expiresAt, final  List<ListingExtraRequest>? extras}): _imageUrls = imageUrls,_cuisineTypes = cuisineTypes,_dishTypes = dishTypes,_dietaryTags = dietaryTags,_allergens = allergens,_extras = extras;
+  const _UpdateListingRequest({this.name, this.description, final  List<String>? imageUrls, this.priceCents, this.originalPriceCents, this.discountPercent, this.portionsLeft, final  List<CuisineType>? cuisineTypes, final  List<DishType>? dishTypes, final  List<DietaryTag>? dietaryTags, final  List<Allergen>? allergens, this.otherAllergens, this.declaresNoAllergens, this.isAvailable, this.isVeg, this.menuCategory, this.fulfillment, this.prepMinutes, this.expiresAt, final  List<ListingExtraRequest>? extras}): _imageUrls = imageUrls,_cuisineTypes = cuisineTypes,_dishTypes = dishTypes,_dietaryTags = dietaryTags,_allergens = allergens,_extras = extras;
   factory _UpdateListingRequest.fromJson(Map<String, dynamic> json) => _$UpdateListingRequestFromJson(json);
 
 @override final  String? name;
@@ -282,6 +284,8 @@ class _UpdateListingRequest implements UpdateListingRequest {
 }
 
 @override final  String? otherAllergens;
+/// Explicit "Aucun" — lets the server accept an empty allergen list.
+@override final  bool? declaresNoAllergens;
 @override final  bool? isAvailable;
 @override final  bool? isVeg;
 @override final  String? menuCategory;
@@ -311,16 +315,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateListingRequest&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls)&&(identical(other.priceCents, priceCents) || other.priceCents == priceCents)&&(identical(other.originalPriceCents, originalPriceCents) || other.originalPriceCents == originalPriceCents)&&(identical(other.discountPercent, discountPercent) || other.discountPercent == discountPercent)&&(identical(other.portionsLeft, portionsLeft) || other.portionsLeft == portionsLeft)&&const DeepCollectionEquality().equals(other._cuisineTypes, _cuisineTypes)&&const DeepCollectionEquality().equals(other._dishTypes, _dishTypes)&&const DeepCollectionEquality().equals(other._dietaryTags, _dietaryTags)&&const DeepCollectionEquality().equals(other._allergens, _allergens)&&(identical(other.otherAllergens, otherAllergens) || other.otherAllergens == otherAllergens)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isVeg, isVeg) || other.isVeg == isVeg)&&(identical(other.menuCategory, menuCategory) || other.menuCategory == menuCategory)&&(identical(other.fulfillment, fulfillment) || other.fulfillment == fulfillment)&&(identical(other.prepMinutes, prepMinutes) || other.prepMinutes == prepMinutes)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&const DeepCollectionEquality().equals(other._extras, _extras));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateListingRequest&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls)&&(identical(other.priceCents, priceCents) || other.priceCents == priceCents)&&(identical(other.originalPriceCents, originalPriceCents) || other.originalPriceCents == originalPriceCents)&&(identical(other.discountPercent, discountPercent) || other.discountPercent == discountPercent)&&(identical(other.portionsLeft, portionsLeft) || other.portionsLeft == portionsLeft)&&const DeepCollectionEquality().equals(other._cuisineTypes, _cuisineTypes)&&const DeepCollectionEquality().equals(other._dishTypes, _dishTypes)&&const DeepCollectionEquality().equals(other._dietaryTags, _dietaryTags)&&const DeepCollectionEquality().equals(other._allergens, _allergens)&&(identical(other.otherAllergens, otherAllergens) || other.otherAllergens == otherAllergens)&&(identical(other.declaresNoAllergens, declaresNoAllergens) || other.declaresNoAllergens == declaresNoAllergens)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isVeg, isVeg) || other.isVeg == isVeg)&&(identical(other.menuCategory, menuCategory) || other.menuCategory == menuCategory)&&(identical(other.fulfillment, fulfillment) || other.fulfillment == fulfillment)&&(identical(other.prepMinutes, prepMinutes) || other.prepMinutes == prepMinutes)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&const DeepCollectionEquality().equals(other._extras, _extras));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,name,description,const DeepCollectionEquality().hash(_imageUrls),priceCents,originalPriceCents,discountPercent,portionsLeft,const DeepCollectionEquality().hash(_cuisineTypes),const DeepCollectionEquality().hash(_dishTypes),const DeepCollectionEquality().hash(_dietaryTags),const DeepCollectionEquality().hash(_allergens),otherAllergens,isAvailable,isVeg,menuCategory,fulfillment,prepMinutes,expiresAt,const DeepCollectionEquality().hash(_extras)]);
+int get hashCode => Object.hashAll([runtimeType,name,description,const DeepCollectionEquality().hash(_imageUrls),priceCents,originalPriceCents,discountPercent,portionsLeft,const DeepCollectionEquality().hash(_cuisineTypes),const DeepCollectionEquality().hash(_dishTypes),const DeepCollectionEquality().hash(_dietaryTags),const DeepCollectionEquality().hash(_allergens),otherAllergens,declaresNoAllergens,isAvailable,isVeg,menuCategory,fulfillment,prepMinutes,expiresAt,const DeepCollectionEquality().hash(_extras)]);
 
 @override
 String toString() {
-  return 'UpdateListingRequest(name: $name, description: $description, imageUrls: $imageUrls, priceCents: $priceCents, originalPriceCents: $originalPriceCents, discountPercent: $discountPercent, portionsLeft: $portionsLeft, cuisineTypes: $cuisineTypes, dishTypes: $dishTypes, dietaryTags: $dietaryTags, allergens: $allergens, otherAllergens: $otherAllergens, isAvailable: $isAvailable, isVeg: $isVeg, menuCategory: $menuCategory, fulfillment: $fulfillment, prepMinutes: $prepMinutes, expiresAt: $expiresAt, extras: $extras)';
+  return 'UpdateListingRequest(name: $name, description: $description, imageUrls: $imageUrls, priceCents: $priceCents, originalPriceCents: $originalPriceCents, discountPercent: $discountPercent, portionsLeft: $portionsLeft, cuisineTypes: $cuisineTypes, dishTypes: $dishTypes, dietaryTags: $dietaryTags, allergens: $allergens, otherAllergens: $otherAllergens, declaresNoAllergens: $declaresNoAllergens, isAvailable: $isAvailable, isVeg: $isVeg, menuCategory: $menuCategory, fulfillment: $fulfillment, prepMinutes: $prepMinutes, expiresAt: $expiresAt, extras: $extras)';
 }
 
 
@@ -331,7 +335,7 @@ abstract mixin class _$UpdateListingRequestCopyWith<$Res> implements $UpdateList
   factory _$UpdateListingRequestCopyWith(_UpdateListingRequest value, $Res Function(_UpdateListingRequest) _then) = __$UpdateListingRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String? name, String? description, List<String>? imageUrls, int? priceCents, int? originalPriceCents, int? discountPercent, int? portionsLeft, List<CuisineType>? cuisineTypes, List<DishType>? dishTypes, List<DietaryTag>? dietaryTags, List<Allergen>? allergens, String? otherAllergens, bool? isAvailable, bool? isVeg, String? menuCategory, Fulfillment? fulfillment, int? prepMinutes, DateTime? expiresAt, List<ListingExtraRequest>? extras
+ String? name, String? description, List<String>? imageUrls, int? priceCents, int? originalPriceCents, int? discountPercent, int? portionsLeft, List<CuisineType>? cuisineTypes, List<DishType>? dishTypes, List<DietaryTag>? dietaryTags, List<Allergen>? allergens, String? otherAllergens, bool? declaresNoAllergens, bool? isAvailable, bool? isVeg, String? menuCategory, Fulfillment? fulfillment, int? prepMinutes, DateTime? expiresAt, List<ListingExtraRequest>? extras
 });
 
 
@@ -348,7 +352,7 @@ class __$UpdateListingRequestCopyWithImpl<$Res>
 
 /// Create a copy of UpdateListingRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? description = freezed,Object? imageUrls = freezed,Object? priceCents = freezed,Object? originalPriceCents = freezed,Object? discountPercent = freezed,Object? portionsLeft = freezed,Object? cuisineTypes = freezed,Object? dishTypes = freezed,Object? dietaryTags = freezed,Object? allergens = freezed,Object? otherAllergens = freezed,Object? isAvailable = freezed,Object? isVeg = freezed,Object? menuCategory = freezed,Object? fulfillment = freezed,Object? prepMinutes = freezed,Object? expiresAt = freezed,Object? extras = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? description = freezed,Object? imageUrls = freezed,Object? priceCents = freezed,Object? originalPriceCents = freezed,Object? discountPercent = freezed,Object? portionsLeft = freezed,Object? cuisineTypes = freezed,Object? dishTypes = freezed,Object? dietaryTags = freezed,Object? allergens = freezed,Object? otherAllergens = freezed,Object? declaresNoAllergens = freezed,Object? isAvailable = freezed,Object? isVeg = freezed,Object? menuCategory = freezed,Object? fulfillment = freezed,Object? prepMinutes = freezed,Object? expiresAt = freezed,Object? extras = freezed,}) {
   return _then(_UpdateListingRequest(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -362,7 +366,8 @@ as List<CuisineType>?,dishTypes: freezed == dishTypes ? _self._dishTypes : dishT
 as List<DishType>?,dietaryTags: freezed == dietaryTags ? _self._dietaryTags : dietaryTags // ignore: cast_nullable_to_non_nullable
 as List<DietaryTag>?,allergens: freezed == allergens ? _self._allergens : allergens // ignore: cast_nullable_to_non_nullable
 as List<Allergen>?,otherAllergens: freezed == otherAllergens ? _self.otherAllergens : otherAllergens // ignore: cast_nullable_to_non_nullable
-as String?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
+as String?,declaresNoAllergens: freezed == declaresNoAllergens ? _self.declaresNoAllergens : declaresNoAllergens // ignore: cast_nullable_to_non_nullable
+as bool?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,isVeg: freezed == isVeg ? _self.isVeg : isVeg // ignore: cast_nullable_to_non_nullable
 as bool?,menuCategory: freezed == menuCategory ? _self.menuCategory : menuCategory // ignore: cast_nullable_to_non_nullable
 as String?,fulfillment: freezed == fulfillment ? _self.fulfillment : fulfillment // ignore: cast_nullable_to_non_nullable

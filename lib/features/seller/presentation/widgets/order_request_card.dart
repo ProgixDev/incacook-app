@@ -354,31 +354,3 @@ class _NoteBlock extends StatelessWidget {
     );
   }
 }
-
-class _LabeledLine extends StatelessWidget {
-  const _LabeledLine({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const Gap(AppSizes.xs),
-        Text(
-          value,
-          style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-        ),
-      ],
-    );
-  }
-}

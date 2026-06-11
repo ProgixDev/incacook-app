@@ -5,24 +5,37 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 
 class ProductInfoPillBar extends StatelessWidget {
-  const ProductInfoPillBar({super.key});
+  const ProductInfoPillBar({
+    super.key,
+    this.deliveryLabel,
+    this.prepLabel,
+  });
+
+  /// Override for the left pill (defaults to "Livraison gratuite"). Pass the
+  /// listing's actual fulfillment string ("Sur place", "Livraison", "Sur
+  /// place + Livraison") to keep the pill real.
+  final String? deliveryLabel;
+
+  /// Override for the right pill (defaults to the demo "20-25 min"). Pass
+  /// `"${prepMinutes} min"` to render the listing's real prep time.
+  final String? prepLabel;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: const [
+      children: [
         Expanded(
           child: _InfoItem(
             icon: Iconsax.truck_fast,
-            label: AppTexts.productFreeDelivery,
+            label: deliveryLabel ?? AppTexts.productFreeDelivery,
           ),
         ),
-        _VerticalDivider(),
+        const _VerticalDivider(),
         Expanded(
           child: _InfoItem(
             icon: Iconsax.clock,
-            label: AppTexts.productPrepTime,
+            label: prepLabel ?? AppTexts.productPrepTime,
           ),
         ),
       ],

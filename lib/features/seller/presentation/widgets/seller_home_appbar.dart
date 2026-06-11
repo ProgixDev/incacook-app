@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
-import 'package:incacook/core/widgets/effects/frosted_surface.dart';
-import 'package:incacook/features/cart/presentation/screens/my_cart.dart';
-import 'package:incacook/features/cart/presentation/widgets/cart_badge.dart';
-import 'package:incacook/features/map/presentation/screens/map.dart';
 
 class SellerHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SellerHomeAppBar({super.key});

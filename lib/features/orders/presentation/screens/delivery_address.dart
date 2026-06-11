@@ -8,7 +8,6 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
-import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/models/delivery_details.dart';
 import 'package:incacook/features/orders/presentation/widgets/address_card.dart';
 import 'package:incacook/features/orders/presentation/widgets/address_search_sheet.dart';
@@ -178,7 +177,6 @@ class _EmptyAddressState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final colors = context.appColors;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSizes.lg),

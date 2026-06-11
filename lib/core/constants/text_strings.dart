@@ -72,8 +72,25 @@ class AppTexts {
   //* forgot password screen
   static const String forgetPasswordTitle = "Mot de passe oublié ?";
   static const String forgetPasswordSubTitle =
-      "Notez votre e-mail pour que nous puissions vous envoyer un lien de réinitialisation";
+      "Saisis ton e-mail : nous t'enverrons un code de réinitialisation à 6 chiffres.";
   static const String submit = "Soumettre";
+
+  //* reset password (code + new password) screen
+  static const String resetPasswordTitle = "Réinitialise ton mot de passe";
+  static const String resetPasswordSubTitle =
+      "Saisis le code reçu par e-mail et choisis un nouveau mot de passe.";
+  static const String resetCodeLabel = "Code de vérification";
+  static const String resetCodeRequired = "Code requis";
+  static const String resetCodeInvalid = "Code à 6 chiffres";
+  static const String newPasswordLabel = "Nouveau mot de passe";
+  static const String confirmNewPasswordLabel = "Confirme le mot de passe";
+  static const String passwordsDoNotMatch =
+      "Les mots de passe ne correspondent pas";
+  static const String resetPasswordCta = "Réinitialiser";
+  static const String resendCode = "Renvoyer le code";
+  static const String resetPasswordSuccess =
+      "Mot de passe modifié. Connecte-toi avec ton nouveau mot de passe.";
+  static const String resetCodeInvalidOrExpired = "Code invalide ou expiré.";
 
   static const String changeYourPasswordTitle =
       "E-mail de réinitialisation du mot de passe envoyé !";
@@ -186,6 +203,18 @@ class AppTexts {
   static const String trackingMinutesSuffix = "minutes";
   static const String trackingArrivingSubtitle =
       "Asseyez-vous et détendez-vous, votre nourriture est en route.";
+  // Leg-specific copy. Phase 1: driver is heading to the seller to
+  // pick the food up. Phase 2: driver picked up the food and is on
+  // the way to the buyer. Surfaces in the tracking bottom sheet so
+  // the buyer knows which leg the map polyline represents.
+  static const String trackingAwaitingPickupTitle =
+      "Le livreur récupère ta commande";
+  static const String trackingAwaitingPickupSubtitle =
+      "Il est en route vers le vendeur — tu peux suivre son trajet sur la carte.";
+  static const String trackingEnRouteTitle =
+      "Ta commande est en chemin !";
+  static const String trackingEnRouteSubtitle =
+      "Le livreur a récupéré ta commande et arrive vers toi.";
   static const String trackingDeliveredTitle = "Votre commande est arrivée";
   static const String trackingDeliveredSubtitle =
       "Bon appétit ! Nous espérons que vous aimez.";
@@ -478,6 +507,18 @@ class AppTexts {
   static const String paymentTermsLink = "Conditions générales d'utilisation";
   static const String paymentPayCtaPrefix = "Payer";
 
+  //* CGU/CGV consent — required at dish publication + order purchase
+  static const String termsAcceptCheckbox = "J'accepte les CGU/CGV";
+  static const String termsReadLink = "Lire les CGU/CGV";
+  static const String legalTermsTitle = "CGU / CGV";
+
+  //* KYC validation — clean French messages replacing the raw
+  //* "KYC_NOT_APPROVED" backend gate (Traiteur / Restaurant sellers).
+  static const String kycPendingMessage =
+      "Votre compte professionnel est en attente de validation KYC.";
+  static const String kycRejectedMessage =
+      "Votre validation KYC a été refusée. Veuillez vérifier vos documents.";
+
   //* checkout — order summary
   static const String checkoutTitle = "Récapitulatif";
   static const String checkoutOrderSection = "Ta commande";
@@ -586,6 +627,7 @@ class AppTexts {
   static const String sellerOrdersFilterAll = "Tout";
   static const String sellerOrdersFilterReadyToPickup = "Prêt à récupérer";
   static const String sellerOrdersFilterPreparing = "En préparation";
+  static const String sellerOrdersFilterCompleted = "Terminé";
   static const String sellerOrdersSortByLabel = "Trier par";
   static const String sellerOrdersSortAcceptedTime = "Heure d'acceptation";
   static const String sellerOrdersSortTotalPrice = "Prix total";
@@ -606,8 +648,11 @@ class AppTexts {
   static const String addProductFieldDescription = "Description";
   static const String addProductFieldPrice = "Prix";
   static const String addProductFieldPortions = "Portions disponibles";
+  static const String addProductFieldPrepMinutes = "Temps de préparation (min)";
   static const String addProductPriceCapNote =
       "Plafond : €4,50 pour Le Bon Fait Maison. Libre pour Traiteur et Restaurant.";
+  static const String addProductPriceCapError =
+      "Le prix d'un produit fait-maison ne peut pas dépasser €4,50.";
   static const String addProductFieldCategory = "Catégorie";
   static const String addProductCategoryAutoNote =
       "Reprise depuis votre profil de cuisinier.";
@@ -626,6 +671,20 @@ class AppTexts {
   static const String addProductPickupDelivery = "Livraison";
   static const String addProductPickupDeliveryHint = "€2,50";
   static const String addProductSaveCta = "Publier le produit";
+  static const String addProductPublishSuccess = "Produit publié avec succès.";
+  static const String addProductUpdateSuccess = "Produit mis à jour avec succès.";
+  static const String addProductEditCta = "Enregistrer";
+
+  //* seller — product detail seller actions
+  static const String sellerProductEditCta = "Modifier";
+  static const String sellerProductDeleteCta = "Supprimer";
+  static const String sellerProductDeleteConfirmTitle = "Supprimer ce produit ?";
+  static const String sellerProductDeleteConfirmBody =
+      "Le produit sera retiré de ta vitrine. Les commandes existantes restent intactes.";
+  static const String sellerProductDeleteConfirmCancel = "Annuler";
+  static const String sellerProductDeleteConfirmCta = "Supprimer";
+  static const String sellerProductDeletedMessage = "Produit supprimé.";
+  static const String sellerProductsLoadError = "Impossible de charger tes produits.";
 
   //* seller — products / catalog screen
   static const String sellerProductsAddCta = "Ajouter un produit";

@@ -38,6 +38,7 @@ class _OrdersFilterPanelState extends State<OrdersFilterPanel> {
     AcceptedOrderStatus.readyToPickup =>
       AppTexts.sellerOrdersFilterReadyToPickup,
     AcceptedOrderStatus.preparing => AppTexts.sellerOrdersFilterPreparing,
+    AcceptedOrderStatus.completed => AppTexts.sellerOrdersFilterCompleted,
   };
 
   void _toggleExpanded() => setState(() => _expanded = !_expanded);

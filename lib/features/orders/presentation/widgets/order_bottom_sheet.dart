@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:incacook/core/constants/api_constants.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/order_stage.dart';
+import 'package:incacook/features/orders/controllers/order_tracking_controller.dart';
+import 'package:incacook/features/orders/data/orders_repository.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_deliverer_pill.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_timeline.dart';
 
@@ -12,12 +15,28 @@ class OrderBottomSheet extends StatelessWidget {
     required this.stage,
     required this.etaMinutes,
     required this.onStageTap,
+    this.phase = TrackingPhase.enRoute,
+    this.driver,
     this.onCallTap,
     this.onChatTap,
   });
 
   final OrderStage stage;
-  final int etaMinutes;
+
+  /// Real assigned driver, or null before assignment. The deliverer pill is
+  /// only rendered once this is non-null — the buyer never sees a driver
+  /// (no placeholder) during preparation.
+  final TrackingDriver? driver;
+
+  /// Which leg of the trip the buyer is watching. Lets the header
+  /// distinguish "driver going to the seller" from "driver coming to
+  /// you" while [stage] stays on `onTheWay` for both. Defaults to
+  /// `enRoute` so existing demo paths keep the old wording.
+  final TrackingPhase phase;
+
+  /// Estimated minutes to arrival, or null when unknown — the header then
+  /// shows a generic "en route" message instead of a fabricated number.
+  final int? etaMinutes;
   final ValueChanged<OrderStage> onStageTap;
   final VoidCallback? onCallTap;
   final VoidCallback? onChatTap;
@@ -42,16 +61,24 @@ class OrderBottomSheet extends StatelessWidget {
         children: [
           const Gap(AppSizes.lg),
 
-          //* title + subtitle (changes per stage)
-          _StageHeader(stage: stage, etaMinutes: etaMinutes),
+          //* title + subtitle (changes per stage and per leg)
+          _StageHeader(stage: stage, etaMinutes: etaMinutes, phase: phase),
           const Gap(AppSizes.lg),
 
           //* timeline
           OrderTimeline(currentStage: stage, onStageTap: onStageTap),
-          const Gap(AppSizes.lg),
 
-          //* deliverer pill
-          OrderDelivererPill(onCallTap: onCallTap, onChatTap: onChatTap),
+          //* deliverer pill — only once a real driver is assigned. Before
+          //* that the buyer sees the timeline/"en préparation" with no driver.
+          if (driver != null) ...[
+            const Gap(AppSizes.lg),
+            OrderDelivererPill(
+              name: driver!.fullName,
+              avatarUrl: ApiConstants.publicImageUrl(driver!.avatarPath),
+              onCallTap: onCallTap,
+              onChatTap: onChatTap,
+            ),
+          ],
         ],
       ),
     );
@@ -59,10 +86,15 @@ class OrderBottomSheet extends StatelessWidget {
 }
 
 class _StageHeader extends StatelessWidget {
-  const _StageHeader({required this.stage, required this.etaMinutes});
+  const _StageHeader({
+    required this.stage,
+    required this.etaMinutes,
+    required this.phase,
+  });
 
   final OrderStage stage;
-  final int etaMinutes;
+  final int? etaMinutes;
+  final TrackingPhase phase;
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +117,21 @@ class _StageHeader extends StatelessWidget {
         break;
       case OrderStage.onTheWay:
       case OrderStage.arrivedDropoff:
-        title =
-            '${AppTexts.trackingArrivingPrefix} $etaMinutes ${AppTexts.trackingMinutesSuffix}';
-        subtitle = AppTexts.trackingArrivingSubtitle;
+        // While the same stage label ("En route") shows on the
+        // stepper, the bottom sheet differentiates the two legs so
+        // the buyer knows whether the polyline on the map is the
+        // driver heading to the seller (leg 1) or to them (leg 2).
+        if (phase == TrackingPhase.awaitingPickup) {
+          title = AppTexts.trackingAwaitingPickupTitle;
+          subtitle = AppTexts.trackingAwaitingPickupSubtitle;
+        } else {
+          // Show a real ETA only when known; otherwise a generic en-route
+          // title (no fabricated number).
+          title = etaMinutes != null
+              ? '${AppTexts.trackingArrivingPrefix} $etaMinutes ${AppTexts.trackingMinutesSuffix}'
+              : AppTexts.trackingEnRouteSubtitle;
+          subtitle = AppTexts.trackingEnRouteSubtitle;
+        }
         break;
       case OrderStage.delivered:
       case OrderStage.failed:

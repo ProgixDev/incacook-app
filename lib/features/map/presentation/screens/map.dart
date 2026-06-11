@@ -35,7 +35,9 @@ class MapScreen extends StatelessWidget {
       context: context,
       builder: (_) => MapListingSheet(
         listing: entry.listing,
-        onViewDetail: () => Get.to(() => const ProductDetailScreen()),
+        // Open the real backend record this pin was built from.
+        onViewDetail: () =>
+            Get.to(() => ProductDetailScreen(listing: entry.source)),
         onOrder: () => Get.back<void>(),
       ),
     ).whenComplete(() => controller.setSelected(null));
@@ -55,7 +57,7 @@ class MapScreen extends StatelessWidget {
           MapWidget(
             styleUri: styleUri,
             cameraOptions: CameraOptions(
-              center: Point(coordinates: MapController.userLocation),
+              center: Point(coordinates: controller.userLocation.value),
               zoom: MapController.initialZoom,
             ),
             onMapCreated: controller.onMapCreated,

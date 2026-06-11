@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/models/listing_filter.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/widgets/misc/drag_handle.dart';
@@ -84,23 +85,23 @@ class FiltersSheet extends StatelessWidget {
                           onToggle: controller.toggleDishType,
                         ),
                       ),
-                    // _Section(
-                    //   title: AppTexts.filterDistanceLabel,
-                    //   child: _DistanceSlider(
-                    //     maxKm:
-                    //         f.category?.maxRadiusKm ??
-                    //         ListingFilter.standardRadiusKm,
-                    //     valueKm: f.maxDistanceKm,
-                    //     onChanged: controller.setMaxDistance,
-                    //   ),
-                    // ),
-                    // _Section(
-                    //   title: AppTexts.filterAvailabilityLabel,
-                    //   child: _StockToggle(
-                    //     value: f.inStockOnly,
-                    //     onChanged: controller.setInStockOnly,
-                    //   ),
-                    // ),
+                    _Section(
+                      title: AppTexts.filterDistanceLabel,
+                      child: _DistanceSlider(
+                        // Category cap: Traiteur 50 km, others 10 km.
+                        maxKm: f.category?.maxRadiusKm ??
+                            ListingFilter.standardRadiusKm,
+                        valueKm: f.maxDistanceKm,
+                        onChanged: controller.setMaxDistance,
+                      ),
+                    ),
+                    _Section(
+                      title: AppTexts.filterAvailabilityLabel,
+                      child: _StockToggle(
+                        value: f.inStockOnly,
+                        onChanged: controller.setInStockOnly,
+                      ),
+                    ),
                     const Gap(AppSizes.md),
                   ],
                 );
@@ -397,6 +398,73 @@ class _Chip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Distance cap slider. [maxKm] is the category radius cap (Traiteur 50 km,
+/// others 10 km). Dragging to the far right means "no distance limit" (null),
+/// which the feed query treats as unfiltered. Only takes effect when the
+/// buyer's location is available (sent server-side from the home screen).
+class _DistanceSlider extends StatelessWidget {
+  const _DistanceSlider({
+    required this.maxKm,
+    required this.valueKm,
+    required this.onChanged,
+  });
+
+  final double maxKm;
+  final double? valueKm;
+  final ValueChanged<double?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final current = (valueKm ?? maxKm).clamp(1.0, maxKm).toDouble();
+    final divisions = maxKm.round() > 1 ? maxKm.round() - 1 : null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          valueKm == null
+              ? 'Toutes distances'
+              : '≤ ${current.toStringAsFixed(0)} km',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        Slider(
+          value: current,
+          min: 1,
+          max: maxKm,
+          divisions: divisions,
+          label: '${current.toStringAsFixed(0)} km',
+          onChanged: (v) => onChanged(v >= maxKm ? null : v),
+        ),
+      ],
+    );
+  }
+}
+
+/// "En stock uniquement" toggle — hides sold-out listings server-side.
+class _StockToggle extends StatelessWidget {
+  const _StockToggle({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            AppTexts.filterInStockOnly,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        Switch(value: value, onChanged: onChanged),
+      ],
     );
   }
 }

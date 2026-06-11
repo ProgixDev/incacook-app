@@ -93,9 +93,22 @@ class _IncomingOrderSheetState extends State<IncomingOrderSheet>
         : greatCircleDistance(pickup, dropoff) / 1000;
     //? city pace ~15 km/h → 4 min/km.
     final etaMin = (distanceKm * 4).round().clamp(1, 99);
-    //? mock driver payout — base + delivery fee. Will be replaced by the
-    //? backend's per-job payout calc once that exists.
-    final payout = order.deliveryFee + 4.0;
+    //? Real driver payout: backend's `driverPayoutCents` (which equals
+    //? the order's `fulfillmentFeeCents`) is surfaced via
+    //? `OrderDetail.deliveryFee` from the hydrated DeliverySummary.
+    //? Was previously `+ 4.0` placeholder.
+    final payout = order.deliveryFee;
+
+    // Dropoff display: lead with the recipient (client) name when the
+    // backend resolved it, with the address underneath. Falls back to
+    // the plain address-only layout when the name isn't available.
+    final dropoffDetails = order.deliveryDetails;
+    final recipient = dropoffDetails?.recipientName;
+    final hasRecipient = recipient != null && recipient.isNotEmpty;
+    final addrLine1 = dropoffDetails?.address.line1 ?? '';
+    final addrLine2 = dropoffDetails?.address.line2 ?? '';
+    final fullAddress =
+        [addrLine1, addrLine2].where((s) => s.isNotEmpty).join(' · ');
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -138,8 +151,8 @@ class _IncomingOrderSheetState extends State<IncomingOrderSheet>
                   _AddressBlock(
                     label: AppTexts.incomingOrderDropoffLabel,
                     icon: Iconsax.location,
-                    title: order.deliveryDetails?.address.line1 ?? '',
-                    subtitle: order.deliveryDetails?.address.line2 ?? '',
+                    title: hasRecipient ? recipient : addrLine1,
+                    subtitle: hasRecipient ? fullAddress : addrLine2,
                   ),
                   const Gap(AppSizes.lg + 4),
                   _Actions(onAccept: _accept, onDecline: _decline),

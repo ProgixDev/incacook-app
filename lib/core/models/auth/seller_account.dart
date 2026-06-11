@@ -40,6 +40,13 @@ abstract class SellerAccount with _$SellerAccount {
     // Server-derived gate. True once profile + addresses + cuisines +
     // charter are complete AND `kycStatus == APPROVED`.
     @Default(false) bool canList,
+
+    // Mandatory platform subscription ($4/mo). `subscriptionActive` is the
+    // gate the app uses to unlock seller features; status + renewal date
+    // drive the dashboard / paywall copy. Mirrors SellerProfileResponseDto.
+    @Default('NONE') String subscriptionStatus,
+    @Default(false) bool subscriptionActive,
+    String? subscriptionCurrentPeriodEnd,
   }) = _SellerAccount;
 
   factory SellerAccount.fromJson(Map<String, dynamic> json) =>

@@ -46,16 +46,27 @@ class ProductReviewsSection extends StatelessWidget {
           onSeeAll: onSeeAll,
         ),
         const Gap(AppSizes.md),
-        SizedBox(
-          height: 176,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: reviews.length,
-            separatorBuilder: (_, _) => const Gap(AppSizes.md),
-            itemBuilder: (context, index) =>
-                _ReviewCard(review: reviews[index]),
+        if (reviews.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+            child: Text(
+              'Aucun avis pour le moment.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 176,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: reviews.length,
+              separatorBuilder: (_, _) => const Gap(AppSizes.md),
+              itemBuilder: (context, index) =>
+                  _ReviewCard(review: reviews[index]),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -156,7 +167,11 @@ class _ReviewCard extends StatelessWidget {
           //* header: avatar + name + time
           Row(
             children: [
-              CustomCircularImage(image: review.avatarUrl, size: 36),
+              CustomCircularImage(
+                image: review.avatarUrl,
+                size: 36,
+                isNetworkImage: review.avatarUrl.startsWith('http'),
+              ),
               const Gap(AppSizes.sm),
               Expanded(
                 child: Column(

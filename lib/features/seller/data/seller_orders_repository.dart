@@ -1,0 +1,148 @@
+import 'package:get/get.dart';
+
+import 'package:incacook/core/constants/api_constants.dart';
+import 'package:incacook/core/network/api_client.dart';
+
+/// One line in a seller's order — name + quantity + unit price are
+/// the only fields the home-screen request card displays today.
+class SellerOrderItem {
+  const SellerOrderItem({
+    required this.listingName,
+    required this.quantity,
+    required this.unitPriceCents,
+    this.note,
+  });
+
+  final String listingName;
+  final int quantity;
+  final int unitPriceCents;
+  final String? note;
+
+  double get unitPriceEuros => unitPriceCents / 100.0;
+
+  factory SellerOrderItem.fromJson(Map<String, dynamic> json) {
+    return SellerOrderItem(
+      listingName: json['listingName'] as String? ?? '',
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      unitPriceCents: (json['unitPriceCents'] as num?)?.toInt() ?? 0,
+      note: json['note'] as String?,
+    );
+  }
+}
+
+/// One row in the seller's incoming-orders dashboard. Carries the
+/// fields the home request card + the Commandes list card need.
+class SellerOrderSummary {
+  const SellerOrderSummary({
+    required this.id,
+    required this.orderNumber,
+    required this.status,
+    required this.buyerTotalCents,
+    required this.placedAt,
+    required this.fulfillmentChoice,
+    required this.items,
+    this.note,
+  });
+
+  final String id;
+  final String orderNumber;
+
+  /// Backend [OrderStatus] string: `PENDING | CONFIRMED | PREPARING |
+  /// READY | IN_DELIVERY | DELIVERED | COMPLETED | CANCELLED |
+  /// REFUNDED | DISPUTED`.
+  final String status;
+
+  final int buyerTotalCents;
+  final DateTime placedAt;
+
+  /// `DELIVERY` or `PICKUP`.
+  final String fulfillmentChoice;
+
+  final List<SellerOrderItem> items;
+
+  /// Buyer's order-level note (separate from per-item notes).
+  final String? note;
+
+  double get totalEuros => buyerTotalCents / 100.0;
+
+  factory SellerOrderSummary.fromJson(Map<String, dynamic> json) {
+    final rawItems = (json['items'] as List?)?.cast<dynamic>() ?? const <dynamic>[];
+    return SellerOrderSummary(
+      id: json['id'] as String,
+      orderNumber: json['orderNumber'] as String,
+      status: json['status'] as String,
+      buyerTotalCents: (json['buyerTotalCents'] as num).toInt(),
+      placedAt: DateTime.parse(json['placedAt'] as String),
+      fulfillmentChoice: json['fulfillmentChoice'] as String,
+      note: json['note'] as String?,
+      items: rawItems
+          .map((e) => SellerOrderItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+/// Repository for seller-side `/v1/sellers/me/*` and the seller's
+/// half of the order lifecycle on `/v1/orders/:id/*`.
+class SellerOrdersRepository extends GetxService {
+  SellerOrdersRepository({ApiClient? api}) : _api = api ?? Get.find<ApiClient>();
+
+  static SellerOrdersRepository get instance => Get.find();
+
+  final ApiClient _api;
+
+  /// `GET /v1/sellers/me/orders` — list of orders for the seller
+  /// resolved from the JWT. Newest first. Pass [status] (backend
+  /// OrderStatus enum string, e.g. `CONFIRMED`) to filter server-side.
+  Future<List<SellerOrderSummary>> listIncoming({
+    int limit = 50,
+    int offset = 0,
+    String? status,
+  }) async {
+    final result = await _api.get<List<SellerOrderSummary>>(
+      '${ApiConstants.apiPrefix}/sellers/me/orders',
+      queryParameters: {
+        'limit': '$limit',
+        'offset': '$offset',
+        'status': ?status,
+      },
+      // The backend's TransformInterceptor hoists `items` into top-level
+      // `data` whenever it detects pagination, so the decoder receives
+      // a List directly (matching ListingsRepository.getFeed shape).
+      decoder: (json) => (json! as List<dynamic>)
+          .map((e) => SellerOrderSummary.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+    return result.data;
+  }
+
+  /// `POST /v1/orders/:id/cancel` — seller refuses a CONFIRMED order.
+  /// [reason] must be 3-500 chars (server-validated). Refunds the
+  /// buyer's PaymentIntent and restores the inventory we decremented
+  /// at order creation.
+  Future<void> cancel(String orderId, {required String reason}) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/cancel',
+      body: {'reason': reason},
+      decoder: (_) {},
+    );
+  }
+
+  /// `POST /v1/orders/:id/start-preparing` — CONFIRMED → PREPARING.
+  Future<void> startPreparing(String orderId) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/start-preparing',
+      decoder: (_) {},
+    );
+  }
+
+  /// `POST /v1/orders/:id/mark-ready` — PREPARING → READY. For
+  /// delivery orders, the server creates a `Delivery` row with status
+  /// SEARCHING at this point so drivers can claim it.
+  Future<void> markReady(String orderId) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/mark-ready',
+      decoder: (_) {},
+    );
+  }
+}

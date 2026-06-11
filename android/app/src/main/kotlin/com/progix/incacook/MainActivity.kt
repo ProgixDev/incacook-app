@@ -1,5 +1,7 @@
 package com.progix.incacook
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// flutter_stripe requires the host Activity to be a FlutterFragmentActivity
+// (its native PaymentSheet is shown as a DialogFragment).
+class MainActivity : FlutterFragmentActivity()

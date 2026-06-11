@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:incacook/core/config/mapbox_config.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/core/services/map/models/place_suggestion.dart';
 
 class MapboxSearchClient {
   MapboxSearchClient({Dio? dio, String? accessToken})
     : _dio = dio ?? Dio(),
-      _accessToken =
-          accessToken ?? const String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
+      _accessToken = accessToken ?? MapboxConfig.publicToken,
+      assert(
+        (accessToken ?? MapboxConfig.publicToken).isNotEmpty,
+        MapboxConfig.missingTokenMessage,
+      );
 
   static const _baseUrl = 'https://api.mapbox.com/search/searchbox/v1';
 

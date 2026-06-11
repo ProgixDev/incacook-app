@@ -14,6 +14,7 @@ _DeliveryDetails _$DeliveryDetailsFromJson(Map<String, dynamic> json) =>
       scheduledAt: json['scheduledAt'] == null
           ? null
           : DateTime.parse(json['scheduledAt'] as String),
+      recipientName: json['recipientName'] as String?,
     );
 
 Map<String, dynamic> _$DeliveryDetailsToJson(_DeliveryDetails instance) =>
@@ -22,6 +23,7 @@ Map<String, dynamic> _$DeliveryDetailsToJson(_DeliveryDetails instance) =>
       'instructions': instance.instructions,
       'timing': _$DeliveryTimingEnumMap[instance.timing]!,
       'scheduledAt': ?instance.scheduledAt?.toIso8601String(),
+      'recipientName': ?instance.recipientName,
     };
 
 const _$DeliveryTimingEnumMap = {

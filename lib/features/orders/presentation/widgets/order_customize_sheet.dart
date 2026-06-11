@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:incacook/core/widgets/misc/drag_handle.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
@@ -184,12 +185,25 @@ class _Header extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
-          child: Image.asset(
-            listing.imageUrl,
-            width: 64,
-            height: 64,
-            fit: BoxFit.cover,
-          ),
+          child: listing.imageUrl.startsWith('http')
+              ? Image.network(
+                  listing.imageUrl,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Image.asset(
+                    AppImages.foodTest,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : Image.asset(
+                  listing.imageUrl,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.cover,
+                ),
         ),
         const Gap(AppSizes.md),
         Expanded(

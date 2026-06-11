@@ -7,8 +7,11 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
+import 'package:incacook/features/authentication/data/models/user_role.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_address_picker.dart';
+import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_image_picker.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 
 class SellerDobAddressPage extends GetView<SignupFlowController> {
@@ -108,6 +111,20 @@ class SellerDobAddressPage extends GetView<SignupFlowController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //* Driver-only profile photo (optional). This page is shared with
+          //  the seller flow, but sellers upload their photo on the dedicated
+          //  sellerProfile step — so the avatar slot only shows for drivers.
+          if (controller.role.value == UserRole.driver) ...[
+            Center(
+              child: Obx(() => SignupImagePicker(
+                    path: controller.avatarPath.value,
+                    purpose: UploadPurpose.avatar,
+                    helper: 'Photo de profil (optionnel)',
+                    onChanged: (p) => controller.avatarPath.value = p,
+                  )),
+            ),
+            const Gap(AppSizes.lg),
+          ],
           Text(
             AppTexts.signupSellerDobLabel,
             style: Theme.of(

@@ -91,7 +91,23 @@ class SignupFlowController extends GetxController {
 
   /// True once `POST /v1/auth/signup` has returned (we have a session).
   /// Guards `submitCompleteProfile` from being called without auth.
+  ///
+  /// This flips mid-flow on the fresh-signup path, so it must NOT drive
+  /// the [steps] preamble — use [startedSignedUp] for that. See its doc.
   final isSignedUp = false.obs;
+
+  /// True when the wizard was *entered* already holding a session but
+  /// without a committed `User` row — the `PostAuthNoProfile` / resume
+  /// paths. Set once by [seedAsSignedIn] / [seedForResume] before the
+  /// first build, and never again.
+  ///
+  /// [steps] keys the preamble on this (not [isSignedUp]) so the page
+  /// list stays stable across the basicInfo signup gate. Using
+  /// [isSignedUp] there collapsed the list the instant signup succeeded
+  /// — dropping `basicInfo` from index 0 while `nextPage` advanced by
+  /// `currentPage + 1`, which silently skipped the phone/email
+  /// verification step.
+  final startedSignedUp = false.obs;
 
   /// When `true`, [steps] omits the universal preamble (basicInfo through
   /// roleSelection). Set by [seedForResume] for users who abandoned the
@@ -149,6 +165,12 @@ class SignupFlowController extends GetxController {
   final Rxn<Address> deliveryAddress = Rxn<Address>();
   final dietaryPreferences = <DietaryTag>[].obs;
   final allergies = <Allergen>[].obs;
+
+  // Profile avatar for buyer + driver (optional). Sellers use
+  // [profilePhotoUrl], which goes to the seller profile; buyer/driver
+  // avatars persist to the User row via PATCH /v1/users/me. Holds the
+  // storage object key from the upload flow; empty = no photo picked.
+  final avatarPath = ''.obs;
 
   // ---------------------------------------------------------------------------
   // Seller-specific
@@ -211,7 +233,7 @@ class SignupFlowController extends GetxController {
     // values we just pulled from UserController. The TextEditingControllers
     // are always created — just initialized from whatever's currently
     // in the Rx vars (debug seed, OAuth pre-fill, or empty).
-    final isPreSeeded = isSignedUp.value || isResumeMode.value;
+    final isPreSeeded = startedSignedUp.value || isResumeMode.value;
     if (!isPreSeeded) {
       final seed = kDebugMode ? _DevSeed.random() : _DevSeed.empty();
       firstName.value = seed.firstName;
@@ -259,12 +281,16 @@ class SignupFlowController extends GetxController {
     final list = <SignupStep>[];
     // Universal preamble. Skipped when resuming a mid-signup user since
     // those rows (auth.users, User, charters) are already committed.
-    // When [isSignedUp] alone is true (PostAuthNoProfile case — auth row
+    // When [startedSignedUp] is true (PostAuthNoProfile case — auth row
     // exists but Gate 2 was never reached), basicInfo is dropped so the
     // user doesn't re-enter Gate 1 data, but OTP/biometric/legal/role
     // remain because Gate 2 still needs them.
+    //
+    // Keyed on [startedSignedUp], NOT the live [isSignedUp]: the latter
+    // flips during the fresh-signup basicInfo gate, which would collapse
+    // this list mid-`nextPage` and skip phoneVerification.
     if (!isResumeMode.value) {
-      if (!isSignedUp.value) {
+      if (!startedSignedUp.value) {
         list.add(SignupStep.basicInfo);
       }
       list.addAll([
@@ -276,7 +302,7 @@ class SignupFlowController extends GetxController {
       // seen a name yet. The JWT pre-fill may be incomplete (single-
       // word Google accounts don't ship `family_name`), so we always
       // confirm before Gate 2 fires.
-      if (isSignedUp.value) {
+      if (startedSignedUp.value) {
         list.add(SignupStep.completeName);
       }
       list.add(SignupStep.roleSelection);
@@ -292,13 +318,12 @@ class SignupFlowController extends GetxController {
       case UserRole.seller:
         list.add(SignupStep.sellerProfile);
         list.add(SignupStep.sellerDobAddress);
-        // The sub-type picker was removed from signup; null is treated
-        // as fait-maison (see [_putSellerProfile]). For fait-maison —
-        // explicit or defaulted — both `business` and the two KYC steps
-        // are skipped server-side (§4.3), and the upload endpoint hard-
-        // rejects KYC purposes with 403 "Fait-maison sellers do not
-        // submit KYC". Mirror that here so the wizard never asks for
-        // documents it can't upload.
+        // Category is picked on the seller-profile page; null defaults to
+        // fait-maison (see [_putSellerProfile]). For fait-maison — explicit
+        // or defaulted — both `business` and the two KYC steps are skipped
+        // server-side (§4.3), and the upload endpoint hard-rejects KYC
+        // purposes with 403 "Fait-maison sellers do not submit KYC". Mirror
+        // that here so the wizard never asks for documents it can't upload.
         if (_isFaitMaisonSeller) {
           list.add(SignupStep.sellerCuisine);
         } else {
@@ -308,6 +333,8 @@ class SignupFlowController extends GetxController {
           list.add(SignupStep.sellerKycSelfie);
         }
         list.add(SignupStep.sellerCharter);
+        // Optional payout setup (Stripe Connect) — last, skippable.
+        list.add(SignupStep.payoutSetup);
       case UserRole.driver:
         list.addAll([
           SignupStep.driverDobAddress,
@@ -321,6 +348,8 @@ class SignupFlowController extends GetxController {
         list.addAll([
           SignupStep.driverZone,
           SignupStep.driverCharter,
+          // Optional payout setup (Stripe Connect) — last, skippable.
+          SignupStep.payoutSetup,
         ]);
       case null:
         break;
@@ -363,7 +392,15 @@ class SignupFlowController extends GetxController {
   }
 
   bool get isPhoneValid {
-    final digits = phone.value.replaceAll(RegExp(r'\D'), '');
+    final raw = phone.value.trim();
+    if (raw.startsWith('+')) {
+      // Full E.164 with country code (e.g. +21612345678). Mirrors the
+      // backend's `^\+[1-9]\d{6,14}$` rule.
+      final body = raw.substring(1).replaceAll(RegExp(r'\D'), '');
+      return RegExp(r'^[1-9]\d{6,14}$').hasMatch(body);
+    }
+    // Legacy: a plain French national 9-digit number (defaults to +33).
+    final digits = raw.replaceAll(RegExp(r'\D'), '');
     return digits.length == 9;
   }
 
@@ -516,6 +553,10 @@ class SignupFlowController extends GetxController {
       case SignupStep.driverCharter:
         return driverPunctualityCommitment.value &&
             driverCareCommitment.value;
+      case SignupStep.payoutSetup:
+        // Optional — payout onboarding can always be skipped (the
+        // dashboard banner re-prompts later), so Continue is enabled.
+        return true;
     }
   }
 
@@ -543,22 +584,37 @@ class SignupFlowController extends GetxController {
   // Navigation
   // ---------------------------------------------------------------------------
   Future<void> nextPage() async {
-    if (!canGoNext()) return;
-    if (isLoading.value) return;
+    debugPrint('[NAV] nextPage ENTER step=${currentStep.name} '
+        'currentPage=${currentPage.value} steps=${steps.map((s) => s.name).toList()} '
+        'len=${steps.length} isLastPage=$isLastPage '
+        'pageCtrl.hasClients=${pageController.hasClients} '
+        'pageCtrl.page=${pageController.hasClients ? pageController.page : null}');
+    if (!canGoNext()) {
+      debugPrint('[NAV] nextPage BLOCKED canGoNext=false');
+      return;
+    }
+    if (isLoading.value) {
+      debugPrint('[NAV] nextPage BLOCKED isLoading=true');
+      return;
+    }
 
     // Step-gated network calls. Each gate has to succeed before the page
     // advances; on failure, `submitError` is set and the bottom bar
     // re-enables for retry.
     submitError.value = '';
     final gateOk = await _runGateForCurrentStep();
+    debugPrint('[NAV] gateOk=$gateOk');
     if (!gateOk) return;
 
     if (isLastPage) {
+      debugPrint('[NAV] -> _finishSignup (isLastPage)');
       _finishSignup();
       return;
     }
     final next = currentPage.value + 1;
     currentPage.value = next;
+    debugPrint('[NAV] advancing to page=$next '
+        'hasClients=${pageController.hasClients}');
     if (pageController.hasClients) {
       pageController.animateToPage(
         next,
@@ -568,6 +624,8 @@ class SignupFlowController extends GetxController {
     }
     // Reset per-page transient state.
     charterScrolledToBottom.value = false;
+    debugPrint('[NAV] nextPage DONE currentPage=${currentPage.value} '
+        'pageCtrl.page=${pageController.hasClients ? pageController.page : null}');
   }
 
   /// Gate hook — returns false if the step's backend call(s) failed
@@ -603,7 +661,8 @@ class SignupFlowController extends GetxController {
 
       // Buyer
       case SignupStep.buyerAddress:
-        return _putAddress(AddressKind.buyerDelivery);
+        if (!await _putAddress(AddressKind.buyerDelivery)) return false;
+        return _persistAvatarIfAny();
       case SignupStep.buyerDietary:
         return _putBuyerPreferences();
       case SignupStep.buyerDone:
@@ -632,7 +691,8 @@ class SignupFlowController extends GetxController {
       case SignupStep.driverDobAddress:
         // DOB rides along on the next screen's vehicle PUT (vehicleType
         // is required, so we can't fire setVehicle here).
-        return _putAddress(AddressKind.driverHome);
+        if (!await _putAddress(AddressKind.driverHome)) return false;
+        return _persistAvatarIfAny();
       case SignupStep.driverVehicle:
         return _putDriverVehicle();
       case SignupStep.driverKycId:
@@ -645,6 +705,11 @@ class SignupFlowController extends GetxController {
         return _putDriverZones();
       case SignupStep.driverCharter:
         return _acceptDriverCharters();
+
+      // Shared — payout onboarding is launched from the page button
+      // (Stripe Connect), not a gate; nothing to commit here.
+      case SignupStep.payoutSetup:
+        return true;
     }
   }
 
@@ -665,6 +730,21 @@ class SignupFlowController extends GetxController {
     });
   }
 
+  /// Persists the optional buyer/driver profile avatar to the User row
+  /// via PATCH /v1/users/me. No-op when the user didn't pick a photo, so
+  /// the avatar stays optional and never blocks the gate. Refreshes the
+  /// global user cache so the role home shows it immediately.
+  Future<bool> _persistAvatarIfAny() async {
+    if (avatarPath.value.isEmpty) return true;
+    return _runApiCall(() async {
+      final updated =
+          await _usersRepository.updateMe(avatarPath: avatarPath.value);
+      if (Get.isRegistered<UserController>()) {
+        UserController.instance.setUser(updated);
+      }
+    });
+  }
+
   Future<bool> _putBuyerPreferences() async {
     return _runApiCall(() async {
       await _buyersRepository.setPreferences(
@@ -677,19 +757,27 @@ class SignupFlowController extends GetxController {
   }
 
   Future<bool> _putSellerProfile() async {
+    // Resume path: when the wizard jumps straight to sellerDobAddress
+    // (OnboardingState.next == 'addresses'), the profile step is already
+    // `complete` server-side but the local form was never rehydrated, so
+    // [displayName] / [profilePhotoUrl] are blank. Re-PUTting them as empty
+    // strings trips the backend's @MinLength(1) on /sellers/me/profile (400).
+    // A fresh flow can't reach this step with blanks — the sellerProfile gate
+    // requires both before advancing — so blank here unambiguously means the
+    // profile is already persisted; skip the re-PUT and let the address gate
+    // run.
+    if (displayName.value.trim().isEmpty || profilePhotoUrl.value.isEmpty) {
+      return true;
+    }
     final dob = dateOfBirth.value;
     if (dob == null) {
       submitError.value = 'Champs requis manquants';
       return false;
     }
-    // The wizard's category picker was removed (see [steps] for the
-    // rationale). Default to FAIT_MAISON when the user hasn't picked
-    // one — it's the only branch the rest of the wizard is wired for:
-    // [steps] already skips sellerBusinessInfo, the charter step
-    // collects `faitMaisonCommitment`, and KYC auto-approves
-    // server-side. TRAITEUR / RESTAURANT would leave the onboarding
-    // endpoint stuck on `business: incomplete` since the wizard has
-    // no business-info screen for them.
+    // Category is chosen on the seller-profile page (the 3-way subtype
+    // picker). Untouched defaults to FAIT_MAISON. TRAITEUR / RESTAURANT
+    // activate the business-info + KYC steps in [steps] so the onboarding
+    // endpoint's `business` / `kyc` gates get satisfied.
     final category = sellerCategory.value ?? SellerCategory.faitMaison;
     return _runApiCall(() async {
       await _sellersRepository.setProfile(
@@ -699,6 +787,11 @@ class SignupFlowController extends GetxController {
           bio: bio.value.isEmpty ? null : bio.value,
           profilePhotoUrl: profilePhotoUrl.value,
           dateOfBirth: _formatDob(dob),
+          // Fixed €2.50 (250 cents) platform delivery fee for all categories
+          // per the client spec — not seller-editable for now. Sending it
+          // here is what lets the seller pass OrdersService's
+          // `deliveryFeeCents !== null` gate. The backend also defaults it.
+          deliveryFeeCents: 250,
           hygieneCommitment: hygieneCommitmentChecked.value,
           faitMaisonCommitment: faitMaisonCommitmentChecked.value,
         ),
@@ -1026,6 +1119,7 @@ class SignupFlowController extends GetxController {
   /// and POST `/v1/users` returns 400 from the length-≥2 validators.
   void seedAsSignedIn() {
     isSignedUp.value = true;
+    startedSignedUp.value = true;
     if (Get.isRegistered<UserController>()) {
       final uc = UserController.instance;
       final first = uc.authFirstName.value;
@@ -1058,6 +1152,7 @@ class SignupFlowController extends GetxController {
     this.sellerCategory.value = sellerCategory;
     this.vehicleType.value = vehicleType;
     isSignedUp.value = true;
+    startedSignedUp.value = true;
     // The universal preamble was committed in the previous session.
     // Mirror those flags so the gates in this controller don't re-fire.
     acceptedCgu.value = true;
@@ -1086,11 +1181,16 @@ class SignupFlowController extends GetxController {
   // OTP — backed by /v1/auth/phone/{request-otp,verify} (§3.8, §3.9).
   // ---------------------------------------------------------------------------
 
-  /// French national 9-digit phone → E.164. The wizard's validator
-  /// enforces 9 digits; we prepend `+33` here so we never send invalid
-  /// formats to the backend (which rejects with 400).
-  String get _phoneE164 =>
-      '+33${phone.value.replaceAll(RegExp(r'\D'), '')}';
+  /// Normalises the typed phone to E.164. A leading `+` is treated as a full
+  /// international number (e.g. `+21612345678`); otherwise a plain French
+  /// national number is assumed and `+33` is prepended (legacy default).
+  String get _phoneE164 {
+    final raw = phone.value.trim();
+    if (raw.startsWith('+')) {
+      return '+${raw.substring(1).replaceAll(RegExp(r'\D'), '')}';
+    }
+    return '+33${raw.replaceAll(RegExp(r'\D'), '')}';
+  }
 
   Future<void> requestOtp() async {
     otpError.value = '';

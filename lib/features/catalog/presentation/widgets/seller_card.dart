@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/custon_shapes/container/circular_container.dart';
 import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
@@ -8,7 +7,8 @@ import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/features/chat/presentation/screens/chat.dart';
+import 'package:incacook/core/services/realtime/chat_message.dart';
+import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 
 class SellerCard extends StatelessWidget {
   const SellerCard({
@@ -17,6 +17,7 @@ class SellerCard extends StatelessWidget {
     this.imageUrl = AppImages.profilePic,
     this.rating = AppTexts.productSampleSellerRating,
     this.ordersCompleted = AppTexts.productSampleSellerOrdersCompleted,
+    this.sellerUserId,
     this.onCallTap,
     this.onCardTap,
   });
@@ -25,6 +26,13 @@ class SellerCard extends StatelessWidget {
   final String imageUrl;
   final double rating;
   final int ordersCompleted;
+
+  /// Internal user id of the seller — passed to ChatScreen so the
+  /// pair-chat thread is keyed correctly. Null disables the chat
+  /// button (covers cases where the surrounding screen hasn't
+  /// resolved a real seller yet, e.g. in mock/demo flows).
+  final String? sellerUserId;
+
   final VoidCallback? onCallTap;
   final VoidCallback? onCardTap;
 
@@ -105,11 +113,21 @@ class SellerCard extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Get.to(() => const ChatScreen()),
-              child: CustomCircularContainer(
-                size: 40,
-                backgroundColor: colors.selectedSurface,
-                child: Icon(Iconsax.message, color: colors.selectedOnSurface, size: 18),
+              onTap: sellerUserId == null
+                  ? null
+                  : () => ChatNavigator.openBuyerSeller(
+                        context: context,
+                        peerUserId: sellerUserId!,
+                        peerName: name,
+                        myRole: ParticipantRole.buyer,
+                      ),
+              child: Opacity(
+                opacity: sellerUserId == null ? 0.5 : 1.0,
+                child: CustomCircularContainer(
+                  size: 40,
+                  backgroundColor: colors.selectedSurface,
+                  child: Icon(Iconsax.message, color: colors.selectedOnSurface, size: 18),
+                ),
               ),
             ),
           ],

@@ -20,5 +20,9 @@ class FeatureFlags {
   /// Flip back to `false` once SMS is restored. The phone-OTP code paths
   /// in [AuthRepository] and [SignupFlowController] are intentionally kept
   /// intact so the revert is one line.
-  static const bool useEmailOtpBypass = true;
+  ///
+  /// `false` — SMS phone OTP is live via Prelude Verify (server-side). The
+  /// phone field is required and the OTP step calls
+  /// `POST /v1/auth/phone/{request-otp,verify}`.
+  static const bool useEmailOtpBypass = false;
 }

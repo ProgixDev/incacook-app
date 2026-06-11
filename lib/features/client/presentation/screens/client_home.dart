@@ -4,7 +4,12 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/listing.dart';
+import 'package:incacook/core/models/listing_filter.dart';
+import 'package:incacook/core/models/listing_mappers.dart';
+import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
+import 'package:incacook/features/catalog/data/repositories/listings_repository.dart';
 import 'package:incacook/features/catalog/presentation/screens/product_detail.dart';
 import 'package:incacook/features/client/controllers/filter_controller.dart';
 import 'package:incacook/features/client/data/client_mock_data.dart';
@@ -37,7 +42,22 @@ class _HomeScreenState extends State<ClientHomeScreen> {
   //* changes scroll direction.
   bool _appBarVisible = true;
 
-  late final List<FoodListing> _listings = ClientMockData.listings();
+  // Real backend feed for the "food near you" section. The other two
+  // sections (kitchens, solidarity) still use mock data — they live on
+  // different endpoints / shapes that haven't been wired yet.
+  List<Listing> _realListings = const [];
+  bool _loadingFeed = true;
+  String? _feedError;
+
+  // Real buyer location (null until resolved / when permission denied).
+  // Sent to the backend feed so distance filter + sort work server-side.
+  double? _lat;
+  double? _lng;
+  String? _locationNote;
+
+  // Debounced refetch when the filter changes (category hub / filters sheet).
+  Worker? _filterWorker;
+
   late final List<Kitchen> _kitchens = ClientMockData.kitchens();
   late final List<FoodListing> _solidarityListings =
       ClientMockData.solidarityListings();
@@ -46,7 +66,131 @@ class _HomeScreenState extends State<ClientHomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_handleScroll);
+    // Refetch from the backend (debounced) whenever the filter changes —
+    // category hub, cuisine/diet/dish chips, distance, stock.
+    _filterWorker = debounce<ListingFilter>(
+      _filter.filter,
+      (_) => _loadFeed(),
+      time: const Duration(milliseconds: 350),
+    );
+    _init();
   }
+
+  /// Resolve the user's location (best-effort), then load the feed.
+  Future<void> _init() async {
+    await _resolveLocation();
+    await _loadFeed();
+  }
+
+  /// Reads the device location via [LocationService]. On denial / disabled
+  /// services we keep going with no point (distance filter/sort disabled) and
+  /// surface a clear note — never crash.
+  Future<void> _resolveLocation() async {
+    try {
+      final loc = Get.isRegistered<LocationService>()
+          ? LocationService.instance
+          : Get.put(LocationService(), permanent: true);
+      final pos = await loc.getCurrent();
+      if (!mounted) return;
+      if (pos != null) {
+        _lat = pos.latitude;
+        _lng = pos.longitude;
+        _locationNote = null;
+      } else {
+        _lat = null;
+        _lng = null;
+        _locationNote =
+            'Localisation désactivée — activez-la pour filtrer par distance.';
+      }
+    } catch (_) {
+      _lat = null;
+      _lng = null;
+      _locationNote = 'Localisation indisponible.';
+    }
+  }
+
+  /// `GET /v1/listings` — the buyer feed, filtered SERVER-SIDE from the active
+  /// [FilterController] (category, cuisine, diet, dish type, distance, stock)
+  /// plus the real buyer location. Buyer-feed-only fields (sellerName,
+  /// distanceKm, lat/lng, rating, …) come back populated.
+  Future<void> _loadFeed() async {
+    setState(() {
+      _loadingFeed = true;
+      _feedError = null;
+    });
+    try {
+      final result = await ListingsRepository().getFeed(
+        _filter.toQuery(lat: _lat, lng: _lng),
+      );
+      if (!mounted) return;
+      setState(() {
+        _realListings = result.items;
+        _loadingFeed = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadingFeed = false;
+        _feedError = e.toString();
+      });
+    }
+  }
+
+  Widget _buildFeedSection(BuildContext context) {
+    final sectionHeight = DeviceUtils.getScreenHeight(context) * 0.4;
+    if (_loadingFeed) {
+      return ClientHomeSection(
+        title: AppTexts.clientHomeSectionFoodNearYou,
+        height: sectionHeight,
+        children: const [Center(child: CircularProgressIndicator())],
+      );
+    }
+    if (_feedError != null) {
+      return ClientHomeSection(
+        title: AppTexts.clientHomeSectionFoodNearYou,
+        height: sectionHeight,
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off, size: 36),
+                const Gap(AppSizes.sm),
+                ElevatedButton(
+                  onPressed: _loadFeed,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+    if (_realListings.isEmpty) {
+      return ClientHomeSection(
+        title: AppTexts.clientHomeSectionFoodNearYou,
+        height: sectionHeight,
+        children: const [
+          Center(child: Text('Aucun produit pour le moment.')),
+        ],
+      );
+    }
+    return ClientHomeSection(
+      title: AppTexts.clientHomeSectionFoodNearYou,
+      height: sectionHeight,
+      children: [
+        for (final l in _realListings)
+          FoodListingCard(
+            listing: _toFoodListing(l),
+            onTap: () => Get.to(() => ProductDetailScreen(listing: l)),
+          ),
+      ],
+    );
+  }
+
+  /// Adapter for the existing [FoodListingCard] — shared mapping so the feed
+  /// and the map stay in sync (see [ListingToFoodListing]).
+  FoodListing _toFoodListing(Listing l) => l.toFoodListing();
 
   void _handleScroll() {
     final direction = _scrollController.position.userScrollDirection;
@@ -59,6 +203,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
 
   @override
   void dispose() {
+    _filterWorker?.dispose();
     _scrollController
       ..removeListener(_handleScroll)
       ..dispose();
@@ -124,22 +269,28 @@ class _HomeScreenState extends State<ClientHomeScreen> {
 
                 const Gap(AppSizes.spaceBtwSections - AppSizes.sm),
 
-                //* food near you (filtered)
-                Obx(() {
-                  final filtered = _filter.apply(_listings);
-                  return ClientHomeSection(
-                    title: AppTexts.clientHomeSectionFoodNearYou,
-                    height: DeviceUtils.getScreenHeight(context) * 0.4,
-                    children: [
-                      for (final listing in filtered)
-                        FoodListingCard(
-                          listing: listing,
-                          onTap: () =>
-                              Get.to(() => const ProductDetailScreen()),
-                        ),
-                    ],
-                  );
-                }),
+                //* food near you — real `GET /v1/listings` feed, filtered
+                //* client-side by [FilterController]. Loading / error /
+                //* empty states are rendered as single-card placeholders
+                //* inside the horizontal section so the layout doesn't jump.
+                //* location note when permission is denied/disabled (the feed
+                //* still works, just without distance filtering/sort).
+                if (_locationNote != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                    child: Text(
+                      _locationNote!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  const Gap(AppSizes.sm),
+                ],
+
+                //* food near you — real `GET /v1/listings` feed, filtered
+                //* SERVER-SIDE from FilterController + buyer location.
+                _buildFeedSection(context),
                 const Gap(AppSizes.spaceBtwSections),
 
                 //* kitchens near you

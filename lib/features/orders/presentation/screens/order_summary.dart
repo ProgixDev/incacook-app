@@ -5,6 +5,7 @@ import 'package:incacook/core/common/widgets/custon_shapes/container/circular_im
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
@@ -186,12 +187,25 @@ class _SummaryItemCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(AppSizes.cardRadiusMd),
-            child: Image.asset(
-              item.listing.imageUrl,
-              width: 56,
-              height: 56,
-              fit: BoxFit.cover,
-            ),
+            child: item.listing.imageUrl.startsWith('http')
+                ? Image.network(
+                    item.listing.imageUrl,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Image.asset(
+                      AppImages.foodTest,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    item.listing.imageUrl,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const Gap(AppSizes.sm + 2),
           Expanded(

@@ -3,26 +3,32 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:incacook/core/enums/food_enums.dart';
-import 'package:incacook/features/map/data/map_mock_data.dart';
+import 'package:incacook/core/models/listing_mappers.dart';
+import 'package:incacook/core/services/location/location_service.dart';
+import 'package:incacook/features/catalog/data/models/requests/list_listings_query.dart';
+import 'package:incacook/features/catalog/data/repositories/listings_repository.dart';
 import 'package:incacook/features/map/domain/map_entry.dart';
 import 'package:incacook/features/map/presentation/widget/map_filter_bar.dart';
 
-/// Owns map state for [MapScreen]: the static demo data, the selected
-/// filter, the currently-tapped pin, and the projected screen coords for
-/// every visible pin (recomputed on every camera change). The screen reads
-/// these reactively via [Obx] and stays UI-only.
+/// Owns map state for [MapScreen]: the real backend listings (pinned by
+/// seller location), the selected filter, the tapped pin, and the projected
+/// screen coords for every visible pin (recomputed on each camera change).
+/// The screen reads these reactively via [Obx] and stays UI-only.
 class MapController extends GetxController {
   static MapController get instance => Get.isRegistered<MapController>()
       ? Get.find<MapController>()
       : Get.put(MapController());
 
-  //? static demo user location — swap for geolocator lookup later
-  static final Position userLocation = Position(2.3522, 48.8566);
+  /// Map centre / user dot. Defaults to central Paris until the device
+  /// location resolves; updated to the real position in [loadListings].
+  final Rx<Position> userLocation = Position(2.3522, 48.8566).obs;
   static const double initialZoom = 14;
   static const Duration urgentWindow = Duration(hours: 2, minutes: 30);
 
-  /// The full pin dataset. Filter is applied via [visibleEntries].
-  late final List<MapEntry> entries = MapMockData.entries();
+  /// Real listings from `GET /v1/listings`, one pin each (only listings whose
+  /// seller has geocoded coordinates). Filter applied via [visibleEntries].
+  final RxList<MapEntry> entries = <MapEntry>[].obs;
+  final RxBool loading = true.obs;
 
   // ── Reactive UI state ─────────────────────────────────────────────────
 
@@ -41,6 +47,61 @@ class MapController extends GetxController {
   //* Bumped on every projection request; results from stale generations are
   //* dropped to avoid jitter when many camera events fire in quick succession.
   int _projectionGen = 0;
+
+  @override
+  void onInit() {
+    super.onInit();
+    unawaited(loadListings());
+  }
+
+  /// Resolves the device location (best-effort), fetches the real feed, and
+  /// builds a pin per listing that has seller coordinates. Never throws —
+  /// on any failure the map simply shows no pins.
+  Future<void> loadListings() async {
+    loading.value = true;
+    double? lat;
+    double? lng;
+    try {
+      final loc = Get.isRegistered<LocationService>()
+          ? LocationService.instance
+          : Get.put(LocationService(), permanent: true);
+      final pos = await loc.getCurrent();
+      if (pos != null) {
+        lat = pos.latitude;
+        lng = pos.longitude;
+        userLocation.value = Position(lng, lat);
+      }
+    } catch (_) {
+      // keep the fallback centre — never crash on location.
+    }
+
+    try {
+      final query = (lat != null && lng != null)
+          ? ListListingsQuery(
+              lat: lat,
+              lng: lng,
+              sort: ListingFeedSort.distance,
+              limit: 100,
+            )
+          : const ListListingsQuery(limit: 100);
+      final result = await ListingsRepository().getFeed(query);
+      entries.assignAll([
+        for (final l in result.items)
+          if (l.lat != null && l.lng != null)
+            MapEntry(
+              position: Position(l.lng!, l.lat!),
+              listing: l.toFoodListing(),
+              source: l,
+            ),
+      ]);
+    } catch (_) {
+      entries.clear();
+    } finally {
+      loading.value = false;
+      if (lat != null && lng != null) unawaited(centerOnUser());
+      unawaited(refreshScreenCoords());
+    }
+  }
 
   // ── Derived data ──────────────────────────────────────────────────────
 
@@ -91,7 +152,7 @@ class MapController extends GetxController {
     final pinPoints = visible
         .map((e) => Point(coordinates: e.position))
         .toList();
-    final userPoint = Point(coordinates: userLocation);
+    final userPoint = Point(coordinates: userLocation.value);
 
     final results = await map.pixelsForCoordinates([...pinPoints, userPoint]);
     if (gen != _projectionGen) return;
@@ -100,10 +161,10 @@ class MapController extends GetxController {
     userScreenCoord.value = results.last;
   }
 
-  void centerOnUser() {
-    _map?.flyTo(
+  Future<void> centerOnUser() async {
+    await _map?.flyTo(
       CameraOptions(
-        center: Point(coordinates: userLocation),
+        center: Point(coordinates: userLocation.value),
         zoom: initialZoom,
       ),
       MapAnimationOptions(duration: 600),

@@ -95,13 +95,33 @@ class AuthRepository extends GetxService {
     }
   }
 
-  /// `POST /v1/auth/password/reset-request` — triggers a recovery email.
+  /// `POST /v1/auth/password/reset-request` — emails the account a 6-digit
+  /// recovery code (Supabase recovery template, `{{ .Token }}`). The
+  /// response is intentionally generic so it never reveals whether the
+  /// email is registered.
   Future<void> requestPasswordReset(PasswordResetRequest req) async {
     await _api.dio.post<dynamic>(
       '${ApiConstants.apiPrefix}/auth/password/reset-request',
       data: req.toJson(),
       options: Options(extra: AuthInterceptor.skipAuth()),
     );
+  }
+
+  /// `POST /v1/auth/password/verify-reset-otp` — confirms the 6-digit reset
+  /// code and returns a short-lived recovery [Session]. The tokens are
+  /// persisted so the immediately-following [updatePassword] call carries
+  /// the recovery bearer. A wrong/expired code throws [ApiFailure] (400).
+  Future<Session> verifyResetOtp({
+    required String email,
+    required String code,
+  }) async {
+    final result = await _api.post<Session>(
+      '${ApiConstants.apiPrefix}/auth/password/verify-reset-otp',
+      body: <String, dynamic>{'email': email, 'code': code},
+      decoder: (json) => Session.fromJson(json! as Map<String, dynamic>),
+    );
+    await _persistSession(result.data);
+    return result.data;
   }
 
   /// `POST /v1/auth/password/update` — authenticated.
@@ -129,17 +149,15 @@ class AuthRepository extends GetxService {
     );
   }
 
-  /// `POST /v1/auth/phone/verify` (§3.9) — confirms the OTP and returns
-  /// a fresh session. Tokens are swapped in [TokenStorage] before the
-  /// new [Session] is handed back.
-  Future<Session> verifyPhoneOtp(VerifyOtpRequest req) async {
-    final result = await _api.post<Session>(
+  /// `POST /v1/auth/phone/verify` (§3.9) — confirms the OTP via Prelude. No new
+  /// session is issued (the caller is already authenticated), so the current
+  /// tokens stay; we just await the 200 (`{ phoneVerified, phone }`).
+  Future<void> verifyPhoneOtp(VerifyOtpRequest req) async {
+    await _api.post<void>(
       '${ApiConstants.apiPrefix}/auth/phone/verify',
       body: req.toJson(),
-      decoder: (json) => Session.fromJson(json! as Map<String, dynamic>),
+      decoder: (_) {},
     );
-    await _persistSession(result.data);
-    return result.data;
   }
 
   /// `POST /v1/auth/email/request-otp` (§3.9 *Temporary email-OTP bypass*) —

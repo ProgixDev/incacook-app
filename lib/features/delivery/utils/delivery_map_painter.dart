@@ -14,13 +14,18 @@ class DeliveryMapPainter {
     required this.map,
     required this.polylineManager,
     required this.circleManager,
+    required this.pointManager,
   });
 
   final MapboxMap map;
   final PolylineAnnotationManager polylineManager;
   final CircleAnnotationManager circleManager;
+  // Text labels ("Vendeur" / "Client") that name each stop's role.
+  final PointAnnotationManager pointManager;
 
-  bool _hasRendered = false;
+  //* Camera is auto-framed once per job (on the first route render);
+  //* later re-routes replace the polyline without yanking the camera.
+  bool _framed = false;
 
   /// One-shot map UI configuration — runs at map creation, before any
   /// annotation managers exist. Static because it's prerequisite to building
@@ -56,22 +61,45 @@ class DeliveryMapPainter {
     );
   }
 
-  /// First call → markers + polyline + camera frame. Subsequent calls (from
-  /// re-routing) → replace the polyline only.
-  Future<void> renderRoute(
-    MapRoute route, {
+  /// Draws (or redraws) the two trip stops — seller pickup + customer
+  /// dropoff. Called on job accept so the driver immediately sees both
+  /// emplacements, even before (or without) a fetched route. Clears any
+  /// previous markers first so back-to-back jobs don't stack.
+  Future<void> showStops({
     required MapPoint pickup,
     required MapPoint dropoff,
   }) async {
-    if (!_hasRendered) {
-      await _drawMarkers(pickup: pickup, dropoff: dropoff);
-      await _drawRoute(route);
-      await _frameRoute(route);
-      _hasRendered = true;
-    } else {
-      await polylineManager.deleteAll();
-      await _drawRoute(route);
+    await circleManager.deleteAll();
+    await pointManager.deleteAll();
+    await _drawMarkers(pickup: pickup, dropoff: dropoff);
+    //? Frame both stops and own the framing for this job — the driver's
+    //? live route can originate far away (real GPS), so we keep the camera
+    //? on the two Paris stops rather than letting the route reframe to a
+    //? continent-spanning bounding box.
+    await _framePoints([pickup, dropoff]);
+    _framed = true;
+  }
+
+  /// Draws the route polyline to the current destination, replacing any
+  /// previous one (so a re-route — e.g. pickup→dropoff leg switch — wipes
+  /// the stale line). Frames the camera once per job on the first route.
+  Future<void> showRoute(MapRoute route) async {
+    await polylineManager.deleteAll();
+    await _drawRoute(route);
+    if (!_framed) {
+      await _framePoints(route.points);
+      _framed = true;
     }
+  }
+
+  /// Wipes every overlay (markers + polyline) and resets the framing
+  /// flag. Call when a job ends so the finished trip doesn't linger on
+  /// the map into the idle dashboard or the next accepted job.
+  Future<void> reset() async {
+    await polylineManager.deleteAll();
+    await circleManager.deleteAll();
+    await pointManager.deleteAll();
+    _framed = false;
   }
 
   Future<void> flyToDriver(MapPoint pos) async {
@@ -119,14 +147,34 @@ class DeliveryMapPainter {
         circleStrokeColor: 0xFFFFFFFF,
       ),
     );
+
+    //* Role labels above each dot so the driver knows which is which.
+    await _drawLabel(pickup, 'Vendeur', 0xFFE8823B);
+    await _drawLabel(dropoff, 'Client', 0xFFFF3B30);
   }
 
-  /// Centres the camera on [route]'s bounding-box midpoint.
-  Future<void> _frameRoute(MapRoute route) async {
-    if (route.points.isEmpty) return;
-    var minLng = route.points.first.lng, maxLng = minLng;
-    var minLat = route.points.first.lat, maxLat = minLat;
-    for (final p in route.points) {
+  Future<void> _drawLabel(MapPoint at, String text, int color) async {
+    await pointManager.create(
+      PointAnnotationOptions(
+        geometry: Point(coordinates: Position(at.lng, at.lat)),
+        textField: text,
+        textColor: color,
+        textHaloColor: 0xFFFFFFFF,
+        textHaloWidth: 1.6,
+        textSize: 13.0,
+        // Lift the label above the 10px circle (offset is in ems).
+        textOffset: [0.0, -1.6],
+      ),
+    );
+  }
+
+  /// Centres the camera on the bounding-box midpoint of [points] (a route
+  /// path or just the two stops).
+  Future<void> _framePoints(List<MapPoint> points) async {
+    if (points.isEmpty) return;
+    var minLng = points.first.lng, maxLng = minLng;
+    var minLat = points.first.lat, maxLat = minLat;
+    for (final p in points) {
       minLng = math.min(minLng, p.lng);
       maxLng = math.max(maxLng, p.lng);
       minLat = math.min(minLat, p.lat);

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/food_listing.dart';
 
@@ -25,7 +26,28 @@ class FoodListingCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(listing.imageUrl, fit: BoxFit.cover),
+              // Real backend listings come through with an `http(s)://` URL;
+              // legacy mock entries still pass an asset key. The network
+              // path falls back to the placeholder asset on load failure
+              // so the card slot never reads as empty.
+              listing.imageUrl.startsWith('http')
+                  ? Image.network(
+                      listing.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) =>
+                          Image.asset(AppImages.foodTest, fit: BoxFit.cover),
+                      loadingBuilder: (ctx, child, progress) {
+                        if (progress == null) return child;
+                        return const Center(
+                          child: SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+                    )
+                  : Image.asset(listing.imageUrl, fit: BoxFit.cover),
 
               //* gradient for text legibility
               const IgnorePointer(
@@ -58,36 +80,41 @@ class FoodListingCard extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
                       child: Row(
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                listing.name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      height: 1.2,
-                                    ),
-                              ),
-                              const Gap(4),
-                              Text(
-                                subtitle,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.75,
+                          // Expanded so a long name gets ellipsized inside
+                          // the available width instead of overflowing the
+                          // card (the trailing price needs reserved space).
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  listing.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        height: 1.2,
                                       ),
-                                    ),
-                              ),
-                            ],
+                                ),
+                                const Gap(4),
+                                Text(
+                                  subtitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.75,
+                                        ),
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const Spacer(),
+                          const Gap(8),
                           //* price (or "Gratuit" for solidarity listings)
                           listing.price == 0
                               ? Text(

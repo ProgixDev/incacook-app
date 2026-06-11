@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/models/listing_filter.dart';
 import 'package:incacook/core/models/food_listing.dart';
+import 'package:incacook/features/catalog/data/models/requests/list_listings_query.dart';
 
 class FilterController extends GetxController {
   static FilterController get instance => Get.isRegistered<FilterController>()
@@ -69,6 +70,26 @@ class FilterController extends GetxController {
 
   void reset() {
     filter.value = const ListingFilter();
+  }
+
+  /// Builds the backend feed query (`GET /v1/listings`) from the active
+  /// filter. Distance + location are only included when [lat]/[lng] are
+  /// present — the server rejects `maxDistanceKm` without a buyer point, and
+  /// distance sort only makes sense with a location.
+  ListListingsQuery toQuery({double? lat, double? lng}) {
+    final f = filter.value;
+    final hasLocation = lat != null && lng != null;
+    return ListListingsQuery(
+      category: f.category,
+      cuisineTypes: f.cuisines.isEmpty ? null : f.cuisines.toList(),
+      dietary: f.diets.isEmpty ? null : f.diets.toList(),
+      dishTypes: f.dishTypes.isEmpty ? null : f.dishTypes.toList(),
+      inStockOnly: f.inStockOnly ? true : null,
+      maxDistanceKm: hasLocation ? f.maxDistanceKm : null,
+      lat: hasLocation ? lat : null,
+      lng: hasLocation ? lng : null,
+      sort: hasLocation ? ListingFeedSort.distance : null,
+    );
   }
 
   /// Apply current filter to a listing collection.

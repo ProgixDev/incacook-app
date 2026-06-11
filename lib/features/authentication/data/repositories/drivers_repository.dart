@@ -35,4 +35,29 @@ class DriversRepository extends GetxService {
       decoder: (_) {},
     );
   }
+
+  /// `POST /v1/drivers/me/location`. High-frequency position update sent
+  /// while the driver has an active delivery. Server-side: updates
+  /// `DriverProfile.lastKnownPoint` and fans out via Redis to the
+  /// buyer's tracking socket. Fire-and-forget — errors are swallowed by
+  /// the caller's throttle loop, since a transient miss is harmless.
+  Future<void> pushLocation({
+    required double lat,
+    required double lng,
+    double? headingDeg,
+    double? speedMps,
+    double? accuracyM,
+  }) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/drivers/me/location',
+      body: {
+        'lat': lat,
+        'lng': lng,
+        'headingDeg': ?headingDeg,
+        'speedMps': ?speedMps,
+        'accuracyM': ?accuracyM,
+      },
+      decoder: (_) {},
+    );
+  }
 }

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/features/chat/domain/chat_preview.dart';
-import 'package:incacook/features/chat/presentation/screens/chat.dart';
 import 'package:incacook/features/chat/presentation/widgets/chat_list_tile.dart';
 import 'package:incacook/features/chat/presentation/widgets/chat_search_bar.dart';
 
@@ -163,7 +161,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     final chat = ChatListScreen._chats[index];
                     return ChatListTile(
                       chat: chat,
-                      onTap: () => Get.to(() => const ChatScreen()),
+                      // Mock chat-list tile — real entry points (buyer
+                      // tracking pill, seller conversations screen)
+                      // pass a real orderId or peerUserId. Tapping
+                      // the mock list is a no-op until wired to real
+                      // ConversationSummary rows.
+                      onTap: () {},
                     );
                   },
                 ),

@@ -12,8 +12,11 @@ import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/core/models/delivery_details.dart';
 import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
+import 'package:incacook/core/config/stripe_config.dart';
 import 'package:incacook/core/models/payment_method.dart';
+import 'package:incacook/features/legal/presentation/legal_terms_screen.dart';
 import 'package:incacook/features/orders/presentation/screens/payment_processing.dart';
+import 'package:incacook/features/orders/presentation/widgets/card_entry_sheet.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
@@ -56,6 +59,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String? _selectedId;
   bool _processing = false;
 
+  /// Required CGU/CGV consent — "Payer" stays disabled until checked.
+  bool _termsAccepted = false;
+
+  /// Stripe PaymentMethod id captured from the card-entry popup for the
+  /// currently selected card. Null for non-card methods (PayPal / wallet /
+  /// Apple Pay) or before a card's details have been entered.
+  String? _cardPaymentMethodId;
+
   @override
   void initState() {
     super.initState();
@@ -79,13 +90,40 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return true;
   }
 
-  void _select(PaymentMethod m) {
+  Future<void> _select(PaymentMethod m) async {
     if (!_isSelectable(m)) return;
-    setState(() => _selectedId = m.id);
+    // Choosing a card opens a popup to enter the card's details (Stripe).
+    // The tokenized PaymentMethod id is kept to settle the order on "Payer".
+    if (m is SavedCardPaymentMethod && StripeConfig.isConfigured) {
+      final pmId = await showCardEntrySheet(context, brandLabel: m.brand);
+      if (pmId == null) return; // cancelled — keep the previous selection
+      setState(() {
+        _selectedId = m.id;
+        _cardPaymentMethodId = pmId;
+      });
+      return;
+    }
+    setState(() {
+      _selectedId = m.id;
+      _cardPaymentMethodId = null;
+    });
   }
 
   Future<void> _pay() async {
     if (_selectedId == null || _processing) return;
+    final selected = _methods.firstWhere((m) => m.id == _selectedId);
+
+    // Safety net: if a card is selected without captured details (e.g. the
+    // default pre-selection), prompt the card popup before paying.
+    var cardMethodId = _cardPaymentMethodId;
+    if (selected is SavedCardPaymentMethod &&
+        StripeConfig.isConfigured &&
+        cardMethodId == null) {
+      cardMethodId = await showCardEntrySheet(context, brandLabel: selected.brand);
+      if (cardMethodId == null) return; // cancelled
+      _cardPaymentMethodId = cardMethodId;
+    }
+
     HapticFeedback.mediumImpact();
     setState(() => _processing = true);
 
@@ -95,6 +133,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         selection: widget.selection,
         options: widget.options,
         deliveryDetails: widget.deliveryDetails,
+        cardPaymentMethodId:
+            selected is SavedCardPaymentMethod ? cardMethodId : null,
+        termsAccepted: _termsAccepted,
       ),
     );
 
@@ -138,14 +179,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   const _Divider(),
                   const _SecureNote(),
                   const Gap(AppSizes.sm + 2),
-                  const _TermsText(),
+                  // Required CGU/CGV consent + "Lire les CGU/CGV" link.
+                  TermsConsentTile(
+                    value: _termsAccepted,
+                    onChanged: (v) => setState(() => _termsAccepted = v),
+                  ),
                 ],
               ),
             ),
           ),
           _PayFooter(
             total: widget.totalAmount,
-            enabled: _selectedId != null && !_processing,
+            enabled: _selectedId != null && _termsAccepted && !_processing,
             processing: _processing,
             onPay: _pay,
           ),
@@ -450,36 +495,6 @@ class _SecureNote extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TermsText extends StatelessWidget {
-  const _TermsText();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final base = Theme.of(context).textTheme.bodySmall?.copyWith(
-      color: scheme.onSurfaceVariant,
-      height: 1.35,
-    );
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: '${AppTexts.paymentTermsPrefix} '),
-          TextSpan(
-            text: AppTexts.paymentTermsLink,
-            style: base?.copyWith(
-              color: scheme.onSurface,
-              fontWeight: FontWeight.w700,
-              decoration: TextDecoration.underline,
-              decorationColor: scheme.onSurface,
-            ),
-          ),
-        ],
-      ),
-      style: base,
     );
   }
 }

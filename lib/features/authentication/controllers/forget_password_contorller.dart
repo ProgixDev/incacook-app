@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:incacook/core/common/styles/loaders.dart';
+import 'package:incacook/core/constants/animations.dart';
+import 'package:incacook/core/network/api_response.dart';
+import 'package:incacook/core/utils/helpers/network_manager.dart';
+import 'package:incacook/core/utils/popups/fullscreen_loader.dart';
+import 'package:incacook/features/authentication/data/models/requests/password_reset_request.dart';
+import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
+import 'package:incacook/features/authentication/presentation/screens/reset_password.dart';
+
 class ForgetPasswordController extends GetxController {
+  ForgetPasswordController({AuthRepository? authRepository})
+    : _authRepository = authRepository ?? Get.find<AuthRepository>();
+
   static ForgetPasswordController get instance => Get.find();
+
+  final AuthRepository _authRepository;
 
   //* variables
   final email = TextEditingController();
+  final isLoading = false.obs;
   GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
 
   @override
@@ -14,84 +29,50 @@ class ForgetPasswordController extends GetxController {
     super.onClose();
   }
 
-  //* send reset password email
-  // void sendPasswordResetEmail() async {
-  //   try {
-  //     //* start loading
-  //     CustomFullscreenLoader.openLoadingDialog(
-  //       'Processing your request...',
-  //       AppAnimations.check,
-  //     );
+  /// Triggers `POST /v1/auth/password/reset-request`, which has Supabase
+  /// email a 6-digit recovery code to [email]. On success we hand off to
+  /// [ResetPasswordScreen], where the user enters that code and picks a new
+  /// password.
+  Future<void> sendPasswordResetEmail() async {
+    if (!(forgetPasswordFormKey.currentState?.validate() ?? false)) return;
+    if (isLoading.value) return;
+    isLoading.value = true;
 
-  //     //* check internet connection
-  //     final isConnected = await NetworkManager.instance.isConnected();
-  //     if (!isConnected) {
-  //       CustomFullscreenLoader.stopLoading();
-  //       return;
-  //     }
+    var loaderShown = false;
+    try {
+      CustomFullscreenLoader.openLoadingDialog(
+        'Envoi du code de réinitialisation...',
+        AppAnimations.loading,
+      );
+      loaderShown = true;
 
-  //     //* form validation
-  //     if (!forgetPasswordFormKey.currentState!.validate()) {
-  //       CustomFullscreenLoader.stopLoading();
-  //       return;
-  //     }
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // NetworkManager itself toasts; just bail before hitting the wire.
+        return;
+      }
 
-  //     //* send email to reset password
-  //     await AuthenticationRepository.instance
-  //         .sendPasswordResetEmail(email.text.trim());
+      final target = email.text.trim();
+      await _authRepository.requestPasswordReset(
+        PasswordResetRequest(email: target),
+      );
 
-  //     //* remove loader
-  //     CustomFullscreenLoader.stopLoading();
+      // Stop the loader before navigating so it doesn't outlive the route.
+      CustomFullscreenLoader.stopLoading();
+      loaderShown = false;
 
-  //     //* show success screen
-  //     CustomLoaders.successSnackBar(
-  //       title: 'Email sent',
-  //       message: 'Email link sent to reset your password'.tr,
-  //     );
-
-  //     //* redirec
-  //     Get.to(
-  //       () => ResetPasswordScreen(
-  //         email: email.text.trim(),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     //* remove loader
-  //     CustomFullscreenLoader.stopLoading();
-  //     CustomLoaders.errorSnackBar(title: 'Oh snap!', message: e.toString());
-  //   }
-  // }
-
-  // resendPasswordResetEmail(String email) async {
-  //   try {
-  //     //* start loading
-  //     CustomFullscreenLoader.openLoadingDialog(
-  //       'Processing your request...',
-  //       TAnimations.check,
-  //     );
-
-  //     //* check internet connection
-  //     final isConnected = await NetworkManager.instance.isConnected();
-  //     if (!isConnected) {
-  //       CustomFullscreenLoader.stopLoading();
-  //       return;
-  //     }
-
-  //     //* send email to reset password
-  //     await AuthenticationRepository.instance.sendPasswordResetEmail(email);
-
-  //     //* remove loader
-  //     CustomFullscreenLoader.stopLoading();
-
-  //     //* show success screen
-  //     CustomLoaders.successSnackBar(
-  //       title: 'Email sent',
-  //       message: 'Email link sent to reset your password'.tr,
-  //     );
-  //   } catch (e) {
-  //     //* remove loader
-  //     CustomFullscreenLoader.stopLoading();
-  //     CustomLoaders.errorSnackBar(title: 'Oh snap!', message: e.toString());
-  //   }
-  // }
+      CustomLoaders.successSnackBar(
+        title: 'Email envoyé',
+        message: 'Un code de réinitialisation a été envoyé à $target',
+      );
+      Get.to<void>(() => ResetPasswordScreen(email: target));
+    } on ApiFailure catch (e) {
+      CustomLoaders.errorSnackBar(title: 'Oh snap!', message: e.message);
+    } catch (e) {
+      CustomLoaders.errorSnackBar(title: 'Oh snap!', message: e.toString());
+    } finally {
+      if (loaderShown) CustomFullscreenLoader.stopLoading();
+      isLoading.value = false;
+    }
+  }
 }

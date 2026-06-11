@@ -39,6 +39,7 @@ _CreateListingRequest _$CreateListingRequestFromJson(
           .toList() ??
       const <Allergen>[],
   otherAllergens: json['otherAllergens'] as String?,
+  declaresNoAllergens: json['declaresNoAllergens'] as bool? ?? false,
   isAvailable: json['isAvailable'] as bool?,
   isVeg: json['isVeg'] as bool?,
   menuCategory: json['menuCategory'] as String?,
@@ -52,6 +53,7 @@ _CreateListingRequest _$CreateListingRequestFromJson(
           ?.map((e) => ListingExtraRequest.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <ListingExtraRequest>[],
+  termsAccepted: json['termsAccepted'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$CreateListingRequestToJson(
@@ -73,6 +75,7 @@ Map<String, dynamic> _$CreateListingRequestToJson(
       .toList(),
   'allergens': instance.allergens.map((e) => _$AllergenEnumMap[e]!).toList(),
   'otherAllergens': ?instance.otherAllergens,
+  'declaresNoAllergens': instance.declaresNoAllergens,
   'isAvailable': ?instance.isAvailable,
   'isVeg': ?instance.isVeg,
   'menuCategory': ?instance.menuCategory,
@@ -80,6 +83,7 @@ Map<String, dynamic> _$CreateListingRequestToJson(
   'prepMinutes': instance.prepMinutes,
   'expiresAt': ?instance.expiresAt?.toIso8601String(),
   'extras': instance.extras.map((e) => e.toJson()).toList(),
+  'termsAccepted': instance.termsAccepted,
 };
 
 const _$CuisineTypeEnumMap = {

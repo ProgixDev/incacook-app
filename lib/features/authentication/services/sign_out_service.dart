@@ -8,6 +8,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/services/google_auth_service.dart';
+import 'package:incacook/core/services/notifications/push_notification_service.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
 import 'package:incacook/features/authentication/presentation/screens/welcome.dart';
@@ -32,6 +33,17 @@ class SignOutService {
   /// Performs the sign-out without prompting. Useful for places that
   /// already confirmed (e.g. a 403 forced-logout flow if one ever lands).
   static Future<void> signOut() async {
+    // Unregister this device's FCM token FIRST — the DELETE is authenticated,
+    // and AuthRepository.signout() clears the bearer in its finally. Doing it
+    // here stops the logged-out device from receiving this user's pushes.
+    // Best-effort: never block leaving the protected screens.
+    if (Get.isRegistered<PushNotificationService>()) {
+      try {
+        await PushNotificationService.instance.unregisterCurrentToken();
+      } catch (_) {
+        // ignore
+      }
+    }
     try {
       await AuthRepository.instance.signout();
     } catch (_) {

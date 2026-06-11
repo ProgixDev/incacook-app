@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:incacook/core/config/mapbox_config.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 
 class MapboxDirectionsClient {
   MapboxDirectionsClient({Dio? dio, String? accessToken})
     : _dio = dio ?? Dio(),
-      _accessToken =
-          accessToken ?? const String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
+      _accessToken = accessToken ?? MapboxConfig.publicToken,
+      assert(
+        (accessToken ?? MapboxConfig.publicToken).isNotEmpty,
+        MapboxConfig.missingTokenMessage,
+      );
 
   static const _baseUrl = 'https://api.mapbox.com/directions/v5/mapbox';
 

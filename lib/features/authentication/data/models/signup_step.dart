@@ -36,6 +36,10 @@ enum SignupStep {
   driverDocuments,
   driverZone,
   driverCharter,
+  // Shared (seller + driver) — optional Stripe Connect payout setup so
+  // they can receive their earnings. Last step in those flows; skippable
+  // (a dashboard banner re-prompts later). Not a backend onboarding step.
+  payoutSetup,
 }
 
 /// Maps `OnboardingState.next` (a backend step key like `kyc_id` or

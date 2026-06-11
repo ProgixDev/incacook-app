@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:incacook/core/controllers/user_controller.dart';
+import 'package:incacook/features/authentication/data/models/user_role.dart';
+import 'package:incacook/features/orders/presentation/screens/orders_history_screen.dart';
 import 'package:incacook/features/settings/domain/setting_menu_item.dart';
+import 'package:incacook/features/settings/presentation/screens/edit_profile.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/authentication/services/sign_out_service.dart';
@@ -14,6 +18,7 @@ import 'package:incacook/features/settings/presentation/widgets/profile_menu_car
 import 'package:incacook/features/settings/presentation/widgets/profile_user_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
 import 'package:incacook/features/settings/presentation/widgets/saved_addresses_sheet.dart';
+import 'package:incacook/features/wallet/presentation/wallet_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,41 +26,6 @@ class SettingsScreen extends StatefulWidget {
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
-
-//* placeholder addresses — swap for a real source once persistence lands.
-const List<Address> _mockSavedAddresses = [
-  Address(
-    id: 'addr-home',
-    type: SavedAddressType.home,
-    fullAddress: '12 rue Saint-Sabin',
-    city: 'Paris',
-    postalCode: '75011',
-  ),
-  Address(
-    id: 'addr-work',
-    type: SavedAddressType.work,
-    fullAddress: '24 rue Lafayette',
-    city: 'Paris',
-    postalCode: '75009',
-  ),
-  Address(
-    id: 'addr-sister',
-    type: SavedAddressType.other,
-    customLabel: 'Chez ma sœur',
-    fullAddress: '47 boulevard Voltaire',
-    city: 'Paris',
-    postalCode: '75011',
-  ),
-  Address(
-    id: 'addr-parents',
-    type: SavedAddressType.other,
-    customLabel: 'Maison parents',
-    fullAddress: '8 rue de la Paix',
-    city: 'Rueil-Malmaison',
-    postalCode: '92500',
-    inRange: false,
-  ),
-];
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final ScrollController _scrollController = ScrollController();
@@ -65,6 +35,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_handleScroll);
+    // Best-effort refresh so the profile card always reflects the latest
+    // name / phone / photo — including a seller's registration photo,
+    // which is set after the Gate-2 user cache was first populated.
+    UserController.instance.refreshFromServer().ignore();
   }
 
   void _handleScroll() {
@@ -89,24 +63,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final appBarHeight =
         MediaQuery.viewPaddingOf(context).top + AppSizes.appBarHeight;
 
+    // Wallet (earnings) only applies to sellers + drivers.
+    final role = UserController.instance.user.value?.role;
+    final isEarner = role == UserRole.seller || role == UserRole.driver;
+
     final accountItems = <SettingMenuItem>[
-      SettingMenuItem(
-        icon: Iconsax.card,
-        title: AppTexts.settingsWallet,
-        trailingText: '€0.00',
-        showChevron: false,
-        onTap: () {},
-      ),
+      if (isEarner)
+        SettingMenuItem(
+          icon: Iconsax.card,
+          title: AppTexts.settingsWallet,
+          onTap: () => Get.to<void>(() => const WalletScreen()),
+        ),
       SettingMenuItem(
         icon: Iconsax.clipboard_text,
         title: AppTexts.settingsOrders,
-        onTap: () {},
+        onTap: () {
+          final isSeller =
+              UserController.instance.user.value?.role == UserRole.seller;
+          Get.to<void>(() => OrdersHistoryScreen(isSeller: isSeller));
+        },
       ),
       SettingMenuItem(
         icon: Iconsax.location,
         title: AppTexts.settingsAddresses,
-        onTap: () =>
-            SavedAddressesSheet.show(context, addresses: _mockSavedAddresses),
+        onTap: () => SavedAddressesSheet.show(context),
       ),
     ];
 
@@ -194,7 +174,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: Column(
               children: [
-                const ProfileUserCard(),
+                ProfileUserCard(
+                  onEditProfile: () =>
+                      Get.to<void>(() => const EditProfileScreen()),
+                ),
                 const Gap(AppSizes.md),
                 SettingMenuSection(
                   title: AppTexts.profileSectionSettings,

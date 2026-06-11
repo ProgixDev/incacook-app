@@ -47,6 +47,30 @@ class UsersRepository extends GetxService {
     return result.data;
   }
 
+  /// `PATCH /v1/users/me` — edits the caller's profile basics (display
+  /// name + avatar) for any role. Only the provided fields are sent.
+  /// [avatarPath] is a storage object key from the upload flow. Returns
+  /// the refreshed [User] so callers can re-hydrate the global cache.
+  Future<User> updateMe({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? avatarPath,
+  }) async {
+    final body = <String, dynamic>{
+      'firstName': ?firstName,
+      'lastName': ?lastName,
+      'phone': ?phone,
+      'avatarPath': ?avatarPath,
+    };
+    final result = await _api.patch<User>(
+      '${ApiConstants.apiPrefix}/users/me',
+      body: body,
+      decoder: (json) => User.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+
   /// `GET /v1/users/me/onboarding` (§4.1) — the wizard's resume cursor.
   ///
   /// Called on cold-start (when tokens exist but the wizard has no
@@ -86,5 +110,50 @@ class UsersRepository extends GetxService {
       decoder: (json) => AddressRecord.fromJson(json! as Map<String, dynamic>),
     );
     return result.data;
+  }
+
+  // ---------------- Multi-address CRUD (Mes adresses) ----------------
+
+  /// `GET /v1/users/me/addresses` — every saved address the user owns.
+  Future<List<AddressRecord>> listAddresses() async {
+    final result = await _api.get<List<AddressRecord>>(
+      '${ApiConstants.apiPrefix}/users/me/addresses',
+      decoder: (json) => (json! as List<dynamic>)
+          .map((e) => AddressRecord.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+    return result.data;
+  }
+
+  /// `POST /v1/users/me/addresses` — adds a new saved address (kind is
+  /// derived server-side from the caller's role).
+  Future<AddressRecord> createAddress(UpsertAddressRequest req) async {
+    final result = await _api.post<AddressRecord>(
+      '${ApiConstants.apiPrefix}/users/me/addresses',
+      body: req.toJson(),
+      decoder: (json) => AddressRecord.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+
+  /// `PATCH /v1/users/me/addresses/:id` — updates a saved address by id.
+  Future<AddressRecord> updateAddress(
+    String id,
+    UpsertAddressRequest req,
+  ) async {
+    final result = await _api.patch<AddressRecord>(
+      '${ApiConstants.apiPrefix}/users/me/addresses/$id',
+      body: req.toJson(),
+      decoder: (json) => AddressRecord.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+
+  /// `DELETE /v1/users/me/addresses/:id` — soft-deletes a saved address.
+  Future<void> deleteAddress(String id) async {
+    await _api.delete<void>(
+      '${ApiConstants.apiPrefix}/users/me/addresses/$id',
+      decoder: (_) {},
+    );
   }
 }

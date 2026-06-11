@@ -1,7 +1,16 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:incacook/app.dart';
+import 'package:incacook/core/config/mapbox_config.dart';
+import 'package:incacook/core/config/stripe_config.dart';
+import 'package:incacook/core/services/notifications/device_tokens_repository.dart';
+import 'package:incacook/core/services/notifications/push_notification_service.dart';
 import 'package:incacook/core/controllers/theme_controller.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_client.dart';
@@ -19,8 +28,6 @@ import 'package:incacook/features/authentication/services/post_auth_router.dart'
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-const _mapboxPublicToken = String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
-
 void main() async {
   //* add widgets bindings
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,12 +35,32 @@ void main() async {
   //* init local storage
   await GetStorage.init();
 
+  //* Firebase / FCM. Guarded so a missing/misconfigured google-services.json
+  //  can never brick startup — push notifications just stay disabled.
+  //  Android reads the config from google-services.json (no options needed).
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    debugPrint('[FCM] Firebase init failed: $e');
+  }
+
   //* init French locale data for intl DateFormat (used in seller / order UI)
   await initializeDateFormatting('fr_FR');
 
   //* mapbox public token from --dart-define=MAPBOX_PUBLIC_TOKEN=...
-  if (_mapboxPublicToken.isNotEmpty) {
-    MapboxOptions.setAccessToken(_mapboxPublicToken);
+  if (MapboxConfig.isConfigured) {
+    MapboxOptions.setAccessToken(MapboxConfig.publicToken);
+  } else {
+    debugPrint(MapboxConfig.missingTokenMessage);
+  }
+
+  //* Stripe — only initialise when a publishable key is configured. Until
+  //* then checkout falls back to the dev bypass, so the app still boots
+  //* and orders still complete without a real card charge.
+  if (StripeConfig.isConfigured) {
+    Stripe.publishableKey = StripeConfig.publishableKey;
+    await Stripe.instance.applySettings();
   }
 
   Get.put(ThemeController());
@@ -53,6 +80,12 @@ void main() async {
   Get.put<DriversRepository>(DriversRepository(), permanent: true);
   Get.put<GoogleAuthService>(GoogleAuthService(), permanent: true);
   Get.put<PostAuthRouter>(PostAuthRouter(), permanent: true);
+
+  //* push notifications — depends on ApiClient + UserController above.
+  //  init() is fire-and-forget and fully guarded, so it never blocks boot.
+  Get.put<DeviceTokensRepository>(DeviceTokensRepository(), permanent: true);
+  Get.put<PushNotificationService>(PushNotificationService(), permanent: true);
+  unawaited(PushNotificationService.instance.init());
 
   runApp(const App());
 }

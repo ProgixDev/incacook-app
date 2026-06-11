@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/misc/price_display.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/core/models/cart_item.dart';
@@ -61,10 +62,33 @@ class CartItemCardDismissible extends StatelessWidget {
                         width: 80,
                         height: 80,
                         color: scheme.surfaceContainerLow,
-                        child: Image.asset(
-                          item.listing.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                        // Real listings come through with an http(s) URL;
+                        // legacy mock cart entries still pass an asset key.
+                        child: item.listing.imageUrl.startsWith('http')
+                            ? Image.network(
+                                item.listing.imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => Image.asset(
+                                  AppImages.foodTest,
+                                  fit: BoxFit.cover,
+                                ),
+                                loadingBuilder: (ctx, child, progress) {
+                                  if (progress == null) return child;
+                                  return const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                item.listing.imageUrl,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     const Gap(AppSizes.md - 4),
