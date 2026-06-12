@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
+import 'package:incacook/core/common/styles/loaders.dart';
 import 'package:incacook/core/config/stripe_config.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_response.dart';
@@ -13,10 +14,14 @@ import 'package:incacook/features/subscriptions/data/subscription_repository.dar
 /// confirm the card → re-sync status from the server.
 ///
 /// Returns true once the subscription is active. Callers own their own
-/// busy/spinner state; this only drives the dialog + network + toasts.
+/// busy/spinner state; this only drives the dialog + network + snackbars
+/// (via [CustomLoaders], so feedback matches the rest of the app).
 Future<bool> startCardSubscription(BuildContext context) async {
   if (!StripeConfig.isConfigured) {
-    _toast(context, 'Paiement non configuré.');
+    CustomLoaders.errorSnackBar(
+      title: 'Paiement indisponible',
+      message: "Le paiement n'est pas configuré.",
+    );
     return false;
   }
 
@@ -47,27 +52,32 @@ Future<bool> startCardSubscription(BuildContext context) async {
     await repo.getStatus();
     final fresh = await UserController.instance.refreshFromServer();
     final active = fresh.sellerAccount?.subscriptionActive ?? false;
-    if (context.mounted) {
-      _toast(
-        context,
-        active ? 'Abonnement activé !' : 'Paiement reçu — activation en cours…',
+    if (active) {
+      CustomLoaders.successSnackBar(title: 'Abonnement activé !');
+    } else {
+      CustomLoaders.warningSnackBar(
+        title: 'Paiement reçu',
+        message: 'Activation en cours…',
       );
     }
     return active;
   } on StripeException catch (e) {
-    if (context.mounted) {
-      _toast(context, e.error.localizedMessage ?? 'Paiement refusé.');
-    }
+    CustomLoaders.errorSnackBar(
+      title: 'Paiement refusé',
+      message: e.error.localizedMessage ?? 'La carte a été refusée.',
+    );
     return false;
   } on ApiFailure catch (e) {
-    if (context.mounted) _toast(context, 'Abonnement impossible: ${e.message}');
+    CustomLoaders.errorSnackBar(
+      title: 'Abonnement impossible',
+      message: e.message,
+    );
     return false;
-  } catch (e) {
-    if (context.mounted) _toast(context, 'Abonnement impossible: $e');
+  } catch (_) {
+    CustomLoaders.errorSnackBar(
+      title: 'Abonnement impossible',
+      message: 'Une erreur est survenue. Réessaie plus tard.',
+    );
     return false;
   }
-}
-
-void _toast(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }

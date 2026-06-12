@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -109,8 +110,70 @@ class _SiretFormatter extends TextInputFormatter {
 class _OpeningHoursEditor extends StatelessWidget {
   const _OpeningHoursEditor();
 
-  Future<TimeOfDay?> _pickTime(BuildContext context, TimeOfDay initial) {
-    return showTimePicker(context: context, initialTime: initial);
+  Future<TimeOfDay?> _pickTime(BuildContext context, TimeOfDay initial) async {
+    final scheme = Theme.of(context).colorScheme;
+    var selected = initial;
+    final confirmed = await showCupertinoModalPopup<bool>(
+      context: context,
+      builder: (ctx) => Container(
+        color: scheme.surface,
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 280,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: Text(
+                        'Annuler',
+                        style: TextStyle(color: scheme.onSurfaceVariant),
+                      ),
+                    ),
+                    CupertinoButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: Text(
+                        'Confirmer',
+                        style: TextStyle(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  // Match the app's light/dark mode so the wheel's text isn't
+                  // unreadable in dark mode.
+                  child: CupertinoTheme(
+                    data: CupertinoThemeData(
+                      brightness: Theme.of(context).brightness,
+                    ),
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.time,
+                      use24hFormat: true,
+                      initialDateTime: DateTime(
+                        2000,
+                        1,
+                        1,
+                        initial.hour,
+                        initial.minute,
+                      ),
+                      onDateTimeChanged: (dt) =>
+                          selected = TimeOfDay(hour: dt.hour, minute: dt.minute),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    return confirmed == true ? selected : null;
   }
 
   @override

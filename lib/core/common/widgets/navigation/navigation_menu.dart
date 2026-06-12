@@ -50,12 +50,19 @@ class NavigationMenu extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(controller.tabs.length, (index) {
                   final tab = controller.tabs[index];
-                  return _NavItem(
+                  final selected = controller.selectedIndex.value == index;
+                  final item = _NavItem(
                     icon: tab.icon,
                     label: tab.label,
-                    selected: controller.selectedIndex.value == index,
+                    selected: selected,
                     onTap: () => controller.selectedIndex.value = index,
                   );
+                  // Only the selected item carries a label and can get long
+                  // ("Commandes"). Make it flexible so it shrinks/ellipsises
+                  // instead of overflowing on narrow screens; the icon-only
+                  // unselected items keep their natural size, and spaceBetween
+                  // still distributes the gaps when there's room.
+                  return selected ? Flexible(child: item) : item;
                 }),
               ),
             ),
@@ -93,13 +100,17 @@ class _NavItem extends StatelessWidget {
         duration: const Duration(milliseconds: 240),
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
-          horizontal: selected ? 18 : 14,
+          horizontal: selected ? 14 : 12,
           vertical: 12,
         ),
         decoration: BoxDecoration(
           color: selected ? colors.selectedSurface : Colors.transparent,
           borderRadius: BorderRadius.circular(40),
         ),
+        //? Only the selected item shows its label. No AnimatedSize here: it
+        //? hands its subtree an unbounded width, which stops the label's
+        //? Flexible from ellipsising → overflow on narrow bars. A plain Row
+        //? keeps the bounded constraint flowing so the label shrinks to fit.
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -108,27 +119,21 @@ class _NavItem extends StatelessWidget {
               size: 22,
               color: selected ? selectedFg : unselectedFg,
             ),
-            //? only the selected item shows its label, like the reference
-            AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              child: selected
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Gap(AppSizes.sm),
-                        Text(
-                          label,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: selectedFg,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ),
+            if (selected) ...[
+              const Gap(AppSizes.sm),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: selectedFg,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

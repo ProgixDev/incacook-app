@@ -26,6 +26,7 @@ Future<UploadPickResult?> pickAndUploadImage({
   required UploadPurpose purpose,
   int imageQuality = 85,
   double maxWidth = 2048,
+  CameraDevice preferredCameraDevice = CameraDevice.rear,
   UploadsRepository? uploads,
 }) async {
   final picker = ImagePicker();
@@ -33,6 +34,7 @@ Future<UploadPickResult?> pickAndUploadImage({
     source: source,
     maxWidth: maxWidth,
     imageQuality: imageQuality,
+    preferredCameraDevice: preferredCameraDevice,
   );
   if (picked == null) return null;
 

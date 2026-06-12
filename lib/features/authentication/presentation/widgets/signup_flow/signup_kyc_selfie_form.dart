@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -41,10 +40,11 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
     });
     try {
       final result = await pickAndUploadImage(
-        // Simulators / emulators have no camera; debug builds use the
-        // gallery so the KYC flow remains exercisable. Release stays
-        // strict camera-only for fraud prevention.
-        source: kDebugMode ? ImageSource.gallery : ImageSource.camera,
+        // A KYC selfie must be a live capture (a gallery photo defeats the
+        // liveness check), so always use the camera — including debug builds
+        // on a real device. (On a camera-less simulator this will no-op.)
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
         purpose: UploadPurpose.kycDocument,
       );
       if (!mounted) return;

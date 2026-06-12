@@ -32,24 +32,19 @@ void main() async {
   //* add widgets bindings
   WidgetsFlutterBinding.ensureInitialized();
 
+  // TEMP boot profiling — logs ms spent in each pre-runApp step so we can see
+  // what's keeping the native (white) launch screen up before the splash.
+  final boot = Stopwatch()..start();
+  void mark(String step) => debugPrint('[BOOT] $step @ ${boot.elapsedMilliseconds}ms');
+  mark('start');
+
   //* init local storage
   await GetStorage.init();
-
-  //* Firebase / FCM. Guarded so a missing/misconfigured config (e.g. no
-  //  GoogleService-Info.plist on iOS) can never brick startup — push
-  //  notifications just stay disabled. Android reads google-services.json,
-  //  iOS reads GoogleService-Info.plist (no options needed either way).
-  var firebaseReady = false;
-  try {
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    firebaseReady = true;
-  } catch (e) {
-    debugPrint('[FCM] Firebase init failed: $e');
-  }
+  mark('GetStorage.init');
 
   //* init French locale data for intl DateFormat (used in seller / order UI)
   await initializeDateFormatting('fr_FR');
+  mark('initializeDateFormatting');
 
   //* mapbox public token from --dart-define=MAPBOX_PUBLIC_TOKEN=...
   if (MapboxConfig.isConfigured) {
@@ -65,6 +60,7 @@ void main() async {
     Stripe.publishableKey = StripeConfig.publishableKey;
     await Stripe.instance.applySettings();
   }
+  mark('Stripe');
 
   Get.put(ThemeController());
 
@@ -83,18 +79,32 @@ void main() async {
   Get.put<DriversRepository>(DriversRepository(), permanent: true);
   Get.put<GoogleAuthService>(GoogleAuthService(), permanent: true);
   Get.put<PostAuthRouter>(PostAuthRouter(), permanent: true);
+  mark('Get.put services');
 
-  //* push notifications — depends on ApiClient + UserController above.
-  //  init() is fire-and-forget and fully guarded, so it never blocks boot.
-  //  Only wired up when Firebase initialised: the PushNotificationService
-  //  constructor eagerly reads FirebaseMessaging.instance, which throws
-  //  [core/no-app] when Firebase is absent (e.g. iOS without a plist) and
-  //  would otherwise crash main() before runApp(). v1 push is Android-only.
-  if (firebaseReady) {
-    Get.put<DeviceTokensRepository>(DeviceTokensRepository(), permanent: true);
-    Get.put<PushNotificationService>(PushNotificationService(), permanent: true);
-    unawaited(PushNotificationService.instance.init());
-  }
-
+  mark('runApp');
   runApp(const App());
+  WidgetsBinding.instance.addPostFrameCallback((_) => mark('first frame painted'));
+
+  //* Firebase + push are NOT on the boot critical path — initialising them
+  //  before runApp() blocked the splash for ~3.4s (and it just fails on iOS,
+  //  which has no GoogleService-Info.plist). Do it after the first frame so
+  //  the splash appears immediately; push stays fully guarded and Android-only.
+  unawaited(_initFirebaseAndPush());
+}
+
+/// Background (post-first-frame) Firebase + FCM setup. Guarded end-to-end so a
+/// missing/misconfigured config can never affect startup — push just stays off.
+Future<void> _initFirebaseAndPush() async {
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    debugPrint('[FCM] Firebase init failed: $e');
+    return;
+  }
+  // The PushNotificationService constructor eagerly reads
+  // FirebaseMessaging.instance, so only register it once Firebase is up.
+  Get.put<DeviceTokensRepository>(DeviceTokensRepository(), permanent: true);
+  Get.put<PushNotificationService>(PushNotificationService(), permanent: true);
+  unawaited(PushNotificationService.instance.init());
 }
