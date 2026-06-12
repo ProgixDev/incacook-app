@@ -45,7 +45,7 @@ import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
 import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:incacook/features/seller/presentation/seller_nav_tabs.dart';
 
-/// Drives the entire CULINEA multi-step signup flow.
+/// Drives the entire IncaCook multi-step signup flow.
 ///
 /// Three responsibilities:
 ///   1. Hold every piece of state collected across steps (reactive).
@@ -121,6 +121,12 @@ class SignupFlowController extends GetxController {
   // ---------------------------------------------------------------------------
   final email = ''.obs;
   final phone = ''.obs;
+  // Selected country dial code for the phone field — defaults to France, but
+  // the country selector updates it so non-FR numbers (e.g. Algeria +213)
+  // compose the right E.164. The `phone` field holds the national number only.
+  final dialCode = '+33'.obs;
+  final countryFlag = '🇫🇷'.obs;
+  final countryIso = 'FR'.obs;
   final password = ''.obs;
   final confirmPassword = ''.obs;
   final firstName = ''.obs;
@@ -150,6 +156,13 @@ class SignupFlowController extends GetxController {
   final otpResendSecondsLeft = 0.obs;
   final otpVerifying = false.obs;
   final otpError = ''.obs;
+  // True once a code has been requested for the current destination — drives
+  // the phone-verification page's two-phase UI (collect number → enter code).
+  // The email/password path arrives here with a number already captured on
+  // basicInfo, so the page flips this straight away; the Google/NoProfile path
+  // (basicInfo skipped) leaves it false until the user types a number and taps
+  // "Envoyer le code".
+  final otpRequested = false.obs;
   Timer? _otpTimer;
 
   // ---------------------------------------------------------------------------
@@ -392,16 +405,10 @@ class SignupFlowController extends GetxController {
   }
 
   bool get isPhoneValid {
-    final raw = phone.value.trim();
-    if (raw.startsWith('+')) {
-      // Full E.164 with country code (e.g. +21612345678). Mirrors the
-      // backend's `^\+[1-9]\d{6,14}$` rule.
-      final body = raw.substring(1).replaceAll(RegExp(r'\D'), '');
-      return RegExp(r'^[1-9]\d{6,14}$').hasMatch(body);
-    }
-    // Legacy: a plain French national 9-digit number (defaults to +33).
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    return digits.length == 9;
+    if (phone.value.trim().isEmpty) return false;
+    // Validate the fully-composed E.164 (selected dial code + national number)
+    // against the backend's `^\+[1-9]\d{6,14}$` rule — works for any country.
+    return RegExp(r'^\+[1-9]\d{6,14}$').hasMatch(_phoneE164);
   }
 
   bool get isPasswordValid {
@@ -1182,18 +1189,43 @@ class SignupFlowController extends GetxController {
   // ---------------------------------------------------------------------------
 
   /// Normalises the typed phone to E.164. A leading `+` is treated as a full
-  /// international number (e.g. `+21612345678`); otherwise a plain French
-  /// national number is assumed and `+33` is prepended (legacy default).
+  /// international number typed verbatim; otherwise the selected [dialCode] is
+  /// prepended to the national number, dropping a single national trunk `0`
+  /// (FR/DZ and most of Europe) when present.
   String get _phoneE164 {
     final raw = phone.value.trim();
     if (raw.startsWith('+')) {
       return '+${raw.substring(1).replaceAll(RegExp(r'\D'), '')}';
     }
-    return '+33${raw.replaceAll(RegExp(r'\D'), '')}';
+    var national = raw.replaceAll(RegExp(r'\D'), '');
+    if (national.startsWith('0')) national = national.substring(1);
+    return '${dialCode.value}$national';
   }
+
+  /// Updates the active country for the phone field (from the country picker).
+  void setCountry({
+    required String dialCode,
+    required String flagEmoji,
+    required String isoCode,
+  }) {
+    this.dialCode.value = dialCode.startsWith('+') ? dialCode : '+$dialCode';
+    countryFlag.value = flagEmoji;
+    countryIso.value = isoCode;
+  }
+
+  /// Whether a code can be sent yet: the email bypass needs no number, but the
+  /// SMS path requires a valid phone. The phone-verification page uses this to
+  /// decide whether to auto-send on open or first collect the number inline.
+  bool get canRequestOtp => FeatureFlags.useEmailOtpBypass || isPhoneValid;
 
   Future<void> requestOtp() async {
     otpError.value = '';
+    // Guard the SMS path against firing with no/blank number (the Google
+    // NoProfile path lands here without one — would POST `{phone: +33}`).
+    if (!canRequestOtp) {
+      otpError.value = AppTexts.signupPhoneError;
+      return;
+    }
     try {
       if (FeatureFlags.useEmailOtpBypass) {
         // §3.9 *Temporary email-OTP bypass* — destination is the
@@ -1204,10 +1236,22 @@ class SignupFlowController extends GetxController {
           RequestOtpRequest(phone: _phoneE164),
         );
       }
+      otpRequested.value = true;
       _startResendCountdown();
     } on ApiFailure catch (e) {
       otpError.value = e.message;
     }
+  }
+
+  /// Returns the phone-verification page to its number-entry phase so the user
+  /// can correct the number before a code is (re)sent. Drives the "Modifier le
+  /// numéro" action on the OTP page for the Google/NoProfile path, where the
+  /// number is entered inline rather than on a previous step.
+  void editPhoneNumber() {
+    _otpTimer?.cancel();
+    otpResendSecondsLeft.value = 0;
+    otpError.value = '';
+    otpRequested.value = false;
   }
 
   void _startResendCountdown() {

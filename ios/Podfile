@@ -1,5 +1,5 @@
-# Required by mapbox_maps_flutter 2.x.
-platform :ios, '14.0'
+# Required by mapbox_maps_flutter 2.x (14.0); raised to 15.0 for firebase-core/messaging.
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

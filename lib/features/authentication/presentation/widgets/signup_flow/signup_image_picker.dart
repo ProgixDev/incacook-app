@@ -272,7 +272,12 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      // Circular avatars are centered by their callers (always wrapped in a
+      // Center); the column itself shrink-wraps to its widest child, so it must
+      // also center its contents or the small avatar sits left-of-centre inside
+      // the helper-text width. Rectangular (KYC/doc) slots stay left-aligned.
+      crossAxisAlignment:
+          isCircular ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
           Text(

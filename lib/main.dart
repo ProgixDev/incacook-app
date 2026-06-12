@@ -35,12 +35,15 @@ void main() async {
   //* init local storage
   await GetStorage.init();
 
-  //* Firebase / FCM. Guarded so a missing/misconfigured google-services.json
-  //  can never brick startup — push notifications just stay disabled.
-  //  Android reads the config from google-services.json (no options needed).
+  //* Firebase / FCM. Guarded so a missing/misconfigured config (e.g. no
+  //  GoogleService-Info.plist on iOS) can never brick startup — push
+  //  notifications just stay disabled. Android reads google-services.json,
+  //  iOS reads GoogleService-Info.plist (no options needed either way).
+  var firebaseReady = false;
   try {
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    firebaseReady = true;
   } catch (e) {
     debugPrint('[FCM] Firebase init failed: $e');
   }
@@ -83,9 +86,15 @@ void main() async {
 
   //* push notifications — depends on ApiClient + UserController above.
   //  init() is fire-and-forget and fully guarded, so it never blocks boot.
-  Get.put<DeviceTokensRepository>(DeviceTokensRepository(), permanent: true);
-  Get.put<PushNotificationService>(PushNotificationService(), permanent: true);
-  unawaited(PushNotificationService.instance.init());
+  //  Only wired up when Firebase initialised: the PushNotificationService
+  //  constructor eagerly reads FirebaseMessaging.instance, which throws
+  //  [core/no-app] when Firebase is absent (e.g. iOS without a plist) and
+  //  would otherwise crash main() before runApp(). v1 push is Android-only.
+  if (firebaseReady) {
+    Get.put<DeviceTokensRepository>(DeviceTokensRepository(), permanent: true);
+    Get.put<PushNotificationService>(PushNotificationService(), permanent: true);
+    unawaited(PushNotificationService.instance.init());
+  }
 
   runApp(const App());
 }

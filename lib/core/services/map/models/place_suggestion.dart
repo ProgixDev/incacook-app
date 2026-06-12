@@ -25,6 +25,9 @@ class RetrievedPlace {
     required this.placeFormatted,
     required this.coordinate,
     this.fullAddress,
+    this.city,
+    this.postcode,
+    this.country,
   });
 
   final String mapboxId;
@@ -32,4 +35,10 @@ class RetrievedPlace {
   final String placeFormatted;
   final MapPoint coordinate;
   final String? fullAddress;
+
+  //* Structured locality fields from Mapbox `context` — locale-independent,
+  //* unlike parsing the formatted string. Null when Mapbox omits them.
+  final String? city;
+  final String? postcode;
+  final String? country;
 }

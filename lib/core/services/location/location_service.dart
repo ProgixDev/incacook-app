@@ -10,6 +10,11 @@ class LocationService extends GetxService {
   final Rx<LocationPermission> permission = LocationPermission.unableToDetermine
       .obs;
 
+  /// Human-readable "City, Country" for the current location, reverse-geocoded
+  /// by whoever resolves the position (e.g. the client home). Null until known
+  /// — UI shows a fallback meanwhile.
+  final Rxn<String> placeLabel = Rxn<String>();
+
   StreamSubscription<Position>? _positionSub;
 
   Future<bool> ensurePermission() async {

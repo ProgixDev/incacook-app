@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/common/widgets/custon_shapes/container/circular_image.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/kitchen.dart';
@@ -45,7 +46,16 @@ class KitchenCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(kitchen.imageUrl, fit: BoxFit.cover),
+                  // Network photo (Supabase) once the seller has one; falls
+                  // back to a placeholder asset while empty or on load error.
+                  kitchen.imageUrl.startsWith('http')
+                      ? Image.network(
+                          kitchen.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) =>
+                              Image.asset(AppImages.foodTest, fit: BoxFit.cover),
+                        )
+                      : Image.asset(AppImages.foodTest, fit: BoxFit.cover),
                   Positioned(
                     top: AppSizes.md - 4,
                     left: AppSizes.md - 4,
@@ -116,7 +126,12 @@ class KitchenCard extends StatelessWidget {
                     ),
                   ),
                   const Gap(AppSizes.sm),
-                  CustomCircularImage(image: kitchen.chefImageUrl),
+                  CustomCircularImage(
+                    image: kitchen.chefImageUrl.startsWith('http')
+                        ? kitchen.chefImageUrl
+                        : AppImages.foodTest,
+                    isNetworkImage: kitchen.chefImageUrl.startsWith('http'),
+                  ),
                 ],
               ),
             ),

@@ -15,8 +15,9 @@ class MapboxConfig {
   MapboxConfig._();
 
   /// Public Mapbox token, or '' when not provided at build time.
-  static const String publicToken =
-      String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
+  // static const String publicToken =
+  //     String.fromEnvironment('MAPBOX_PUBLIC_TOKEN');
+  static const String publicToken = 'pk.eyJ1IjoiZ2hvc3RhdmU3IiwiYSI6ImNtcHZjcDRsODAzazUyeXJhZm16cWl4ZWYifQ.ACMGS4gX27uzBjr0s5z8SA';
 
   /// True once a token has been supplied via `--dart-define`.
   static bool get isConfigured => publicToken.isNotEmpty;

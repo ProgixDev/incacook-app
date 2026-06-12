@@ -22,6 +22,7 @@ class SignupTextField extends StatelessWidget {
     this.errorText,
     this.helperText,
     this.leadingIcon,
+    this.leading,
     this.trailing,
     this.obscureText = false,
     this.keyboardType,
@@ -41,6 +42,9 @@ class SignupTextField extends StatelessWidget {
   final String? errorText;
   final String? helperText;
   final IconData? leadingIcon;
+  // Custom prefix widget (e.g. a country-code selector). Takes precedence over
+  // [leadingIcon] and sizes to its own content.
+  final Widget? leading;
   final Widget? trailing;
   final bool obscureText;
   final TextInputType? keyboardType;
@@ -100,7 +104,11 @@ class SignupTextField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               prefixIcon:
-                  leadingIcon == null ? null : Icon(leadingIcon, size: 20),
+                  leading ??
+                  (leadingIcon == null ? null : Icon(leadingIcon, size: 20)),
+              prefixIconConstraints: leading != null
+                  ? const BoxConstraints(minWidth: 0, minHeight: 0)
+                  : null,
               suffixIcon: trailing,
               counterText: '',
               focusedBorder: focusedBorder,

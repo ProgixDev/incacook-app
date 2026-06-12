@@ -18,37 +18,10 @@ import 'package:incacook/features/client/presentation/widget/category_pill.dart'
 class CategoryHubSection extends StatelessWidget {
   const CategoryHubSection({super.key});
 
-  //* visual mappings — icon assets live with the UI, not on the enums, so
-  //* the domain model stays asset-agnostic.
-  static const Map<SellerCategory, String> _categoryIcon = {
-    SellerCategory.faitMaison: AppImages.homeMade,
-    SellerCategory.traiteur: AppImages.bulk,
-    SellerCategory.restaurant: AppImages.restaurants,
-  };
-
-  static const Map<CuisineType, String> _cuisineIcon = {
-    CuisineType.orientale: AppImages.eastern,
-    CuisineType.francaise: AppImages.french,
-    CuisineType.africaine: AppImages.african,
-    CuisineType.portugaise: AppImages.portuguese,
-    CuisineType.italienne: AppImages.italian,
-    CuisineType.espagnole: AppImages.spanish,
-    CuisineType.latine: AppImages.latin,
-  };
-
-  static const Map<DietaryTag, String> _dietIcon = {
-    DietaryTag.halal: AppImages.halal,
-    DietaryTag.vegan: AppImages.vegan,
-    DietaryTag.glutenFree: AppImages.glutenFree,
-    DietaryTag.casher: AppImages.casher,
-  };
-
-  static const Map<DishType, String> _dishIcon = {
-    DishType.entree: AppImages.appetizer,
-    DishType.plat: AppImages.dish,
-    DishType.dessert: AppImages.dessert,
-    DishType.cocktailDinatoire: AppImages.cocktail,
-  };
+  // Icons come straight from each enum value (`imagePath` / `iconPath`) — the
+  // single source of truth. A previous local `_dishIcon` map drifted out of
+  // sync when `DishType.boisson` was added (its missing entry crashed the
+  // dish strip on traiteur/restaurant), so we no longer duplicate the mapping.
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +54,7 @@ class CategoryHubSection extends StatelessWidget {
                 for (final cat in SellerCategory.values) ...[
                   CategoryPill(
                     label: cat.shortLabel,
-                    iconPath: _categoryIcon[cat]!,
+                    iconPath: cat.imagePath,
                     selected: selectedCat == cat,
                     onTap: () => filter.setCategory(cat),
                   ),
@@ -99,7 +72,7 @@ class CategoryHubSection extends StatelessWidget {
               for (final cuisine in CuisineType.values)
                 _SubcategoryCircle(
                   label: cuisine.label,
-                  iconPath: _cuisineIcon[cuisine]!,
+                  iconPath: cuisine.iconPath,
                   selected: f.cuisines.contains(cuisine),
                   onTap: () => filter.toggleCuisine(cuisine),
                 ),
@@ -114,7 +87,7 @@ class CategoryHubSection extends StatelessWidget {
               for (final diet in DietaryTag.values)
                 _SubcategoryCircle(
                   label: diet.label,
-                  iconPath: _dietIcon[diet]!,
+                  iconPath: diet.iconPath,
                   selected: f.diets.contains(diet),
                   onTap: () => filter.toggleDiet(diet),
                 ),
@@ -132,7 +105,7 @@ class CategoryHubSection extends StatelessWidget {
                 for (final dish in visibleDishes)
                   _SubcategoryCircle(
                     label: dish.label,
-                    iconPath: _dishIcon[dish]!,
+                    iconPath: dish.iconPath,
                     selected: f.dishTypes.contains(dish),
                     onTap: () => filter.toggleDishType(dish),
                   ),

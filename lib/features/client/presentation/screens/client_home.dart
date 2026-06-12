@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
@@ -12,7 +14,9 @@ import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/features/catalog/data/repositories/listings_repository.dart';
 import 'package:incacook/features/catalog/presentation/screens/product_detail.dart';
 import 'package:incacook/features/client/controllers/filter_controller.dart';
-import 'package:incacook/features/client/data/client_mock_data.dart';
+import 'package:incacook/core/services/map/mapbox_search_client.dart';
+import 'package:incacook/core/widgets/no_results_view.dart';
+import 'package:incacook/features/client/data/kitchens_repository.dart';
 import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/core/models/kitchen.dart';
 import 'package:incacook/features/client/presentation/widget/category_hub.dart';
@@ -58,9 +62,15 @@ class _HomeScreenState extends State<ClientHomeScreen> {
   // Debounced refetch when the filter changes (category hub / filters sheet).
   Worker? _filterWorker;
 
-  late final List<Kitchen> _kitchens = ClientMockData.kitchens();
-  late final List<FoodListing> _solidarityListings =
-      ClientMockData.solidarityListings();
+  // Single repo instance so the in-memory feed cache (query-keyed, TTL) is
+  // reused across loads instead of being re-created each fetch.
+  final ListingsRepository _listings = ListingsRepository();
+
+  // Real backend kitchens feed — `GET /v1/sellers`. Empty until loaded; the
+  // section shows a loader, then either the cards or a noResults animation.
+  List<Kitchen> _kitchens = const [];
+  bool _loadingKitchens = true;
+  String? _kitchensError;
 
   @override
   void initState() {
@@ -79,7 +89,31 @@ class _HomeScreenState extends State<ClientHomeScreen> {
   /// Resolve the user's location (best-effort), then load the feed.
   Future<void> _init() async {
     await _resolveLocation();
-    await _loadFeed();
+    // Feed needs the resolved location; kitchens don't — load both in parallel.
+    await Future.wait([_loadFeed(), _loadKitchens()]);
+  }
+
+  /// `GET /v1/sellers` — the "kitchens near you" feed. Independent of the
+  /// product feed and the location resolution.
+  Future<void> _loadKitchens() async {
+    setState(() {
+      _loadingKitchens = true;
+      _kitchensError = null;
+    });
+    try {
+      final kitchens = await KitchensRepository().getKitchens();
+      if (!mounted) return;
+      setState(() {
+        _kitchens = kitchens;
+        _loadingKitchens = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadingKitchens = false;
+        _kitchensError = e.toString();
+      });
+    }
   }
 
   /// Reads the device location via [LocationService]. On denial / disabled
@@ -96,6 +130,8 @@ class _HomeScreenState extends State<ClientHomeScreen> {
         _lat = pos.latitude;
         _lng = pos.longitude;
         _locationNote = null;
+        // Best-effort reverse geocode for the appbar's "City, Country" label.
+        unawaited(_resolvePlaceLabel(pos.latitude, pos.longitude));
       } else {
         _lat = null;
         _lng = null;
@@ -109,19 +145,53 @@ class _HomeScreenState extends State<ClientHomeScreen> {
     }
   }
 
+  /// Reverse-geocodes [lat]/[lng] to "City, Country" and publishes it on
+  /// [LocationService.placeLabel] for the home appbar. Best-effort — on any
+  /// failure the label keeps its fallback.
+  Future<void> _resolvePlaceLabel(double lat, double lng) async {
+    try {
+      final place = await Get.find<MapboxSearchClient>().reverse(
+        lat: lat,
+        lng: lng,
+        language: 'fr',
+      );
+      final parts = [place.city, place.country]
+          .where((s) => s != null && s.isNotEmpty)
+          .cast<String>()
+          .toList();
+      if (parts.isNotEmpty && Get.isRegistered<LocationService>()) {
+        LocationService.instance.placeLabel.value = parts.join(', ');
+      }
+    } catch (_) {
+      // Keep whatever fallback the appbar shows.
+    }
+  }
+
   /// `GET /v1/listings` — the buyer feed, filtered SERVER-SIDE from the active
   /// [FilterController] (category, cuisine, diet, dish type, distance, stock)
   /// plus the real buyer location. Buyer-feed-only fields (sellerName,
   /// distanceKm, lat/lng, rating, …) come back populated.
-  Future<void> _loadFeed() async {
+  Future<void> _loadFeed({bool force = false}) async {
+    final query = _filter.toQuery(lat: _lat, lng: _lng);
+    // Cache hit → render instantly, no spinner, no network. This is what makes
+    // toggling cuisine/category chips back and forth free for the backend.
+    if (!force) {
+      final cached = _listings.peekFeed(query);
+      if (cached != null) {
+        setState(() {
+          _realListings = cached.items;
+          _loadingFeed = false;
+          _feedError = null;
+        });
+        return;
+      }
+    }
     setState(() {
       _loadingFeed = true;
       _feedError = null;
     });
     try {
-      final result = await ListingsRepository().getFeed(
-        _filter.toQuery(lat: _lat, lng: _lng),
-      );
+      final result = await _listings.getFeed(query, forceRefresh: force);
       if (!mounted) return;
       setState(() {
         _realListings = result.items;
@@ -157,7 +227,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                 const Icon(Icons.cloud_off, size: 36),
                 const Gap(AppSizes.sm),
                 ElevatedButton(
-                  onPressed: _loadFeed,
+                  onPressed: () => _loadFeed(force: true),
                   child: const Text('Réessayer'),
                 ),
               ],
@@ -171,7 +241,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
         title: AppTexts.clientHomeSectionFoodNearYou,
         height: sectionHeight,
         children: const [
-          Center(child: Text('Aucun produit pour le moment.')),
+          NoResultsView(message: 'Aucun produit à proximité pour le moment.'),
         ],
       );
     }
@@ -183,6 +253,63 @@ class _HomeScreenState extends State<ClientHomeScreen> {
           FoodListingCard(
             listing: _toFoodListing(l),
             onTap: () => Get.to(() => ProductDetailScreen(listing: l)),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildKitchensSection(BuildContext context) {
+    final sectionHeight = DeviceUtils.getScreenHeight(context) * 0.4;
+    const title = AppTexts.clientHomeSectionKitchensNearYou;
+    if (_loadingKitchens) {
+      return ClientHomeSection(
+        title: title,
+        height: sectionHeight,
+        children: const [Center(child: CircularProgressIndicator())],
+      );
+    }
+    if (_kitchensError != null) {
+      return ClientHomeSection(
+        title: title,
+        height: sectionHeight,
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off, size: 36),
+                const Gap(AppSizes.sm),
+                ElevatedButton(
+                  onPressed: _loadKitchens,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+    if (_kitchens.isEmpty) {
+      return ClientHomeSection(
+        title: title,
+        height: sectionHeight,
+        children: const [
+          NoResultsView(message: 'Aucune cuisine à proximité pour le moment.'),
+        ],
+      );
+    }
+    return ClientHomeSection(
+      title: title,
+      height: sectionHeight,
+      children: [
+        for (final kitchen in _kitchens)
+          KitchenCard(
+            kitchen: kitchen,
+            isSaved: _savedKitchenIds.contains(kitchen.id),
+            onTap: () => Get.to(
+              () => SellerProfileScreen(profile: SellerMockData.demoSeller()),
+            ),
+            onToggleSaved: () => _toggleKitchenSaved(kitchen.id),
           ),
       ],
     );
@@ -293,39 +420,12 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                 _buildFeedSection(context),
                 const Gap(AppSizes.spaceBtwSections),
 
-                //* kitchens near you
-                ClientHomeSection(
-                  title: AppTexts.clientHomeSectionKitchensNearYou,
-                  height: DeviceUtils.getScreenHeight(context) * 0.4,
-                  children: [
-                    for (final kitchen in _kitchens)
-                      KitchenCard(
-                        kitchen: kitchen,
-                        isSaved: _savedKitchenIds.contains(kitchen.id),
-                        onTap: () => Get.to(
-                          () => SellerProfileScreen(
-                            profile: SellerMockData.demoSeller(),
-                          ),
-                        ),
-                        onToggleSaved: () => _toggleKitchenSaved(kitchen.id),
-                      ),
-                  ],
-                ),
+                //* kitchens near you — real `GET /v1/sellers` feed.
+                _buildKitchensSection(context),
 
-                const Gap(AppSizes.spaceBtwSections),
-
-                //* partages solidaires (free food)
-                ClientHomeSection(
-                  title: AppTexts.clientHomeSectionSolidarity,
-                  height: DeviceUtils.getScreenHeight(context) * 0.4,
-                  children: [
-                    for (final listing in _solidarityListings)
-                      FoodListingCard(
-                        listing: listing,
-                        onTap: () => Get.to(() => const ProductDetailScreen()),
-                      ),
-                  ],
-                ),
+                // "Partages solidaires" (solidarity/free food) is removed
+                // until the backend supports a solidarity listing type — it
+                // has no data source today, so showing it would be fake.
 
                 const Gap(AppSizes.spaceBtwSections * 2),
               ],

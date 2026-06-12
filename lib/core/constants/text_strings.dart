@@ -211,8 +211,7 @@ class AppTexts {
       "Le livreur récupère ta commande";
   static const String trackingAwaitingPickupSubtitle =
       "Il est en route vers le vendeur — tu peux suivre son trajet sur la carte.";
-  static const String trackingEnRouteTitle =
-      "Ta commande est en chemin !";
+  static const String trackingEnRouteTitle = "Ta commande est en chemin !";
   static const String trackingEnRouteSubtitle =
       "Le livreur a récupéré ta commande et arrive vers toi.";
   static const String trackingDeliveredTitle = "Votre commande est arrivée";
@@ -672,19 +671,22 @@ class AppTexts {
   static const String addProductPickupDeliveryHint = "€2,50";
   static const String addProductSaveCta = "Publier le produit";
   static const String addProductPublishSuccess = "Produit publié avec succès.";
-  static const String addProductUpdateSuccess = "Produit mis à jour avec succès.";
+  static const String addProductUpdateSuccess =
+      "Produit mis à jour avec succès.";
   static const String addProductEditCta = "Enregistrer";
 
   //* seller — product detail seller actions
   static const String sellerProductEditCta = "Modifier";
   static const String sellerProductDeleteCta = "Supprimer";
-  static const String sellerProductDeleteConfirmTitle = "Supprimer ce produit ?";
+  static const String sellerProductDeleteConfirmTitle =
+      "Supprimer ce produit ?";
   static const String sellerProductDeleteConfirmBody =
       "Le produit sera retiré de ta vitrine. Les commandes existantes restent intactes.";
   static const String sellerProductDeleteConfirmCancel = "Annuler";
   static const String sellerProductDeleteConfirmCta = "Supprimer";
   static const String sellerProductDeletedMessage = "Produit supprimé.";
-  static const String sellerProductsLoadError = "Impossible de charger tes produits.";
+  static const String sellerProductsLoadError =
+      "Impossible de charger tes produits.";
 
   //* seller — products / catalog screen
   static const String sellerProductsAddCta = "Ajouter un produit";
@@ -818,6 +820,13 @@ class AppTexts {
       "On t'envoie un code à 6 chiffres au $phone.";
   static String signupOtpResendIn(int seconds) => "Renvoyer dans ${seconds}s";
 
+  //* Phone-entry phase — shown when the wizard reaches this step without a
+  //  number yet (e.g. the Google sign-in path, which skips basic info).
+  static const String signupOtpEnterPhoneTitle = "Ton numéro de téléphone";
+  static const String signupOtpEnterPhoneSubtitle =
+      "On t'envoie un code à 6 chiffres par SMS pour vérifier ton numéro.";
+  static const String signupOtpSendCode = "Envoyer le code";
+
   //* signup flow — email-OTP bypass variant (see FeatureFlags.useEmailOtpBypass).
   //  Same step, different channel; copy can be removed when SMS is back.
   static const String signupOtpEmailTitle = "Vérifie ton compte";
@@ -848,7 +857,7 @@ class AppTexts {
       "Tu pourras consulter ces documents à tout moment dans tes paramètres.";
 
   //* signup flow — role selection page
-  static const String signupRoleTitle = "Comment veux-tu utiliser CULINEA ?";
+  static const String signupRoleTitle = "Comment veux-tu utiliser IncaCook ?";
   static const String signupRoleSubtitle =
       "Tu pourras changer ce choix plus tard.";
   static const String signupRoleBuyerTitle = "Acheter des plats";
@@ -1020,8 +1029,7 @@ class AppTexts {
   static const String payoutSetupBannerSubtitle =
       "2 minutes pour recevoir tes gains sur ton compte bancaire.";
   static const String payoutSetupBannerCta = "Commencer";
-  static const String payoutOnboardingScreenTitle =
-      "Configurer les paiements";
+  static const String payoutOnboardingScreenTitle = "Configurer les paiements";
   static const String payoutStatusActive = "Paiements actifs";
   static const String payoutStatusPending = "Configuration en cours";
   static const String payoutStatusFailed =
@@ -1048,34 +1056,42 @@ class AppTexts {
   //* signup flow — address picker
   static const String signupAddressSearchHint = "Cherche une adresse…";
   static const String signupAddressConfirmed = "Adresse confirmée";
+  static const String signupAddressUseCurrentLocation =
+      "Utiliser ma position actuelle";
+  static const String signupAddressLocating = "Localisation…";
+  static const String signupAddressLocationDenied =
+      "Active la localisation pour utiliser ta position.";
+  static const String signupAddressLocationError =
+      "Impossible de récupérer ta position. Réessaie.";
+  static const String signupAddressSearchError = "Recherche indisponible.";
 
   //* signup flow — long charter / legal text
   static const String signupCguText = '''
-Conditions Générales d'Utilisation — CULINEA
+Conditions Générales d'Utilisation — IncaCook
 
 1. Objet
-Les présentes conditions régissent l'utilisation de la plateforme CULINEA, un service de mise en relation entre cuisiniers, livreurs et acheteurs de plats faits maison.
+Les présentes conditions régissent l'utilisation de la plateforme IncaCook, un service de mise en relation entre cuisiniers, livreurs et acheteurs de plats faits maison.
 
 2. Inscription
-L'utilisateur s'engage à fournir des informations exactes lors de son inscription. CULINEA se réserve le droit de suspendre tout compte ne respectant pas les présentes conditions.
+L'utilisateur s'engage à fournir des informations exactes lors de son inscription. IncaCook se réserve le droit de suspendre tout compte ne respectant pas les présentes conditions.
 
 3. Utilisation
 La plateforme est destinée à un usage personnel. Toute utilisation commerciale non autorisée est strictement interdite.
 
 4. Responsabilité
-CULINEA agit en tant qu'intermédiaire technique. Les vendeurs sont responsables de la qualité et de la conformité de leurs produits.
+IncaCook agit en tant qu'intermédiaire technique. Les vendeurs sont responsables de la qualité et de la conformité de leurs produits.
 
 5. Données personnelles
 Les données collectées sont traitées conformément à notre politique de confidentialité et au RGPD.
 
 6. Modification
-CULINEA se réserve le droit de modifier les présentes conditions à tout moment.
+IncaCook se réserve le droit de modifier les présentes conditions à tout moment.
 
 En cochant ci-dessous, tu confirmes avoir lu et accepté l'intégralité de ces conditions.
 ''';
 
   static const String signupCgvText = '''
-Conditions Générales de Vente — CULINEA
+Conditions Générales de Vente — IncaCook
 
 1. Prix
 Les prix sont indiqués en euros et toutes taxes comprises. Pour Le Bon Fait Maison, le prix maximum par plat est plafonné à 4,50 €.
@@ -1084,13 +1100,13 @@ Les prix sont indiqués en euros et toutes taxes comprises. Pour Le Bon Fait Mai
 Toute commande passée sur la plateforme est ferme et définitive. Le paiement est effectué au moment de la commande.
 
 3. Livraison
-Les délais de livraison sont indicatifs. CULINEA s'engage à mettre en œuvre les moyens raisonnables pour respecter les délais annoncés.
+Les délais de livraison sont indicatifs. IncaCook s'engage à mettre en œuvre les moyens raisonnables pour respecter les délais annoncés.
 
 4. Annulation
 Une commande peut être annulée jusqu'à acceptation par le vendeur. Au-delà, aucun remboursement n'est garanti.
 
 5. Litiges
-En cas de litige, CULINEA propose un service de médiation. À défaut d'accord, les tribunaux français sont compétents.
+En cas de litige, IncaCook propose un service de médiation. À défaut d'accord, les tribunaux français sont compétents.
 
 6. Hygiène
 Les vendeurs s'engagent à respecter les règles d'hygiène en vigueur. Tout manquement constaté entraîne la suspension du compte.
@@ -1099,7 +1115,7 @@ En cochant ci-dessous, tu confirmes avoir lu et accepté l'intégralité de ces 
 ''';
 
   static const String signupSellerCharterText = '''
-Charte d'hygiène — Vendeurs CULINEA
+Charte d'hygiène — Vendeurs IncaCook
 
 1. Tu cuisines des plats faits maison à partir d'ingrédients frais et de qualité.
 
@@ -1111,13 +1127,13 @@ Charte d'hygiène — Vendeurs CULINEA
 
 5. Tu signales clairement les ingrédients allergènes dans la description de chaque plat.
 
-6. Tu acceptes les contrôles ponctuels de CULINEA.
+6. Tu acceptes les contrôles ponctuels de IncaCook.
 
 Le non-respect de cette charte peut entraîner la suspension immédiate de ton compte.
 ''';
 
   static const String signupDriverCharterText = '''
-Charte du livreur — CULINEA
+Charte du livreur — IncaCook
 
 1. Tu respectes les délais de livraison annoncés et préviens le client en cas de retard.
 
@@ -1129,7 +1145,7 @@ Charte du livreur — CULINEA
 
 5. Tu vérifies le bon état du véhicule avant chaque tournée.
 
-6. Tu signales tout incident à CULINEA dans les meilleurs délais.
+6. Tu signales tout incident à IncaCook dans les meilleurs délais.
 
 Le non-respect de cette charte peut entraîner la suspension immédiate de ton compte livreur.
 ''';

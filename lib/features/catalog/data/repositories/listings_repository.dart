@@ -22,6 +22,41 @@ class ListingsRepository extends GetxService {
 
   final ApiClient _api;
 
+  // --- Buyer-feed cache ---------------------------------------------------
+  // Keyed by the exact query (same filters + location → same key). Toggling
+  // cuisine/category chips back and forth, or returning to a combo within the
+  // TTL, is served from memory with no network call. Static so it survives
+  // screen rebuilds and is shared across repo instances.
+  static const Duration _feedTtl = Duration(minutes: 2);
+  static final Map<String, _FeedCacheEntry> _feedCache = {};
+  static final Map<String, Future<({List<Listing> items, Pagination? pagination})>>
+      _feedInFlight = {};
+
+  String _feedKey(ListListingsQuery query) {
+    final params = query.toQueryParameters();
+    final entries = params.entries.where((e) => e.value != null).toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return entries.map((e) => '${e.key}=${e.value}').join('&');
+  }
+
+  /// Synchronous peek: returns a *fresh* cached feed for [query], or null.
+  /// Lets the UI render instantly (no spinner / no fetch) on a cache hit.
+  ({List<Listing> items, Pagination? pagination})? peekFeed(
+    ListListingsQuery query,
+  ) {
+    final entry = _feedCache[_feedKey(query)];
+    if (entry == null) return null;
+    if (DateTime.now().difference(entry.fetchedAt) >= _feedTtl) return null;
+    return entry.result;
+  }
+
+  /// Drops all cached feed pages — call after an action that can change what
+  /// the buyer feed returns (e.g. a seller publishing/editing a listing).
+  static void invalidateFeedCache() {
+    _feedCache.clear();
+    _feedInFlight.clear();
+  }
+
   /// `POST /v1/listings` (§5.1) — creates a listing. Seller resolved
   /// from JWT; KYC must be APPROVED.
   Future<Listing> create(CreateListingRequest req) async {
@@ -82,16 +117,41 @@ class ListingsRepository extends GetxService {
   /// empty on feed items — fetch detail via [getById] for the full
   /// add-on list.
   Future<({List<Listing> items, Pagination? pagination})> getFeed(
+    ListListingsQuery query, {
+    bool forceRefresh = false,
+  }) async {
+    final key = _feedKey(query);
+    if (!forceRefresh) {
+      final cached = peekFeed(query);
+      if (cached != null) return cached;
+      // Dedup: if an identical query is already in flight, await that one
+      // instead of firing a second request.
+      final pending = _feedInFlight[key];
+      if (pending != null) return pending;
+    }
+    final future = _fetchAndCacheFeed(key, query);
+    if (!forceRefresh) _feedInFlight[key] = future;
+    return future;
+  }
+
+  Future<({List<Listing> items, Pagination? pagination})> _fetchAndCacheFeed(
+    String key,
     ListListingsQuery query,
   ) async {
-    final result = await _api.get<List<Listing>>(
-      '${ApiConstants.apiPrefix}/listings',
-      queryParameters: query.toQueryParameters(),
-      decoder: (json) => (json! as List<dynamic>)
-          .map((e) => Listing.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-    return (items: result.data, pagination: result.pagination);
+    try {
+      final result = await _api.get<List<Listing>>(
+        '${ApiConstants.apiPrefix}/listings',
+        queryParameters: query.toQueryParameters(),
+        decoder: (json) => (json! as List<dynamic>)
+            .map((e) => Listing.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+      final res = (items: result.data, pagination: result.pagination);
+      _feedCache[key] = _FeedCacheEntry(res, DateTime.now());
+      return res;
+    } finally {
+      _feedInFlight.remove(key);
+    }
   }
 
   /// `GET /v1/listings/:id` (§5.6) — full listing detail including
@@ -121,4 +181,12 @@ class ListingsRepository extends GetxService {
     );
     return result.data;
   }
+}
+
+/// One cached buyer-feed page + when it was fetched (for TTL expiry).
+class _FeedCacheEntry {
+  _FeedCacheEntry(this.result, this.fetchedAt);
+
+  final ({List<Listing> items, Pagination? pagination}) result;
+  final DateTime fetchedAt;
 }

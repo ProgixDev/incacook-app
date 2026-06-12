@@ -131,14 +131,14 @@ fulfillment paths. The data is already there —
 
 ### 2.1 Wrong product name
 
-> *"Changer le nom CULINEA dans les CGV. CG U."*
+> *"Changer le nom IncaCook dans les CGV. CG U."*
 
-`CULINEA` appears somewhere in the CGU/CGV content and must be replaced
+`IncaCook` appears somewhere in the CGU/CGV content and must be replaced
 with **IncaCook**. These texts are served by the backend
 (`GET /v1/charters/active`) — the fix is on the charter-content side
 (database / seed migration), not in the Flutter app.
 
-Search the backend repo for `CULINEA` and replace. After updating the
+Search the backend repo for `IncaCook` and replace. After updating the
 text, bump the **version** of the affected charters (`CGU`, `CGV`) so
 existing users are forced to re-accept.
 
@@ -365,7 +365,7 @@ Confirm wording with the client.
    tracking copy. Both small, both improve immediate buyer UX.
 4. **§1.5** — remove the Facebook button (or wire it up); diagnose the
    email-signup friction.
-5. **§2** — coordinate with legal to rewrite CGU/CGV (rename CULINEA →
+5. **§2** — coordinate with legal to rewrite CGU/CGV (rename IncaCook →
    IncaCook, add cuisinier-responsibility clauses); bump charter
    versions to force re-acceptance.
 6. **§3** — seller-declared extras (backend table + endpoints, then

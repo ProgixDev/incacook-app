@@ -7,6 +7,7 @@ import 'package:incacook/core/config/feature_flags.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
+import 'package:incacook/features/authentication/presentation/widgets/signup_flow/country_code_selector.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_text_field.dart';
 
@@ -62,7 +63,7 @@ class BasicInfoPage extends GetView<SignupFlowController> {
                     ? AppTexts.signupPhoneLabelOptional
                     : AppTexts.signupPhoneLabel,
                 hint: AppTexts.signupPhoneHint,
-                leadingIcon: Iconsax.call,
+                leading: const CountryCodeSelector(),
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
                 inputFormatters: [

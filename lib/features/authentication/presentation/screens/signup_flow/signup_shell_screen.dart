@@ -35,7 +35,7 @@ import 'package:incacook/features/authentication/presentation/screens/signup_flo
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_bottom_bar.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_timeline.dart';
 
-/// Container for the entire CULINEA signup flow. Owns the [PageView] and
+/// Container for the entire IncaCook signup flow. Owns the [PageView] and
 /// pins the timeline to the top, the back chevron + counter, and the
 /// sticky bottom action bar.
 class SignupShellScreen extends GetView<SignupFlowController> {
