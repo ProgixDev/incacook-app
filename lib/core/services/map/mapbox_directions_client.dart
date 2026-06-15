@@ -22,9 +22,21 @@ class MapboxDirectionsClient {
     required MapPoint origin,
     required MapPoint destination,
     String profile = 'driving-traffic',
+  }) => getRouteThrough([origin, destination], profile: profile);
+
+  /// Routes through an ordered list of [waypoints] (≥ 2 points). The Directions
+  /// API accepts up to 25 coordinates, so e.g. `[driver, seller, client]`
+  /// returns ONE connected geometry covering both legs — letting the buyer's
+  /// tracking map draw the whole path between the driver, the seller (pickup)
+  /// and the client (dropoff) as a single line.
+  Future<MapRoute> getRouteThrough(
+    List<MapPoint> waypoints, {
+    String profile = 'driving-traffic',
   }) async {
-    final coords =
-        '${origin.lng},${origin.lat};${destination.lng},${destination.lat}';
+    if (waypoints.length < 2) {
+      throw ArgumentError('getRouteThrough requires at least 2 waypoints');
+    }
+    final coords = waypoints.map((p) => '${p.lng},${p.lat}').join(';');
 
     final response = await _dio.get<Map<String, dynamic>>(
       '$_baseUrl/$profile/$coords',

@@ -123,7 +123,20 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     }
     final pickup = _route.pickup;
     final dropoff = _route.dropoff;
-    if (pickup == null || dropoff == null) return;
+    final driver = _route.currentDriverPosition;
+    String fmt(MapPoint? p) =>
+        p == null ? 'MISSING' : '(${p.lat.toStringAsFixed(5)},${p.lng.toStringAsFixed(5)})';
+    // Driver's own position shows as the native location puck (configure()),
+    // so it isn't a circle marker — log it for completeness.
+    debugPrint(
+      '[TrackingMap](driver) pickup=${fmt(pickup)}, dropoff=${fmt(dropoff)}, '
+      'driver=${driver == null ? "puck-pending" : fmt(driver)}',
+    );
+    if (pickup == null || dropoff == null) {
+      debugPrint('[TrackingMap](driver) stop coords missing — markers not drawn '
+          '(seller/client not geocoded).');
+      return;
+    }
     await _painter?.showStops(pickup: pickup, dropoff: dropoff);
   }
 

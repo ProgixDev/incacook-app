@@ -123,6 +123,7 @@ class OrderTrackingController extends GetxController {
         'fulfillment=${snap.fulfillmentChoice} '
         'driver=${snap.driverInfo?.fullName ?? "unassigned"}',
       );
+      _logTrackingState('snapshot');
     } catch (_) {
       // Leave snapshotReady=false → the screen renders its unavailable state.
     }
@@ -137,10 +138,42 @@ class OrderTrackingController extends GetxController {
       final snap = await OrdersRepository.instance.getTracking(id);
       if (snap.driverInfo != null) {
         assignedDriver.value = snap.driverInfo;
+        if (snap.driver != null) driverPosition.value = snap.driver!;
         debugPrint('[tracking] order $id driver assigned: ${snap.driverInfo!.fullName}');
+        _logTrackingState('driver-assigned');
       }
     } catch (_) {
       // best-effort
+    }
+  }
+
+  /// One-line dump of the three tracking points for verifying the map shows
+  /// all of them. Logs exactly which coordinate is missing — never fabricates
+  /// one (a missing point means the backend hasn't geocoded it / no driver).
+  void _logTrackingState(String source) {
+    String fmt(MapPoint p) =>
+        '(${p.lat.toStringAsFixed(5)},${p.lng.toStringAsFixed(5)})';
+    final hasPickup = _pickupPoint != _kUnsetPoint;
+    final hasDropoff = _dropoffPoint != _kUnsetPoint;
+    final dp = driverPosition.value;
+    final hasDriver = hasAssignedDriver && (dp.lng != 0 || dp.lat != 0);
+    final markers =
+        (hasPickup ? 1 : 0) + (hasDropoff ? 1 : 0) + (hasDriver ? 1 : 0);
+    debugPrint(
+      '[TrackingMap]($source) '
+      'pickup=${hasPickup ? fmt(_pickupPoint) : "MISSING"}, '
+      'dropoff=${hasDropoff ? fmt(_dropoffPoint) : "MISSING"}, '
+      'driver=${hasDriver ? fmt(dp) : "MISSING"}, '
+      'markers=$markers',
+    );
+    if (!hasPickup) {
+      debugPrint('[TrackingMap] pickup MISSING — seller location not geocoded.');
+    }
+    if (!hasDropoff) {
+      debugPrint('[TrackingMap] dropoff MISSING — client address not geocoded.');
+    }
+    if (!hasDriver) {
+      debugPrint('[TrackingMap] driver MISSING — no driver assigned/located yet.');
     }
   }
 
