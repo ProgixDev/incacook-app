@@ -61,6 +61,7 @@ class WalletEntry {
 class WalletSummary {
   const WalletSummary({
     required this.availableCents,
+    required this.pendingCents,
     required this.heldCents,
     required this.paidOutCents,
     required this.minWithdrawalCents,
@@ -69,6 +70,9 @@ class WalletSummary {
   });
 
   final int availableCents;
+
+  /// Earnings inside the 24h safety window — visible but not yet withdrawable.
+  final int pendingCents;
   final int heldCents;
   final int paidOutCents;
   final int minWithdrawalCents;
@@ -76,6 +80,9 @@ class WalletSummary {
   final List<WalletEntry> entries;
 
   double get availableEuros => availableCents / 100.0;
+
+  /// Pending (24h window) + held (disputed) — everything owed but not available.
+  double get pendingEuros => (pendingCents + heldCents) / 100.0;
   double get heldEuros => heldCents / 100.0;
   double get paidOutEuros => paidOutCents / 100.0;
   double get minWithdrawalEuros => minWithdrawalCents / 100.0;
@@ -83,6 +90,7 @@ class WalletSummary {
   factory WalletSummary.fromJson(Map<String, dynamic> json) {
     return WalletSummary(
       availableCents: (json['availableCents'] as num?)?.toInt() ?? 0,
+      pendingCents: (json['pendingCents'] as num?)?.toInt() ?? 0,
       heldCents: (json['heldCents'] as num?)?.toInt() ?? 0,
       paidOutCents: (json['paidOutCents'] as num?)?.toInt() ?? 0,
       minWithdrawalCents: (json['minWithdrawalCents'] as num?)?.toInt() ?? 5000,

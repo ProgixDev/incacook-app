@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
+import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/enums/order_stage.dart';
+import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/realtime/chat_message.dart';
+import 'package:incacook/core/widgets/qr/qr_display_sheet.dart';
 import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 import 'package:incacook/features/orders/controllers/order_tracking_controller.dart';
 import 'package:incacook/features/orders/data/orders_repository.dart';
@@ -66,6 +71,46 @@ class OrderTrackingScreen extends StatelessWidget {
                 ),
               ),
 
+            //* 2a. no-driver fallback: when no driver accepted the delivery
+            //*     (status NO_DRIVER_AVAILABLE), prompt the buyer to switch to
+            //*     pickup or cancel + refund.
+            if (controller.noDriverDecisionPending.value && orderId != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 200,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.lg),
+                  child: _NoDriverCard(
+                    onSwitchToPickup: () =>
+                        _onNoDriverDecision(context, controller, 'SWITCH_TO_PICKUP'),
+                    onCancelRefund: () =>
+                        _onNoDriverDecision(context, controller, 'CANCEL_AND_REFUND'),
+                  ),
+                ),
+              ),
+
+            //* 2b. delivery-only reception QR. Visible once the driver has
+            //*     confirmed pickup (phase enRoute → order IN_DELIVERY). The
+            //*     buyer taps to display their QR; the assigned driver scans it
+            //*     to confirm delivery.
+            if (!controller.isPickup.value &&
+                controller.phase.value == TrackingPhase.enRoute &&
+                orderId != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 200,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
+                  child: FilledButton.icon(
+                    onPressed: () => _showReceptionQr(context, orderId!),
+                    icon: const Icon(Icons.qr_code_2),
+                    label: const Text(AppTexts.buyerDeliveryQrCta),
+                  ),
+                ),
+              ),
+
             //* 3. bottom sheet with title, timeline and deliverer pill
             Positioned(
               left: 0,
@@ -106,6 +151,63 @@ class OrderTrackingScreen extends StatelessWidget {
     );
   }
 
+  /// Sends the buyer's no-driver decision and refreshes the screen. On success
+  /// the order moves to pickup (READY) or cancelled; failures surface a snack.
+  Future<void> _onNoDriverDecision(
+    BuildContext context,
+    OrderTrackingController controller,
+    String decision,
+  ) async {
+    final id = orderId;
+    if (id == null) return;
+    try {
+      await OrdersRepository.instance.noDriverDecision(id, decision);
+      controller.noDriverDecisionPending.value = false;
+      await controller.refreshSnapshot();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            decision == 'SWITCH_TO_PICKUP'
+                ? AppTexts.noDriverSwitchedMessage
+                : AppTexts.noDriverCancelledMessage,
+          ),
+        ),
+      );
+    } on ApiFailure catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text(AppTexts.noDriverDecisionFailed)));
+    }
+  }
+
+  /// Fetches the buyer's reception QR for [orderId] and shows it for the
+  /// driver to scan. Surfaces the backend message (e.g. not in delivery yet)
+  /// on failure.
+  Future<void> _showReceptionQr(BuildContext context, String orderId) async {
+    try {
+      final qr = await OrdersRepository.instance.fetchDeliveryQr(orderId);
+      if (!context.mounted) return;
+      await showQrModal(
+        context,
+        title: AppTexts.deliveryQrSheetTitle,
+        instruction: AppTexts.deliveryQrSheetInstruction,
+        qrData: qr.qrData,
+        closeLabel: AppTexts.deliveryQrSheetClose,
+      );
+    } on ApiFailure catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text(AppTexts.deliveryQrUnavailable)));
+    }
+  }
+
   Widget _stageContent(OrderStage stage) {
     switch (stage) {
       case OrderStage.prepared:
@@ -115,8 +217,104 @@ class OrderTrackingScreen extends StatelessWidget {
       case OrderStage.arrivedDropoff:
         return const OnTheWayStageView();
       case OrderStage.delivered:
-      case OrderStage.failed:
         return const DeliveredStageView();
+      case OrderStage.failed:
+        return const _CancelledStageView();
     }
+  }
+}
+
+/// Buyer-facing cancelled/refunded state. Tailors the message to the
+/// cancellation reason (e.g. seller unavailable at pickup).
+class _CancelledStageView extends StatelessWidget {
+  const _CancelledStageView();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(AppSizes.lg),
+      child: Obx(() {
+        final reason = OrderTrackingController.instance.cancellationReason.value;
+        final message = switch (reason) {
+          'seller_unavailable' => AppTexts.buyerSellerUnavailableCancelled,
+          'driver_disappeared' => AppTexts.buyerDriverDisappearedRefunded,
+          _ => AppTexts.orderCancelledRefunded,
+        };
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.cancel_outlined, size: 56, color: scheme.error),
+            const Gap(AppSizes.md),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+}
+
+/// Buyer prompt shown when no driver accepted the delivery: switch to pickup
+/// or cancel + refund.
+class _NoDriverCard extends StatelessWidget {
+  const _NoDriverCard({
+    required this.onSwitchToPickup,
+    required this.onCancelRefund,
+  });
+
+  final VoidCallback onSwitchToPickup;
+  final VoidCallback onCancelRefund;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Material(
+      elevation: 6,
+      borderRadius: BorderRadius.circular(16),
+      color: scheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.no_transfer_outlined, color: scheme.error),
+                const SizedBox(width: AppSizes.sm),
+                Expanded(
+                  child: Text(
+                    AppTexts.noDriverTitle,
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Text(AppTexts.noDriverText, style: textTheme.bodyMedium),
+            const SizedBox(height: AppSizes.md),
+            FilledButton.icon(
+              onPressed: onSwitchToPickup,
+              icon: const Icon(Icons.storefront_outlined, size: 18),
+              label: const Text(AppTexts.noDriverSwitchPickup),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            OutlinedButton.icon(
+              onPressed: onCancelRefund,
+              icon: const Icon(Icons.cancel_outlined, size: 18),
+              label: const Text(AppTexts.noDriverCancelRefund),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

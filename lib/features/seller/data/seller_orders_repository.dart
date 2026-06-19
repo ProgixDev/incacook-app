@@ -42,6 +42,7 @@ class SellerOrderSummary {
     required this.fulfillmentChoice,
     required this.items,
     this.note,
+    this.cancellationReason,
   });
 
   final String id;
@@ -63,6 +64,9 @@ class SellerOrderSummary {
   /// Buyer's order-level note (separate from per-item notes).
   final String? note;
 
+  /// Reason an order was cancelled (e.g. `seller_unavailable`), or null.
+  final String? cancellationReason;
+
   double get totalEuros => buyerTotalCents / 100.0;
 
   factory SellerOrderSummary.fromJson(Map<String, dynamic> json) {
@@ -75,6 +79,7 @@ class SellerOrderSummary {
       placedAt: DateTime.parse(json['placedAt'] as String),
       fulfillmentChoice: json['fulfillmentChoice'] as String,
       note: json['note'] as String?,
+      cancellationReason: json['cancellationReason'] as String?,
       items: rawItems
           .map((e) => SellerOrderItem.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -143,6 +148,43 @@ class SellerOrdersRepository extends GetxService {
     await _api.post<void>(
       '${ApiConstants.apiPrefix}/orders/$orderId/mark-ready',
       decoder: (_) {},
+    );
+  }
+
+  /// `GET /v1/sellers/me/orders/:orderId/pickup-qr` — the pickup-proof QR the
+  /// seller shows to the assigned driver. Throws [ApiFailure] if the order
+  /// isn't ready / not the caller's.
+  Future<SellerPickupQr> fetchPickupQr(String orderId) async {
+    final result = await _api.get<SellerPickupQr>(
+      '${ApiConstants.apiPrefix}/sellers/me/orders/$orderId/pickup-qr',
+      decoder: (json) => SellerPickupQr.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+}
+
+/// Pickup-proof QR payload for a seller's delivery order.
+class SellerPickupQr {
+  const SellerPickupQr({
+    required this.orderId,
+    required this.deliveryId,
+    required this.pickupToken,
+    required this.qrData,
+  });
+
+  final String orderId;
+  final String deliveryId;
+  final String pickupToken;
+
+  /// The string to encode in the QR the seller displays.
+  final String qrData;
+
+  factory SellerPickupQr.fromJson(Map<String, dynamic> json) {
+    return SellerPickupQr(
+      orderId: json['orderId'] as String? ?? '',
+      deliveryId: json['deliveryId'] as String? ?? '',
+      pickupToken: json['pickupToken'] as String? ?? '',
+      qrData: json['qrData'] as String? ?? '',
     );
   }
 }

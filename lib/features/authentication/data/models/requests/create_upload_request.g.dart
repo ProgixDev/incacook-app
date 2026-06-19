@@ -24,4 +24,5 @@ const _$UploadPurposeEnumMap = {
   UploadPurpose.kycDocument: 'kyc_document',
   UploadPurpose.listingImage: 'listing_image',
   UploadPurpose.sellerFacade: 'seller_facade',
+  UploadPurpose.deliveryProof: 'delivery_proof',
 };

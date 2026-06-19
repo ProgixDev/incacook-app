@@ -62,15 +62,13 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     if (order == null || _modalOpen || !mounted) return;
     _modalOpen = true;
     try {
-      // Gate "Accepter" on the backend claim rule (KYC approved + payout
-      // onboarding complete). The driver still SEES the offer; the offer just
-      // disables Accept and offers a "set up payments" CTA when not ready.
+      // Gate "Accepter" on the backend claim rule, which is KYC only — Stripe
+      // payout onboarding does NOT block claiming (it's required at cashout).
       final canClaim = UserController.instance.canDriverClaim;
       final accepted = await showIncomingOrderModal(
         context,
         order: order,
         canClaim: canClaim,
-        onConfigurePayments: _configurePayments,
       );
       if (accepted == true) {
         final deliveryId = _incoming.pendingDeliveryId.value;

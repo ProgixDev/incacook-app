@@ -61,6 +61,7 @@ class TrackingDriver {
 class OrderTrackingSnapshot {
   const OrderTrackingSnapshot({
     required this.orderStatus,
+    this.cancellationReason,
     this.fulfillmentChoice = 'DELIVERY',
     this.deliveryStatus,
     this.deliveryId,
@@ -72,6 +73,9 @@ class OrderTrackingSnapshot {
 
   /// Backend `OrderStatus` string (PENDING … READY … IN_DELIVERY …).
   final String orderStatus;
+
+  /// Reason an order was cancelled (e.g. `seller_unavailable`), or null.
+  final String? cancellationReason;
 
   /// `DELIVERY` | `PICKUP`.
   final String fulfillmentChoice;
@@ -106,6 +110,7 @@ class OrderTrackingSnapshot {
     final di = json['driverInfo'];
     return OrderTrackingSnapshot(
       orderStatus: json['orderStatus'] as String,
+      cancellationReason: json['cancellationReason'] as String?,
       fulfillmentChoice: json['fulfillmentChoice'] as String? ?? 'DELIVERY',
       deliveryStatus: json['deliveryStatus'] as String?,
       deliveryId: json['deliveryId'] as String?,
@@ -115,6 +120,87 @@ class OrderTrackingSnapshot {
       driverInfo: di == null
           ? null
           : TrackingDriver.fromJson(di as Map<String, dynamic>),
+    );
+  }
+}
+
+/// Reception-proof QR payload for a buyer's IN_DELIVERY order
+/// (`GET /v1/orders/:id/delivery-qr`).
+class BuyerDeliveryQr {
+  const BuyerDeliveryQr({
+    required this.orderId,
+    required this.deliveryId,
+    required this.deliveryToken,
+    required this.qrData,
+  });
+
+  final String orderId;
+  final String deliveryId;
+  final String deliveryToken;
+
+  /// The string to encode in the QR the buyer displays.
+  final String qrData;
+
+  factory BuyerDeliveryQr.fromJson(Map<String, dynamic> json) {
+    return BuyerDeliveryQr(
+      orderId: json['orderId'] as String? ?? '',
+      deliveryId: json['deliveryId'] as String? ?? '',
+      deliveryToken: json['deliveryToken'] as String? ?? '',
+      qrData: json['qrData'] as String? ?? '',
+    );
+  }
+}
+
+/// Delivery completion proof for an order (`GET /v1/orders/:id/delivery-proof`).
+/// When [deliveredAsAbsent] is true the order was left at the door with a
+/// [photoUrl] (a storage path — resolve via [ApiConstants.publicImageUrl]) +
+/// GPS + [takenAt]; for a normal QR delivery those fields are null.
+class DeliveryProof {
+  const DeliveryProof({
+    required this.orderId,
+    required this.deliveryId,
+    required this.deliveredAsAbsent,
+    required this.status,
+    this.deliveredAt,
+    this.photoUrl,
+    this.lat,
+    this.lng,
+    this.takenAt,
+    this.note,
+    this.contactAttemptedAt,
+  });
+
+  final String orderId;
+  final String deliveryId;
+  final bool deliveredAsAbsent;
+  final String status;
+  final DateTime? deliveredAt;
+  final String? photoUrl;
+  final double? lat;
+  final double? lng;
+  final DateTime? takenAt;
+  final String? note;
+  final DateTime? contactAttemptedAt;
+
+  /// True only when there's an actual absent-dropoff photo to show.
+  bool get hasAbsentPhoto =>
+      deliveredAsAbsent && photoUrl != null && photoUrl!.isNotEmpty;
+
+  factory DeliveryProof.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDate(dynamic v) =>
+        v is String && v.isNotEmpty ? DateTime.tryParse(v) : null;
+    return DeliveryProof(
+      orderId: json['orderId'] as String? ?? '',
+      deliveryId: json['deliveryId'] as String? ?? '',
+      deliveredAsAbsent: json['deliveredAsAbsent'] as bool? ?? false,
+      status: json['status'] as String? ?? '',
+      deliveredAt: parseDate(json['deliveredAt']),
+      photoUrl: json['photoUrl'] as String?,
+      lat: (json['lat'] as num?)?.toDouble(),
+      lng: (json['lng'] as num?)?.toDouble(),
+      takenAt: parseDate(json['takenAt']),
+      note: json['note'] as String?,
+      contactAttemptedAt: parseDate(json['contactAttemptedAt']),
     );
   }
 }
@@ -248,6 +334,41 @@ class OrdersRepository extends GetxService {
       '${ApiConstants.apiPrefix}/orders/$orderId/tracking',
       decoder: (json) =>
           OrderTrackingSnapshot.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+
+  /// `GET /v1/orders/:id/delivery-qr` — the buyer→driver reception proof QR
+  /// for an IN_DELIVERY order. The buyer renders [BuyerDeliveryQr.qrData] and
+  /// the assigned driver scans it to confirm delivery. Throws [ApiFailure] if
+  /// the order isn't in delivery / not the caller's.
+  Future<BuyerDeliveryQr> fetchDeliveryQr(String orderId) async {
+    final result = await _api.get<BuyerDeliveryQr>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/delivery-qr',
+      decoder: (json) => BuyerDeliveryQr.fromJson(json! as Map<String, dynamic>),
+    );
+    return result.data;
+  }
+
+  /// `POST /v1/orders/:id/no-driver-decision` — buyer's choice when no driver
+  /// accepted the delivery (order is NO_DRIVER_AVAILABLE). [decision] is
+  /// `SWITCH_TO_PICKUP` or `CANCEL_AND_REFUND`. Throws [ApiFailure] if not
+  /// allowed (e.g. not the buyer, or no decision pending).
+  Future<void> noDriverDecision(String orderId, String decision) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/no-driver-decision',
+      body: {'decision': decision},
+      decoder: (_) {},
+    );
+  }
+
+  /// `GET /v1/orders/:id/delivery-proof` — delivery completion proof (buyer or
+  /// seller of the order only). Used to show the client-absent photo + GPS +
+  /// timestamp on a delivered order. Throws [ApiFailure] if not the caller's.
+  Future<DeliveryProof> fetchDeliveryProof(String orderId) async {
+    final result = await _api.get<DeliveryProof>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/delivery-proof',
+      decoder: (json) => DeliveryProof.fromJson(json! as Map<String, dynamic>),
     );
     return result.data;
   }

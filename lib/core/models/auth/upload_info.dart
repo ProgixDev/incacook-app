@@ -15,6 +15,8 @@ enum UploadPurpose {
   listingImage,
   @JsonValue('seller_facade')
   sellerFacade,
+  @JsonValue('delivery_proof')
+  deliveryProof,
 }
 
 /// Response of `POST /v1/uploads` (§3.19).

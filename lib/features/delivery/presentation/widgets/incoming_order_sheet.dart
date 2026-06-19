@@ -24,18 +24,13 @@ Future<bool?> showIncomingOrderModal(
   BuildContext context, {
   required OrderDetail order,
   bool canClaim = true,
-  VoidCallback? onConfigurePayments,
 }) {
   return showBlurredModalBottomSheet<bool>(
     context: context,
     //? non-dismissible: declining must be an explicit choice or a timeout.
     isDismissible: false,
     enableDrag: false,
-    builder: (_) => IncomingOrderSheet(
-      order: order,
-      canClaim: canClaim,
-      onConfigurePayments: onConfigurePayments,
-    ),
+    builder: (_) => IncomingOrderSheet(order: order, canClaim: canClaim),
   );
 }
 
@@ -44,18 +39,14 @@ class IncomingOrderSheet extends StatefulWidget {
     super.key,
     required this.order,
     this.canClaim = true,
-    this.onConfigurePayments,
   });
 
   final OrderDetail order;
 
-  /// When false the driver hasn't finished payout setup: "Accepter" is
-  /// disabled and a "Configurer mes paiements" CTA is shown instead.
+  /// Gates the "Accepter" button on real delivery constraints (KYC approved).
+  /// Stripe payout onboarding is NOT a factor — drivers can accept and earn
+  /// before setting up payments (payout setup is enforced at cashout).
   final bool canClaim;
-
-  /// Invoked when the driver taps "Configurer mes paiements" (the sheet
-  /// closes first, then the host opens Stripe onboarding).
-  final VoidCallback? onConfigurePayments;
 
   @override
   State<IncomingOrderSheet> createState() => _IncomingOrderSheetState();
@@ -99,14 +90,6 @@ class _IncomingOrderSheetState extends State<IncomingOrderSheet>
 
   void _accept() => Navigator.of(context).pop(true);
   void _decline() => Navigator.of(context).pop(false);
-
-  /// Close the offer (counts as a decline) then hand off to the host to open
-  /// Stripe payout onboarding. After onboarding the host refreshes the
-  /// profile, so the next offer's "Accepter" is enabled.
-  void _configurePayments() {
-    Navigator.of(context).pop(false);
-    widget.onConfigurePayments?.call();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,10 +165,6 @@ class _IncomingOrderSheetState extends State<IncomingOrderSheet>
                     subtitle: hasRecipient ? fullAddress : addrLine2,
                   ),
                   const Gap(AppSizes.lg + 4),
-                  if (!widget.canClaim) ...[
-                    _PayoutRequiredNotice(onConfigure: _configurePayments),
-                    const Gap(AppSizes.md),
-                  ],
                   _Actions(
                     onAccept: _accept,
                     onDecline: _decline,
@@ -440,55 +419,6 @@ class _Actions extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Warning + CTA shown on the offer when the driver hasn't completed Stripe
-/// payout onboarding. Tapping the button closes the offer and opens the
-/// hosted Stripe onboarding (the claim guard is enforced server-side too).
-class _PayoutRequiredNotice extends StatelessWidget {
-  const _PayoutRequiredNotice({required this.onConfigure});
-
-  final VoidCallback onConfigure;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(AppSizes.md - 2),
-      decoration: BoxDecoration(
-        color: scheme.errorContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Iconsax.card_pos, size: 18, color: scheme.error),
-              const Gap(AppSizes.sm),
-              Expanded(
-                child: Text(
-                  AppTexts.incomingOrderPayoutRequired,
-                  style: textTheme.bodySmall?.copyWith(color: scheme.error),
-                ),
-              ),
-            ],
-          ),
-          const Gap(AppSizes.sm),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: onConfigure,
-              icon: const Icon(Iconsax.wallet_add, size: 18),
-              label: const Text(AppTexts.incomingOrderConfigurePaymentsCta),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

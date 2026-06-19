@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/realtime/chat_message.dart';
 import 'package:incacook/core/utils/geo/distance.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
@@ -13,8 +14,10 @@ import 'package:incacook/core/constants/text_strings.dart' show AppTexts;
 import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 import 'package:incacook/features/delivery/controllers/delivery_route_controller.dart';
 import 'package:incacook/features/delivery/data/issue_catalog.dart';
+import 'package:incacook/features/delivery/presentation/screens/absent_dropoff_screen.dart';
+import 'package:incacook/features/delivery/presentation/screens/qr_scan_screen.dart';
+import 'package:incacook/features/delivery/presentation/screens/seller_unavailable_screen.dart';
 import 'package:incacook/features/delivery/presentation/widgets/issue_report_sheet.dart';
-import 'package:incacook/features/delivery/presentation/widgets/qr_handoff_sheet.dart';
 import 'package:incacook/core/models/order_detail.dart';
 import 'package:incacook/core/enums/order_stage.dart';
 
@@ -117,6 +120,26 @@ class _Card extends StatelessWidget {
                 spec: spec,
                 onPressed: () => _onCtaPressed(context),
               ),
+              // Pickup fallback: seller absent / no food → report it (driver is
+              // at the seller). Only at the pickup step, before confirmation.
+              if (stage == OrderStage.arrivedPickup) ...[
+                const Gap(AppSizes.xs),
+                TextButton.icon(
+                  onPressed: () => _onSellerUnavailablePressed(context),
+                  icon: const Icon(Icons.storefront_outlined, size: 18),
+                  label: const Text(AppTexts.sellerUnavailableCta),
+                ),
+              ],
+              // Dropoff fallback: client absent → leave at the door with photo
+              // + GPS proof. Only at the dropoff step (driver is at the door).
+              if (stage == OrderStage.arrivedDropoff) ...[
+                const Gap(AppSizes.xs),
+                TextButton.icon(
+                  onPressed: () => _onAbsentPressed(context),
+                  icon: const Icon(Icons.report_gmailerrorred_outlined, size: 18),
+                  label: const Text(AppTexts.absentDropoffCta),
+                ),
+              ],
               if (!spec.isTerminal) ...[
                 const Gap(AppSizes.xs),
                 _ReportIssueButton(
@@ -130,6 +153,30 @@ class _Card extends StatelessWidget {
     );
   }
 
+  /// Seller-unavailable fallback at the pickup step. Opens the report screen;
+  /// on success the order is cancelled + refunded, the driver compensated, and
+  /// the job cleared by the controller.
+  Future<void> _onSellerUnavailablePressed(BuildContext context) async {
+    final ok = await Get.to<bool>(() => const SellerUnavailableScreen());
+    if (ok == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.sellerUnavailableSuccess)),
+      );
+    }
+  }
+
+  /// Client-absent fallback at the dropoff step. Opens the proof screen
+  /// (photo + GPS); on success the job is already cleared by the controller, so
+  /// we just confirm to the driver.
+  Future<void> _onAbsentPressed(BuildContext context) async {
+    final ok = await Get.to<bool>(() => const AbsentDropoffScreen());
+    if (ok == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.absentDropoffSuccess)),
+      );
+    }
+  }
+
   Future<void> _onCtaPressed(BuildContext context) async {
     final spec = _StageSpec.forStage(stage);
     if (spec.isTerminal) {
@@ -138,22 +185,69 @@ class _Card extends StatelessWidget {
     }
     final next = spec.nextStage;
     if (next == null) return;
-    if (spec.requiresQrHandoff) {
-      // Encode the handoff target in the QR — the seller (at pickup)
-      // or buyer (at dropoff) would scan it; on emulator the modal's
-      // Continue button is the tap-instead-of-scan fallback.
-      final orderId = route.currentJob.value?.id ?? 'unknown';
-      final action = next == OrderStage.delivered ? 'delivery' : 'pickup';
-      final title = next == OrderStage.delivered
-          ? 'Montre le code au client'
-          : 'Montre le code au vendeur';
-      final confirmed = await showQrHandoffModal(
-        context,
-        qrData: 'incacook://handoff?orderId=$orderId&action=$action',
-        title: title,
+
+    // Pickup: the driver SCANS the seller's QR (proof the dish was handed
+    // over). The token is validated server-side; the stage only advances on a
+    // successful scan — an invalid/duplicate QR surfaces the backend message.
+    if (next == OrderStage.onTheWay) {
+      final token = await Get.to<String>(
+        () => const QrScanScreen(
+          title: AppTexts.pickupScanTitle,
+          instruction: AppTexts.pickupScanInstruction,
+        ),
       );
-      if (confirmed != true) return;
+      if (token == null || token.isEmpty) return;
+      try {
+        await route.confirmPickupScanned(token);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(AppTexts.pickupConfirmedMessage)),
+          );
+        }
+      } on ApiFailure catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message)));
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        }
+      }
+      return;
     }
+
+    // Delivery: the driver SCANS the buyer's reception QR (proof the order
+    // reached the client). On success the job is DELIVERED and cleared; an
+    // invalid/duplicate QR surfaces the backend message.
+    if (next == OrderStage.delivered) {
+      final token = await Get.to<String>(
+        () => const QrScanScreen(
+          title: AppTexts.deliveryScanTitle,
+          instruction: AppTexts.deliveryScanInstruction,
+        ),
+      );
+      if (token == null || token.isEmpty) return;
+      try {
+        await route.confirmDeliveryScanned(token);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(AppTexts.deliveryConfirmedMessage)),
+          );
+        }
+      } on ApiFailure catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message)));
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        }
+      }
+      return;
+    }
+
     await route.advanceStage(next);
   }
 

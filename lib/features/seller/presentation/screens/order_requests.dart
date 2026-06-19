@@ -5,8 +5,10 @@ import 'package:lottie/lottie.dart';
 import 'package:incacook/core/constants/animations.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/realtime/chat_message.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
+import 'package:incacook/core/widgets/qr/qr_display_sheet.dart';
 import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 import 'package:incacook/features/seller/data/seller_orders_repository.dart';
 import 'package:incacook/features/seller/domain/accepted_order.dart';
@@ -23,6 +25,8 @@ const _kReady = 'READY';
 const _kInDelivery = 'IN_DELIVERY';
 const _kDelivered = 'DELIVERED';
 const _kCompleted = 'COMPLETED';
+const _kNoDriver = 'NO_DRIVER_AVAILABLE';
+const _kCancelled = 'CANCELLED';
 
 class OrderRequestsScreen extends StatefulWidget {
   const OrderRequestsScreen({super.key});
@@ -144,6 +148,28 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
     }
   }
 
+  /// Fetches the pickup-proof QR for [orderId] and shows it for the driver to
+  /// scan. Surfaces the backend message (e.g. order not ready) on failure.
+  Future<void> _showPickupQr(String orderId) async {
+    try {
+      final qr = await SellerOrdersRepository.instance.fetchPickupQr(orderId);
+      if (!mounted) return;
+      await showQrModal(
+        context,
+        title: AppTexts.pickupQrSheetTitle,
+        instruction: AppTexts.pickupQrSheetInstruction,
+        qrData: qr.qrData,
+      );
+    } on ApiFailure catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text(AppTexts.pickupQrUnavailable)));
+    }
+  }
+
   String? _ctaLabel(String status) {
     switch (status) {
       case _kPending:
@@ -241,6 +267,23 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   AcceptedOrderCard(order: adapter),
+                                  // No driver accepted — awaiting the client's
+                                  // decision (switch to pickup / cancel). The
+                                  // seller is not penalised.
+                                  if (o.status == _kNoDriver) ...[
+                                    const Gap(AppSizes.sm),
+                                    const _NoDriverBanner(),
+                                  ],
+                                  // Cancelled with a delivery-incident reason:
+                                  // seller couldn't provide (no fault beyond the
+                                  // cancel) or driver disappeared (seller still
+                                  // paid).
+                                  if (o.status == _kCancelled &&
+                                      (o.cancellationReason == 'seller_unavailable' ||
+                                          o.cancellationReason == 'driver_disappeared')) ...[
+                                    const Gap(AppSizes.sm),
+                                    _OrderCancelledBanner(reason: o.cancellationReason!),
+                                  ],
                                   if (cta != null) ...[
                                     const Gap(AppSizes.sm),
                                     FilledButton(
@@ -271,6 +314,12 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                       icon: const Icon(Icons.message_outlined, size: 18),
                                       label: const Text(AppTexts.chatContactDriverCta),
                                     ),
+                                    const Gap(AppSizes.sm),
+                                    OutlinedButton.icon(
+                                      onPressed: () => _showPickupQr(o.id),
+                                      icon: const Icon(Icons.qr_code_2, size: 18),
+                                      label: const Text(AppTexts.sellerPickupQrCta),
+                                    ),
                                   ],
                                 ],
                               );
@@ -281,6 +330,80 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Banner shown on a seller order whose delivery found no driver — the client
+/// is deciding whether to switch to pickup or cancel. No seller penalty.
+class _NoDriverBanner extends StatelessWidget {
+  const _NoDriverBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.sm),
+      decoration: BoxDecoration(
+        color: scheme.errorContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.no_transfer_outlined, size: 18, color: scheme.onErrorContainer),
+          const Gap(AppSizes.sm),
+          Expanded(
+            child: Text(
+              AppTexts.sellerNoDriverWaiting,
+              style: textTheme.bodySmall?.copyWith(
+                color: scheme.onErrorContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Banner on a seller order cancelled by a delivery incident: seller couldn't
+/// provide the order at pickup, or the driver disappeared after pickup (seller
+/// is still paid in that case).
+class _OrderCancelledBanner extends StatelessWidget {
+  const _OrderCancelledBanner({required this.reason});
+
+  final String reason;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final message = reason == 'driver_disappeared'
+        ? AppTexts.sellerDriverIncidentMaintained
+        : AppTexts.sellerOrderCancelledNoFood;
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.sm),
+      decoration: BoxDecoration(
+        color: scheme.errorContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.cancel_outlined, size: 18, color: scheme.onErrorContainer),
+          const Gap(AppSizes.sm),
+          Expanded(
+            child: Text(
+              message,
+              style: textTheme.bodySmall?.copyWith(
+                color: scheme.onErrorContainer,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

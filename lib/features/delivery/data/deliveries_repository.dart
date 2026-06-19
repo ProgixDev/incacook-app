@@ -142,19 +142,93 @@ class DeliveriesRepository extends GetxService {
   }
 
   /// `POST /v1/drivers/me/deliveries/:id/confirm-pickup`.
-  /// AT_PICKUP → PICKED_UP. Order → IN_DELIVERY.
-  Future<void> confirmPickup(String deliveryId) async {
+  /// Driver scans the seller's pickup QR and submits its token (+ optional
+  /// GPS). On success: PICKED_UP, Order → IN_DELIVERY. Throws [ApiFailure] on
+  /// an invalid/duplicate scan so the caller can surface the message.
+  Future<void> confirmPickup(
+    String deliveryId, {
+    required String pickupToken,
+    double? lat,
+    double? lng,
+  }) async {
     await _api.post<void>(
       '${ApiConstants.apiPrefix}/drivers/me/deliveries/$deliveryId/confirm-pickup',
+      body: {
+        'pickupToken': pickupToken,
+        'lat': ?lat,
+        'lng': ?lng,
+      },
       decoder: (_) {},
     );
   }
 
   /// `POST /v1/drivers/me/deliveries/:id/confirm-delivery`.
-  /// PICKED_UP → DELIVERED. Order → DELIVERED. Triggers Stripe transfers.
-  Future<void> confirmDelivery(String deliveryId) async {
+  /// Driver scans the buyer's reception QR and submits its token (+ optional
+  /// GPS). On success: DELIVERED, Order → DELIVERED, triggers Stripe transfers.
+  /// Throws [ApiFailure] on an invalid/duplicate scan so the caller can
+  /// surface the message.
+  Future<void> confirmDelivery(
+    String deliveryId, {
+    required String deliveryToken,
+    double? lat,
+    double? lng,
+  }) async {
     await _api.post<void>(
       '${ApiConstants.apiPrefix}/drivers/me/deliveries/$deliveryId/confirm-delivery',
+      body: {
+        'deliveryToken': deliveryToken,
+        'lat': ?lat,
+        'lng': ?lng,
+      },
+      decoder: (_) {},
+    );
+  }
+
+  /// `POST /v1/drivers/me/deliveries/:id/confirm-absent-dropoff`.
+  /// Client-absent fallback: leaves the order at the door with a mandatory
+  /// photo ([photoUrl] is the storage path from the upload flow) + GPS. On
+  /// success: DELIVERED, Order → DELIVERED. Throws [ApiFailure] on a failed
+  /// confirmation so the caller can surface the message.
+  Future<void> confirmAbsentDropoff(
+    String deliveryId, {
+    required String photoUrl,
+    required double lat,
+    required double lng,
+    String? note,
+  }) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/drivers/me/deliveries/$deliveryId/confirm-absent-dropoff',
+      body: {
+        'photoUrl': photoUrl,
+        'lat': lat,
+        'lng': lng,
+        'note': ?note,
+      },
+      decoder: (_) {},
+    );
+  }
+
+  /// `POST /v1/drivers/me/deliveries/:id/report-seller-unavailable`.
+  /// Driver arrived but the seller couldn't provide the order (absent / no
+  /// food), before pickup. Cancels + refunds the order and compensates the
+  /// driver. Throws [ApiFailure] on a rejected report.
+  Future<void> reportSellerUnavailable(
+    String deliveryId, {
+    required String reason,
+    required double lat,
+    required double lng,
+    String? note,
+    String? photoUrl,
+  }) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/drivers/me/deliveries/$deliveryId/report-seller-unavailable',
+      body: {
+        'reason': reason,
+        'lat': lat,
+        'lng': lng,
+        'note': ?note,
+        'photoUrl': ?photoUrl,
+      },
       decoder: (_) {},
     );
   }

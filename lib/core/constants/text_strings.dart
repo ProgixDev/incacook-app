@@ -837,6 +837,96 @@ class AppTexts {
   // guard other than payout). Never surfaces the raw backend error.
   static const String incomingOrderClaimFailed =
       "Impossible d'accepter cette livraison. Réessayez.";
+  // Wallet — payout (Stripe Connect) setup prompt. Shown only when the driver
+  // hasn't configured payouts; delivering/earning does NOT require it.
+  static const String walletPayoutSetupTitle = "Recevoir mes paiements";
+  static const String walletPayoutSetupBody =
+      "Vous pouvez livrer maintenant. Configurez vos paiements uniquement "
+      "lorsque vous souhaitez retirer vos gains.";
+  // QR scanner (driver) — shared manual-entry fallback.
+  static const String commonCancel = "Annuler";
+  static const String commonValidate = "Valider";
+  static const String qrScanManualCta = "Saisir le code manuellement";
+  static const String qrScanManualTitle = "Code";
+  static const String qrScanManualHint = "Collez ou saisissez le code";
+  // Seller pickup proof QR — seller shows, driver scans.
+  static const String sellerPickupQrCta = "QR de retrait livreur";
+  static const String pickupQrSheetTitle = "QR de retrait";
+  static const String pickupQrSheetInstruction =
+      "Montrez ce code au livreur pour confirmer la remise de la commande.";
+  static const String pickupQrSheetClose = "Fermer";
+  static const String pickupScanTitle = "Scanner le QR vendeur";
+  static const String pickupScanInstruction =
+      "Scannez le QR affiché par le vendeur pour confirmer le retrait.";
+  static const String pickupConfirmedMessage = "Retrait confirmé — en livraison";
+  static const String pickupQrUnavailable = "QR de retrait indisponible pour le moment.";
+  // Buyer delivery (reception) proof QR — buyer shows, driver scans.
+  static const String buyerDeliveryQrCta = "QR de réception";
+  static const String deliveryQrSheetTitle = "QR de réception";
+  static const String deliveryQrSheetInstruction =
+      "Montrez ce QR code au livreur pour confirmer la réception.";
+  static const String deliveryQrSheetClose = "Fermer";
+  static const String deliveryScanTitle = "Scanner le QR client";
+  static const String deliveryScanInstruction =
+      "Scannez le QR affiché par le client pour confirmer la livraison.";
+  static const String deliveryConfirmedMessage = "Livraison confirmée";
+  static const String deliveryQrUnavailable = "QR de réception indisponible pour le moment.";
+  // Client-absent dropoff (driver) — photo + GPS proof.
+  static const String absentDropoffCta = "Client absent";
+  static const String absentDropoffTitle = "Client absent";
+  static const String absentDropoffIntro =
+      "Le client est absent ? Déposez la commande à l'adresse avec une preuve "
+      "photo et la position GPS.";
+  static const String absentDropoffTakePhoto = "Prendre une photo";
+  static const String absentDropoffRetakePhoto = "Reprendre la photo";
+  static const String absentDropoffNoteHint = "Note (optionnel)";
+  static const String absentDropoffSubmit = "Confirmer le dépôt";
+  static const String absentDropoffGpsCapturing = "Récupération de la position GPS…";
+  static const String absentDropoffGpsReady = "Position GPS enregistrée";
+  static const String absentDropoffGpsMissing =
+      "Position GPS indisponible. Activez la localisation et réessayez.";
+  static const String absentDropoffPhotoRequired = "Photo obligatoire.";
+  static const String absentDropoffSuccess = "Livraison confirmée (client absent).";
+  static const String absentDropoffUploadFailed = "Échec de l'envoi de la photo.";
+  // No driver available — buyer decision (switch to pickup / cancel+refund).
+  static const String noDriverTitle = "Aucun livreur disponible";
+  static const String noDriverText =
+      "Vous pouvez récupérer votre commande en ramassage, ou annuler et être remboursé.";
+  static const String noDriverSwitchPickup = "Passer en ramassage";
+  static const String noDriverCancelRefund = "Annuler et rembourser";
+  static const String noDriverSwitchedMessage = "Votre commande est passée en ramassage.";
+  static const String noDriverCancelledMessage = "Votre commande a été annulée et remboursée.";
+  static const String noDriverDecisionFailed = "Action impossible pour le moment.";
+  static const String sellerNoDriverWaiting =
+      "Aucun livreur disponible — en attente de décision client";
+  // Seller-unavailable-at-pickup report (driver).
+  static const String sellerUnavailableCta = "Vendeur absent / plat indisponible";
+  static const String sellerUnavailableTitle = "Vendeur indisponible";
+  static const String sellerUnavailableIntro =
+      "Le vendeur est absent ou le plat n'est pas disponible ? Signalez-le avec "
+      "votre position — vous serez indemnisé pour le déplacement.";
+  static const String sellerUnavailableReasonLabel = "Motif";
+  static const String sellerUnavailableReasonAbsent = "Vendeur absent";
+  static const String sellerUnavailableReasonNoFood = "Plat non disponible";
+  static const String sellerUnavailableSubmit = "Envoyer le signalement";
+  static const String sellerUnavailableSuccess =
+      "Signalement envoyé. Vous serez indemnisé pour le déplacement.";
+  // Order-cancelled states surfaced to buyer/seller.
+  static const String orderCancelledRefunded = "Commande annulée et remboursée.";
+  static const String buyerSellerUnavailableCancelled =
+      "Commande annulée et remboursée : vendeur indisponible.";
+  static const String sellerOrderCancelledNoFood =
+      "Commande annulée : plat non disponible au retrait.";
+  // Driver disappeared after pickup.
+  static const String buyerDriverDisappearedRefunded =
+      "Commande remboursée : livraison non effectuée.";
+  static const String sellerDriverIncidentMaintained =
+      "Incident livreur : paiement maintenu.";
+  // Client-absent proof (buyer/seller order detail).
+  static const String absentProofCardTitle = "Commande déposée";
+  static const String absentProofCardText =
+      "Commande déposée à votre adresse avec preuve photo.";
+  static const String absentProofDeliveredAtLabel = "Livrée le";
   // Chat CTAs shared by the delivery + seller order surfaces.
   static const String chatContactClientCta = "Contacter le client";
   static const String chatContactSellerCta = "Contacter le vendeur";

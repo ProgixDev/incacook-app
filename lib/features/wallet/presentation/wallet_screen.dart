@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
 import 'package:incacook/features/wallet/data/wallet_models.dart';
 import 'package:incacook/features/wallet/data/wallet_repository.dart';
 
@@ -32,6 +36,17 @@ class _WalletScreenState extends State<WalletScreen> {
     final next = WalletRepository().getSummary();
     setState(() => _future = next);
     await next;
+  }
+
+  /// Opens Stripe Connect payout onboarding (required only to withdraw), then
+  /// refreshes the user so the prompt hides itself once payouts are ready.
+  Future<void> _configurePayments() async {
+    await PayoutOnboardingService.openOnboarding(context);
+    try {
+      await UserController.instance.refreshFromServer();
+    } catch (_) {
+      // Best-effort — next /users/me read reconciles.
+    }
   }
 
   Future<void> _withdraw() async {
@@ -90,6 +105,16 @@ class _WalletScreenState extends State<WalletScreen> {
               children: [
                 _BalanceCard(summary: s),
                 const Gap(AppSizes.md),
+                // Driver payout setup prompt — only while not yet configured.
+                // Reactive so it disappears once onboarding completes.
+                Obx(
+                  () => UserController.instance.driverNeedsPayoutSetup
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: AppSizes.md),
+                          child: _PayoutSetupCard(onConfigure: _configurePayments),
+                        )
+                      : const SizedBox.shrink(),
+                ),
                 _WithdrawSection(
                   summary: s,
                   withdrawing: _withdrawing,
@@ -162,7 +187,7 @@ class _BalanceCard extends StatelessWidget {
             children: [
               _MiniStat(
                 label: 'En attente',
-                value: currency.format(summary.heldEuros),
+                value: currency.format(summary.pendingEuros),
               ),
               const Gap(AppSizes.lg),
               _MiniStat(
@@ -200,6 +225,46 @@ class _MiniStat extends StatelessWidget {
           style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
       ],
+    );
+  }
+}
+
+/// Non-blocking prompt: drivers can deliver + earn without Stripe payout
+/// onboarding; it's only needed to withdraw. Shown in the wallet until set up.
+class _PayoutSetupCard extends StatelessWidget {
+  const _PayoutSetupCard({required this.onConfigure});
+
+  final Future<void> Function() onConfigure;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return FrostedSurface(
+      borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppTexts.walletPayoutSetupTitle,
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const Gap(AppSizes.xs),
+          Text(
+            AppTexts.walletPayoutSetupBody,
+            style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const Gap(AppSizes.md),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onConfigure,
+              child: const Text(AppTexts.incomingOrderConfigurePaymentsCta),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

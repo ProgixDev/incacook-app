@@ -47,6 +47,15 @@ class OrderTrackingController extends GetxController {
   /// True once the real tracking snapshot has loaded (real coords + status).
   final RxBool snapshotReady = false.obs;
 
+  /// True when the order is NO_DRIVER_AVAILABLE — no driver accepted the
+  /// delivery within the timeout, so the buyer must decide (switch to pickup or
+  /// cancel + refund). Drives the no-driver decision card on the tracking screen.
+  final RxBool noDriverDecisionPending = false.obs;
+
+  /// Cancellation reason once the order is cancelled (e.g. `seller_unavailable`),
+  /// null otherwise. Drives the buyer's cancelled-state message.
+  final Rxn<String> cancellationReason = Rxn<String>();
+
   /// Real seller pickup + client dropoff coordinates (from the snapshot).
   MapPoint _pickupPoint = _kUnsetPoint;
   MapPoint _dropoffPoint = _kUnsetPoint;
@@ -95,6 +104,10 @@ class OrderTrackingController extends GetxController {
 
   void setStage(OrderStage next) => stage.value = next;
 
+  /// Re-pulls the snapshot — used after the buyer resolves a no-driver prompt
+  /// so the screen reflects the new status (pickup / cancelled).
+  Future<void> refreshSnapshot() => _loadTrackingSnapshot();
+
   /// Pulls the real pickup/dropoff/driver coordinates + status + driver
   /// identity. This is the initial frame; live movement then arrives over
   /// the socket. On failure the screen shows a safe "unavailable" state.
@@ -108,6 +121,8 @@ class OrderTrackingController extends GetxController {
       isPickup.value = snap.isPickup;
 
       _lastStatus = snap.orderStatus;
+      noDriverDecisionPending.value = snap.orderStatus == 'NO_DRIVER_AVAILABLE';
+      cancellationReason.value = snap.cancellationReason;
       final mappedStage = _statusToStage(snap.orderStatus);
       if (mappedStage != null) stage.value = mappedStage;
       phase.value = _phaseForStatus(snap.orderStatus);
@@ -221,9 +236,15 @@ class OrderTrackingController extends GetxController {
   void _onStatusEvent(OrderStatusEvent ev) {
     if (ev.status == _lastStatus) return;
     _lastStatus = ev.status;
+    noDriverDecisionPending.value = ev.status == 'NO_DRIVER_AVAILABLE';
 
     final newPhase = _phaseForStatus(ev.status);
     if (phase.value != newPhase) phase.value = newPhase;
+
+    // On a live cancellation, pull the reason for the cancelled-state message.
+    if (ev.status == 'CANCELLED' || ev.status == 'REFUNDED') {
+      unawaited(refreshSnapshot());
+    }
 
     final next = _statusToStage(ev.status);
     if (next == null) return;

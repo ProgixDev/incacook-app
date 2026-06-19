@@ -100,18 +100,23 @@ class UserController extends GetxController {
   bool get isSignedIn => user.value != null;
 
   /// True once the driver finished Stripe Connect payout onboarding. Drives the
-  /// payout banner + the delivery-claim CTA. Reactive — bind inside [Obx].
+  /// wallet "set up payments" prompt — NOT the ability to deliver. Reactive.
   bool get driverPayoutReady =>
       user.value?.driverAccount?.stripeOnboardingCompleted ?? false;
 
-  /// Whether the connected driver may claim deliveries — mirrors the backend
-  /// claim gate (KYC APPROVED **and** payout onboarding complete). When false,
-  /// the offer's "Accepter" is disabled and a "set up payments" CTA is shown.
-  bool get canDriverClaim {
+  /// Driver-only: whether to show the wallet "Configurer mes paiements" prompt.
+  /// True when the connected user is a driver who hasn't set up payouts yet.
+  bool get driverNeedsPayoutSetup {
     final d = user.value?.driverAccount;
-    if (d == null) return false;
-    return d.kycStatus.toUpperCase() == 'APPROVED' && d.stripeOnboardingCompleted;
+    return d != null && !d.stripeOnboardingCompleted;
   }
+
+  /// Whether the connected driver may claim deliveries — mirrors the backend
+  /// claim gate, which is **KYC only**. Stripe Connect payout onboarding is NOT
+  /// required to claim/earn (it's enforced at cashout instead), so a driver can
+  /// accept deliveries before setting up payments.
+  bool get canDriverClaim =>
+      user.value?.driverAccount?.kycStatus.toUpperCase() == 'APPROVED';
 
   /// Seller subscription gate — the single rule the app uses to decide whether
   /// to show the paywall. True when the connected seller's plan is live by

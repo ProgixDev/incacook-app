@@ -124,14 +124,101 @@ class DeliveryRouteController extends GetxController {
     try {
       if (prev == OrderStage.prepared && next == OrderStage.arrivedPickup) {
         await repo.arrivePickup(id);
-      } else if (prev == OrderStage.arrivedPickup && next == OrderStage.onTheWay) {
-        await repo.confirmPickup(id);
-      } else if (prev == OrderStage.arrivedDropoff && next == OrderStage.delivered) {
-        await repo.confirmDelivery(id);
       }
+      // Pickup (arrivedPickup → onTheWay) and delivery (arrivedDropoff →
+      // delivered) are NOT here: both are token-validated QR scans handled by
+      // [confirmPickupScanned] / [confirmDeliveryScanned], which advance the
+      // stage themselves on success.
     } catch (_) {
       //? swallow — local UI keeps moving, server can resync on retry
     }
+  }
+
+  /// Driver scanned the seller's pickup QR. Confirms pickup on the backend
+  /// (token-validated, with current GPS when available); on success advances
+  /// to "en livraison" and reroutes to the dropoff. Unlike [advanceStage]
+  /// this is NOT best-effort — it rethrows [ApiFailure] (invalid/duplicate
+  /// QR, wrong driver) so the caller can show the message and the stage does
+  /// not advance on failure.
+  Future<void> confirmPickupScanned(String pickupToken) async {
+    final id = _deliveryId;
+    if (id == null) return;
+    final p = currentDriverPosition;
+    await DeliveriesRepository.instance.confirmPickup(
+      id,
+      pickupToken: pickupToken,
+      lat: p?.lat,
+      lng: p?.lng,
+    );
+    currentStage.value = OrderStage.onTheWay;
+    if (p != null) await _refetchRoute(p);
+  }
+
+  /// Driver scanned the buyer's reception QR. Confirms delivery on the backend
+  /// (token-validated, with current GPS when available). On success the order
+  /// is DELIVERED, so we clear the active job — which stops live tracking and
+  /// returns the driver to available deliveries. NOT best-effort: rethrows
+  /// [ApiFailure] (invalid/duplicate QR, wrong driver) so the caller can show
+  /// the message and the job is not cleared on failure.
+  Future<void> confirmDeliveryScanned(String deliveryToken) async {
+    final id = _deliveryId;
+    if (id == null) return;
+    final p = currentDriverPosition;
+    await DeliveriesRepository.instance.confirmDelivery(
+      id,
+      deliveryToken: deliveryToken,
+      lat: p?.lat,
+      lng: p?.lng,
+    );
+    clearJob();
+  }
+
+  /// Client-absent fallback: the driver leaves the order at the door with a
+  /// mandatory photo ([photoUrl] from the upload flow) + GPS. On success the
+  /// order is DELIVERED, so we clear the active job (stops tracking, returns to
+  /// available deliveries). NOT best-effort: rethrows [ApiFailure] so the
+  /// caller can show the message and the job is not cleared on failure.
+  Future<void> confirmAbsentDropoff({
+    required String photoUrl,
+    required double lat,
+    required double lng,
+    String? note,
+  }) async {
+    final id = _deliveryId;
+    if (id == null) return;
+    await DeliveriesRepository.instance.confirmAbsentDropoff(
+      id,
+      photoUrl: photoUrl,
+      lat: lat,
+      lng: lng,
+      note: note,
+    );
+    clearJob();
+  }
+
+  /// Driver reports the seller couldn't provide the order at pickup (absent / no
+  /// food). On success the order is cancelled + refunded and the driver is
+  /// compensated, so we clear the active job (back to available deliveries).
+  /// NOT best-effort: rethrows [ApiFailure] so the caller can show the message
+  /// and the job is not cleared on failure.
+  Future<void> reportSellerUnavailable({
+    required String reason,
+    required double lat,
+    required double lng,
+    String? note,
+    String? photoUrl,
+  }) async {
+    final id = _deliveryId;
+    if (id == null) return;
+    await DeliveriesRepository.instance.reportSellerUnavailable(
+      id,
+      reason: reason,
+      lat: lat,
+      lng: lng,
+      note: note,
+      photoUrl: photoUrl,
+    );
+    clearJob();
   }
 
   /// Clears the active job, the rendered route, and stops the position watcher.
