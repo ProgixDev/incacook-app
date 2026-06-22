@@ -362,6 +362,33 @@ class OrdersRepository extends GetxService {
     );
   }
 
+  /// `POST /v1/orders/:id/disputes` — buyer post-delivery claim. Returns the
+  /// backend's buyer-facing [message] (auto-refunded / under review / no refund).
+  /// Throws [ApiFailure] on a rejected request (wrong buyer, duplicate, missing
+  /// proof, window elapsed).
+  Future<String> createDispute(
+    String orderId, {
+    required String type,
+    String? description,
+    List<String>? photoUrls,
+    List<String>? proofFileUrls,
+  }) async {
+    final result = await _api.post<String>(
+      '${ApiConstants.apiPrefix}/orders/$orderId/disputes',
+      body: {
+        'type': type,
+        'description': ?description,
+        'photoUrls': ?photoUrls,
+        'proofFileUrls': ?proofFileUrls,
+      },
+      decoder: (json) {
+        final map = json as Map<String, dynamic>?;
+        return (map?['message'] as String?) ?? 'Votre signalement a bien été enregistré.';
+      },
+    );
+    return result.data;
+  }
+
   /// `GET /v1/orders/:id/delivery-proof` — delivery completion proof (buyer or
   /// seller of the order only). Used to show the client-absent photo + GPS +
   /// timestamp on a delivered order. Throws [ApiFailure] if not the caller's.

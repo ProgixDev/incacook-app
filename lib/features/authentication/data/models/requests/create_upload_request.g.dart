@@ -25,4 +25,5 @@ const _$UploadPurposeEnumMap = {
   UploadPurpose.listingImage: 'listing_image',
   UploadPurpose.sellerFacade: 'seller_facade',
   UploadPurpose.deliveryProof: 'delivery_proof',
+  UploadPurpose.disputeProof: 'dispute_proof',
 };

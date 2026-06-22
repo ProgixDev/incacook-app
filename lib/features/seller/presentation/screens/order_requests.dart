@@ -148,6 +148,66 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
     }
   }
 
+  /// Seller proactively cancels an order they can't fulfil ("Je ne peux pas
+  /// fournir"). Confirms (with an optional note), refunds the buyer + adds a
+  /// light strike server-side, then refreshes the list.
+  Future<void> _cannotProvide(SellerOrderSummary o) async {
+    final noteCtrl = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(AppTexts.sellerCannotProvideTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(AppTexts.sellerCannotProvideConfirm),
+            const Gap(AppSizes.sm),
+            TextField(
+              controller: noteCtrl,
+              maxLines: 2,
+              maxLength: 500,
+              decoration: const InputDecoration(
+                hintText: AppTexts.sellerCannotProvideNoteHint,
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text(AppTexts.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text(AppTexts.sellerCannotProvideConfirmCta),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    setState(() => _busy.add(o.id));
+    try {
+      final note = noteCtrl.text.trim();
+      await SellerOrdersRepository.instance
+          .cannotProvide(o.id, note: note.isEmpty ? null : note);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.sellerCannotProvideSuccess)),
+      );
+      await _refresh();
+    } on ApiFailure catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    } finally {
+      if (mounted) setState(() => _busy.remove(o.id));
+    }
+  }
+
   /// Fetches the pickup-proof QR for [orderId] and shows it for the driver to
   /// scan. Surfaces the backend message (e.g. order not ready) on failure.
   Future<void> _showPickupQr(String orderId) async {
@@ -280,7 +340,8 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                   // paid).
                                   if (o.status == _kCancelled &&
                                       (o.cancellationReason == 'seller_unavailable' ||
-                                          o.cancellationReason == 'driver_disappeared')) ...[
+                                          o.cancellationReason == 'driver_disappeared' ||
+                                          o.cancellationReason == 'seller_cannot_provide')) ...[
                                     const Gap(AppSizes.sm),
                                     _OrderCancelledBanner(reason: o.cancellationReason!),
                                   ],
@@ -319,6 +380,24 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                       onPressed: () => _showPickupQr(o.id),
                                       icon: const Icon(Icons.qr_code_2, size: 18),
                                       label: const Text(AppTexts.sellerPickupQrCta),
+                                    ),
+                                  ],
+                                  // Seller proactive cancellation — only before
+                                  // pickup is confirmed (pre-pickup states).
+                                  if (o.status == _kConfirmed ||
+                                      o.status == _kPreparing ||
+                                      o.status == _kReady) ...[
+                                    const Gap(AppSizes.sm),
+                                    OutlinedButton.icon(
+                                      onPressed: _busy.contains(o.id)
+                                          ? null
+                                          : () => _cannotProvide(o),
+                                      icon: const Icon(Icons.cancel_outlined, size: 18),
+                                      label: const Text(AppTexts.sellerCannotProvideCta),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -385,9 +464,11 @@ class _OrderCancelledBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final message = reason == 'driver_disappeared'
-        ? AppTexts.sellerDriverIncidentMaintained
-        : AppTexts.sellerOrderCancelledNoFood;
+    final message = switch (reason) {
+      'driver_disappeared' => AppTexts.sellerDriverIncidentMaintained,
+      'seller_cannot_provide' => AppTexts.sellerCannotProvideBanner,
+      _ => AppTexts.sellerOrderCancelledNoFood,
+    };
     return Container(
       padding: const EdgeInsets.all(AppSizes.sm),
       decoration: BoxDecoration(

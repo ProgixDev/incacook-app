@@ -922,6 +922,41 @@ class AppTexts {
       "Commande remboursée : livraison non effectuée.";
   static const String sellerDriverIncidentMaintained =
       "Incident livreur : paiement maintenu.";
+  // Seller proactive cancellation — "Je ne peux pas fournir".
+  static const String sellerCannotProvideCta = "Je ne peux pas fournir";
+  static const String sellerCannotProvideTitle = "Je ne peux pas fournir";
+  static const String sellerCannotProvideConfirm =
+      "La commande sera annulée et le client remboursé. Un strike sera ajouté à votre compte.";
+  static const String sellerCannotProvideNoteHint = "Note (optionnel)";
+  static const String sellerCannotProvideConfirmCta = "Confirmer l'annulation";
+  static const String sellerCannotProvideSuccess =
+      "Commande annulée. Le client a été remboursé.";
+  static const String sellerCannotProvideBanner =
+      "Commande annulée : vous ne pouviez pas la fournir.";
+  static const String buyerSellerCannotProvideCancelled =
+      "Commande annulée et remboursée : le vendeur ne peut pas fournir le plat.";
+  // Buyer post-delivery dispute / refund request.
+  static const String disputeCta = "Signaler un problème";
+  static const String disputeTitle = "Signaler un problème";
+  static const String disputeIntro =
+      "Choisissez le motif. Selon le cas, vous serez remboursé(e) automatiquement "
+      "ou votre demande sera examinée par notre équipe.";
+  static const String disputeReasonLabel = "Motif";
+  static const String disputeReasonNeverReceived = "Commande jamais reçue";
+  static const String disputeReasonWrongOrder = "Commande totalement erronée";
+  static const String disputeReasonSpoiled = "Plat avarié";
+  static const String disputeReasonPoisoning = "Intoxication alimentaire";
+  static const String disputeReasonSubjective = "Insatisfaction (goût, portion…)";
+  static const String disputeDescriptionHint = "Décrivez le problème (optionnel)";
+  static const String disputeAddPhoto = "Ajouter une photo";
+  static const String disputeAddProof = "Ajouter une preuve (certificat médical…)";
+  static const String disputeProofRequiredPoisoning =
+      "Une preuve est requise pour un signalement d'intoxication.";
+  static const String disputeSubmit = "Envoyer le signalement";
+  static const String disputeSubjectiveNotice =
+      "Ce motif ne donne pas lieu à un remboursement. Vous pouvez laisser un avis.";
+  static const String disputeSubmitFailed = "Envoi impossible pour le moment.";
+  static const String disputePhotoFailed = "Échec de l'envoi de la photo.";
   // Client-absent proof (buyer/seller order detail).
   static const String absentProofCardTitle = "Commande déposée";
   static const String absentProofCardText =

@@ -242,6 +242,7 @@ class _CancelledStageView extends StatelessWidget {
         final message = switch (reason) {
           'seller_unavailable' => AppTexts.buyerSellerUnavailableCancelled,
           'driver_disappeared' => AppTexts.buyerDriverDisappearedRefunded,
+          'seller_cannot_provide' => AppTexts.buyerSellerCannotProvideCancelled,
           _ => AppTexts.orderCancelledRefunded,
         };
         return Column(

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/orders/data/order_summary.dart';
 import 'package:incacook/features/orders/data/orders_repository.dart';
+import 'package:incacook/features/orders/presentation/screens/dispute_screen.dart';
 import 'package:incacook/features/reviews/presentation/review_sheet.dart';
 
 /// Profile "Mes commandes" history. Buyer mode lists the user's own orders;
@@ -59,6 +62,17 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     }
   }
 
+  /// Buyer reports a post-delivery problem. Refreshes on success so a resulting
+  /// refund/status change is reflected.
+  Future<void> _openDispute(OrderSummary order) async {
+    final created = await Get.to<bool>(
+      () => DisputeScreen(orderId: order.id, orderNumber: order.orderNumber),
+    );
+    if (created == true && mounted) {
+      await _refresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -106,6 +120,9 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
                 // Buyers can review a delivered order.
                 onReview:
                     widget.isSeller ? null : () => _openReview(orders[i]),
+                // Buyers can report a post-delivery problem.
+                onDispute:
+                    widget.isSeller ? null : () => _openDispute(orders[i]),
               ),
             );
           },
@@ -120,6 +137,7 @@ class _OrderCard extends StatelessWidget {
     required this.order,
     required this.showPaidBadge,
     this.onReview,
+    this.onDispute,
   });
 
   final OrderSummary order;
@@ -127,6 +145,9 @@ class _OrderCard extends StatelessWidget {
 
   /// Buyer-side review action; shown only for DELIVERED orders.
   final VoidCallback? onReview;
+
+  /// Buyer-side "report a problem" action; shown for in-delivery/delivered orders.
+  final VoidCallback? onDispute;
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +206,22 @@ class _OrderCard extends StatelessWidget {
                 onPressed: onReview,
                 icon: const Icon(Icons.star_rate_rounded, size: 18),
                 label: const Text('Noter'),
+              ),
+            ),
+          ],
+          //* Buyer "report a problem" — available once the order is on its way
+          //* or completed (covers never-received + post-delivery quality issues).
+          if (onDispute != null &&
+              (order.status == 'IN_DELIVERY' ||
+                  order.status == 'DELIVERED' ||
+                  order.status == 'COMPLETED')) ...[
+            const Gap(AppSizes.xs),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: onDispute,
+                icon: const Icon(Icons.report_gmailerrorred_outlined, size: 18),
+                label: const Text(AppTexts.disputeCta),
               ),
             ),
           ],

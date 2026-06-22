@@ -133,6 +133,18 @@ class SellerOrdersRepository extends GetxService {
     );
   }
 
+  /// `POST /v1/sellers/me/orders/:id/cannot-provide` — seller proactively
+  /// cancels an order they can't fulfil (before pickup). Refunds the buyer,
+  /// cancels any delivery, and adds a light seller strike. Throws [ApiFailure]
+  /// if not allowed (wrong seller, pickup confirmed, already resolved).
+  Future<void> cannotProvide(String orderId, {String? note}) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/sellers/me/orders/$orderId/cannot-provide',
+      body: {'note': ?note},
+      decoder: (_) {},
+    );
+  }
+
   /// `POST /v1/orders/:id/start-preparing` — CONFIRMED → PREPARING.
   Future<void> startPreparing(String orderId) async {
     await _api.post<void>(
