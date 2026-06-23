@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/features/supply_catalog/data/supply_catalog_repository.dart';
 import 'package:incacook/features/supply_catalog/presentation/money_format.dart';
+import 'package:incacook/features/supply_catalog/presentation/screens/supply_orders_screen.dart';
 import 'package:incacook/features/supply_catalog/presentation/screens/supply_product_detail_screen.dart';
 
 /// Seller-facing catalog of admin products. Browse + tap to buy. Reached
@@ -35,7 +36,16 @@ class _SupplyCatalogScreenState extends State<SupplyCatalogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Catalogue fournisseur')),
+      appBar: AppBar(
+        title: const Text('Catalogue fournisseur'),
+        actions: [
+          IconButton(
+            tooltip: 'Mes commandes',
+            icon: const Icon(Iconsax.receipt_item),
+            onPressed: () => Get.to<void>(() => const SupplyOrdersScreen()),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder<List<CatalogItem>>(

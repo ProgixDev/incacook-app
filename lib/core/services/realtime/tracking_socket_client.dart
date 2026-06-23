@@ -7,6 +7,7 @@ import 'package:socket_io_client/socket_io_client.dart' as sio;
 import 'package:incacook/core/constants/api_constants.dart';
 import 'package:incacook/core/network/token_storage.dart';
 import 'package:incacook/core/services/realtime/chat_message.dart';
+import 'package:incacook/core/services/realtime/delivery_cancelled_event.dart';
 import 'package:incacook/core/services/realtime/driver_location.dart';
 import 'package:incacook/core/services/realtime/order_status_event.dart';
 
@@ -47,6 +48,11 @@ class TrackingSocketClient extends GetxService {
   // (re)connected.
   final Set<String> _pendingOrderIds = <String>{};
 
+  // Per-user `delivery:cancelled` events. The server auto-joins the socket to
+  // the user's room on connect, so no explicit subscribe is needed — listeners
+  // just need a live connection.
+  StreamController<DeliveryCancelledEvent>? _cancelController;
+
   /// Broadcast stream of driver positions for [orderId]. Empty for
   /// pickup orders (no driver). The first listener triggers a
   /// `subscribe` emit; later listeners share the same stream.
@@ -82,6 +88,21 @@ class TrackingSocketClient extends GetxService {
     );
     _pendingConvIds.add(conversationId);
     unawaited(_ensureConnectedAndSubscribeConv(conversationId));
+    return controller.stream;
+  }
+
+  /// Broadcast stream of `delivery:cancelled` events targeted at the current
+  /// user (e.g. the assigned driver). Opening the stream ensures a live socket
+  /// so the server's per-user room delivers the event — no explicit subscribe.
+  Stream<DeliveryCancelledEvent> deliveryCancellations() {
+    final controller =
+        _cancelController ??= StreamController<DeliveryCancelledEvent>.broadcast();
+    unawaited(
+      _ensureConnected().then(
+        (_) {},
+        onError: (Object e) => _log.w('[tracking] delivery-cancel connect failed: $e'),
+      ),
+    );
     return controller.stream;
   }
 
@@ -162,6 +183,9 @@ class TrackingSocketClient extends GetxService {
     for (final c in _convControllers.values) {
       if (!c.isClosed) await c.close();
     }
+    final cancelCtl = _cancelController;
+    if (cancelCtl != null && !cancelCtl.isClosed) await cancelCtl.close();
+    _cancelController = null;
     _locControllers.clear();
     _statusControllers.clear();
     _convControllers.clear();
@@ -261,6 +285,16 @@ class TrackingSocketClient extends GetxService {
         _convControllers[msg.conversationId]?.add(msg);
       } catch (e) {
         _log.w('[tracking] bad message:new payload: $e');
+      }
+    });
+
+    socket.on('delivery:cancelled', (data) {
+      if (data is! Map) return;
+      try {
+        final payload = Map<String, dynamic>.from(data);
+        _cancelController?.add(DeliveryCancelledEvent.fromJson(payload));
+      } catch (e) {
+        _log.w('[tracking] bad delivery:cancelled payload: $e');
       }
     });
 

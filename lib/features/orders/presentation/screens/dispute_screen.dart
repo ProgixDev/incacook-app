@@ -19,6 +19,7 @@ const _reasons = <(String, String)>[
   ('SPOILED_FOOD', AppTexts.disputeReasonSpoiled),
   ('FOOD_POISONING', AppTexts.disputeReasonPoisoning),
   ('SUBJECTIVE_DISSATISFACTION', AppTexts.disputeReasonSubjective),
+  ('ALLERGEN_FALSE_DECLARATION', AppTexts.disputeReasonAllergen),
 ];
 
 /// Buyer post-delivery claim. Pick a reason, describe, optionally attach
@@ -46,6 +47,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
 
   bool get _isPoisoning => _type == 'FOOD_POISONING';
   bool get _isSubjective => _type == 'SUBJECTIVE_DISSATISFACTION';
+  bool get _isAllergen => _type == 'ALLERGEN_FALSE_DECLARATION';
 
   @override
   void dispose() {
@@ -82,11 +84,15 @@ class _DisputeScreenState extends State<DisputeScreen> {
       setState(() => _error = AppTexts.disputeProofRequiredPoisoning);
       return;
     }
+    final description = _description.text.trim();
+    if (_isAllergen && description.isEmpty) {
+      setState(() => _error = AppTexts.disputeDescriptionRequired);
+      return;
+    }
     setState(() {
       _submitting = true;
       _error = null;
     });
-    final description = _description.text.trim();
     try {
       final message = await OrdersRepository.instance.createDispute(
         widget.orderId,
@@ -154,6 +160,30 @@ class _DisputeScreenState extends State<DisputeScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(AppTexts.disputeSubjectiveNotice, style: textTheme.bodyMedium),
+              ),
+            ],
+
+            if (_isAllergen) ...[
+              const Gap(AppSizes.md),
+              Container(
+                padding: const EdgeInsets.all(AppSizes.md),
+                decoration: BoxDecoration(
+                  color: scheme.errorContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.warning_amber_rounded, size: 18, color: scheme.onErrorContainer),
+                    const Gap(AppSizes.sm),
+                    Expanded(
+                      child: Text(
+                        AppTexts.disputeAllergenWarning,
+                        style: textTheme.bodyMedium?.copyWith(color: scheme.onErrorContainer),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
 

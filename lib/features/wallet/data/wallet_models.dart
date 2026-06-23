@@ -38,6 +38,8 @@ class WalletEntry {
         return 'Remboursement';
       case 'WITHDRAWAL':
         return 'Retrait';
+      case 'DRIVER_DEBT':
+        return 'Dette (remboursement)';
       default:
         return type;
     }
@@ -64,6 +66,7 @@ class WalletSummary {
     required this.pendingCents,
     required this.heldCents,
     required this.paidOutCents,
+    required this.debtCents,
     required this.minWithdrawalCents,
     required this.canWithdraw,
     required this.entries,
@@ -75,6 +78,10 @@ class WalletSummary {
   final int pendingCents;
   final int heldCents;
   final int paidOutCents;
+
+  /// Outstanding debt (e.g. refund clawback after a driver no-show). While > 0
+  /// the server blocks cashout; future earnings offset it automatically.
+  final int debtCents;
   final int minWithdrawalCents;
   final bool canWithdraw;
   final List<WalletEntry> entries;
@@ -85,7 +92,11 @@ class WalletSummary {
   double get pendingEuros => (pendingCents + heldCents) / 100.0;
   double get heldEuros => heldCents / 100.0;
   double get paidOutEuros => paidOutCents / 100.0;
+  double get debtEuros => debtCents / 100.0;
   double get minWithdrawalEuros => minWithdrawalCents / 100.0;
+
+  /// True when the wallet carries an unrecovered debt.
+  bool get hasDebt => debtCents > 0;
 
   factory WalletSummary.fromJson(Map<String, dynamic> json) {
     return WalletSummary(
@@ -93,6 +104,7 @@ class WalletSummary {
       pendingCents: (json['pendingCents'] as num?)?.toInt() ?? 0,
       heldCents: (json['heldCents'] as num?)?.toInt() ?? 0,
       paidOutCents: (json['paidOutCents'] as num?)?.toInt() ?? 0,
+      debtCents: (json['debtCents'] as num?)?.toInt() ?? 0,
       minWithdrawalCents: (json['minWithdrawalCents'] as num?)?.toInt() ?? 5000,
       canWithdraw: json['canWithdraw'] as bool? ?? false,
       entries: ((json['entries'] as List?) ?? const <dynamic>[])

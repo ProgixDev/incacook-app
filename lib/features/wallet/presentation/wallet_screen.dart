@@ -196,6 +196,14 @@ class _BalanceCard extends StatelessWidget {
               ),
             ],
           ),
+          if (summary.hasDebt) ...[
+            const Gap(AppSizes.md),
+            _MiniStat(
+              label: 'Dette',
+              value: '-${currency.format(summary.debtEuros)}',
+              valueColor: scheme.error,
+            ),
+          ],
         ],
       ),
     );
@@ -203,10 +211,11 @@ class _BalanceCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  const _MiniStat({required this.label, required this.value});
+  const _MiniStat({required this.label, required this.value, this.valueColor});
 
   final String label;
   final String value;
+  final Color? valueColor;
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +231,8 @@ class _MiniStat extends StatelessWidget {
         const Gap(2),
         Text(
           value,
-          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: textTheme.titleSmall
+              ?.copyWith(fontWeight: FontWeight.w700, color: valueColor),
         ),
       ],
     );
@@ -299,7 +309,14 @@ class _WithdrawSection extends StatelessWidget {
                 )
               : const Text('Demander un retrait'),
         ),
-        if (!summary.canWithdraw) ...[
+        if (summary.hasDebt) ...[
+          const Gap(AppSizes.xs),
+          Text(
+            'Retrait impossible : votre solde présente une dette.',
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall?.copyWith(color: scheme.error),
+          ),
+        ] else if (!summary.canWithdraw) ...[
           const Gap(AppSizes.xs),
           Text(
             'Retrait disponible à partir de $minLabel €',

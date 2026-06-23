@@ -8,6 +8,8 @@ import 'package:incacook/core/models/order_detail.dart';
 import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/map/mapbox_directions_client.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/core/services/realtime/delivery_cancelled_event.dart';
+import 'package:incacook/core/services/realtime/tracking_socket_client.dart';
 import 'package:incacook/core/utils/geo/distance.dart';
 import 'package:incacook/features/authentication/data/repositories/drivers_repository.dart';
 import 'package:incacook/features/delivery/data/deliveries_repository.dart';
@@ -78,6 +80,10 @@ class DeliveryRouteController extends GetxController {
   bool _refetching = false;
   Worker? _positionWorker;
 
+  /// Listens for server-side delivery cancellations targeted at this driver, so
+  /// the active job auto-clears when a seller/admin cancels the order.
+  StreamSubscription<DeliveryCancelledEvent>? _cancelSub;
+
   DateTime? _lastPushAt;
   MapPoint? _lastPushedPoint;
   bool _pushingLocation = false;
@@ -94,7 +100,46 @@ class DeliveryRouteController extends GetxController {
     _deliveryId = deliveryId;
     currentJob.value = job;
     currentStage.value = OrderStage.prepared;
+    _listenForCancellation();
     await bootstrap();
+  }
+
+  /// Subscribes to realtime delivery-cancellation events. If the cancelled
+  /// delivery/order matches the active job, the job is cleared (GPS stopped) and
+  /// a message is shown — the reactive UI then returns to available deliveries.
+  /// Pure decision: does a cancellation event target the driver's active job?
+  /// Matches by deliveryId or orderId; false when there's no active job.
+  static bool cancelMatchesJob(
+    DeliveryCancelledEvent event, {
+    String? activeDeliveryId,
+    String? activeOrderId,
+  }) {
+    if (activeDeliveryId != null && event.deliveryId == activeDeliveryId) return true;
+    if (activeOrderId != null && event.orderId == activeOrderId) return true;
+    return false;
+  }
+
+  void _listenForCancellation() {
+    _cancelSub?.cancel();
+    if (!Get.isRegistered<TrackingSocketClient>()) return;
+    _cancelSub = TrackingSocketClient.instance.deliveryCancellations().listen(
+      (ev) {
+        if (!cancelMatchesJob(ev,
+            activeDeliveryId: _deliveryId, activeOrderId: currentJob.value?.id)) {
+          return;
+        }
+        final message = ev.message.isNotEmpty ? ev.message : 'Cette livraison a été annulée.';
+        clearJob();
+        Get.snackbar(
+          'Livraison annulée',
+          message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      },
+      onError: (Object _) {},
+      cancelOnError: false,
+    );
   }
 
   /// Advances the lifecycle to [next]. Also fires the matching backend
@@ -225,6 +270,8 @@ class DeliveryRouteController extends GetxController {
   void clearJob() {
     _positionWorker?.dispose();
     _positionWorker = null;
+    _cancelSub?.cancel();
+    _cancelSub = null;
     LocationService.instance.stop();
     route.value = null;
     currentJob.value = null;
@@ -363,6 +410,7 @@ class DeliveryRouteController extends GetxController {
   @override
   void onClose() {
     _positionWorker?.dispose();
+    _cancelSub?.cancel();
     LocationService.instance.stop();
     super.onClose();
   }

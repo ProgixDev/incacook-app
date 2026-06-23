@@ -1007,6 +1007,21 @@ class _AllergensBlock extends StatelessWidget {
             ),
           ],
         ],
+        // Food-safety acknowledgment shown to the buyer before ordering.
+        const Gap(AppSizes.sm),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.info_outline, size: 16, color: scheme.onSurfaceVariant),
+            const Gap(AppSizes.xs),
+            Expanded(
+              child: Text(
+                AppTexts.allergenCheckNotice,
+                style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

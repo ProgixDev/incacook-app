@@ -957,6 +957,14 @@ class AppTexts {
       "Ce motif ne donne pas lieu à un remboursement. Vous pouvez laisser un avis.";
   static const String disputeSubmitFailed = "Envoi impossible pour le moment.";
   static const String disputePhotoFailed = "Échec de l'envoi de la photo.";
+  static const String disputeReasonAllergen = "Allergène non déclaré / info incorrecte";
+  static const String disputeAllergenWarning =
+      "Ce signalement sera examiné par l'équipe. En cas de risque médical, "
+      "contactez immédiatement un professionnel de santé.";
+  static const String disputeDescriptionRequired = "Une description est requise pour ce signalement.";
+  // Allergen acknowledgment shown before checkout / on the dish detail.
+  static const String allergenCheckNotice =
+      "Vérifiez les allergènes avant de commander. En cas de doute, contactez le vendeur.";
   // Client-absent proof (buyer/seller order detail).
   static const String absentProofCardTitle = "Commande déposée";
   static const String absentProofCardText =
