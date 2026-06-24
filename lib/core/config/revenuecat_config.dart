@@ -12,6 +12,12 @@ import 'package:incacook/core/enums/food_enums.dart';
 ///
 ///   flutter run --dart-define=REVENUECAT_ANDROID_KEY=goog_xxx \
 ///               --dart-define=REVENUECAT_IOS_KEY=appl_xxx
+///
+/// NOTE (app identifier): the RevenueCat dashboard apps must be configured with
+///   - Android app package:  com.incacook.app
+///   - iOS app Bundle ID:     com.incacook.app
+/// These keys stay public SDK keys passed via dart-define; do not hardcode any
+/// secret key here.
 
 class RevenueCatConfig {
   RevenueCatConfig._();

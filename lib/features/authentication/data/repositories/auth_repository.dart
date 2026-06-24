@@ -268,6 +268,40 @@ class AuthRepository extends GetxService {
     return result.data;
   }
 
+  /// `POST /v1/auth/social/email/request-otp` — PUBLIC fallback when a social
+  /// login (Facebook) returned no email AND no Supabase session was created, so
+  /// the JWT-guarded `requestEmailOtp` can't be used. Sends a 6-digit code to
+  /// [email] via the backend (Supabase SMTP). Throws [ApiFailure] (e.g. 409 if
+  /// the email already belongs to another account). Never logs the email/code.
+  Future<void> requestSocialEmailOtp(String email) async {
+    await _api.post<void>(
+      '${ApiConstants.apiPrefix}/auth/social/email/request-otp',
+      body: <String, dynamic>{'provider': 'facebook', 'email': email.trim()},
+      decoder: (_) {},
+    );
+  }
+
+  /// `POST /v1/auth/social/email/verify-otp` — PUBLIC. Confirms the 6-digit code
+  /// from [requestSocialEmailOtp] and returns a fresh session (tokens persisted
+  /// in [TokenStorage]), so the app can continue to the same destination as a
+  /// normal social login. A wrong/expired code throws [ApiFailure] (401).
+  Future<Session> verifySocialEmailOtp({
+    required String email,
+    required String code,
+  }) async {
+    final result = await _api.post<Session>(
+      '${ApiConstants.apiPrefix}/auth/social/email/verify-otp',
+      body: <String, dynamic>{
+        'provider': 'facebook',
+        'email': email.trim(),
+        'code': code.trim(),
+      },
+      decoder: (json) => Session.fromJson(json! as Map<String, dynamic>),
+    );
+    await _persistSession(result.data);
+    return result.data;
+  }
+
   Future<void> _persistSession(Session s) async {
     // Decode the access token's `user_metadata` for OAuth name claims
     // (Google → `given_name` / `family_name`). Stays null for email-

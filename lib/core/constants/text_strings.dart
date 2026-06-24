@@ -53,6 +53,31 @@ class AppTexts {
       "e-mail. Vérifiez que le compte Facebook possède une adresse e-mail "
       "confirmée.";
 
+  //* social auth — Facebook missing-email manual fallback (OTP by e-mail)
+  static const String fbEmailFallbackNotice =
+      "Facebook n'a pas retourné votre adresse e-mail. Vous pouvez continuer "
+      "en saisissant votre e-mail manuellement.";
+  static const String fbEmailStepTitle = "Adresse e-mail requise";
+  static const String fbEmailStepMessage =
+      "Facebook n'a pas retourné votre adresse e-mail. Veuillez saisir une "
+      "adresse e-mail pour continuer.";
+  static const String fbEmailLabel = "Adresse e-mail";
+  static const String fbEmailSendCodeCta = "Recevoir le code";
+  static const String fbEmailInvalid = "Veuillez saisir une adresse e-mail valide.";
+  static const String fbOtpStepTitle = "Vérification de l'e-mail";
+  static const String fbOtpStepMessage = "Entrez le code reçu par e-mail.";
+  static const String fbOtpLabel = "Code OTP";
+  static const String fbOtpVerifyCta = "Vérifier";
+  static const String fbOtpResendCta = "Renvoyer le code";
+  static const String fbEmailChangeCta = "Modifier l'adresse";
+  static const String fbEmailCancelCta = "Annuler";
+  static const String fbEmailGenericError =
+      "Une erreur est survenue. Veuillez réessayer.";
+  static const String fbEmailInvalidCode = "Code invalide ou expiré.";
+  static const String fbEmailCodeSent =
+      "Un code à 6 chiffres a été envoyé à votre adresse e-mail.";
+  static const String fbEmailVerifiedSuccess = "Adresse e-mail vérifiée.";
+
   //* network — transport error copy
   static const String serverUnreachableError =
       "Connexion au serveur impossible. Vérifiez que le backend est lancé.";

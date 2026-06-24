@@ -44,7 +44,7 @@
 		     complete the session after the hosted Facebook login. -->
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.progix.incacook.oauth</string>
+			<string>com.incacook.app.oauth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>incacook</string>

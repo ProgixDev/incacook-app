@@ -8,6 +8,7 @@ import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
 import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
 import 'package:incacook/features/authentication/presentation/screens/complete_email_screen.dart';
+import 'package:incacook/features/authentication/presentation/screens/facebook_email_completion_screen.dart';
 import 'package:incacook/features/authentication/services/post_auth_router.dart';
 
 /// Drives the welcome/login screens' social sign-in.
@@ -101,12 +102,35 @@ class WelcomeController extends GetxController {
       final decision = await _router.decide();
       _router.navigateTo(decision);
     } on OAuthEmailMissingException {
-      // Provider returned no email (common Facebook case) — specific guidance.
+      // Provider returned no email AND no Supabase session was created.
       debugPrint('[Auth][$tag] callback/session received: false');
-      CustomLoaders.errorSnackBar(
-        title: errorTitle,
-        message: AppTexts.facebookNoEmailError,
-      );
+      if (provider != OAuthProvider.facebook) {
+        CustomLoaders.errorSnackBar(
+          title: errorTitle,
+          message: AppTexts.facebookNoEmailError,
+        );
+        return;
+      }
+      // Recoverable: collect + verify an email by OTP (PUBLIC endpoints, no
+      // session needed), then continue to the same destination as a normal
+      // social login. Replaces the old blocking red error.
+      debugPrint('[Auth][Facebook] missing email fallback opened');
+      final completed =
+          await Get.to<bool>(() => const FacebookEmailCompletionScreen());
+      if (completed != true) return; // user cancelled → back at login
+      // The repository persisted the fresh (email-verified) session; sync the
+      // identity and route exactly like a normal social login.
+      try {
+        final sync = await _authRepository.syncOAuthUser();
+        debugPrint('[Auth][Facebook] manual email login synced '
+            '(profileExists=${sync.profileExists} needsEmail=${sync.needsEmail})');
+        final decision = await _router.decide();
+        _router.navigateTo(decision);
+      } on ApiFailure catch (e) {
+        CustomLoaders.errorSnackBar(title: errorTitle, message: e.message);
+      } catch (_) {
+        CustomLoaders.errorSnackBar(title: errorTitle, message: errorMessage);
+      }
     } on OAuthSignInException {
       // Launch failure, or no callback/session within the timeout. Surface a
       // clean toast (loading is reset in the finally below).

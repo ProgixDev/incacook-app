@@ -1,4 +1,4 @@
-package com.progix.incacook
+package com.incacook.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

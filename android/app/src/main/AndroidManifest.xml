@@ -50,5 +50,15 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Android 11+ (API 30) package visibility: without this, url_launcher
+             (used by supabase_flutter's signInWithOAuth) can't resolve a browser,
+             so the Google/Facebook hosted-login page never opens and the OAuth
+             flow silently stalls. Declaring the browsable https VIEW intent makes
+             the external browser / Custom Tab visible to the app. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
     </queries>
 </manifest>

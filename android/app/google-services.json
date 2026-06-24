@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:723681508646:android:a3845a4d09bcaa1f7955e7",
+        "android_client_info": {
+          "package_name": "com.incacook.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9nhBQg88I3Kw2or8j7kHkdzM5hiJ_33g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:723681508646:android:c1864cfaf00aff8a7955e7",
         "android_client_info": {
           "package_name": "com.progix.incacook"
