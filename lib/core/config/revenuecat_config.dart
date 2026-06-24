@@ -22,10 +22,16 @@ import 'package:incacook/core/enums/food_enums.dart';
 class RevenueCatConfig {
   RevenueCatConfig._();
 
-  static const String _defaultAndroidApiKey =
-      'test_TcJwhvAUrAZXfzwSbaWFyoZguIK';
+  // No baked-in default keys. The previous `test_…` placeholders were not valid
+  // RevenueCat keys (real keys are `appl_…`/`goog_…`), so they made the SDK
+  // throw "Invalid API Key" at startup. Empty here means "unconfigured" →
+  // RevenueCatService.init() skips Purchases.configure entirely (the paywall
+  // then shows fallback prices). Supply a real key via
+  // --dart-define=REVENUECAT_IOS_KEY=appl_… / REVENUECAT_ANDROID_KEY=goog_… to
+  // enable subscriptions.
+  static const String _defaultAndroidApiKey = '';
 
-  static const String _defaultIosApiKey = 'test_TcJwhvAUrZXfzwSbaWFyoZguIK';
+  static const String _defaultIosApiKey = '';
 
   static const String _androidApiKeyFromEnv = String.fromEnvironment(
     'REVENUECAT_ANDROID_KEY',
