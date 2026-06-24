@@ -3,8 +3,9 @@ class AppTexts {
   static const String welcomeBrand = "IncaCook";
   static const String welcomeTagline = "Le goût de chez toi, près de chez toi";
   static const String welcomeSkip = "Passer";
-  static const String welcomeContinueWith = "Continuer";
-  static const String welcomeContinueWithFacebook = "Continuer avec Facebook";
+  // static const String welcomeContinueWith = "Continuer";
+  static const String welcomeContinueWithFacebook = "Facebook";
+  static const String welcomeContinueWithGoogle = "Google";
   static const String welcomeSignUpEmail = "S'inscrire avec e-mail";
   static const String welcomeAlreadyAccount = "Déjà un compte ?";
 

@@ -26,22 +26,11 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<!-- Google Sign-In. The GIDClientID is the iOS OAuth client from
-	     Google Cloud; the URL scheme is its REVERSED_CLIENT_ID. See
-	     docs/flutter-integration.md §"Google Sign-In". -->
-	<key>GIDClientID</key>
-	<string>850527183709-vqsisaq8u8825lmfkd337l10lplqlalf.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.850527183709-vqsisaq8u8825lmfkd337l10lplqlalf</string>
-			</array>
-		</dict>
-		<!-- Supabase Facebook OAuth callback (incacook://auth/callback).
-		     supabase_flutter's deep-link observer catches this scheme to
-		     complete the session after the hosted Facebook login. -->
+		<!-- Supabase OAuth callback (incacook://auth/callback) for the hosted
+		     Google + Facebook sign-in. supabase_flutter's deep-link observer
+		     catches this scheme to complete the session after login. -->
 		<dict>
 			<key>CFBundleURLName</key>
 			<string>com.incacook.app.oauth</string>

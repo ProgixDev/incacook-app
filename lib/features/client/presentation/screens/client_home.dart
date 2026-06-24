@@ -127,18 +127,21 @@ class _HomeScreenState extends State<ClientHomeScreen> {
       final pos = await loc.getCurrent();
       if (!mounted) return;
       if (pos != null) {
+        debugPrint('[Loc] getCurrent OK lat=${pos.latitude} lng=${pos.longitude}');
         _lat = pos.latitude;
         _lng = pos.longitude;
         _locationNote = null;
         // Best-effort reverse geocode for the appbar's "City, Country" label.
         unawaited(_resolvePlaceLabel(pos.latitude, pos.longitude));
       } else {
+        debugPrint('[Loc] getCurrent returned null — permission/service off');
         _lat = null;
         _lng = null;
         _locationNote =
             'Localisation désactivée — activez-la pour filtrer par distance.';
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Loc] _resolveLocation threw: $e');
       _lat = null;
       _lng = null;
       _locationNote = 'Localisation indisponible.';
@@ -155,15 +158,23 @@ class _HomeScreenState extends State<ClientHomeScreen> {
         lng: lng,
         language: 'fr',
       );
+      debugPrint(
+        '[Loc] reverse OK city=${place.city} country=${place.country} '
+        'name=${place.name}',
+      );
       final parts = [place.city, place.country]
           .where((s) => s != null && s.isNotEmpty)
           .cast<String>()
           .toList();
       if (parts.isNotEmpty && Get.isRegistered<LocationService>()) {
         LocationService.instance.placeLabel.value = parts.join(', ');
+        debugPrint('[Loc] placeLabel set to "${parts.join(', ')}"');
+      } else {
+        debugPrint('[Loc] reverse returned no city/country — label unchanged');
       }
-    } catch (_) {
+    } catch (e) {
       // Keep whatever fallback the appbar shows.
+      debugPrint('[Loc] _resolvePlaceLabel threw: $e');
     }
   }
 

@@ -71,9 +71,16 @@ class MapboxSearchClient {
         .toList();
   }
 
-  //* Reverse-geocode a coordinate to its nearest address. Uses the Geocoding
+  //* Reverse-geocode a coordinate to its nearest place. Uses the Geocoding
   //* v6 API (no Search Box session — billed per request), so it needs no
   //* session token. Powers "use my current location".
+  //*
+  //* We request administrative levels in addition to `address` because many
+  //* regions (e.g. much of Algeria) have NO address-level data — restricting
+  //* to `types=address` there returns zero features and throws. Mapbox returns
+  //* one feature per matched type, most-specific first, so `features.first` is
+  //* still the street address when one exists, and falls back to place/region
+  //* otherwise. City/country are then read from whichever level carries them.
   Future<RetrievedPlace> reverse({
     required double lat,
     required double lng,
@@ -85,7 +92,7 @@ class MapboxSearchClient {
         'longitude': lng,
         'latitude': lat,
         'access_token': _accessToken,
-        'types': 'address',
+        'types': 'address,place,locality,region,postcode,country',
         'language': ?language,
       },
     );
@@ -94,6 +101,22 @@ class MapboxSearchClient {
         (response.data!['features'] as List?)?.cast<Map<String, dynamic>>() ??
         const [];
     if (features.isEmpty) throw const PlaceNotFoundException();
+
+    // A level (place/country/…) can appear either as a feature's own
+    // `feature_type` (when that feature IS the city/country) or inside another
+    // feature's `context`. Scan all returned features so we catch it either way.
+    String? pick(String type) {
+      for (final f in features) {
+        final props = f['properties'] as Map<String, dynamic>;
+        if (props['feature_type'] == type) {
+          final name = props['name'] as String?;
+          if (name != null && name.isNotEmpty) return name;
+        }
+        final fromContext = _contextName(props, type);
+        if (fromContext != null && fromContext.isNotEmpty) return fromContext;
+      }
+      return null;
+    }
 
     final feature = features.first;
     final properties = feature['properties'] as Map<String, dynamic>;
@@ -105,9 +128,9 @@ class MapboxSearchClient {
       name: properties['name'] as String? ?? '',
       placeFormatted: properties['place_formatted'] as String? ?? '',
       fullAddress: properties['full_address'] as String?,
-      city: _contextName(properties, 'place'),
-      postcode: _contextName(properties, 'postcode'),
-      country: _contextName(properties, 'country'),
+      city: pick('place') ?? pick('locality'),
+      postcode: pick('postcode'),
+      country: pick('country'),
       coordinate: MapPoint(lng: coords[0].toDouble(), lat: coords[1].toDouble()),
     );
   }
