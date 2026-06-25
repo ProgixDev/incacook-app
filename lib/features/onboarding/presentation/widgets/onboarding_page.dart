@@ -26,7 +26,7 @@ class OnBoardingPage extends StatelessWidget {
           Image.asset(
             animation,
             width: DeviceUtils.getScreenWidth(context) * 0.8,
-            height: DeviceUtils.getScreenHeight(context) * 0.6,
+            height: DeviceUtils.getScreenHeight(context) * 0.5,
           ),
           Text(
             title,

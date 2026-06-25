@@ -16,12 +16,14 @@ class AppTexts {
       "pour finaliser votre inscription.";
   static const String completeEmailLabel = "Adresse e-mail";
   static const String completeEmailSendCta = "Envoyer le code";
-  static const String completeEmailSendLinkCta = "Envoyer le lien de vérification";
+  static const String completeEmailSendLinkCta =
+      "Envoyer le lien de vérification";
   static const String completeEmailLinkSent =
       "Un lien de vérification a été envoyé à votre email. Cliquez sur le lien "
       "pour continuer.";
   static const String completeEmailVerifiedButton = "J'ai vérifié mon email";
-  static const String completeEmailVerifiedSuccess = "Email vérifié avec succès";
+  static const String completeEmailVerifiedSuccess =
+      "Email vérifié avec succès";
   static const String completeEmailNotVerifiedYet =
       "Pas encore vérifié. Ouvrez le lien reçu par email, puis revenez ici.";
   static const String completeEmailHaveCode = "J'ai reçu un code à la place";
@@ -64,7 +66,8 @@ class AppTexts {
       "adresse e-mail pour continuer.";
   static const String fbEmailLabel = "Adresse e-mail";
   static const String fbEmailSendCodeCta = "Recevoir le code";
-  static const String fbEmailInvalid = "Veuillez saisir une adresse e-mail valide.";
+  static const String fbEmailInvalid =
+      "Veuillez saisir une adresse e-mail valide.";
   static const String fbOtpStepTitle = "Vérification de l'e-mail";
   static const String fbOtpStepMessage = "Entrez le code reçu par e-mail.";
   static const String fbOtpLabel = "Code OTP";
@@ -90,12 +93,26 @@ class AppTexts {
   static const String onBoardingTitle2 = "Aidez votre communauté";
   static const String onBoardingTitle3 = "Luttez contre le gaspillage";
 
+  static const String onBoardingTitle11 = "Notre philo";
+  static const String onBoardingTitle21 = "Sauve Ton Plat";
+  static const String onBoardingTitle31 = "L’Atelier Traiteur";
+  static const String onBoardingTitle41 = "Le Bon Fait Maison";
+
   static const String onBoardingSubTitle1 =
       "Explorez une grande variété de plats préparés avec amour par des cuisiniers locaux. Trouvez chaque jour de nouvelles saveurs à savourer.";
   static const String onBoardingSubTitle2 =
       "En commandant, vous soutenez les vendeurs locaux et contribuez à une économie de partage solidaire.";
   static const String onBoardingSubTitle3 =
       "Chaque commande aide à sauver des invendus et à réduire le gaspillage alimentaire. Ensemble, faisons la différence.";
+
+  static const String onBoardingSubTitle11 =
+      "Chaque commande compte. Moins de gaspillage, plus de partage et une récompense plus juste.";
+  static const String onBoardingSubTitle21 =
+      "Les meilleurs plats ne devraient jamais finir à la poubelle. Retrouvez les surplus du jour.";
+  static const String onBoardingSubTitle31 =
+      "Un cocktail, une réception, un événement ? Nos traiteurs vous proposent.";
+  static const String onBoardingSubTitle41 =
+      "Oups, j’en ai préparé un peu trop pour ma famille ! Plutôt que de gaspiller.";
 
   //* authentication Forum text
   static const String firstName = "Prénom";
@@ -858,7 +875,8 @@ class AppTexts {
   // the "Accepter" button is disabled and this CTA opens onboarding.
   static const String incomingOrderPayoutRequired =
       "Configurez vos paiements avant d'accepter des livraisons.";
-  static const String incomingOrderConfigurePaymentsCta = "Configurer mes paiements";
+  static const String incomingOrderConfigurePaymentsCta =
+      "Configurer mes paiements";
   // Generic claim failure (e.g. another driver won the race, or a backend
   // guard other than payout). Never surfaces the raw backend error.
   static const String incomingOrderClaimFailed =
@@ -884,8 +902,10 @@ class AppTexts {
   static const String pickupScanTitle = "Scanner le QR vendeur";
   static const String pickupScanInstruction =
       "Scannez le QR affiché par le vendeur pour confirmer le retrait.";
-  static const String pickupConfirmedMessage = "Retrait confirmé — en livraison";
-  static const String pickupQrUnavailable = "QR de retrait indisponible pour le moment.";
+  static const String pickupConfirmedMessage =
+      "Retrait confirmé — en livraison";
+  static const String pickupQrUnavailable =
+      "QR de retrait indisponible pour le moment.";
   // Buyer delivery (reception) proof QR — buyer shows, driver scans.
   static const String buyerDeliveryQrCta = "QR de réception";
   static const String deliveryQrSheetTitle = "QR de réception";
@@ -896,7 +916,8 @@ class AppTexts {
   static const String deliveryScanInstruction =
       "Scannez le QR affiché par le client pour confirmer la livraison.";
   static const String deliveryConfirmedMessage = "Livraison confirmée";
-  static const String deliveryQrUnavailable = "QR de réception indisponible pour le moment.";
+  static const String deliveryQrUnavailable =
+      "QR de réception indisponible pour le moment.";
   // Client-absent dropoff (driver) — photo + GPS proof.
   static const String absentDropoffCta = "Client absent";
   static const String absentDropoffTitle = "Client absent";
@@ -907,26 +928,33 @@ class AppTexts {
   static const String absentDropoffRetakePhoto = "Reprendre la photo";
   static const String absentDropoffNoteHint = "Note (optionnel)";
   static const String absentDropoffSubmit = "Confirmer le dépôt";
-  static const String absentDropoffGpsCapturing = "Récupération de la position GPS…";
+  static const String absentDropoffGpsCapturing =
+      "Récupération de la position GPS…";
   static const String absentDropoffGpsReady = "Position GPS enregistrée";
   static const String absentDropoffGpsMissing =
       "Position GPS indisponible. Activez la localisation et réessayez.";
   static const String absentDropoffPhotoRequired = "Photo obligatoire.";
-  static const String absentDropoffSuccess = "Livraison confirmée (client absent).";
-  static const String absentDropoffUploadFailed = "Échec de l'envoi de la photo.";
+  static const String absentDropoffSuccess =
+      "Livraison confirmée (client absent).";
+  static const String absentDropoffUploadFailed =
+      "Échec de l'envoi de la photo.";
   // No driver available — buyer decision (switch to pickup / cancel+refund).
   static const String noDriverTitle = "Aucun livreur disponible";
   static const String noDriverText =
       "Vous pouvez récupérer votre commande en ramassage, ou annuler et être remboursé.";
   static const String noDriverSwitchPickup = "Passer en ramassage";
   static const String noDriverCancelRefund = "Annuler et rembourser";
-  static const String noDriverSwitchedMessage = "Votre commande est passée en ramassage.";
-  static const String noDriverCancelledMessage = "Votre commande a été annulée et remboursée.";
-  static const String noDriverDecisionFailed = "Action impossible pour le moment.";
+  static const String noDriverSwitchedMessage =
+      "Votre commande est passée en ramassage.";
+  static const String noDriverCancelledMessage =
+      "Votre commande a été annulée et remboursée.";
+  static const String noDriverDecisionFailed =
+      "Action impossible pour le moment.";
   static const String sellerNoDriverWaiting =
       "Aucun livreur disponible — en attente de décision client";
   // Seller-unavailable-at-pickup report (driver).
-  static const String sellerUnavailableCta = "Vendeur absent / plat indisponible";
+  static const String sellerUnavailableCta =
+      "Vendeur absent / plat indisponible";
   static const String sellerUnavailableTitle = "Vendeur indisponible";
   static const String sellerUnavailableIntro =
       "Le vendeur est absent ou le plat n'est pas disponible ? Signalez-le avec "
@@ -938,7 +966,8 @@ class AppTexts {
   static const String sellerUnavailableSuccess =
       "Signalement envoyé. Vous serez indemnisé pour le déplacement.";
   // Order-cancelled states surfaced to buyer/seller.
-  static const String orderCancelledRefunded = "Commande annulée et remboursée.";
+  static const String orderCancelledRefunded =
+      "Commande annulée et remboursée.";
   static const String buyerSellerUnavailableCancelled =
       "Commande annulée et remboursée : vendeur indisponible.";
   static const String sellerOrderCancelledNoFood =
@@ -972,10 +1001,13 @@ class AppTexts {
   static const String disputeReasonWrongOrder = "Commande totalement erronée";
   static const String disputeReasonSpoiled = "Plat avarié";
   static const String disputeReasonPoisoning = "Intoxication alimentaire";
-  static const String disputeReasonSubjective = "Insatisfaction (goût, portion…)";
-  static const String disputeDescriptionHint = "Décrivez le problème (optionnel)";
+  static const String disputeReasonSubjective =
+      "Insatisfaction (goût, portion…)";
+  static const String disputeDescriptionHint =
+      "Décrivez le problème (optionnel)";
   static const String disputeAddPhoto = "Ajouter une photo";
-  static const String disputeAddProof = "Ajouter une preuve (certificat médical…)";
+  static const String disputeAddProof =
+      "Ajouter une preuve (certificat médical…)";
   static const String disputeProofRequiredPoisoning =
       "Une preuve est requise pour un signalement d'intoxication.";
   static const String disputeSubmit = "Envoyer le signalement";
@@ -983,11 +1015,13 @@ class AppTexts {
       "Ce motif ne donne pas lieu à un remboursement. Vous pouvez laisser un avis.";
   static const String disputeSubmitFailed = "Envoi impossible pour le moment.";
   static const String disputePhotoFailed = "Échec de l'envoi de la photo.";
-  static const String disputeReasonAllergen = "Allergène non déclaré / info incorrecte";
+  static const String disputeReasonAllergen =
+      "Allergène non déclaré / info incorrecte";
   static const String disputeAllergenWarning =
       "Ce signalement sera examiné par l'équipe. En cas de risque médical, "
       "contactez immédiatement un professionnel de santé.";
-  static const String disputeDescriptionRequired = "Une description est requise pour ce signalement.";
+  static const String disputeDescriptionRequired =
+      "Une description est requise pour ce signalement.";
   // Allergen acknowledgment shown before checkout / on the dish detail.
   static const String allergenCheckNotice =
       "Vérifiez les allergènes avant de commander. En cas de doute, contactez le vendeur.";
@@ -1300,7 +1334,8 @@ class AppTexts {
   static const String signupSubscriptionPlanStandard = "Standard";
   static const String signupSubscriptionPlanPremium = "Premium";
   static const String signupSubscriptionStandardCommission = "Commission 30%";
-  static const String signupSubscriptionPremiumCommission = "Commission réduite à 25%";
+  static const String signupSubscriptionPremiumCommission =
+      "Commission réduite à 25%";
   static const String signupSubscriptionPremiumPerkFeatured =
       "3 mises à la une offertes / mois";
   static const String signupSubscriptionPremiumPerkCommission =

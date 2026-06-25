@@ -23,7 +23,7 @@ class OnBoardingController extends GetxController {
   //* update current index and jump to next page
   void nextPage() {
     //? change the value depending on how many pages we do have
-    if (currentPageIndex.value == 2) {
+    if (currentPageIndex.value == 3) {
       final storage = GetStorage();
       if (kDebugMode) {
         print("================ Get Storage NEXT BUTTON ================");
@@ -49,8 +49,8 @@ class OnBoardingController extends GetxController {
 
   //* update current index and jump to last page
   void skipPage() {
-    currentPageIndex.value = 2; //? values start from 0, 1, 2....
-    pageController.jumpToPage(2);
+    currentPageIndex.value = 3; //? values start from 0, 1, 2, 3
+    pageController.jumpToPage(3);
   }
 
   @override

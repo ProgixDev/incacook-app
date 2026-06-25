@@ -38,7 +38,7 @@ class RevenueCatConfig {
   );
 
   static const String _iosApiKeyFromEnv = String.fromEnvironment(
-    'REVENUECAT_IOS_KEY',
+    'appl_mtskPNbxiaPozqLtGvqoAOrsCNt',
   );
 
   static String get androidApiKey {
