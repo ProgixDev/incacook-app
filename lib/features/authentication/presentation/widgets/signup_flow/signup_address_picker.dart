@@ -9,6 +9,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/address.dart';
 import 'package:incacook/core/services/location/location_service.dart';
+import 'package:incacook/core/services/map/address_mapping.dart';
 import 'package:incacook/core/services/map/mapbox_search_client.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/core/services/map/models/place_suggestion.dart';
@@ -176,31 +177,11 @@ class _SignupAddressPickerState extends State<SignupAddressPicker> {
     FocusScope.of(context).unfocus();
   }
 
-  /// Builds our [Address] from a Mapbox place: street from `name`, with city
-  /// and postcode taken from Mapbox's structured `context` (works for any
-  /// country). Falls back to parsing the FR "12345 City" format only when
-  /// Mapbox omits the structured fields.
-  Address _addressFromPlace(RetrievedPlace place) {
-    final formatted = place.fullAddress ?? place.placeFormatted;
-    var postal = place.postcode ?? '';
-    var city = place.city ?? '';
-    if (postal.isEmpty) {
-      postal = RegExp(r'\b(\d{5})\b').firstMatch(formatted)?.group(1) ?? '';
-    }
-    if (city.isEmpty && postal.isNotEmpty) {
-      final segments = formatted.split(',').map((s) => s.trim()).toList();
-      city = segments
-          .firstWhere((s) => s.startsWith(postal), orElse: () => '')
-          .replaceFirst(postal, '')
-          .trim();
-    }
-    return Address(
-      fullAddress: place.name.isNotEmpty ? place.name : formatted,
-      city: city,
-      postalCode: postal,
-      coordinate: place.coordinate,
-    );
-  }
+  /// Builds our [Address] from a Mapbox place. Delegates to the shared
+  /// [addressFromRetrievedPlace] so the `fullAddress` always carries the WHOLE
+  /// address (street + postal + city + country), never just the street.
+  Address _addressFromPlace(RetrievedPlace place) =>
+      addressFromRetrievedPlace(place);
 
   @override
   Widget build(BuildContext context) {

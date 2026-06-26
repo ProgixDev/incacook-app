@@ -45,7 +45,9 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>IncaCook needs access to your photos so you can attach images to food listings.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>IncaCook uses the camera so you can take photos of dishes you're sharing.</string>
+	<string>IncaCook utilise la caméra pour vos photos de plats et pour vérifier votre visage lors de l’inscription.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>IncaCook utilise Face ID pour sécuriser votre connexion.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>IncaCook needs microphone access for video recordings attached to listings.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

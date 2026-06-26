@@ -10,7 +10,7 @@ _SellerBusinessRequest _$SellerBusinessRequestFromJson(
   Map<String, dynamic> json,
 ) => _SellerBusinessRequest(
   businessName: json['businessName'] as String,
-  siret: json['siret'] as String,
+  siret: json['siret'] as String?,
   facadeUrl: json['facadeUrl'] as String?,
   legalForm: json['legalForm'] as String?,
   openingHours:
@@ -24,7 +24,7 @@ Map<String, dynamic> _$SellerBusinessRequestToJson(
   _SellerBusinessRequest instance,
 ) => <String, dynamic>{
   'businessName': instance.businessName,
-  'siret': instance.siret,
+  'siret': ?instance.siret,
   'facadeUrl': ?instance.facadeUrl,
   'legalForm': ?instance.legalForm,
   'openingHours': instance.openingHours.map((e) => e.toJson()).toList(),

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/models/address.dart';
+import 'package:incacook/core/services/map/address_mapping.dart';
 import 'package:incacook/core/services/map/mapbox_search_client.dart';
 import 'package:incacook/core/services/map/models/place_suggestion.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
@@ -86,33 +87,15 @@ class _AddressSearchSheetState extends State<AddressSearchSheet> {
       );
       if (!mounted) return;
 
-      // Parse a structured Address out of the Mapbox formatted string.
-      // The street part is `place.name`; the postal/city are extracted
-      // from the formatted full address (5-digit FR postal regex).
-      final formatted = place.fullAddress ?? place.placeFormatted;
-      final postalMatch = RegExp(r'\b(\d{5})\b').firstMatch(formatted);
-      final postal = postalMatch?.group(1) ?? '';
-      // City sits between the postal and the country segment, e.g.
-      // "12 rue X, 75011 Paris, France" → "Paris".
-      final segments = formatted.split(',').map((s) => s.trim()).toList();
-      final cityFromFormatted = segments
-          .firstWhere(
-            (s) => s.startsWith(postal) && postal.isNotEmpty,
-            orElse: () => '',
-          )
-          .replaceFirst(postal, '')
-          .trim();
-
-      Navigator.of(context).pop(
-        Address(
-          id: 'mb-${place.mapboxId}',
-          type: SavedAddressType.other,
-          fullAddress: place.name,
-          city: cityFromFormatted,
-          postalCode: postal,
-          coordinate: place.coordinate,
-        ),
+      // Build a structured Address with the WHOLE address (street + postal +
+      // city + country) — never just the street. Shared mapping keeps the rule
+      // identical across every picker.
+      final address = addressFromRetrievedPlace(place).copyWith(
+        id: 'mb-${place.mapboxId}',
+        type: SavedAddressType.other,
       );
+
+      Navigator.of(context).pop(address);
     } catch (_) {
       if (!mounted) return;
       setState(() {

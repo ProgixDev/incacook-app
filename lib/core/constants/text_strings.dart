@@ -737,7 +737,7 @@ class AppTexts {
   static const String sellerOrdersEmptyMessage = "Aucune commande à afficher";
 
   //* seller — add product sheet
-  static const String addProductSheetTitle = "Ajouter un produit";
+  static const String addProductSheetTitle = "Ajouter un plat";
   static const String addProductSectionPhotos = "Photos";
   static const String addProductSectionBasic = "Infos de base";
   static const String addProductSectionClassification = "Classification";
@@ -760,7 +760,7 @@ class AppTexts {
   static const String addProductPriceFreeNote =
       "Prix libre pour cette catégorie.";
   static const String addProductPriceCapError =
-      "Le prix d'un produit fait-maison ne peut pas dépasser €4,50.";
+      "Le prix d'un plat fait-maison ne peut pas dépasser €4,50.";
   static const String addProductFieldCategory = "Catégorie";
   static const String addProductCategoryAutoNote =
       "Reprise depuis votre profil de cuisinier.";
@@ -780,33 +780,33 @@ class AppTexts {
   static const String addProductPickupOnSiteHint = "Gratuit";
   static const String addProductPickupDelivery = "Livraison";
   static const String addProductPickupDeliveryHint = "€2,50";
-  static const String addProductSaveCta = "Publier le produit";
-  static const String addProductPublishSuccess = "Produit publié avec succès.";
+  static const String addProductSaveCta = "Publier le plat";
+  static const String addProductPublishSuccess = "Plat publié avec succès.";
   static const String addProductUpdateSuccess =
-      "Produit mis à jour avec succès.";
+      "Plat mis à jour avec succès.";
   static const String addProductEditCta = "Enregistrer";
 
   //* seller — product detail seller actions
   static const String sellerProductEditCta = "Modifier";
   static const String sellerProductDeleteCta = "Supprimer";
   static const String sellerProductDeleteConfirmTitle =
-      "Supprimer ce produit ?";
+      "Supprimer ce plat ?";
   static const String sellerProductDeleteConfirmBody =
-      "Le produit sera retiré de ta vitrine. Les commandes existantes restent intactes.";
+      "Le plat sera retiré de ta vitrine. Les commandes existantes restent intactes.";
   static const String sellerProductDeleteConfirmCancel = "Annuler";
   static const String sellerProductDeleteConfirmCta = "Supprimer";
-  static const String sellerProductDeletedMessage = "Produit supprimé.";
+  static const String sellerProductDeletedMessage = "Plat supprimé.";
   static const String sellerProductsLoadError =
-      "Impossible de charger tes produits.";
+      "Impossible de charger tes plats.";
 
   //* seller — products / catalog screen
-  static const String sellerProductsAddCta = "Ajouter un produit";
+  static const String sellerProductsAddCta = "Ajouter un plat";
   static const String sellerProductsTabAvailable = "Disponible";
   static const String sellerProductsTabNotAvailable = "Indisponible";
   static const String sellerProductsAvailableLabel = "Disponible";
   static const String sellerProductsNotAvailableLabel = "Indisponible";
   static const String sellerProductsPrepSuffix = "min";
-  static const String sellerProductsEmptyMessage = "Aucun produit à afficher";
+  static const String sellerProductsEmptyMessage = "Aucun plat à afficher";
 
   //* delivery — driver dashboard (Drive sheet + nav bar)
   static const String deliveryDashboardDriveTab = "Conduire";
@@ -1126,6 +1126,22 @@ class AppTexts {
   static const String signupBiometricEnabledToast =
       "Connexion biométrique activée";
 
+  //* biometric login (OS-level via local_auth — NOT camera face matching)
+  static const String biometricLoginCta = "Connexion biométrique";
+  static const String biometricLoginTitle = "Connexion biométrique";
+  static const String biometricLoginReason =
+      "Authentifiez-vous pour accéder à votre compte IncaCook.";
+  static const String biometricSetupReason =
+      "Confirmez votre identité pour activer la connexion biométrique.";
+  static const String biometricFailed =
+      "Authentification biométrique annulée ou échouée.";
+  static const String biometricSessionExpired =
+      "Votre session a expiré. Veuillez vous reconnecter.";
+  static const String biometricUnavailable =
+      "La biométrie n'est pas disponible sur cet appareil.";
+  static const String biometricLaterCta = "Plus tard";
+  static const String biometricContinueCta = "Continuer";
+
   //* signup flow — legal acceptance page
   static const String signupLegalTitle = "Conditions d'utilisation";
   static const String signupLegalSubtitle =
@@ -1231,6 +1247,10 @@ class AppTexts {
   static const String signupSellerSiretHint = "000 000 000 00000";
   static const String signupSellerSiretError =
       "SIRET invalide (14 chiffres + Luhn)";
+  // Shown ONLY at submit, and ONLY for Sauve Ton Panier (restaurant), when the
+  // SIRET is empty. Traiteur / fait-maison never see a "SIRET requis" message.
+  static const String signupSellerSiretRequiredSubmit =
+      "Veuillez renseigner votre SIRET pour continuer.";
   static const String signupSellerFacadeLabel = "Photo de la façade";
   static const String signupSellerHoursLabel = "Horaires d'ouverture";
   static const String signupSellerHoursClosed = "Fermé";

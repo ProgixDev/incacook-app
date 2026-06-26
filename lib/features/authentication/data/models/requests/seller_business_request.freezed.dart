@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerBusinessRequest {
 
- String get businessName; String get siret; String? get facadeUrl; String? get legalForm; List<OpeningHoursRow> get openingHours;
+ String get businessName; String? get siret; String? get facadeUrl; String? get legalForm; List<OpeningHoursRow> get openingHours;
 /// Create a copy of SellerBusinessRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $SellerBusinessRequestCopyWith<$Res>  {
   factory $SellerBusinessRequestCopyWith(SellerBusinessRequest value, $Res Function(SellerBusinessRequest) _then) = _$SellerBusinessRequestCopyWithImpl;
 @useResult
 $Res call({
- String businessName, String siret, String? facadeUrl, String? legalForm, List<OpeningHoursRow> openingHours
+ String businessName, String? siret, String? facadeUrl, String? legalForm, List<OpeningHoursRow> openingHours
 });
 
 
@@ -65,11 +65,11 @@ class _$SellerBusinessRequestCopyWithImpl<$Res>
 
 /// Create a copy of SellerBusinessRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? businessName = null,Object? siret = null,Object? facadeUrl = freezed,Object? legalForm = freezed,Object? openingHours = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? businessName = null,Object? siret = freezed,Object? facadeUrl = freezed,Object? legalForm = freezed,Object? openingHours = null,}) {
   return _then(_self.copyWith(
 businessName: null == businessName ? _self.businessName : businessName // ignore: cast_nullable_to_non_nullable
-as String,siret: null == siret ? _self.siret : siret // ignore: cast_nullable_to_non_nullable
-as String,facadeUrl: freezed == facadeUrl ? _self.facadeUrl : facadeUrl // ignore: cast_nullable_to_non_nullable
+as String,siret: freezed == siret ? _self.siret : siret // ignore: cast_nullable_to_non_nullable
+as String?,facadeUrl: freezed == facadeUrl ? _self.facadeUrl : facadeUrl // ignore: cast_nullable_to_non_nullable
 as String?,legalForm: freezed == legalForm ? _self.legalForm : legalForm // ignore: cast_nullable_to_non_nullable
 as String?,openingHours: null == openingHours ? _self.openingHours : openingHours // ignore: cast_nullable_to_non_nullable
 as List<OpeningHoursRow>,
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String businessName,  String siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String businessName,  String? siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerBusinessRequest() when $default != null:
 return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_that.openingHours);case _:
@@ -178,7 +178,7 @@ return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String businessName,  String siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String businessName,  String? siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)  $default,) {final _that = this;
 switch (_that) {
 case _SellerBusinessRequest():
 return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_that.openingHours);case _:
@@ -198,7 +198,7 @@ return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String businessName,  String siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String businessName,  String? siret,  String? facadeUrl,  String? legalForm,  List<OpeningHoursRow> openingHours)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerBusinessRequest() when $default != null:
 return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_that.openingHours);case _:
@@ -213,11 +213,11 @@ return $default(_that.businessName,_that.siret,_that.facadeUrl,_that.legalForm,_
 @JsonSerializable()
 
 class _SellerBusinessRequest implements SellerBusinessRequest {
-  const _SellerBusinessRequest({required this.businessName, required this.siret, this.facadeUrl, this.legalForm, final  List<OpeningHoursRow> openingHours = const <OpeningHoursRow>[]}): _openingHours = openingHours;
+  const _SellerBusinessRequest({required this.businessName, this.siret, this.facadeUrl, this.legalForm, final  List<OpeningHoursRow> openingHours = const <OpeningHoursRow>[]}): _openingHours = openingHours;
   factory _SellerBusinessRequest.fromJson(Map<String, dynamic> json) => _$SellerBusinessRequestFromJson(json);
 
 @override final  String businessName;
-@override final  String siret;
+@override final  String? siret;
 @override final  String? facadeUrl;
 @override final  String? legalForm;
  final  List<OpeningHoursRow> _openingHours;
@@ -261,7 +261,7 @@ abstract mixin class _$SellerBusinessRequestCopyWith<$Res> implements $SellerBus
   factory _$SellerBusinessRequestCopyWith(_SellerBusinessRequest value, $Res Function(_SellerBusinessRequest) _then) = __$SellerBusinessRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String businessName, String siret, String? facadeUrl, String? legalForm, List<OpeningHoursRow> openingHours
+ String businessName, String? siret, String? facadeUrl, String? legalForm, List<OpeningHoursRow> openingHours
 });
 
 
@@ -278,11 +278,11 @@ class __$SellerBusinessRequestCopyWithImpl<$Res>
 
 /// Create a copy of SellerBusinessRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? businessName = null,Object? siret = null,Object? facadeUrl = freezed,Object? legalForm = freezed,Object? openingHours = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? businessName = null,Object? siret = freezed,Object? facadeUrl = freezed,Object? legalForm = freezed,Object? openingHours = null,}) {
   return _then(_SellerBusinessRequest(
 businessName: null == businessName ? _self.businessName : businessName // ignore: cast_nullable_to_non_nullable
-as String,siret: null == siret ? _self.siret : siret // ignore: cast_nullable_to_non_nullable
-as String,facadeUrl: freezed == facadeUrl ? _self.facadeUrl : facadeUrl // ignore: cast_nullable_to_non_nullable
+as String,siret: freezed == siret ? _self.siret : siret // ignore: cast_nullable_to_non_nullable
+as String?,facadeUrl: freezed == facadeUrl ? _self.facadeUrl : facadeUrl // ignore: cast_nullable_to_non_nullable
 as String?,legalForm: freezed == legalForm ? _self.legalForm : legalForm // ignore: cast_nullable_to_non_nullable
 as String?,openingHours: null == openingHours ? _self._openingHours : openingHours // ignore: cast_nullable_to_non_nullable
 as List<OpeningHoursRow>,

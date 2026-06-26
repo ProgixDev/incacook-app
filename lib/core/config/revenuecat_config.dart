@@ -22,23 +22,26 @@ import 'package:incacook/core/enums/food_enums.dart';
 class RevenueCatConfig {
   RevenueCatConfig._();
 
-  // No baked-in default keys. The previous `test_…` placeholders were not valid
-  // RevenueCat keys (real keys are `appl_…`/`goog_…`), so they made the SDK
-  // throw "Invalid API Key" at startup. Empty here means "unconfigured" →
-  // RevenueCatService.init() skips Purchases.configure entirely (the paywall
-  // then shows fallback prices). Supply a real key via
-  // --dart-define=REVENUECAT_IOS_KEY=appl_… / REVENUECAT_ANDROID_KEY=goog_… to
-  // enable subscriptions.
+  // Public RevenueCat SDK keys (`appl_…` iOS / `goog_…` Android). These are
+  // PUBLIC client keys — safe to embed in the app binary (like the Supabase
+  // anon key), so the iOS default below lets a plain `flutter run` reach the
+  // store. A `--dart-define=REVENUECAT_IOS_KEY=…` / `REVENUECAT_ANDROID_KEY=…`
+  // still overrides it (e.g. a separate prod key). Empty → "unconfigured" →
+  // RevenueCatService.init() skips Purchases.configure (paywall shows fallback
+  // prices). NEVER put a SECRET key (`sk_…`) here.
   static const String _defaultAndroidApiKey = '';
 
-  static const String _defaultIosApiKey = '';
+  static const String _defaultIosApiKey = 'appl_mtskPNbxiaPozqLtGvqoAOrsCNt';
 
   static const String _androidApiKeyFromEnv = String.fromEnvironment(
     'REVENUECAT_ANDROID_KEY',
   );
 
+  // NOTE: the argument is the dart-define VARIABLE NAME, not the key value. A
+  // previous edit mistakenly passed the key itself here, so the variable never
+  // resolved and iOS stayed "unconfigured" → "Abonnement indisponible".
   static const String _iosApiKeyFromEnv = String.fromEnvironment(
-    'appl_mtskPNbxiaPozqLtGvqoAOrsCNt',
+    'REVENUECAT_IOS_KEY',
   );
 
   static String get androidApiKey {

@@ -38,6 +38,9 @@ dependencies:
   rename_app: ^1.6.5
   flutter_launcher_icons: ^0.14.4
   flutter_secure_storage: ^10.2.0
+  # OS-level biometric unlock (Face ID / Touch ID / fingerprint) for the
+  # optional "Connexion biométrique" login. NOT camera face matching.
+  local_auth: ^2.3.0
   ulid: ^2.0.0
   image_picker: ^1.1.2
   pinput: ^6.0.2

@@ -545,8 +545,13 @@ class SignupFlowController extends GetxController {
       case SignupStep.sellerDobAddress:
         return isAdult && pickupAddress.value != null;
       case SignupStep.sellerBusinessInfo:
-        final base =
-            businessName.value.trim().length >= 2 && isSiretValid;
+        // SIRET is optional at this gate for every category: an empty value
+        // never blocks Continue. When filled, it must be a valid 14-digit Luhn
+        // SIRET. Sauve Ton Panier's "required" rule is enforced at submit (see
+        // [_putSellerBusiness]) so the message only appears on submit — never
+        // for Traiteur / fait-maison.
+        final base = businessName.value.trim().length >= 2 &&
+            (siret.value.trim().isEmpty || isSiretValid);
         if (sellerCategory.value == SellerCategory.restaurant) {
           return base &&
               restaurantFacadeUrl.value.isNotEmpty &&
@@ -848,11 +853,22 @@ class SignupFlowController extends GetxController {
   }
 
   Future<bool> _putSellerBusiness() async {
+    final cleanedSiret = siret.value.replaceAll(RegExp(r'\s'), '').trim();
+    // Sauve Ton Panier (restaurant) is the only category that requires a SIRET.
+    // Surface the message ONLY here (at submit) and ONLY when empty — Traiteur /
+    // fait-maison are never blocked by an empty SIRET.
+    if (sellerCategory.value == SellerCategory.restaurant &&
+        cleanedSiret.isEmpty) {
+      submitError.value = AppTexts.signupSellerSiretRequiredSubmit;
+      return false;
+    }
     return _runApiCall(() async {
       await _sellersRepository.setBusiness(
         SellerBusinessRequest(
           businessName: businessName.value,
-          siret: siret.value.replaceAll(RegExp(r'\s'), ''),
+          // Send null (not '') when empty — the backend treats absent SIRET as
+          // optional for Traiteur; an empty string would fail format validation.
+          siret: cleanedSiret.isEmpty ? null : cleanedSiret,
           facadeUrl: restaurantFacadeUrl.value.isEmpty
               ? null
               : restaurantFacadeUrl.value,

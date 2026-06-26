@@ -32,9 +32,13 @@ const List<NavTab> kSellerNavTabs = [
       showBackArrow: false,
     ),
   ),
+  // "Mes plats" + a "+" icon so the seller immediately sees where to add
+  // dishes (the old "Catalogue" label was ambiguous). The nav bar shows the
+  // label only when the tab is selected; the always-visible "+" icon is the
+  // micro add affordance the client asked for.
   NavTab(
-    icon: Iconsax.category,
-    label: 'Catalogue',
+    icon: Iconsax.add_circle,
+    label: 'Mes plats',
     screen: SubscriptionGate(child: SellerProductsScreen()),
   ),
   NavTab(icon: Iconsax.user, label: 'Profil', screen: SettingsScreen()),
