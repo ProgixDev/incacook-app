@@ -8,6 +8,7 @@ import 'package:incacook/core/services/realtime/driver_location.dart';
 import 'package:incacook/core/services/realtime/order_status_event.dart';
 import 'package:incacook/core/services/realtime/tracking_socket_client.dart';
 import 'package:incacook/features/orders/data/orders_repository.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// Where the driver is in the journey, from the buyer's POV. Drives
 /// which destination + route polyline the buyer's map renders:
@@ -133,7 +134,7 @@ class OrderTrackingController extends GetxController {
       if (snap.driver != null) driverPosition.value = snap.driver!;
 
       snapshotReady.value = true;
-      debugPrint(
+      logInfo(
         '[tracking] order $id snapshot: status=${snap.orderStatus} '
         'fulfillment=${snap.fulfillmentChoice} '
         'driver=${snap.driverInfo?.fullName ?? "unassigned"}',
@@ -154,7 +155,7 @@ class OrderTrackingController extends GetxController {
       if (snap.driverInfo != null) {
         assignedDriver.value = snap.driverInfo;
         if (snap.driver != null) driverPosition.value = snap.driver!;
-        debugPrint('[tracking] order $id driver assigned: ${snap.driverInfo!.fullName}');
+        logInfo('[tracking] order $id driver assigned: ${snap.driverInfo!.fullName}');
         _logTrackingState('driver-assigned');
       }
     } catch (_) {
@@ -174,7 +175,7 @@ class OrderTrackingController extends GetxController {
     final hasDriver = hasAssignedDriver && (dp.lng != 0 || dp.lat != 0);
     final markers =
         (hasPickup ? 1 : 0) + (hasDropoff ? 1 : 0) + (hasDriver ? 1 : 0);
-    debugPrint(
+    logWarning(
       '[TrackingMap]($source) '
       'pickup=${hasPickup ? fmt(_pickupPoint) : "MISSING"}, '
       'dropoff=${hasDropoff ? fmt(_dropoffPoint) : "MISSING"}, '
@@ -182,13 +183,13 @@ class OrderTrackingController extends GetxController {
       'markers=$markers',
     );
     if (!hasPickup) {
-      debugPrint('[TrackingMap] pickup MISSING — seller location not geocoded.');
+      logWarning('[TrackingMap] pickup MISSING — seller location not geocoded.');
     }
     if (!hasDropoff) {
-      debugPrint('[TrackingMap] dropoff MISSING — client address not geocoded.');
+      logWarning('[TrackingMap] dropoff MISSING — client address not geocoded.');
     }
     if (!hasDriver) {
-      debugPrint('[TrackingMap] driver MISSING — no driver assigned/located yet.');
+      logWarning('[TrackingMap] driver MISSING — no driver assigned/located yet.');
     }
   }
 
@@ -207,7 +208,7 @@ class OrderTrackingController extends GetxController {
     if (socket == null) return;
 
     try {
-      debugPrint('[tracking] buyer subscribing to order $id');
+      logInfo('[tracking] buyer subscribing to order $id');
       // Driver position — only meaningful once a driver is assigned.
       _socketLocSub = socket.subscribeToOrder(id).listen(
         (ev) {

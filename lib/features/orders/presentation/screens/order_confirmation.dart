@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -20,6 +19,7 @@ class OrderConfirmationScreen extends StatefulWidget {
   const OrderConfirmationScreen({
     super.key,
     required this.orderId,
+    required this.orderNumber,
     required this.totalAmount,
     required this.selection,
     required this.options,
@@ -30,6 +30,7 @@ class OrderConfirmationScreen extends StatefulWidget {
   /// through to the tracking screen so it can subscribe to the live
   /// driver-position socket for this delivery.
   final String orderId;
+  final String orderNumber;
   final double totalAmount;
   final FulfillmentSelection selection;
   final FulfillmentOptions options;
@@ -43,7 +44,6 @@ class OrderConfirmationScreen extends StatefulWidget {
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   static const double _serviceFee = 0.50;
 
-  late final String _orderNumber;
   late final List<CartItem> _items;
   late final FoodListing _seller;
   late final double _subtotal;
@@ -55,17 +55,11 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     _items = List.unmodifiable(cart.items);
     _seller = cart.sellerReference!;
     _subtotal = cart.subtotal;
-    _orderNumber = _generateOrderNumber();
 
     HapticFeedback.heavyImpact();
 
     //? clear the cart after first frame so the snapshot above stays intact
     WidgetsBinding.instance.addPostFrameCallback((_) => cart.clear());
-  }
-
-  static String _generateOrderNumber() {
-    final random = Random();
-    return 'A${1000 + random.nextInt(9000)}';
   }
 
   DateTime get _expectedArrival =>
@@ -105,7 +99,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SuccessHeader(orderNumber: _orderNumber),
+              _SuccessHeader(orderNumber: widget.orderNumber),
               const _Divider(),
               _StatusBlock(
                 sellerName: _seller.sellerName,
@@ -348,7 +342,7 @@ class _Row extends StatelessWidget {
     final labelStyle = emphasized
         ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
         : theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant);
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

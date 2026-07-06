@@ -60,6 +60,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
   //? the Stripe sheet) re-presents payment instead of creating a duplicate
   //? order + PaymentIntent.
   String? _orderId;
+  String? _orderNumber;
   String? _clientSecret;
 
   @override
@@ -99,6 +100,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
           termsAccepted: widget.termsAccepted,
         );
         _orderId = result.id;
+        _orderNumber = result.orderNumber;
         _clientSecret = result.paymentIntentClientSecret;
       }
 
@@ -151,6 +153,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         MaterialPageRoute<void>(
           builder: (_) => OrderConfirmationScreen(
             orderId: _orderId!,
+            orderNumber: _orderNumber!,
             totalAmount: widget.totalAmount,
             selection: widget.selection,
             options: widget.options,
@@ -230,9 +233,9 @@ class _ProcessingView extends StatelessWidget {
           Text(
             AppTexts.paymentProcessingTitle,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const Spacer(flex: 3),
           Row(
@@ -283,9 +286,9 @@ class _FailedView extends StatelessWidget {
           Text(
             AppTexts.paymentErrorTitle,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const Gap(AppSizes.sm + 2),
           Text(

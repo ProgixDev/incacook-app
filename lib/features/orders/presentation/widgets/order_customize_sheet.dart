@@ -114,7 +114,13 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
       maxChildSize: 0.95,
       expand: false,
       builder: (_, scrollController) {
-        return Container(
+        // Lift the pinned CTA above the soft keyboard, and let a tap anywhere on
+        // the sheet dismiss the keyboard so "Commander" is always reachable.
+        final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -164,8 +170,15 @@ class _OrderCustomizeSheetState extends State<OrderCustomizeSheet> {
                   ),
                 ),
               ),
-              _TotalAndCta(total: _total, onAddToCart: _confirmAddToCart),
+              Padding(
+                padding: EdgeInsets.only(bottom: keyboardInset),
+                child: _TotalAndCta(
+                  total: _total,
+                  onAddToCart: _confirmAddToCart,
+                ),
+              ),
             ],
+          ),
           ),
         );
       },
