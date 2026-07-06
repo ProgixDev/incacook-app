@@ -1,11 +1,14 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/services/notifications/device_tokens_repository.dart';
 import 'package:incacook/features/orders/presentation/screens/order_tracking.dart';
+import 'package:incacook/core/utils/log.dart';
+import 'package:incacook/firebase_options.dart';
 
 /// Background / terminated-state FCM handler. MUST be a top-level (or static)
 /// function and is registered from `main.dart` via
@@ -14,8 +17,8 @@ import 'package:incacook/features/orders/presentation/screens/order_tracking.dar
 /// tray display of `notification` messages is automatic on Android.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  debugPrint(
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  logInfo(
     '[FCM][bg] message=${message.messageId} '
     'title=${message.notification?.title} data=${message.data}',
   );
@@ -33,9 +36,9 @@ class PushNotificationService extends GetxService {
     FirebaseMessaging? messaging,
     DeviceTokensRepository? repository,
     UserController? userController,
-  })  : _messaging = messaging ?? FirebaseMessaging.instance,
-        _repo = repository ?? Get.find<DeviceTokensRepository>(),
-        _userController = userController ?? Get.find<UserController>();
+  }) : _messaging = messaging ?? FirebaseMessaging.instance,
+       _repo = repository ?? Get.find<DeviceTokensRepository>(),
+       _userController = userController ?? Get.find<UserController>();
 
   static PushNotificationService get instance => Get.find();
 
@@ -54,8 +57,9 @@ class PushNotificationService extends GetxService {
     importance: Importance.high,
   );
 
-  /// Platform tag sent to the backend. v1 is Android-only.
-  static const String _platform = 'ANDROID';
+  /// Platform tag sent to the backend. Keep this aligned with
+  /// RegisterDeviceTokenDto on the API.
+  static String get _platform => Platform.isIOS ? 'IOS' : 'ANDROID';
 
   String? _currentToken;
   bool _registeredOnce = false;
@@ -65,11 +69,18 @@ class PushNotificationService extends GetxService {
   Future<void> init() async {
     try {
       await _messaging.requestPermission();
+      await _messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
       await _initLocalNotifications();
 
-      _currentToken = await _messaging.getToken();
+      _currentToken = await _loadInitialToken();
       // Never log the token value. Presence only.
-      debugPrint('[FCM] token received: ${_currentToken != null && _currentToken!.isNotEmpty}');
+      logWarning(
+        '[FCM] token received: ${_currentToken != null && _currentToken!.isNotEmpty}',
+      );
 
       // Register now if a session already exists (cold-start rehydrate),
       // then on every transition into an authenticated state.
@@ -81,7 +92,7 @@ class PushNotificationService extends GetxService {
       });
 
       _messaging.onTokenRefresh.listen((token) {
-        debugPrint('[FCM] token refreshed');
+        logInfo('[FCM] token refreshed');
         _currentToken = token;
         _registeredOnce = false;
         if (_userController.isSignedIn) _registerCurrentToken();
@@ -89,7 +100,7 @@ class PushNotificationService extends GetxService {
 
       FirebaseMessaging.onMessage.listen(_onForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp.listen((message) {
-        debugPrint('[FCM] opened from notification: data=${message.data}');
+        logInfo('[FCM] opened from notification: data=${message.data}');
         // App was backgrounded → the route stack is live, safe to navigate.
         _routeForNotification(message);
       });
@@ -99,12 +110,46 @@ class PushNotificationService extends GetxService {
       // route being mounted; deep-link-from-terminated is a later task.
       final initial = await _messaging.getInitialMessage();
       if (initial != null) {
-        debugPrint('[FCM] launched from notification: data=${initial.data}');
+        logError('[FCM] launched from notification: data=${initial.data}');
       }
     } catch (e) {
       // Never let push setup crash the app (e.g. missing Firebase config).
-      debugPrint('[FCM] init failed: $e');
+      logError('[FCM] init failed: $e');
     }
+  }
+
+  /// Gets the first FCM token without aborting notification setup when iOS
+  /// temporarily refuses token creation (`Too many server requests`) or APNs
+  /// has not attached a token yet. Token refresh still registers later.
+  Future<String?> _loadInitialToken() async {
+    if (Platform.isIOS) {
+      final apnsToken = await _waitForApnsToken();
+      if (apnsToken == null || apnsToken.isEmpty) {
+        logWarning('[FCM] APNs token unavailable; waiting for token refresh');
+        return null;
+      }
+    }
+
+    try {
+      return await _messaging.getToken();
+    } catch (e) {
+      logWarning('[FCM] initial token unavailable: $e');
+      return null;
+    }
+  }
+
+  Future<String?> _waitForApnsToken() async {
+    for (var attempt = 0; attempt < 8; attempt++) {
+      try {
+        final token = await _messaging.getAPNSToken();
+        if (token != null && token.isNotEmpty) return token;
+      } catch (e) {
+        logWarning('[FCM] APNs token read failed: $e');
+        return null;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
+    return null;
   }
 
   /// Sends the current token to the backend. No-op when there's no token or
@@ -115,9 +160,9 @@ class PushNotificationService extends GetxService {
     try {
       await _repo.register(token: token, platform: _platform);
       _registeredOnce = true;
-      debugPrint('[FCM] token registered with backend');
+      logSuccess('[FCM] token registered with backend');
     } catch (e) {
-      debugPrint('[FCM] token registration failed: $e');
+      logError('[FCM] token registration failed: $e');
     }
   }
 
@@ -130,18 +175,20 @@ class PushNotificationService extends GetxService {
       await _repo.unregister(token: token);
       _registeredOnce = false;
     } catch (e) {
-      debugPrint('[FCM] token unregister failed: $e');
+      logError('[FCM] token unregister failed: $e');
     }
   }
 
   Future<void> _initLocalNotifications() async {
     const initSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
     );
     await _localNotifications.initialize(settings: initSettings);
     await _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(_channel);
   }
 
@@ -158,13 +205,13 @@ class PushNotificationService extends GetxService {
         Get.to<void>(() => OrderTrackingScreen(orderId: orderId));
       }
     } catch (e) {
-      debugPrint('[FCM] route handling failed: $e');
+      logError('[FCM] route handling failed: $e');
     }
   }
 
   void _onForegroundMessage(RemoteMessage message) {
     final notification = message.notification;
-    debugPrint(
+    logInfo(
       '[FCM] foreground: title=${notification?.title} '
       'body=${notification?.body} data=${message.data}',
     );
