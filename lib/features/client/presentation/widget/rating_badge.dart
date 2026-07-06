@@ -19,6 +19,8 @@ class RatingBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (reviewCount <= 0 || rating <= 0) return const SizedBox.shrink();
+
     final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

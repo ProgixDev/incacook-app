@@ -14,7 +14,7 @@ import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/features/catalog/data/repositories/listings_repository.dart';
 import 'package:incacook/features/catalog/presentation/screens/product_detail.dart';
 import 'package:incacook/features/client/controllers/filter_controller.dart';
-import 'package:incacook/core/services/map/mapbox_search_client.dart';
+import 'package:incacook/core/services/map/google_places_client.dart';
 import 'package:incacook/core/widgets/no_results_view.dart';
 import 'package:incacook/features/client/data/kitchens_repository.dart';
 import 'package:incacook/core/models/food_listing.dart';
@@ -26,8 +26,8 @@ import 'package:incacook/features/client/presentation/widget/client_home_appbar.
 import 'package:incacook/features/client/presentation/widget/client_home_search_bar.dart';
 import 'package:incacook/features/client/presentation/widget/client_home_section.dart';
 import 'package:incacook/features/client/presentation/widget/kitchen_card.dart';
-import 'package:incacook/features/seller/data/seller_mock_data.dart';
 import 'package:incacook/features/seller/presentation/screens/seller_profile.dart';
+import 'package:incacook/core/utils/log.dart';
 
 class ClientHomeScreen extends StatefulWidget {
   const ClientHomeScreen({super.key});
@@ -127,21 +127,21 @@ class _HomeScreenState extends State<ClientHomeScreen> {
       final pos = await loc.getCurrent();
       if (!mounted) return;
       if (pos != null) {
-        debugPrint('[Loc] getCurrent OK lat=${pos.latitude} lng=${pos.longitude}');
+        logInfo('[Loc] getCurrent OK lat=${pos.latitude} lng=${pos.longitude}');
         _lat = pos.latitude;
         _lng = pos.longitude;
         _locationNote = null;
         // Best-effort reverse geocode for the appbar's "City, Country" label.
         unawaited(_resolvePlaceLabel(pos.latitude, pos.longitude));
       } else {
-        debugPrint('[Loc] getCurrent returned null — permission/service off');
+        logInfo('[Loc] getCurrent returned null — permission/service off');
         _lat = null;
         _lng = null;
         _locationNote =
             'Localisation désactivée — activez-la pour filtrer par distance.';
       }
     } catch (e) {
-      debugPrint('[Loc] _resolveLocation threw: $e');
+      logInfo('[Loc] _resolveLocation threw: $e');
       _lat = null;
       _lng = null;
       _locationNote = 'Localisation indisponible.';
@@ -153,12 +153,12 @@ class _HomeScreenState extends State<ClientHomeScreen> {
   /// failure the label keeps its fallback.
   Future<void> _resolvePlaceLabel(double lat, double lng) async {
     try {
-      final place = await Get.find<MapboxSearchClient>().reverse(
+      final place = await Get.find<GooglePlacesClient>().reverse(
         lat: lat,
         lng: lng,
         language: 'fr',
       );
-      debugPrint(
+      logInfo(
         '[Loc] reverse OK city=${place.city} country=${place.country} '
         'name=${place.name}',
       );
@@ -168,13 +168,13 @@ class _HomeScreenState extends State<ClientHomeScreen> {
           .toList();
       if (parts.isNotEmpty && Get.isRegistered<LocationService>()) {
         LocationService.instance.placeLabel.value = parts.join(', ');
-        debugPrint('[Loc] placeLabel set to "${parts.join(', ')}"');
+        logWarning('[Loc] placeLabel set to "${parts.join(', ')}"');
       } else {
-        debugPrint('[Loc] reverse returned no city/country — label unchanged');
+        logWarning('[Loc] reverse returned no city/country — label unchanged');
       }
     } catch (e) {
       // Keep whatever fallback the appbar shows.
-      debugPrint('[Loc] _resolvePlaceLabel threw: $e');
+      logInfo('[Loc] _resolvePlaceLabel threw: $e');
     }
   }
 
@@ -322,7 +322,7 @@ class _HomeScreenState extends State<ClientHomeScreen> {
             kitchen: kitchen,
             isSaved: _savedKitchenIds.contains(kitchen.id),
             onTap: () => Get.to(
-              () => SellerProfileScreen(profile: SellerMockData.demoSeller()),
+              () => SellerProfileLoader(sellerId: kitchen.id),
             ),
             onToggleSaved: () => _toggleKitchenSaved(kitchen.id),
           ),
@@ -419,12 +419,14 @@ class _HomeScreenState extends State<ClientHomeScreen> {
                 //* still works, just without distance filtering/sort).
                 if (_locationNote != null) ...[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
                     child: Text(
                       _locationNote!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                     ),
                   ),
                   const Gap(AppSizes.sm),
