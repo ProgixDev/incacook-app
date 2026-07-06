@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/features/authentication/data/models/user_role.dart';
 import 'package:incacook/features/orders/presentation/screens/orders_history_screen.dart';
+import 'package:incacook/features/notifications/controllers/notifications_controller.dart';
+import 'package:incacook/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:incacook/features/settings/domain/setting_menu_item.dart';
+import 'package:incacook/features/settings/presentation/screens/buyer_preferences_screen.dart';
 import 'package:incacook/features/settings/presentation/screens/edit_profile.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
@@ -19,6 +22,7 @@ import 'package:incacook/features/settings/presentation/widgets/profile_user_car
 import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
 import 'package:incacook/features/settings/presentation/widgets/saved_addresses_sheet.dart';
 import 'package:incacook/features/wallet/presentation/wallet_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,6 +35,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _appBarVisible = true;
 
+  final NotificationsController _notifications =
+      Get.isRegistered<NotificationsController>()
+          ? NotificationsController.instance
+          : Get.put(NotificationsController(), permanent: true);
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +48,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // name / phone / photo — including a seller's registration photo,
     // which is set after the Gate-2 user cache was first populated.
     UserController.instance.refreshFromServer().ignore();
+    // Light badge refresh for the bell (no full inbox load).
+    _notifications.refreshUnreadCount();
   }
 
   void _handleScroll() {
@@ -56,6 +67,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ..removeListener(_handleScroll)
       ..dispose();
     super.dispose();
+  }
+
+  /// "Obtenir de l'aide" → opens the support email. Falls back to a snackbar
+  /// with the address if no mail app is available.
+  Future<void> _openSupport(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: AppTexts.supportEmail,
+      query: 'subject=${Uri.encodeComponent(AppTexts.supportEmailSubject)}',
+    );
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.supportUnavailable)),
+      );
+    }
+  }
+
+  /// "À propos de l'application" → native about dialog (name + legalese).
+  void _showAbout(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: AppTexts.appName,
+      applicationLegalese: AppTexts.appLegalese,
+    );
   }
 
   @override
@@ -99,12 +135,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       SettingMenuItem(
         icon: Iconsax.message_question,
         title: AppTexts.settingsGetHelp,
-        onTap: () {},
+        onTap: () => _openSupport(context),
       ),
       SettingMenuItem(
         icon: Iconsax.info_circle,
         title: AppTexts.settingsAboutApp,
-        onTap: () {},
+        onTap: () => _showAbout(context),
       ),
     ];
 
@@ -135,20 +171,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             actions: [
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  await Get.to<void>(() => const NotificationsScreen());
+                  // Reconcile the badge after the user views the inbox.
+                  _notifications.refreshUnreadCount();
+                },
                 behavior: HitTestBehavior.opaque,
                 child: SizedBox(
                   width: 44,
                   height: 44,
-                  child: FrostedSurface(
-                    shape: BoxShape.circle,
-                    child: Center(
-                      child: Icon(
-                        Iconsax.notification,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        size: 20,
+                  child: Stack(
+                    children: [
+                      FrostedSurface(
+                        shape: BoxShape.circle,
+                        child: Center(
+                          child: Icon(
+                            Iconsax.notification,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 20,
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Obx(() {
+                          final count = _notifications.unreadCount.value;
+                          if (count == 0) return const SizedBox.shrink();
+                          return Container(
+                            padding: const EdgeInsets.all(2),
+                            constraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.error,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                count > 9 ? '9+' : '$count',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onError,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -177,6 +250,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ProfileUserCard(
                   onEditProfile: () =>
                       Get.to<void>(() => const EditProfileScreen()),
+                  // Preferences edit dietary/allergens — buyer-only data, so
+                  // the tile stays inert for sellers/drivers.
+                  onPreferences: role == UserRole.buyer
+                      ? () =>
+                          Get.to<void>(() => const BuyerPreferencesScreen())
+                      : null,
                 ),
                 const Gap(AppSizes.md),
                 SettingMenuSection(
