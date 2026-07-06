@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:incacook/core/controllers/user_controller.dart';
+import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/features/subscriptions/presentation/screens/subscription_paywall_screen.dart';
 
 /// Wraps a seller-only feature screen. Reactively shows the paywall when
@@ -23,9 +24,9 @@ class SubscriptionGate extends StatelessWidget {
       // Date/status gate — NOT a fresh charge. The seller stays unlocked until
       // their period end / trial end; the paywall returns only once it lapses.
       final active = userCtrl.hasActiveSellerSubscription;
-      debugPrint('[SubscriptionGate] backend status=${seller?.subscriptionStatus ?? 'none'}');
-      debugPrint('[SubscriptionGate] expiresAt=${seller?.subscriptionCurrentPeriodEnd ?? 'null'}');
-      debugPrint('[SubscriptionGate] shouldShowPaywall=${!active}');
+      logInfo('[SubscriptionGate] backend status=${seller?.subscriptionStatus ?? 'none'} '
+          'expiresAt=${seller?.subscriptionCurrentPeriodEnd ?? 'null'} '
+          'shouldShowPaywall=${!active}');
       return active ? child : const SubscriptionPaywallScreen();
     });
   }

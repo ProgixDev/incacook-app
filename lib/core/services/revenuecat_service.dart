@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'package:incacook/core/config/revenuecat_config.dart';
 import 'package:incacook/core/enums/food_enums.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// Outcome of a purchase / restore, distilled to what the backend sync needs.
 /// Never carries tokens or receipts.
@@ -75,24 +76,24 @@ class RevenueCatService extends GetxService {
     final platform = defaultTargetPlatform == TargetPlatform.iOS
         ? 'iOS'
         : defaultTargetPlatform == TargetPlatform.android
-            ? 'Android'
-            : 'other';
+        ? 'Android'
+        : 'other';
     final keyPresent = RevenueCatConfig.isConfigured;
-    debugPrint('[RevenueCat] platform=$platform configured=$keyPresent');
+    logInfo('[RevenueCat] platform=$platform configured=$keyPresent');
 
     if (!keyPresent) {
-      debugPrint('[RevenueCat] not configured (no public SDK key) — skipping');
-      debugPrint('[RevenueCat] sdk configured success=false');
+      logWarning('[RevenueCat] not configured (no public SDK key) — skipping');
       return;
     }
     try {
-      await Purchases.configure(PurchasesConfiguration(RevenueCatConfig.apiKey));
+      await Purchases.configure(
+        PurchasesConfiguration(RevenueCatConfig.apiKey),
+      );
       _configured = true;
-      debugPrint('[RevenueCat] sdk configured success=true');
+      logSuccess('[RevenueCat] sdk configured success=true');
     } catch (e) {
       // Never block app startup on the billing SDK.
-      debugPrint('[RevenueCat] configure failed: $e');
-      debugPrint('[RevenueCat] sdk configured success=false');
+      logError('[RevenueCat] configure failed: $e');
     }
   }
 
@@ -102,7 +103,7 @@ class RevenueCatService extends GetxService {
     try {
       await Purchases.logIn(appUserId);
     } catch (e) {
-      debugPrint('[RevenueCat] logIn failed: $e');
+      logError('[RevenueCat] logIn failed: $e');
     }
   }
 
@@ -117,39 +118,43 @@ class RevenueCatService extends GetxService {
   ///   `[RevenueCat] packages count=…`
   ///   `[Subscription] available packages=[…]`
   /// On error: `error code=…` / `error message=…` / `underlying=…`.
-  Future<OfferingResult> loadOfferingForCategory(SellerCategory category) async {
+  Future<OfferingResult> loadOfferingForCategory(
+    SellerCategory category,
+  ) async {
     final offeringId = RevenueCatConfig.offeringIdForCategory(category);
     if (!_configured) {
-      debugPrint('[RevenueCat] getOfferings skipped reason=key-missing');
+      logWarning('[RevenueCat] getOfferings skipped reason=key-missing');
       return const OfferingResult(failure: OfferingFailure.keyMissing);
     }
-    debugPrint('[RevenueCat] getOfferings start');
-    debugPrint('[RevenueCat] offeringId=$offeringId');
+    logInfo('[RevenueCat] getOfferings start offeringId=$offeringId');
     try {
       final offerings = await Purchases.getOfferings();
-      debugPrint('[RevenueCat] getOfferings success=true');
       final offering = offerings.all[offeringId];
       final exists = offering != null;
-      debugPrint('[RevenueCat] current offering exists=$exists');
       final ids =
-          offering?.availablePackages.map((p) => p.identifier).toList() ?? const <String>[];
-      debugPrint('[RevenueCat] packages count=${ids.length}');
-      debugPrint('[Subscription] available packages=$ids');
+          offering?.availablePackages.map((p) => p.identifier).toList() ??
+          const <String>[];
+      logSuccess(
+        '[RevenueCat] getOfferings success=true exists=$exists packages=$ids',
+      );
       if (!exists) {
+        // Log which offerings DID come back — pinpoints a dashboard id typo.
+        logWarning(
+          '[RevenueCat] offeringMissing: store returned ${offerings.all.keys.toList()}',
+        );
         return const OfferingResult(failure: OfferingFailure.offeringMissing);
       }
       return OfferingResult(offering: offering);
     } on PlatformException catch (e) {
-      debugPrint('[RevenueCat] getOfferings success=false');
-      debugPrint(
-        '[RevenueCat] getOfferings error code=${PurchasesErrorHelper.getErrorCode(e)}',
+      logError(
+        '[RevenueCat] getOfferings failed '
+        'code=${PurchasesErrorHelper.getErrorCode(e)} '
+        'message=${e.message ?? ''} '
+        'underlying=${_safeUnderlying(e.details)}',
       );
-      debugPrint('[RevenueCat] getOfferings error message=${e.message ?? ''}');
-      debugPrint('[RevenueCat] getOfferings underlying=${_safeUnderlying(e.details)}');
       return const OfferingResult(failure: OfferingFailure.storeError);
     } catch (e) {
-      debugPrint('[RevenueCat] getOfferings success=false');
-      debugPrint('[RevenueCat] getOfferings error message=$e');
+      logError('[RevenueCat] getOfferings failed: $e');
       return const OfferingResult(failure: OfferingFailure.storeError);
     }
   }
@@ -159,7 +164,8 @@ class RevenueCatService extends GetxService {
   /// contains the API key or tokens, but we only surface known string fields.
   static String _safeUnderlying(Object? details) {
     if (details is Map) {
-      final v = details['underlyingErrorMessage'] ?? details['readableErrorCode'];
+      final v =
+          details['underlyingErrorMessage'] ?? details['readableErrorCode'];
       if (v != null) return v.toString();
     } else if (details is String && details.isNotEmpty) {
       return details;
@@ -180,7 +186,9 @@ class RevenueCatService extends GetxService {
         return const SubscriptionOutcome(cancelled: true);
       }
       // Never surface raw store/receipt internals — generic French message.
-      throw const RevenueCatException('Abonnement impossible. Veuillez réessayer.');
+      throw const RevenueCatException(
+        'Abonnement impossible. Veuillez réessayer.',
+      );
     }
   }
 
@@ -191,22 +199,54 @@ class RevenueCatService extends GetxService {
       final info = await Purchases.restorePurchases();
       return _outcomeFrom(info);
     } on PlatformException {
-      throw const RevenueCatException('Restauration impossible. Veuillez réessayer.');
+      throw const RevenueCatException(
+        'Restauration impossible. Veuillez réessayer.',
+      );
+    }
+  }
+
+  /// Reads the current subscriber's active seller entitlement from RevenueCat
+  /// WITHOUT making a purchase — used to reconcile a device that already owns
+  /// the subscription against a backend showing NONE (e.g. a post-purchase sync
+  /// that failed). Returns an empty outcome when unconfigured or on error.
+  Future<SubscriptionOutcome> currentOutcome() async {
+    if (!_configured) return const SubscriptionOutcome();
+    try {
+      final info = await Purchases.getCustomerInfo();
+      return _outcomeFrom(info);
+    } on PlatformException catch (e) {
+      logWarning('[RevenueCat] getCustomerInfo failed: ${e.message ?? e}');
+      return const SubscriptionOutcome();
+    }
+  }
+
+  /// Store URL for managing the current subscription. RevenueCat returns the
+  /// correct App Store / Play Store destination when an active subscription
+  /// exists on the current device account.
+  Future<String?> subscriptionManagementUrl() async {
+    if (!_configured) return null;
+    try {
+      final info = await Purchases.getCustomerInfo();
+      return info.managementURL;
+    } on PlatformException catch (e) {
+      logWarning('[RevenueCat] managementURL failed: ${e.message ?? e}');
+      return null;
     }
   }
 
   /// Reads the active seller entitlement (premium wins) out of a [CustomerInfo].
   SubscriptionOutcome _outcomeFrom(CustomerInfo info) {
     final active = info.entitlements.active;
-    final ent = active[RevenueCatConfig.entitlementPremium] ??
+    final ent =
+        active[RevenueCatConfig.entitlementPremium] ??
         active[RevenueCatConfig.entitlementStandard];
     if (ent == null) return const SubscriptionOutcome();
     return SubscriptionOutcome(
       entitlementId: ent.identifier,
       productId: ent.productIdentifier,
-      expiresAtMs: DateTime.tryParse(ent.expirationDate ?? '')
-          ?.toUtc()
-          .millisecondsSinceEpoch,
+      expiresAtMs: DateTime.tryParse(
+        ent.expirationDate ?? '',
+      )?.toUtc().millisecondsSinceEpoch,
       isTrial: ent.periodType == PeriodType.trial,
     );
   }

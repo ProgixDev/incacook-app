@@ -12,6 +12,7 @@ import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/enums/food_enums.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/revenuecat_service.dart';
+import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/features/authentication/data/repositories/sellers_repository.dart';
 
@@ -65,7 +66,7 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
 
   Future<void> _bootstrap() async {
     final offeringId = RevenueCatConfig.offeringIdForCategory(_category);
-    debugPrint('[Subscription] category=${_category.name} offeringId=$offeringId');
+    logInfo('[Subscription] category=${_category.name} offeringId=$offeringId');
 
     // Identify the subscriber with the backend user id so the RevenueCat
     // webhook can map events back to this seller (= app_user_id).
@@ -134,12 +135,12 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
       );
       return;
     }
-    debugPrint('[Subscription] selected plan=${plan.name}');
+    logInfo('[Subscription] selected plan=${plan.name}');
     setState(() => _busy = true);
     try {
       final outcome = await _revenueCat.purchase(pkg);
       if (outcome.cancelled) return; // user dismissed — silent
-      debugPrint('[Subscription] entitlement returned: ${outcome.entitlementId ?? 'none'}');
+      logSuccess('[Subscription] entitlement returned: ${outcome.entitlementId ?? 'none'}');
       if (!outcome.hasActiveEntitlement) {
         CustomLoaders.errorSnackBar(
           title: AppTexts.signupSubscriptionTitle,
@@ -160,7 +161,7 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
     setState(() => _busy = true);
     try {
       final outcome = await _revenueCat.restore();
-      debugPrint('[Subscription] restore entitlement: ${outcome.entitlementId ?? 'none'}');
+      logSuccess('[Subscription] restore entitlement: ${outcome.entitlementId ?? 'none'}');
       if (!outcome.hasActiveEntitlement) {
         CustomLoaders.warningSnackBar(
           title: AppTexts.signupSubscriptionRestoreCta,
@@ -189,10 +190,9 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
         revenueCatCustomerId: UserController.instance.user.value?.id,
         category: _category,
       );
-      debugPrint('[Subscription] backend sync: active=${result.active} status=${result.status}');
-      debugPrint('[RevenueCat] sync completed');
+      logSuccess('[Subscription] backend sync: active=${result.active} status=${result.status}');
     } on ApiFailure catch (e) {
-      debugPrint('[Subscription] backend sync failed: ${e.code} (webhook will reconcile)');
+      logWarning('[Subscription] backend sync failed: ${e.code} (webhook will reconcile)');
     }
     await widget.onActivated();
     if (!mounted) return;

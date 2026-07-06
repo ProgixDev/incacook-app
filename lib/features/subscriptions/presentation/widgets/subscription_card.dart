@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -6,14 +7,13 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:incacook/core/controllers/user_controller.dart';
-import 'package:incacook/core/network/api_response.dart';
-import 'package:incacook/features/subscriptions/data/subscription_repository.dart';
-import 'package:incacook/features/subscriptions/presentation/subscribe_flow.dart';
+import 'package:incacook/core/services/revenuecat_service.dart';
+import 'package:incacook/features/subscriptions/presentation/screens/subscription_paywall_screen.dart';
 import 'package:incacook/features/subscriptions/presentation/widgets/subscription_status_badge.dart';
 
 /// Seller dashboard card: shows the platform subscription status + renewal
-/// date and a "Gérer" button that opens the Stripe Billing Portal (update
-/// card / cancel / invoices). When inactive it offers a subscribe button.
+/// date and a "Gérer" button that opens the App Store / Play Store subscription
+/// management page. When inactive it opens the RevenueCat paywall.
 class SubscriptionCard extends StatefulWidget {
   const SubscriptionCard({super.key});
 
@@ -22,37 +22,52 @@ class SubscriptionCard extends StatefulWidget {
 }
 
 class _SubscriptionCardState extends State<SubscriptionCard> {
-  final SubscriptionRepository _repo = const SubscriptionRepository();
+  final RevenueCatService _revenueCat = Get.find<RevenueCatService>();
   bool _busy = false;
 
-  Future<void> _open(Future<String> Function() makeUrl, String failMsg) async {
+  Future<void> _manageSubscription() async {
     setState(() => _busy = true);
     try {
-      final url = await makeUrl();
-      final opened = await launchUrl(
-        Uri.parse(url),
-        mode: LaunchMode.externalApplication,
-      );
-      if (!opened && mounted) _toast(failMsg);
-    } on ApiFailure catch (e) {
-      if (mounted) _toast('$failMsg ${e.message}');
+      final url =
+          await _revenueCat.subscriptionManagementUrl() ??
+          _fallbackManagementUrl();
+      final uri = Uri.tryParse(url);
+      if (uri == null) {
+        if (mounted) _toast('Ouverture de la gestion impossible.');
+        return;
+      }
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) _toast('Ouverture de la gestion impossible.');
     } catch (e) {
-      if (mounted) _toast('$failMsg $e');
+      if (mounted) _toast('Ouverture de la gestion impossible: $e');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  /// In-app subscribe (card popup → charge), shared with the paywall.
+  String _fallbackManagementUrl() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'https://play.google.com/store/account/subscriptions'
+          '?package=com.incacook.app';
+    }
+    return 'https://apps.apple.com/account/subscriptions';
+  }
+
+  /// Opens the current RevenueCat/App Store subscription flow.
   Future<void> _subscribe() async {
     setState(() => _busy = true);
-    await startCardSubscription(context);
-    if (mounted) setState(() => _busy = false);
+    try {
+      await Get.to<void>(() => const SubscriptionPaywallScreen());
+      await UserController.instance.refreshFromServer();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   void _toast(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   String _renewal(String? iso) {
@@ -93,8 +108,9 @@ class _SubscriptionCardState extends State<SubscriptionCard> {
                     'Mon abonnement',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        text.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const Gap(8),
@@ -108,26 +124,23 @@ class _SubscriptionCardState extends State<SubscriptionCard> {
             Text(
               active
                   ? (renewal.isNotEmpty
-                      ? 'Renouvellement le $renewal'
-                      : 'Abonnement actif')
+                        ? 'Renouvellement le $renewal'
+                        : 'Abonnement actif')
                   : 'Activez votre abonnement pour vendre sur IncaCook.',
               style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const Gap(12),
             if (active)
               OutlinedButton.icon(
-                onPressed: _busy
-                    ? null
-                    : () => _open(_repo.createPortalUrl,
-                        'Ouverture du portail impossible:'),
+                onPressed: _busy ? null : _manageSubscription,
                 icon: const Icon(Iconsax.setting_2, size: 18),
                 label: const Text('Gérer l\'abonnement'),
               )
             else
               FilledButton.icon(
                 onPressed: _busy ? null : _subscribe,
-                icon: const Icon(Iconsax.card, size: 18),
-                label: const Text('S\'abonner — 4 \$ / mois'),
+                icon: const Icon(Iconsax.crown, size: 18),
+                label: const Text('Choisir un abonnement'),
               ),
           ],
         ),

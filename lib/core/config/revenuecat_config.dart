@@ -8,7 +8,7 @@ import 'package:incacook/core/enums/food_enums.dart';
 ///
 /// SECURITY: the two keys below are **public** RevenueCat SDK keys (safe to
 /// ship in the client). No App Store / Play / Stripe secret is here. Values are
-/// read at build time from `--dart-define` (same pattern as Supabase/Mapbox):
+/// read at build time from `--dart-define` (same pattern as Supabase/Google Maps):
 ///
 ///   flutter run --dart-define=REVENUECAT_ANDROID_KEY=goog_xxx \
 ///               --dart-define=REVENUECAT_IOS_KEY=appl_xxx
@@ -25,7 +25,7 @@ class RevenueCatConfig {
   // Public RevenueCat SDK keys (`appl_…` iOS / `goog_…` Android). These are
   // PUBLIC client keys — safe to embed in the app binary (like the Supabase
   // anon key). Each is a SINGLE constant read from `--dart-define` (the value
-  // comes from `.vscode/dart_defines.json`, same as MAPBOX/SUPABASE), with a
+  // comes from `.vscode/dart_defines.json`, same as GOOGLE_MAPS/SUPABASE), with a
   // baked-in `defaultValue` so a plain `flutter run` still reaches the store.
   // The dart-define value, when set, always wins. Empty → "unconfigured" →
   // RevenueCatService.init() skips Purchases.configure (paywall shows fallback
