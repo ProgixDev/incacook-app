@@ -41,4 +41,15 @@ class FeatureFlags {
   /// restores SMS verification in one line. Mutually independent from
   /// [useEmailOtpBypass] (don't enable both).
   static const bool skipPhoneVerification = true;
+
+  /// Hide Facebook sign-in button while Meta/Facebook app configuration is
+  /// being resolved or if access to the Meta account is unavailable.
+  ///
+  /// When `true`:
+  /// - Facebook social pill is hidden on Welcome/Login screens
+  /// - Only Google and email sign-in remain available
+  ///
+  /// Set back to `false` once Facebook App is in Live mode with correct
+  /// redirect URLs configured.
+  static const bool hideFacebookSignIn = true;
 }

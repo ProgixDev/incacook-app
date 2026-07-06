@@ -20,6 +20,18 @@ class App extends StatelessWidget {
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darkTheme,
         initialBinding: GeneralBindings(),
+        builder: (context, child) => GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            final scope = FocusScope.of(context);
+            if (!scope.hasPrimaryFocus && scope.focusedChild != null) {
+              scope.unfocus();
+            }
+          },
+          child: _KeyboardDismissOverlay(
+            child: child ?? const SizedBox.shrink(),
+          ),
+        ),
         getPages: [
           GetPage<void>(
             name: '/signup',
@@ -39,6 +51,87 @@ class App extends StatelessWidget {
         // signup based on stored session + /users/me/onboarding.
         home: const SplashScreen(),
       ),
+    );
+  }
+}
+
+class _KeyboardDismissOverlay extends StatefulWidget {
+  const _KeyboardDismissOverlay({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_KeyboardDismissOverlay> createState() =>
+      _KeyboardDismissOverlayState();
+}
+
+class _KeyboardDismissOverlayState extends State<_KeyboardDismissOverlay> {
+  bool _hasEditableFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FocusManager.instance.addListener(_handleFocusChange);
+    _handleFocusChange();
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeListener(_handleFocusChange);
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    final hasFocus = FocusManager.instance.primaryFocus != null;
+    if (hasFocus != _hasEditableFocus && mounted) {
+      setState(() => _hasEditableFocus = hasFocus);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final visible = keyboardInset > 0 && _hasEditableFocus;
+
+    return Stack(
+      children: [
+        widget.child,
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          right: 16,
+          bottom: visible ? keyboardInset + 12 : 12,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 120),
+            opacity: visible ? 1 : 0,
+            child: IgnorePointer(
+              ignoring: !visible,
+              child: Material(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(18),
+                elevation: 6,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Text(
+                      'OK',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

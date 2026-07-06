@@ -16,7 +16,7 @@
 /// Secret) is ever placed here.
 ///
 /// Values are read at build time from `--dart-define` (consistent with
-/// `MAPBOX_PUBLIC_TOKEN` / `API_BASE_URL`), falling back to the IncaCook
+/// `GOOGLE_MAPS_API_KEY` / `API_BASE_URL`), falling back to the IncaCook
 /// production project so a plain `flutter run` works out of the box.
 class SupabaseConfig {
   SupabaseConfig._();

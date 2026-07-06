@@ -8,7 +8,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:incacook/app.dart';
-import 'package:incacook/core/config/mapbox_config.dart';
+import 'package:incacook/core/config/google_maps_config.dart';
 import 'package:incacook/core/config/stripe_config.dart';
 import 'package:incacook/core/config/supabase_config.dart';
 import 'package:incacook/core/constants/api_constants.dart';
@@ -18,6 +18,8 @@ import 'package:incacook/core/controllers/theme_controller.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_client.dart';
 import 'package:incacook/core/network/token_storage.dart';
+import 'package:incacook/core/services/map/google_maps_native_config.dart';
+import 'package:incacook/core/services/native_google_auth_service.dart';
 import 'package:incacook/core/services/revenuecat_service.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
 import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
@@ -29,8 +31,9 @@ import 'package:incacook/features/authentication/data/repositories/sellers_repos
 import 'package:incacook/features/authentication/data/repositories/uploads_repository.dart';
 import 'package:incacook/features/authentication/data/repositories/users_repository.dart';
 import 'package:incacook/features/authentication/services/post_auth_router.dart';
+import 'package:incacook/core/utils/log.dart';
+import 'package:incacook/firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -40,7 +43,8 @@ void main() async {
   // TEMP boot profiling — logs ms spent in each pre-runApp step so we can see
   // what's keeping the native (white) launch screen up before the splash.
   final boot = Stopwatch()..start();
-  void mark(String step) => debugPrint('[BOOT] $step @ ${boot.elapsedMilliseconds}ms');
+  void mark(String step) =>
+      logInfo('[BOOT] $step @ ${boot.elapsedMilliseconds}ms');
   mark('start');
 
   //* init local storage
@@ -51,11 +55,12 @@ void main() async {
   await initializeDateFormatting('fr_FR');
   mark('initializeDateFormatting');
 
-  //* Supabase — only needed for hosted-OAuth providers (Facebook). Email /
-  //  Google / phone / refresh all stay backend-mediated. `autoRefreshToken`
+  //* Supabase — needed for hosted Facebook OAuth and native Google's
+  //  signInWithIdToken exchange. Email / phone / refresh stay
+  //  backend-mediated. `autoRefreshToken`
   //  is OFF on purpose: once the Facebook handshake hands us a session we
   //  copy it into TokenStorage and the backend's /auth/refresh owns the
-  //  lifecycle (same as Google/email). Leaving Supabase's own refresh on
+  //  lifecycle (same as email). Leaving Supabase's own refresh on
   //  would rotate the refresh token out from under TokenStorage and log the
   //  user out on the next 401. PKCE is the secure mobile OAuth flow.
   if (SupabaseConfig.isConfigured) {
@@ -86,11 +91,11 @@ void main() async {
   //  absorbs/logs. Never logs tokens/codes.
   _initSupabaseAuthErrorGuard();
 
-  //* mapbox public token from --dart-define=MAPBOX_PUBLIC_TOKEN=...
-  if (MapboxConfig.isConfigured) {
-    MapboxOptions.setAccessToken(MapboxConfig.publicToken);
+  //* Google Maps Platform public key from --dart-define=GOOGLE_MAPS_API_KEY=...
+  if (!GoogleMapsConfig.isConfigured) {
+    logWarning(GoogleMapsConfig.missingKeyMessage);
   } else {
-    debugPrint(MapboxConfig.missingTokenMessage);
+    await GoogleMapsNativeConfig.configure();
   }
 
   //* Stripe — only initialise when a publishable key is configured. Until
@@ -117,7 +122,7 @@ void main() async {
   //  Order matters: TokenStorage feeds AuthInterceptor inside ApiClient.
   // Safe startup diagnostic: log the resolved backend URL ONLY. Never log
   // tokens or secrets. Lets you confirm a real phone picked up LAN_API_BASE_URL.
-  debugPrint('[ApiConfig] Using API base URL: ${ApiConstants.baseUrl}');
+  logInfo('[ApiConfig] Using API base URL: ${ApiConstants.baseUrl}');
   Get.put<TokenStorage>(TokenStorage(), permanent: true);
   Get.put<ApiClient>(ApiClient(), permanent: true);
   Get.put<AuthRepository>(AuthRepository(), permanent: true);
@@ -130,12 +135,18 @@ void main() async {
   Get.put<SellersRepository>(SellersRepository(), permanent: true);
   Get.put<DriversRepository>(DriversRepository(), permanent: true);
   Get.put<SupabaseOAuthService>(SupabaseOAuthService(), permanent: true);
+  Get.put<NativeGoogleAuthService>(
+    NativeGoogleAuthService(),
+    permanent: true,
+  );
   Get.put<PostAuthRouter>(PostAuthRouter(), permanent: true);
   mark('Get.put services');
 
   mark('runApp');
   runApp(const App());
-  WidgetsBinding.instance.addPostFrameCallback((_) => mark('first frame painted'));
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => mark('first frame painted'),
+  );
 
   //* Firebase + push are NOT on the boot critical path — initialising them
   //  before runApp() blocked the splash for ~3.4s (and it just fails on iOS,
@@ -152,19 +163,16 @@ void main() async {
 void _initDeepLinkDiagnostic() {
   try {
     final appLinks = AppLinks();
-    appLinks.uriLinkStream.listen(
-      (uri) {
-        final hasCode = uri.queryParameters.containsKey('code');
-        final error = uri.queryParameters['error'];
-        debugPrint(
-          '[DeepLink] received: ${uri.scheme}://${uri.host}${uri.path} '
-          '(code: $hasCode${error != null ? ', error: $error' : ''})',
-        );
-      },
-      onError: (Object e) => debugPrint('[DeepLink] stream error: $e'),
-    );
+    appLinks.uriLinkStream.listen((uri) {
+      final hasCode = uri.queryParameters.containsKey('code');
+      final error = uri.queryParameters['error'];
+      logError(
+        '[DeepLink] received: ${uri.scheme}://${uri.host}${uri.path} '
+        '(code: $hasCode${error != null ? ', error: $error' : ''})',
+      );
+    }, onError: (Object e) => logError('[DeepLink] stream error: $e'));
   } catch (e) {
-    debugPrint('[DeepLink] diagnostic setup failed: $e');
+    logError('[DeepLink] diagnostic setup failed: $e');
   }
 }
 
@@ -181,12 +189,13 @@ void _initSupabaseAuthErrorGuard() {
     Supabase.instance.client.auth.onAuthStateChange.listen(
       (_) {},
       onError: (Object e) {
-        final message = e is AuthException ? e.message : e.runtimeType.toString();
-        debugPrint('[Auth][OAuth] supabase auth error: $message');
+        final message =
+            e is AuthException ? e.message : e.runtimeType.toString();
+        logError('[Auth][OAuth] supabase auth error: $message');
       },
     );
   } catch (e) {
-    debugPrint('[Auth][OAuth] auth error guard setup failed: $e');
+    logError('[Auth][OAuth] auth error guard setup failed: $e');
   }
 }
 
@@ -194,10 +203,12 @@ void _initSupabaseAuthErrorGuard() {
 /// missing/misconfigured config can never affect startup — push just stays off.
 Future<void> _initFirebaseAndPush() async {
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   } catch (e) {
-    debugPrint('[FCM] Firebase init failed: $e');
+    logError('[FCM] Firebase init failed: $e');
     return;
   }
   // The PushNotificationService constructor eagerly reads

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -8,6 +10,7 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/network/auth_interceptor.dart';
 import 'package:incacook/core/network/token_storage.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// Single entry point for every call against the IncaCook backend.
 ///
@@ -51,6 +54,9 @@ class ApiClient extends GetxService {
         compact: true,
       ),
     );
+    if (_ApiResponseBodyLogger.enabled) {
+      _dio.interceptors.add(const _ApiResponseBodyLogger());
+    }
   }
 
   static ApiClient get instance => Get.find();
@@ -98,10 +104,7 @@ class ApiClient extends GetxService {
     required T Function(Object? json) decoder,
     Object? body,
   }) {
-    return _send<T>(
-      () => _dio.put<dynamic>(path, data: body),
-      decoder,
-    );
+    return _send<T>(() => _dio.put<dynamic>(path, data: body), decoder);
   }
 
   Future<ApiSuccess<T>> patch<T>(
@@ -109,10 +112,7 @@ class ApiClient extends GetxService {
     required T Function(Object? json) decoder,
     Object? body,
   }) {
-    return _send<T>(
-      () => _dio.patch<dynamic>(path, data: body),
-      decoder,
-    );
+    return _send<T>(() => _dio.patch<dynamic>(path, data: body), decoder);
   }
 
   Future<ApiSuccess<T>> delete<T>(
@@ -215,5 +215,71 @@ class ApiClient extends GetxService {
           statusCode: response?.statusCode ?? 0,
         );
     }
+  }
+}
+
+/// Debug-only endpoint response body logger for QA.
+///
+/// Enable with:
+/// `--dart-define=INCACOOK_LOG_API_RESPONSES=true`
+///
+/// Request bodies and headers stay hidden. Response bodies are redacted and
+/// truncated so auth tokens / secrets are not printed accidentally.
+class _ApiResponseBodyLogger extends Interceptor {
+  const _ApiResponseBodyLogger();
+
+  static const bool enabled = bool.fromEnvironment(
+    'INCACOOK_LOG_API_RESPONSES',
+  );
+  static const int _maxChars = int.fromEnvironment(
+    'INCACOOK_LOG_API_RESPONSE_MAX_CHARS',
+    defaultValue: 4000,
+  );
+  static const Set<String> _redactedKeys = {
+    'accessToken',
+    'access_token',
+    'refreshToken',
+    'refresh_token',
+    'token',
+    'authorization',
+    'password',
+    'otp',
+    'code',
+    'clientSecret',
+    'client_secret',
+    'url',
+  };
+
+  @override
+  void onResponse(
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) {
+    final method = response.requestOptions.method;
+    final uri = response.requestOptions.uri;
+    final status = response.statusCode ?? 0;
+    final body = _stringify(_redact(response.data));
+    logInfo('[API][body] $method $status $uri\n$body');
+    handler.next(response);
+  }
+
+  static Object? _redact(Object? value) {
+    if (value is Map) {
+      return value.map((key, dynamic child) {
+        final name = key.toString();
+        if (_redactedKeys.contains(name)) {
+          return MapEntry(name, '<redacted>');
+        }
+        return MapEntry(name, _redact(child));
+      });
+    }
+    if (value is List) return value.map(_redact).toList(growable: false);
+    return value;
+  }
+
+  static String _stringify(Object? value) {
+    final text = const JsonEncoder.withIndent('  ').convert(value);
+    if (text.length <= _maxChars) return text;
+    return '${text.substring(0, _maxChars)}\n... <truncated>';
   }
 }

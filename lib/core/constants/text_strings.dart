@@ -144,7 +144,7 @@ class AppTexts {
   static const String userTypeSubHeading =
       "Choisissez l'option qui vous convient le mieux. Vous pouvez toujours contacter le support pour la modifier plus tard";
 
-  static const String userTypeSellerTitle = "Ma cuisine mérite d'être goûtée";
+  static const String userTypeSellerTitle = "Restaurateur / Cuisinier";
   static const String userTypeSellerSubtitle =
       "Cuisinier passionné ou restaurateur ? Partagez vos plats et attirez les gourmands du quartier";
 
@@ -232,6 +232,14 @@ class AppTexts {
   static const String settingsAppearance = "Apparence";
   static const String settingsGetHelp = "Obtenir de l'aide";
   static const String settingsAboutApp = "À propos de l'application";
+  // Support contact opened by "Obtenir de l'aide" (mailto). CONFIRM this is the
+  // real support address before release.
+  static const String supportEmail = "support@incacook.app";
+  static const String supportEmailSubject = "Aide IncaCook";
+  static const String supportUnavailable =
+      "Aucune application e-mail. Écrivez-nous à support@incacook.app";
+  static const String appName = "IncaCook";
+  static const String appLegalese = "© 2026 IncaCook";
   static const String settingsLogout = "Se déconnecter";
   static const String settingsLogoutConfirmTitle = "Se déconnecter";
   static const String settingsLogoutConfirmBody =
@@ -403,8 +411,8 @@ class AppTexts {
   static const String categoryGroupDish = "Type de plat";
 
   //* home — section titles
-  static const String clientHomeSectionFoodNearYou = "Plats près de toi";
-  static const String clientHomeSectionKitchensNearYou = "Cuisines près de toi";
+  static const String clientHomeSectionFoodNearYou = "Plats près de chez toi";
+  static const String clientHomeSectionKitchensNearYou = "Autres suggestions";
   static const String clientHomeSectionSolidarity = "Partages solidaires";
 
   //* home — kitchen card labels
@@ -692,6 +700,9 @@ class AppTexts {
   static const String cartReviewSuffix = "avis";
   static const String cartOrderSummaryTitle = "Récapitulatif";
   static const String cartShippingLabel = "Livraison";
+  // Shown at the cart stage where delivery-vs-pickup (and its fee) isn't chosen
+  // yet — the real breakdown appears on the summary screen after the choice.
+  static const String cartFeesDeferredHint = "Calculés à l'étape suivante";
   static const String cartTotalLabel = "Total";
   // Flat delivery fee (5,00 €) — mirrors the backend DELIVERY_FEE_CENTS=500.
   static const double cartShippingFee = 5.00;
@@ -782,15 +793,13 @@ class AppTexts {
   static const String addProductPickupDeliveryHint = "€2,50";
   static const String addProductSaveCta = "Publier le plat";
   static const String addProductPublishSuccess = "Plat publié avec succès.";
-  static const String addProductUpdateSuccess =
-      "Plat mis à jour avec succès.";
+  static const String addProductUpdateSuccess = "Plat mis à jour avec succès.";
   static const String addProductEditCta = "Enregistrer";
 
   //* seller — product detail seller actions
   static const String sellerProductEditCta = "Modifier";
   static const String sellerProductDeleteCta = "Supprimer";
-  static const String sellerProductDeleteConfirmTitle =
-      "Supprimer ce plat ?";
+  static const String sellerProductDeleteConfirmTitle = "Supprimer ce plat ?";
   static const String sellerProductDeleteConfirmBody =
       "Le plat sera retiré de ta vitrine. Les commandes existantes restent intactes.";
   static const String sellerProductDeleteConfirmCancel = "Annuler";
@@ -1157,7 +1166,7 @@ class AppTexts {
       "Tu pourras changer ce choix plus tard.";
   static const String signupRoleBuyerTitle = "Acheter des plats";
   static const String signupRoleBuyerSubtitle =
-      "Découvre les plats près de toi";
+      "Découvre les plats près de chez toi";
   static const String signupRoleSellerTitle = "Vendre mes plats";
   static const String signupRoleSellerSubtitle =
       "Partage ta cuisine et fais des économies";
@@ -1400,6 +1409,8 @@ class AppTexts {
   // Shown when a picked image is still too large after compression/resize.
   static const String imagePickerTooLarge =
       "Image trop volumineuse. Veuillez choisir une image plus légère.";
+  static const String imagePickerUnsupported =
+      "Format d'image non pris en charge. Veuillez choisir une photo JPEG, PNG ou WebP.";
 
   //* signup flow — address picker
   static const String signupAddressSearchHint = "Cherche une adresse…";
