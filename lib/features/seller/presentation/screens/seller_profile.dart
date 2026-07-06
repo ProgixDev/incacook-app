@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/models/seller_rating.dart';
+import 'package:incacook/features/client/data/kitchens_repository.dart';
 import 'package:incacook/features/seller/presentation/widgets/profile_stats_section.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/common/widgets/appbar/appbar.dart';
@@ -20,6 +21,7 @@ class SellerProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final List<SellerRating> ratings = profile.stats.criteriaRatings;
+    final hasLocation = profile.location.lat != 0 || profile.location.lng != 0;
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: true,
@@ -43,15 +45,25 @@ class SellerProfileScreen extends StatelessWidget {
               children: [
                 ProfileStatsSection(profile: profile, ratings: ratings),
                 const Gap(AppSizes.spaceBtwSections),
-                const BioSection(),
+                // Sections with no real backing are hidden (real-but-sparse):
+                // bio only when set, location only when geocoded, reviews only
+                // when present (no reviews list endpoint yet).
+                if (profile.bio.trim().isNotEmpty) ...[
+                  BioSection(bio: profile.bio),
+                  const Gap(AppSizes.spaceBtwSections),
+                ],
+                if (hasLocation) ...[
+                  LocationSection(
+                    profileLocation: profile.location,
+                    neighborhood: profile.neighborhood,
+                  ),
+                  const Gap(AppSizes.spaceBtwSections),
+                ],
+                if (profile.recentReviews.isNotEmpty) ...[
+                  ReviewsSection(reviews: profile.recentReviews),
+                  const Gap(AppSizes.spaceBtwSections),
+                ],
                 const Gap(AppSizes.spaceBtwSections),
-                LocationSection(
-                  profileLocation: profile.location,
-                  neighborhood: profile.neighborhood,
-                ),
-                const Gap(AppSizes.spaceBtwSections),
-                const ReviewsSection(),
-                const Gap(AppSizes.spaceBtwSections * 2),
               ],
             ),
           ),
@@ -61,4 +73,41 @@ class SellerProfileScreen extends StatelessWidget {
   }
 }
 
+/// Fetches a real seller profile by id (`GET /v1/sellers/:id`) and renders
+/// [SellerProfileScreen] — replaces the old `SellerMockData.demoSeller()` push.
+class SellerProfileLoader extends StatefulWidget {
+  const SellerProfileLoader({super.key, required this.sellerId});
 
+  final String sellerId;
+
+  @override
+  State<SellerProfileLoader> createState() => _SellerProfileLoaderState();
+}
+
+class _SellerProfileLoaderState extends State<SellerProfileLoader> {
+  late final Future<SellerProfile> _future = KitchensRepository().getSeller(
+    widget.sellerId,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<SellerProfile>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final profile = snapshot.data;
+        if (snapshot.hasError || profile == null) {
+          return Scaffold(
+            appBar: const CustomAppBar(showBackArrow: true),
+            body: const Center(child: Text('Profil indisponible')),
+          );
+        }
+        return SellerProfileScreen(profile: profile);
+      },
+    );
+  }
+}

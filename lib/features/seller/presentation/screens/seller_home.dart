@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/features/supply_catalog/presentation/screens/supply_catalog_screen.dart';
 import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
@@ -13,8 +15,31 @@ import 'package:incacook/features/seller/presentation/widgets/seller_home_appbar
 import 'package:incacook/features/seller/presentation/widgets/today_snapshot_card.dart';
 import 'package:incacook/features/subscriptions/presentation/widgets/subscription_card.dart';
 
-class SellerHomeScreen extends StatelessWidget {
+class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({super.key});
+
+  @override
+  State<SellerHomeScreen> createState() => _SellerHomeScreenState();
+}
+
+class _SellerHomeScreenState extends State<SellerHomeScreen> {
+  final RefreshController _refreshController = RefreshController();
+
+  Future<void> _onRefresh() async {
+    // Refresh user data and controller states
+    try {
+      await UserController.instance.refreshFromServer();
+      _refreshController.refreshCompleted();
+    } catch (e) {
+      _refreshController.refreshFailed();
+    }
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +56,40 @@ class SellerHomeScreen extends StatelessWidget {
             right: -16,
             child: IgnorePointer(child: DecorBlob()),
           ),
-          ListView(
+          SmartRefresher(
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            enablePullDown: true,
+            header: const WaterDropMaterialHeader(),
+            child: ListView(
             padding: EdgeInsets.only(
               top: appBarHeight + AppSizes.md,
               bottom: AppSizes.spaceBtwSections,
             ),
             children: [
               //* Payout setup nudge — visible until the seller completes
-              //* Stripe Connect Express onboarding. Tap is stubbed until the
-              //* StripeConnectService lands.
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                child: PayoutSetupBanner(
-                  onTap: () => _onPayoutSetupTap(context),
-                ),
+              //* Stripe Connect Express onboarding.
+              Obx(
+                () => UserController.instance.sellerPayoutReady
+                    ? const SizedBox.shrink()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.md,
+                            ),
+                            child: PayoutSetupBanner(
+                              onTap: () => _onPayoutSetupTap(context),
+                            ),
+                          ),
+                          const Gap(AppSizes.md),
+                        ],
+                      ),
               ),
-              const Gap(AppSizes.md),
-              //* Platform subscription status + renewal + manage (Stripe
-              //* Billing Portal). Visible here because Accueil is only
-              //* reachable once the subscription is active.
+              //* Platform subscription status + renewal + store subscription
+              //* management. Visible here because Accueil is only reachable
+              //* once the subscription is active.
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
                 child: SubscriptionCard(),
@@ -73,6 +113,7 @@ class SellerHomeScreen extends StatelessWidget {
               const Gap(AppSizes.spaceBtwSections),
               const OrderRequestsSection(),
             ],
+            ),
           ),
         ],
       ),
@@ -115,16 +156,24 @@ class _CatalogShortcut extends StatelessWidget {
                 children: [
                   Text(
                     'Catalogue fournisseur',
-                    style: text.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     'Achetez des produits pour votre activité',
-                    style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                    style: text.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(Iconsax.arrow_right_3, color: scheme.onSurfaceVariant, size: 18),
+            Icon(
+              Iconsax.arrow_right_3,
+              color: scheme.onSurfaceVariant,
+              size: 18,
+            ),
           ],
         ),
       ),

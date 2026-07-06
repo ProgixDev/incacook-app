@@ -38,6 +38,7 @@ class SellerOrderSummary {
     required this.orderNumber,
     required this.status,
     required this.buyerTotalCents,
+    required this.sellerEarningsCents,
     required this.placedAt,
     required this.fulfillmentChoice,
     required this.items,
@@ -54,6 +55,7 @@ class SellerOrderSummary {
   final String status;
 
   final int buyerTotalCents;
+  final int sellerEarningsCents;
   final DateTime placedAt;
 
   /// `DELIVERY` or `PICKUP`.
@@ -70,12 +72,16 @@ class SellerOrderSummary {
   double get totalEuros => buyerTotalCents / 100.0;
 
   factory SellerOrderSummary.fromJson(Map<String, dynamic> json) {
-    final rawItems = (json['items'] as List?)?.cast<dynamic>() ?? const <dynamic>[];
+    final rawItems =
+        (json['items'] as List?)?.cast<dynamic>() ?? const <dynamic>[];
     return SellerOrderSummary(
       id: json['id'] as String,
       orderNumber: json['orderNumber'] as String,
       status: json['status'] as String,
       buyerTotalCents: (json['buyerTotalCents'] as num).toInt(),
+      sellerEarningsCents:
+          (json['sellerEarningsCents'] as num?)?.toInt() ??
+          (json['buyerTotalCents'] as num).toInt(),
       placedAt: DateTime.parse(json['placedAt'] as String),
       fulfillmentChoice: json['fulfillmentChoice'] as String,
       note: json['note'] as String?,
@@ -90,7 +96,8 @@ class SellerOrderSummary {
 /// Repository for seller-side `/v1/sellers/me/*` and the seller's
 /// half of the order lifecycle on `/v1/orders/:id/*`.
 class SellerOrdersRepository extends GetxService {
-  SellerOrdersRepository({ApiClient? api}) : _api = api ?? Get.find<ApiClient>();
+  SellerOrdersRepository({ApiClient? api})
+    : _api = api ?? Get.find<ApiClient>();
 
   static SellerOrdersRepository get instance => Get.find();
 

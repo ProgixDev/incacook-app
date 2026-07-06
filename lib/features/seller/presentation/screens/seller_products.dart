@@ -107,7 +107,9 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
     imageUrl: l.imageUrls.isNotEmpty
         ? (ApiConstants.publicImageUrl(l.imageUrls.first) ?? AppImages.foodTest)
         : AppImages.foodTest,
-    sellerName: l.sellerName ?? '',
+    sellerName: (l.sellerName == null || l.sellerName!.trim().isEmpty)
+        ? AppTexts.productSellerFallbackName
+        : l.sellerName!,
     category: l.category,
     price: l.priceCents / 100,
     portionsLeft: l.portionsLeft ?? 0,

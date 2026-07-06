@@ -35,30 +35,37 @@ class ProfileStatsSection extends StatelessWidget {
       width: DeviceUtils.getScreenWidth(context) * 0.9,
       child: Stack(
         children: [
-          //* 1) profile image — pinned to top, centered horizontally.
-          const Positioned(
+          //* 1) profile image — real avatar (network) with asset fallback.
+          Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Align(
               alignment: Alignment.topCenter,
-              child: CustomCircularImage(
-                image: AppImages.profilePic,
-                size: _imageSize,
-              ),
+              child: profile.avatarUrl.isEmpty
+                  ? const CustomCircularImage(
+                      image: AppImages.profilePic,
+                      size: _imageSize,
+                    )
+                  : CustomCircularImage(
+                      image: profile.avatarUrl,
+                      size: _imageSize,
+                      isNetworkImage: true,
+                    ),
             ),
           ),
 
-          //* 2) verified badge over the image.
-          const Positioned(
-            top: 50,
-            left: 95,
-            child: CustomCircularContainer(
-              backgroundColor: BrandColors.primary,
-              size: 40,
-              child: Icon(Icons.check, color: Colors.white, size: 20),
+          //* 2) verified badge — only for verified sellers.
+          if (profile.verifications.isNotEmpty)
+            const Positioned(
+              top: 50,
+              left: 95,
+              child: CustomCircularContainer(
+                backgroundColor: BrandColors.primary,
+                size: 40,
+                child: Icon(Icons.check, color: Colors.white, size: 20),
+              ),
             ),
-          ),
 
           //* 3) glass card — the only non-positioned child, so the Stack's
           //* height grows with its natural content. No fixed height = no
@@ -96,7 +103,7 @@ class ProfileStatsSection extends StatelessWidget {
                           Column(
                             children: [
                               Text(
-                                '30',
+                                '${profile.stats.reviewCount}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineMedium!
@@ -106,7 +113,7 @@ class ProfileStatsSection extends StatelessWidget {
                                     ),
                               ),
                               Text(
-                                'Contributions',
+                                'Avis',
                                 style: Theme.of(
                                   context,
                                 ).textTheme.labelMedium,

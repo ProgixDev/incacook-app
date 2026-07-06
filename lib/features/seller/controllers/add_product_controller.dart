@@ -18,6 +18,7 @@ import 'package:incacook/features/authentication/data/services/upload_picker.dar
 import 'package:incacook/features/catalog/data/models/requests/create_listing_request.dart';
 import 'package:incacook/features/catalog/data/models/requests/update_listing_request.dart';
 import 'package:incacook/features/catalog/data/repositories/listings_repository.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// Owns every piece of state for the [AddProductSheet] form. The sheet
 /// itself stays stateless — sections read/write through this controller
@@ -121,8 +122,8 @@ class AddProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    debugPrint('[AddProduct] seller category=${sellerCategory?.name ?? 'none'}');
-    debugPrint('[AddProduct] category label=$categoryLabel');
+    logInfo('[AddProduct] seller category=${sellerCategory?.name ?? 'none'}');
+    logInfo('[AddProduct] category label=$categoryLabel');
     titleController.addListener(_onTextChanged);
     descriptionController.addListener(_onTextChanged);
     priceController.addListener(_onTextChanged);

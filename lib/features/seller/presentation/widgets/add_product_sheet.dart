@@ -22,11 +22,7 @@ import 'package:incacook/features/seller/controllers/add_product_controller.dart
 /// [AddProductController]; this widget is just the shell that wires it up
 /// and renders the section widgets.
 class AddProductSheet extends StatefulWidget {
-  const AddProductSheet({
-    super.key,
-    this.sellerCategory,
-    this.existing,
-  });
+  const AddProductSheet({super.key, this.sellerCategory, this.existing});
 
   /// Optional explicit override. Normally left null so the controller
   /// resolves the category from the connected seller's profile — the
@@ -50,10 +46,8 @@ class AddProductSheet extends StatefulWidget {
   }) {
     return showBlurredModalBottomSheet<bool>(
       context: context,
-      builder: (_) => AddProductSheet(
-        sellerCategory: sellerCategory,
-        existing: existing,
-      ),
+      builder: (_) =>
+          AddProductSheet(sellerCategory: sellerCategory, existing: existing),
     );
   }
 
@@ -84,83 +78,98 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.92,
-      minChildSize: 0.6,
-      maxChildSize: 0.93,
-      expand: false,
-      builder: (context, scrollCtrl) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DragHandle(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.35),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.md),
-              child: Text(
-                AppTexts.addProductSheetTitle,
-                style: Theme.of(
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      padding: EdgeInsets.only(bottom: keyboardInset),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.92,
+        minChildSize: 0.6,
+        maxChildSize: 0.96,
+        expand: false,
+        builder: (context, scrollCtrl) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DragHandle(
+                color: Theme.of(
                   context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                ).colorScheme.onSurface.withValues(alpha: 0.35),
               ),
-            ),
-            Expanded(
-              child: ListView(
-                controller: scrollCtrl,
-                padding: const EdgeInsets.fromLTRB(
-                  AppSizes.md,
-                  AppSizes.lg,
-                  AppSizes.md,
-                  AppSizes.md,
+              Padding(
+                padding: const EdgeInsets.all(AppSizes.md),
+                child: Text(
+                  AppTexts.addProductSheetTitle,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
-                children: [
-                  PhotosSection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  BaseInfoSection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  ClassificationSection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  AllergensSection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  AvailabilitySection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  PickupModeSection(controller: _controller),
-                  const Gap(AppSizes.spaceBtwSections),
-                  // CGU/CGV consent — required to publish a NEW dish (the
-                  // publish button is gated on it). Hidden when editing.
-                  if (!_controller.isEditing) ...[
-                    Obx(
-                      () => TermsConsentTile(
-                        value: _controller.termsAccepted.value,
-                        onChanged: (v) => _controller.termsAccepted.value = v,
-                      ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: ListView(
+                    controller: scrollCtrl,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSizes.md,
+                      AppSizes.lg,
+                      AppSizes.md,
+                      AppSizes.md + _SaveBar.height,
                     ),
-                    const Gap(AppSizes.spaceBtwSections),
-                  ],
-                ],
+                    children: [
+                      PhotosSection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      BaseInfoSection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      ClassificationSection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      AllergensSection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      AvailabilitySection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      PickupModeSection(controller: _controller),
+                      const Gap(AppSizes.spaceBtwSections),
+                      // CGU/CGV consent — required to publish a NEW dish (the
+                      // publish button is gated on it). Hidden when editing.
+                      if (!_controller.isEditing) ...[
+                        Obx(
+                          () => TermsConsentTile(
+                            value: _controller.termsAccepted.value,
+                            onChanged: (v) =>
+                                _controller.termsAccepted.value = v,
+                          ),
+                        ),
+                        const Gap(AppSizes.spaceBtwSections),
+                      ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-            Obx(
-              () => _SaveBar(
-                enabled: _controller.canSubmit && !_controller.isSubmitting.value,
-                loading: _controller.isSubmitting.value,
-                ctaLabel: _controller.isEditing
-                    ? AppTexts.addProductEditCta
-                    : AppTexts.addProductSaveCta,
-                onSave: () async {
-                  final ok = await _controller.submit();
-                  if (ok && context.mounted) Navigator.of(context).pop(true);
-                },
+              Obx(
+                () => _SaveBar(
+                  enabled:
+                      _controller.canSubmit && !_controller.isSubmitting.value,
+                  loading: _controller.isSubmitting.value,
+                  ctaLabel: _controller.isEditing
+                      ? AppTexts.addProductEditCta
+                      : AppTexts.addProductSaveCta,
+                  onSave: () async {
+                    FocusScope.of(context).unfocus();
+                    final ok = await _controller.submit();
+                    if (ok && context.mounted) Navigator.of(context).pop(true);
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -767,7 +776,12 @@ class _FrostedField extends StatelessWidget {
         controller: controller,
         maxLines: maxLines,
         keyboardType: keyboardType,
+        textInputAction: maxLines == 1
+            ? TextInputAction.done
+            : TextInputAction.newline,
         inputFormatters: inputFormatters,
+        onEditingComplete: () => FocusScope.of(context).unfocus(),
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
         decoration: InputDecoration(
           //? suppress every state-specific underline/outline so the
           //? FrostedSurface remains the only visible chrome.
@@ -996,8 +1010,11 @@ class _PhotoTile extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.55),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Iconsax.close_circle,
-                      color: Colors.white, size: 18),
+                  child: const Icon(
+                    Iconsax.close_circle,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
             ),
@@ -1025,8 +1042,11 @@ class _PhotoTile extends StatelessWidget {
                 width: 1,
               ),
               child: Center(
-                child: Icon(Iconsax.gallery_tick,
-                    color: scheme.primary, size: 26),
+                child: Icon(
+                  Iconsax.gallery_tick,
+                  color: scheme.primary,
+                  size: 26,
+                ),
               ),
             ),
             Positioned(
@@ -1040,8 +1060,11 @@ class _PhotoTile extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.55),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Iconsax.close_circle,
-                      color: Colors.white, size: 18),
+                  child: const Icon(
+                    Iconsax.close_circle,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
             ),
@@ -1079,7 +1102,9 @@ class _PhotoTile extends StatelessWidget {
                   )
                 : Icon(
                     isError ? Iconsax.refresh : Iconsax.add,
-                    color: isError ? BrandColors.error : scheme.onSurfaceVariant,
+                    color: isError
+                        ? BrandColors.error
+                        : scheme.onSurfaceVariant,
                     size: 26,
                   ),
           ),
@@ -1135,6 +1160,8 @@ class _SaveBar extends StatelessWidget {
   final bool loading;
   final String ctaLabel;
   final VoidCallback onSave;
+
+  static const double height = 84;
 
   @override
   Widget build(BuildContext context) {

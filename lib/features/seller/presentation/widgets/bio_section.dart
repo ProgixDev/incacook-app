@@ -6,7 +6,9 @@ import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 class BioSection extends StatelessWidget {
-  const BioSection({super.key});
+  const BioSection({super.key, required this.bio});
+
+  final String bio;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class BioSection extends StatelessWidget {
               ),
               const Gap(AppSizes.sm),
               Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                bio,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),

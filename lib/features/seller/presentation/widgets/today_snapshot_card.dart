@@ -6,9 +6,23 @@ import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/features/seller/data/seller_orders_repository.dart';
 
-class TodaySnapshotCard extends StatelessWidget {
+class TodaySnapshotCard extends StatefulWidget {
   const TodaySnapshotCard({super.key});
+
+  @override
+  State<TodaySnapshotCard> createState() => _TodaySnapshotCardState();
+}
+
+class _TodaySnapshotCardState extends State<TodaySnapshotCard> {
+  late final Future<_TodaySellerStats> _statsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _statsFuture = _loadStats();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,28 +39,90 @@ class TodaySnapshotCard extends StatelessWidget {
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const Gap(AppSizes.lg),
-          Row(
-            children: const [
-              Expanded(
-                child: _StatTile(
-                  iconAsset: AppImages.revenue,
-                  value: '€34.50',
-                  label: AppTexts.sellerHomeTodayRevenue,
-                ),
-              ),
-              Expanded(
-                child: _StatTile(
-                  iconAsset: AppImages.orders,
-                  value: '12',
-                  label: AppTexts.sellerHomeTodayOrders,
-                ),
-              ),
-            ],
+          FutureBuilder<_TodaySellerStats>(
+            future: _statsFuture,
+            builder: (context, snapshot) {
+              final loading = snapshot.connectionState != ConnectionState.done;
+              final stats = snapshot.data;
+
+              return Row(
+                children: [
+                  Expanded(
+                    child: _StatTile(
+                      iconAsset: AppImages.revenue,
+                      value: loading
+                          ? '...'
+                          : stats == null
+                          ? '--'
+                          : _formatEuros(stats.revenueCents),
+                      label: AppTexts.sellerHomeTodayRevenue,
+                    ),
+                  ),
+                  Expanded(
+                    child: _StatTile(
+                      iconAsset: AppImages.orders,
+                      value: loading ? '...' : '${stats?.orderCount ?? 0}',
+                      label: AppTexts.sellerHomeTodayOrders,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
   }
+
+  Future<_TodaySellerStats> _loadStats() async {
+    final orders = await SellerOrdersRepository.instance.listIncoming(
+      limit: 100,
+    );
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    var revenueCents = 0;
+    var orderCount = 0;
+
+    for (final order in orders) {
+      final placedAt = order.placedAt.toLocal();
+      if (placedAt.isBefore(today) || !placedAt.isBefore(tomorrow)) {
+        continue;
+      }
+      if (!_paidSellerStatuses.contains(order.status)) {
+        continue;
+      }
+      orderCount += 1;
+      revenueCents += order.sellerEarningsCents;
+    }
+
+    return _TodaySellerStats(
+      revenueCents: revenueCents,
+      orderCount: orderCount,
+    );
+  }
+
+  String _formatEuros(int cents) => '€${(cents / 100).toStringAsFixed(2)}';
+}
+
+const Set<String> _paidSellerStatuses = {
+  'CONFIRMED',
+  'PREPARING',
+  'READY',
+  'PICKED_UP',
+  'IN_DELIVERY',
+  'DELIVERED',
+  'COMPLETED',
+};
+
+class _TodaySellerStats {
+  const _TodaySellerStats({
+    required this.revenueCents,
+    required this.orderCount,
+  });
+
+  final int revenueCents;
+  final int orderCount;
 }
 
 class _StatTile extends StatelessWidget {
