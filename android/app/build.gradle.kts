@@ -1,3 +1,7 @@
+import java.io.FileInputStream
+import java.util.Base64
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,6 +10,43 @@ plugins {
     // Firebase / FCM. Must come after the Android + Flutter plugins.
     id("com.google.gms.google-services")
 }
+
+// Release signing for Play Store uploads (RevenueCat needs the app on a Play
+// track to fetch subscription products). Credentials are read from the
+// gitignored `android/key.properties` (storeFile/storePassword/keyAlias/
+// keyPassword) — never committed. When the file is absent the release build
+// falls back to the debug key so `flutter run --release` keeps working locally.
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+val hasReleaseKeystore = keystorePropertiesFile.exists()
+if (hasReleaseKeystore) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
+fun flutterDartDefines(): Map<String, String> {
+    val encodedDefines = (project.findProperty("dart-defines") as? String).orEmpty()
+    if (encodedDefines.isBlank()) return emptyMap()
+
+    return encodedDefines
+        .split(",")
+        .mapNotNull { encoded ->
+            runCatching {
+                String(Base64.getDecoder().decode(encoded))
+            }.getOrNull()
+        }
+        .mapNotNull { define ->
+            val separator = define.indexOf('=')
+            if (separator <= 0) {
+                null
+            } else {
+                define.substring(0, separator) to define.substring(separator + 1)
+            }
+        }
+        .toMap()
+}
+
+val dartDefines = flutterDartDefines()
+val googleMapsApiKey = dartDefines["GOOGLE_MAPS_API_KEY"].orEmpty()
 
 android {
     namespace = "com.incacook.app"
@@ -32,13 +73,31 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKey
+    }
+
+    signingConfigs {
+        // Only materialised when android/key.properties is present (e.g. on the
+        // release machine / CI). Absent locally → release falls back to debug.
+        if (hasReleaseKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = (keystoreProperties["storeFile"] as String?)?.let { file(it) }
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Real upload key when key.properties exists; debug key otherwise so
+            // `flutter run --release` still works on a dev machine without it.
+            signingConfig = if (hasReleaseKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
