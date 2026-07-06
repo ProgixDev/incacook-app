@@ -2,6 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "IncaCook ▶ iPhone d'Ali (device · sandbox)",
+      "type": "dart",
+      "request": "launch",
+      "deviceId": "00008110-000E55980207801E",
+      "toolArgs": [
+        "--dart-define-from-file=.vscode/dart_defines.json"
+      ]
+    },
+    {
+      "name": "IncaCook ▶ iPhone 17 (simulator · StoreKit)",
+      "type": "dart",
+      "request": "launch",
+      "deviceId": "55FC9976-D60A-48A3-9411-507262059BA8",
+      "toolArgs": [
+        "--dart-define-from-file=.vscode/dart_defines.json"
+      ]
+    },
+    {
       "name": "IncaCook (debug)",
       "type": "dart",
       "request": "launch",

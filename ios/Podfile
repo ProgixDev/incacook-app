@@ -1,4 +1,4 @@
-# Required by mapbox_maps_flutter 2.x (14.0); raised to 15.0 for firebase-core/messaging.
+# iOS deployment target for Firebase, Google Maps, and related native plugins.
 platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.

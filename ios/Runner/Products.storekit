@@ -1,0 +1,206 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "fr_FR",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "INCACOOK01",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_applicationInternalID" : "",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "fr_FR",
+    "_storefront" : "FRA"
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21401",
+      "localizations" : [],
+      "name" : "IncaCook Fait Maison",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6740001",
+          "introductoryOffer" : {
+            "internalID" : "5550001",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Standard mensuel",
+              "displayName" : "Le Bon Fait Maison Standard",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_faitmaison_standard_monthly_v2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Fait Maison Standard Mensuel",
+          "subscriptionGroupID" : "21401",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740002",
+          "introductoryOffer" : {
+            "internalID" : "5550002",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Premium mensuel",
+              "displayName" : "Le Bon Fait Maison Premium",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_faitmaison_premium_monthly_v2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Fait Maison Premium Mensuel",
+          "subscriptionGroupID" : "21401",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        }
+      ]
+    },
+    {
+      "id" : "21402",
+      "localizations" : [],
+      "name" : "IncaCook Traiteur",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6740003",
+          "introductoryOffer" : {
+            "internalID" : "5550003",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Standard mensuel",
+              "displayName" : "Atelier Traiteur Standard",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_traiteur_standard_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Traiteur Standard Mensuel",
+          "subscriptionGroupID" : "21402",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740004",
+          "introductoryOffer" : {
+            "internalID" : "5550004",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Premium mensuel",
+              "displayName" : "Atelier Traiteur Premium",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_traiteur_premium_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Traiteur Premium Mensuel",
+          "subscriptionGroupID" : "21402",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        }
+      ]
+    },
+    {
+      "id" : "21403",
+      "localizations" : [],
+      "name" : "IncaCook Sauve ton Panier",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6740005",
+          "introductoryOffer" : {
+            "internalID" : "5550005",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Standard mensuel",
+              "displayName" : "Sauve Ton Panier Standard",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_sauvetonpanier_standard_monthly_v2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Sauve Ton Panier Standard Mensuel",
+          "subscriptionGroupID" : "21403",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740006",
+          "introductoryOffer" : {
+            "internalID" : "5550006",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2M"
+          },
+          "localizations" : [
+            {
+              "description" : "Abonnement Premium mensuel",
+              "displayName" : "Sauve Ton Panier Premium",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "incacook_sauvetonpanier_premium_monthly_v2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Sauve Ton Panier Premium Mensuel",
+          "subscriptionGroupID" : "21403",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
