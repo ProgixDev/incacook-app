@@ -1,5 +1,6 @@
 import 'package:incacook/core/constants/api_constants.dart';
 import 'package:incacook/core/constants/image_strings.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/core/models/listing.dart';
 
@@ -15,7 +16,11 @@ extension ListingToFoodListing on Listing {
         imageUrl: imageUrls.isNotEmpty
             ? (ApiConstants.publicImageUrl(imageUrls.first) ?? AppImages.foodTest)
             : AppImages.foodTest,
-        sellerName: sellerName ?? '',
+        // Fall back to a generic cook name (never ''), so the order summary
+        // shows a name instead of letting the category label stand in (ISSUE-13).
+        sellerName: (sellerName == null || sellerName!.trim().isEmpty)
+            ? AppTexts.productSellerFallbackName
+            : sellerName!,
         category: category,
         price: priceCents / 100,
         portionsLeft: portionsLeft ?? 0,

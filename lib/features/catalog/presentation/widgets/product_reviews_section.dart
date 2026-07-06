@@ -85,6 +85,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasReviews = totalReviews > 0;
     final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -95,52 +96,65 @@ class _Header extends StatelessWidget {
             children: [
               Text(
                 AppTexts.productReviewsTitle,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Gap(2),
-              Row(
-                children: [
-                  const Icon(Iconsax.star1, color: Color(0xFFFFC107), size: 14),
-                  const Gap(4),
-                  Text(
-                    averageRating.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const Gap(6),
-                  Text(
-                    '${AppTexts.productReviewsBasedOn} $totalReviews ${AppTexts.productReviewsWordReviews}',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        GestureDetector(
-          onTap: onSeeAll,
-          child: Row(
-            children: [
-              Text(
-                AppTexts.productReviewsSeeAll,
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const Gap(2),
-              Icon(
-                Iconsax.arrow_right_3,
-                size: 14,
-                color: scheme.onSurfaceVariant,
-              ),
+              if (hasReviews)
+                Row(
+                  children: [
+                    const Icon(
+                      Iconsax.star1,
+                      color: Color(0xFFFFC107),
+                      size: 14,
+                    ),
+                    const Gap(4),
+                    Text(
+                      averageRating.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Gap(6),
+                    Text(
+                      '${AppTexts.productReviewsBasedOn} $totalReviews ${AppTexts.productReviewsWordReviews}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  'Aucun avis pour le moment.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
         ),
+        if (hasReviews && onSeeAll != null)
+          GestureDetector(
+            onTap: onSeeAll,
+            child: Row(
+              children: [
+                Text(
+                  AppTexts.productReviewsSeeAll,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+                const Gap(2),
+                Icon(
+                  Iconsax.arrow_right_3,
+                  size: 14,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -188,9 +202,9 @@ class _ReviewCard extends StatelessWidget {
                     ),
                     Text(
                       review.time,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),

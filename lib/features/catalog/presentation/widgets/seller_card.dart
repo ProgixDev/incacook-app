@@ -14,8 +14,8 @@ class SellerCard extends StatelessWidget {
     this.name = AppTexts.productSellerFallbackName,
     this.avatarUrl,
     this.initials = '',
-    this.rating = AppTexts.productSampleSellerRating,
-    this.ordersCompleted = AppTexts.productSampleSellerOrdersCompleted,
+    this.rating = 0,
+    this.ordersCompleted = 0,
     this.sellerUserId,
     this.onCallTap,
     this.onCardTap,
@@ -44,7 +44,6 @@ class SellerCard extends StatelessWidget {
   final VoidCallback? onCardTap;
 
   String get _formattedOrders {
-    //? 1284 -> "1,284"
     final s = ordersCompleted.toString();
     final buffer = StringBuffer();
     for (var i = 0; i < s.length; i++) {
@@ -58,6 +57,7 @@ class SellerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final colors = context.appColors;
+    final hasStats = rating > 0 || ordersCompleted > 0;
     return GestureDetector(
       onTap: onCardTap,
       child: Container(
@@ -81,41 +81,52 @@ class SellerCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Iconsax.star1,
-                        size: 14,
-                        color: Color(0xFFFFC107),
+                  if (hasStats)
+                    Row(
+                      children: [
+                        if (rating > 0) ...[
+                          const Icon(
+                            Iconsax.star1,
+                            size: 14,
+                            color: Color(0xFFFFC107),
+                          ),
+                          const Gap(4),
+                          Text(
+                            rating.toStringAsFixed(1),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                        if (rating > 0 && ordersCompleted > 0) ...[
+                          const Gap(6),
+                          Container(
+                            width: 3,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              color: scheme.onSurfaceVariant,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const Gap(6),
+                        ],
+                        if (ordersCompleted > 0)
+                          Flexible(
+                            child: Text(
+                              '$_formattedOrders ${AppTexts.productSellerOrdersSuffix}',
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: scheme.onSurfaceVariant),
+                            ),
+                          ),
+                      ],
+                    )
+                  else
+                    Text(
+                      'Aucun avis pour le moment.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
                       ),
-                      const Gap(4),
-                      Text(
-                        rating.toStringAsFixed(1),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const Gap(6),
-                      //? separator dot
-                      Container(
-                        width: 3,
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: scheme.onSurfaceVariant,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const Gap(6),
-                      Flexible(
-                        child: Text(
-                          '$_formattedOrders ${AppTexts.productSellerOrdersSuffix}',
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: scheme.onSurfaceVariant),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
                 ],
               ),
             ),
@@ -123,17 +134,21 @@ class SellerCard extends StatelessWidget {
               onTap: sellerUserId == null
                   ? null
                   : () => ChatNavigator.openBuyerSeller(
-                        context: context,
-                        peerUserId: sellerUserId!,
-                        peerName: name,
-                        myRole: ParticipantRole.buyer,
-                      ),
+                      context: context,
+                      peerUserId: sellerUserId!,
+                      peerName: name,
+                      myRole: ParticipantRole.buyer,
+                    ),
               child: Opacity(
                 opacity: sellerUserId == null ? 0.5 : 1.0,
                 child: CustomCircularContainer(
                   size: 40,
                   backgroundColor: colors.selectedSurface,
-                  child: Icon(Iconsax.message, color: colors.selectedOnSurface, size: 18),
+                  child: Icon(
+                    Iconsax.message,
+                    color: colors.selectedOnSurface,
+                    size: 18,
+                  ),
                 ),
               ),
             ),

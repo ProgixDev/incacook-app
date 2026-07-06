@@ -57,13 +57,15 @@ class ProductTitlePriceRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const Gap(AppSizes.xs),
-              Text(
-                shortDescription,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-              ),
+              if (shortDescription.trim().isNotEmpty) ...[
+                const Gap(AppSizes.xs),
+                Text(
+                  shortDescription,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -74,26 +76,27 @@ class ProductTitlePriceRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             PriceDisplay(price: double.parse(price)),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Iconsax.star1, size: 14, color: Color(0xFFFFC107)),
-                const Gap(4),
-                Text(
-                  rating.toStringAsFixed(1),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+            if (reviewsCount > 0)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Iconsax.star1, size: 14, color: Color(0xFFFFC107)),
+                  const Gap(4),
+                  Text(
+                    rating.toStringAsFixed(1),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const Gap(4),
-                Text(
-                  '($reviewsCount+Review)',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
-                ),
-              ],
-            ),
+                  const Gap(4),
+                  Text(
+                    '($reviewsCount avis)',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ],

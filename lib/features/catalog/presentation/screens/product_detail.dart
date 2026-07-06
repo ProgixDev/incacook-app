@@ -33,22 +33,18 @@ import 'package:incacook/features/moderation/presentation/report_sheet.dart';
 import 'package:incacook/features/reviews/data/review.dart';
 import 'package:incacook/features/reviews/data/reviews_repository.dart';
 import 'package:incacook/features/orders/presentation/widgets/order_customize_sheet.dart';
-import 'package:incacook/features/seller/data/seller_mock_data.dart';
 import 'package:get/get.dart';
 import 'package:incacook/features/seller/presentation/screens/seller_profile.dart';
 import 'package:incacook/features/seller/presentation/widgets/add_product_sheet.dart';
+import 'package:incacook/core/utils/log.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({
-    super.key,
-    this.listing,
-    this.isSeller = false,
-  });
+  const ProductDetailScreen({super.key, this.listing, this.isSeller = false});
 
   /// When non-null, the real backend [Listing] this detail screen is for.
-  /// Drives the seller actions (edit + delete) and binds the visible
-  /// name/price/description. Demo data is used as a fallback when null
-  /// (legacy entry from the mock buyer feed).
+  /// Drives the seller actions (edit + delete) and binds every visible
+  /// name/price/description value. Null renders an unavailable state instead
+  /// of falling back to demo content.
   final Listing? listing;
 
   /// Show the seller action bar (Modifier + Supprimer) instead of the
@@ -131,18 +127,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       _fetched?.sellerAvatarUrl,
       widget.listing?.sellerAvatarUrl,
     );
-    debugPrint('[ProductDetail] sellerId=${id ?? 'none'}');
-    debugPrint(
+    logWarning('[ProductDetail] sellerId=${id ?? 'none'}');
+    logWarning(
       '[ProductDetail] sellerName=${name ?? AppTexts.productSellerFallbackName}',
     );
-    debugPrint('[ProductDetail] sellerAvatarUrl present=${avatar != null}');
+    logError('[ProductDetail] sellerAvatarUrl present=${avatar != null}');
   }
 
   /// Fetches the seller's real reviews and maps them to the card model.
   /// Best-effort: on failure the section just renders its empty state.
   Future<void> _loadReviews(String sellerId) async {
     try {
-      final reviews = await ReviewsRepository().listForSeller(sellerId, limit: 20);
+      final reviews = await ReviewsRepository().listForSeller(
+        sellerId,
+        limit: 20,
+      );
       if (!mounted) return;
       setState(() => _reviews = reviews.map(_toProductReview).toList());
     } catch (_) {
@@ -202,56 +201,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  static const List<String> _productImages = [
-    AppImages.foodTest,
-    AppImages.foodTest,
-    AppImages.foodTest,
-  ];
-
-  //? demo listing passed to the order customize sheet — swap for a real
-  //? model once the catalog data layer is wired
-  static final FoodListing _demoListing = FoodListing(
-    id: 'demo-product-1',
-    name: 'Tajine poulet olives',
-    imageUrl: AppImages.foodTest,
-    sellerName: 'Fatima K.',
-    category: SellerCategory.faitMaison,
-    distanceKm: 0.3,
-    rating: 4.9,
-    reviewCount: 24,
-    portionsLeft: 4,
-    fulfillment: Fulfillment.both,
-    originalPrice: 8.00,
-    price: 3.00,
-    expiresAt: DateTime.now().add(const Duration(hours: 3)),
-  );
-
-  static const List<ProductAddOn> _demoAddOns = [
-    ProductAddOn(id: 'bread', label: 'Avec pain', priceDelta: 0.50),
-    ProductAddOn(
-      id: 'sauce',
-      label: 'Supplément sauce piquante',
-      priceDelta: 0.50,
-    ),
-    ProductAddOn(id: 'kids', label: 'Portion enfant', priceDelta: -1.00),
-  ];
-
   Future<void> _openOrderSheet() async {
-    // Real backend listing when we have one; demo data otherwise.
     final real = _fetched ?? widget.listing;
-    final orderListing = real != null
-        ? _listingToFoodListing(real)
-        : _demoListing;
-    final addOns = real != null
-        ? [
-            for (final ex in real.extras)
-              ProductAddOn(
-                id: ex.id,
-                label: ex.label,
-                priceDelta: ex.priceDeltaCents / 100,
-              ),
-          ]
-        : _demoAddOns;
+    if (real == null) return;
+
+    final orderListing = _listingToFoodListing(real);
+    final addOns = [
+      for (final ex in real.extras)
+        ProductAddOn(
+          id: ex.id,
+          label: ex.label,
+          priceDelta: ex.priceDeltaCents / 100,
+        ),
+    ];
     final draft = await OrderCustomizeSheet.show(
       context,
       listing: orderListing,
@@ -271,9 +233,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   //? quick-add: no customize sheet, default quantity 1, no add-ons, no note
   Future<void> _quickAddToCart() async {
     final real = _fetched ?? widget.listing;
-    final cartListing = real != null
-        ? _listingToFoodListing(real)
-        : _demoListing;
+    if (real == null) return;
+
+    final cartListing = _listingToFoodListing(real);
     // Empty id — CartController assigns it on insert.
     final draft = CartItem(
       id: '',
@@ -348,31 +310,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  //? sample reviews — swap with a real data source when the API is wired
-  static const List<ProductReview> _sampleReviews = [
-    ProductReview(
-      author: AppTexts.productReview1Author,
-      avatarUrl: AppImages.profilePic,
-      rating: 5,
-      body: AppTexts.productReview1Body,
-      time: AppTexts.productReview1Time,
-    ),
-    ProductReview(
-      author: AppTexts.productReview2Author,
-      avatarUrl: AppImages.profilePic,
-      rating: 5,
-      body: AppTexts.productReview2Body,
-      time: AppTexts.productReview2Time,
-    ),
-    ProductReview(
-      author: AppTexts.productReview3Author,
-      avatarUrl: AppImages.profilePic,
-      rating: 4,
-      body: AppTexts.productReview3Body,
-      time: AppTexts.productReview3Time,
-    ),
-  ];
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -386,27 +323,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (widget.isSeller && widget.listing != null) {
       return _buildSellerView(_fetched ?? widget.listing!);
     }
-    // Buyers fall through to the existing buyer detail layout. When a real
-    // listing was passed (which is the common case now that the feed is on
-    // `GET /v1/listings`), the demo values below are overridden by data
-    // from `_fetched ?? widget.listing` further down.
-    final imageHeight = DeviceUtils.getScreenHeight(context) * 0.55;
-    // Bind every visible field to the real backend listing when one was
-    // passed; fall back to demo values for legacy entries that pass none.
-    // Prefer `_fetched` (full record from `getById`, includes extras)
-    // over `widget.listing` (feed row, no extras).
     final l = _fetched ?? widget.listing;
-    final boundName = l?.name ?? 'Grilled Chicken Breast';
-    final boundPrice =
-        l != null ? (l.priceCents / 100).toStringAsFixed(2) : '3.97';
-    final boundDescription = l?.description ?? AppTexts.productSampleLongDesc;
-    final boundImages = (l != null && l.imageUrls.isNotEmpty)
+    if (l == null) return const _UnavailableProductView();
+
+    // Buyers fall through to the existing buyer detail layout. Every visible
+    // field below is bound to the real backend listing.
+    final imageHeight = DeviceUtils.getScreenHeight(context) * 0.55;
+    // Prefer `_fetched` (full record from `getById`, includes extras) over
+    // `widget.listing` (feed row, no extras).
+    final boundName = l.name;
+    final boundPrice = (l.priceCents / 100).toStringAsFixed(2);
+    final boundDescription = (l.description ?? '').trim();
+    final boundImages = l.imageUrls.isNotEmpty
         ? l.imageUrls
               .map((p) => ApiConstants.publicImageUrl(p) ?? AppImages.foodTest)
               .toList()
-        : _productImages;
-    final boundRating = l?.rating ?? 3.9;
-    final boundReviewsCount = l?.reviewCount ?? 193;
+        : const <String>[AppImages.foodTest];
+    final boundRating = l.rating ?? 0;
+    final boundReviewsCount = l.reviewCount ?? 0;
     // Real seller identity — coalesced across the detail re-fetch (`_fetched`)
     // and the feed row (`widget.listing`); both now carry sellerName + avatar.
     // No mock fallback: a missing name shows "Cuisinier", a missing photo
@@ -418,16 +352,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final boundSellerName =
         resolvedSellerName ?? AppTexts.productSellerFallbackName;
     final sellerAvatarUrl = ApiConstants.publicImageUrl(
-      _firstNonEmpty(_fetched?.sellerAvatarUrl, widget.listing?.sellerAvatarUrl),
+      _firstNonEmpty(
+        _fetched?.sellerAvatarUrl,
+        widget.listing?.sellerAvatarUrl,
+      ),
     );
     final sellerInitials = _initialsFrom(resolvedSellerName);
-    final boundDeliveryLabel = l != null
-        ? _fulfillmentLabel(l.fulfillment)
-        : null;
-    final boundPrepLabel = l != null ? '${l.prepMinutes} min' : null;
-    // Real listings show the seller's real reviews (fetched in initState);
-    // legacy mock entries (no listing) keep the sample list.
-    final boundReviews = l != null ? _reviews : _sampleReviews;
+    final boundDeliveryLabel = _fulfillmentLabel(l.fulfillment);
+    final boundPrepLabel = '${l.prepMinutes} min';
+    final boundReviews = _reviews;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -478,7 +411,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             titleLeading: boundName,
                             titleMid: '',
                             titleTrailing: '',
-                            shortDescription: AppTexts.productSampleShortDesc,
+                            shortDescription: '',
                             price: boundPrice,
                             rating: boundRating,
                             reviewsCount: boundReviewsCount,
@@ -511,12 +444,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 // Thread the seller's user id through so
                                 // the chat button can open a pair-keyed
                                 // ChatScreen with the real counterparty.
-                                sellerUserId: l?.sellerId,
-                                onCardTap: () => Get.to(
-                                  () => SellerProfileScreen(
-                                    profile: SellerMockData.demoSeller(),
-                                  ),
-                                ),
+                                sellerUserId: l.sellerId,
+                                rating: boundRating,
+                                onCardTap: () {
+                                  Get.to(
+                                    () => SellerProfileLoader(
+                                      sellerId: l.sellerId,
+                                    ),
+                                  );
+                                },
                               ),
                               const Gap(AppSizes.lg),
                               ProductDescriptionBlock(
@@ -526,8 +462,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               //* Allergens — food-safety: always shown to the
                               //* buyer, with an explicit empty state.
                               _AllergensBlock(
-                                allergens: l?.allergens ?? const <Allergen>[],
-                                otherAllergens: l?.otherAllergens,
+                                allergens: l.allergens,
+                                otherAllergens: l.otherAllergens,
                               ),
                               const Gap(AppSizes.lg),
                               ProductReviewsSection(
@@ -537,20 +473,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 onSeeAll: () {},
                               ),
                               // Report a dish (real listings only).
-                              if (l != null) ...[
-                                const Gap(AppSizes.lg),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TextButton.icon(
-                                    onPressed: () => _openReport(context, l),
-                                    icon: const Icon(
-                                      Icons.flag_outlined,
-                                      size: 18,
-                                    ),
-                                    label: const Text('Signaler ce plat'),
+                              const Gap(AppSizes.lg),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton.icon(
+                                  onPressed: () => _openReport(context, l),
+                                  icon: const Icon(
+                                    Icons.flag_outlined,
+                                    size: 18,
                                   ),
+                                  label: const Text('Signaler ce plat'),
                                 ),
-                              ],
+                              ),
                             ],
                           ),
                         ),
@@ -570,10 +504,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             right: 0,
             bottom: 0,
             child: widget.isSeller && widget.listing != null
-                ? _SellerActionBar(
-                    onEdit: _onEdit,
-                    onDelete: _onDelete,
-                  )
+                ? _SellerActionBar(onEdit: _onEdit, onDelete: _onDelete)
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -700,8 +631,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _SectionTitle(title: 'Types de plat'),
                               const Gap(AppSizes.sm),
                               _LabelChipsWrap(
-                                labels:
-                                    l.dishTypes.map((d) => d.label).toList(),
+                                labels: l.dishTypes
+                                    .map((d) => d.label)
+                                    .toList(),
                               ),
                             ],
                             if (l.dietaryTags.isNotEmpty) ...[
@@ -709,8 +641,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _SectionTitle(title: 'Régime alimentaire'),
                               const Gap(AppSizes.sm),
                               _LabelChipsWrap(
-                                labels:
-                                    l.dietaryTags.map((d) => d.label).toList(),
+                                labels: l.dietaryTags
+                                    .map((d) => d.label)
+                                    .toList(),
                               ),
                             ],
                             const Gap(AppSizes.lg),
@@ -775,7 +708,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     imageUrl: l.imageUrls.isNotEmpty
         ? (ApiConstants.publicImageUrl(l.imageUrls.first) ?? AppImages.foodTest)
         : AppImages.foodTest,
-    sellerName: l.sellerName ?? '',
+    // Never '' — a blank name lets the category label stand in for the vendor
+    // in the order summary (ISSUE-13); fall back to a generic cook name.
+    sellerName: (l.sellerName == null || l.sellerName!.trim().isEmpty)
+        ? AppTexts.productSellerFallbackName
+        : l.sellerName!,
     category: l.category,
     price: l.priceCents / 100,
     portionsLeft: l.portionsLeft ?? 0,
@@ -796,7 +733,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     allergens: l.allergens,
     otherAllergens: l.otherAllergens,
   );
-
 }
 
 /// Replaces the buyer's cart/order bar for sellers viewing their own
@@ -854,6 +790,46 @@ class _SellerActionBar extends StatelessWidget {
   }
 }
 
+class _UnavailableProductView extends StatelessWidget {
+  const _UnavailableProductView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBar(showBackArrow: true),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Iconsax.box_remove,
+                size: 48,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const Gap(AppSizes.md),
+              Text(
+                'Plat indisponible',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const Gap(AppSizes.xs),
+              Text(
+                'Ce plat ne peut pas être affiché pour le moment.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // Seller-view helper widgets — small, dynamic, no static demo content.
@@ -958,9 +934,9 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-        fontWeight: FontWeight.w800,
-      ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
     );
   }
 }
@@ -994,9 +970,7 @@ class _AllergensBlock extends StatelessWidget {
           )
         else ...[
           if (allergens.isNotEmpty)
-            _LabelChipsWrap(
-              labels: allergens.map((a) => a.label).toList(),
-            ),
+            _LabelChipsWrap(labels: allergens.map((a) => a.label).toList()),
           if (hasOther) ...[
             const Gap(AppSizes.sm),
             Text(
@@ -1017,7 +991,9 @@ class _AllergensBlock extends StatelessWidget {
             Expanded(
               child: Text(
                 AppTexts.allergenCheckNotice,
-                style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                style: textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -1092,9 +1068,7 @@ class _LabelChipsWrap extends StatelessWidget {
             ),
             child: Text(
               l,
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
       ],
@@ -1124,9 +1098,7 @@ class _ExtraRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Expanded(
-            child: Text(label, style: textTheme.bodyMedium),
-          ),
+          Expanded(child: Text(label, style: textTheme.bodyMedium)),
           Text(
             priceText,
             style: textTheme.bodyMedium?.copyWith(

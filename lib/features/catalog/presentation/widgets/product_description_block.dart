@@ -11,35 +11,40 @@ class ProductDescriptionBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bodyStyle = Theme.of(
-      context,
-    ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant, height: 1.5);
+    final bodyStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: scheme.onSurfaceVariant,
+      height: 1.5,
+    );
+    final cleanDescription = description.trim();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppTexts.productDescription,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         const Gap(AppSizes.sm),
-        Text.rich(
-          TextSpan(
-            style: bodyStyle,
-            children: [
-              TextSpan(text: '$description. '),
-              TextSpan(
-                text: AppTexts.productReadMore,
-                style: bodyStyle?.copyWith(
-                  color: scheme.onSurface,
-                  fontWeight: FontWeight.w700,
+        if (cleanDescription.isEmpty)
+          Text('Aucune description pour le moment.', style: bodyStyle)
+        else
+          Text.rich(
+            TextSpan(
+              style: bodyStyle,
+              children: [
+                TextSpan(text: cleanDescription),
+                TextSpan(
+                  text: ' ${AppTexts.productReadMore}',
+                  style: bodyStyle?.copyWith(
+                    color: scheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
