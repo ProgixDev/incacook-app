@@ -35,6 +35,7 @@ class SellerBusinessInfoPage extends GetView<SignupFlowController> {
             initialValue: controller.businessName.value,
             onChanged: (v) => controller.businessName.value = v,
             leadingIcon: Iconsax.shop,
+            textInputAction: TextInputAction.next,
           ),
           const Gap(AppSizes.md),
           Obx(() => SignupTextField(
@@ -43,6 +44,7 @@ class SellerBusinessInfoPage extends GetView<SignupFlowController> {
                 initialValue: controller.siret.value,
                 leadingIcon: Iconsax.card,
                 keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[\d\s]')),
                   _SiretFormatter(),

@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:ulid/ulid.dart';
 
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/auth/upload_info.dart';
 import 'package:incacook/features/authentication/data/models/requests/create_upload_request.dart';
 import 'package:incacook/features/authentication/data/repositories/uploads_repository.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// One pick + two-step upload, packaged for any UI that needs more
 /// custom presentation than [SignupImagePicker] provides (e.g. the KYC
@@ -35,11 +39,26 @@ class ImageTooLargeException implements Exception {
   String toString() => message;
 }
 
+/// Thrown when the picked file can't be decoded as an image we can safely
+/// normalize. HEIC/HEIF should normally be converted by image_picker when
+/// quality is set; if not, fail before requesting a signed upload URL.
+class UnsupportedImageTypeException implements Exception {
+  const UnsupportedImageTypeException([
+    this.message = AppTexts.imagePickerUnsupported,
+  ]);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 /// Hard ceiling for the uploaded bytes (5 MB). `image_picker` already
 /// downscales to [maxWidth] × [maxHeight] at [imageQuality], so a normal
 /// gallery photo lands well under this; the check only catches pathological
 /// inputs (huge PNGs, panoramas) that survive compression.
 const int _maxUploadBytes = 5 * 1024 * 1024;
+const String _normalizedContentType = 'image/jpeg';
 
 Future<UploadPickResult?> pickAndUploadImage({
   required ImageSource source,
@@ -62,9 +81,9 @@ Future<UploadPickResult?> pickAndUploadImage({
   );
   if (picked == null) return null;
 
-  final file = File(picked.path);
-  final bytes = await file.readAsBytes();
-  debugPrint(
+  final normalized = await _normalizeToJpeg(picked, imageQuality: imageQuality);
+  final bytes = normalized.bytes;
+  logInfo(
     '[Upload] picked bytes=${bytes.length} '
     '(${(bytes.length / (1024 * 1024)).toStringAsFixed(2)} MB) purpose=$purpose',
   );
@@ -72,7 +91,9 @@ Future<UploadPickResult?> pickAndUploadImage({
   // Don't fail silently / spin forever: reject before the upload if still too
   // large so the caller can show a clear error.
   if (bytes.length > _maxUploadBytes) {
-    debugPrint('[Upload] rejected: image exceeds ${_maxUploadBytes ~/ (1024 * 1024)} MB');
+    logError(
+      '[Upload] rejected: image exceeds ${_maxUploadBytes ~/ (1024 * 1024)} MB',
+    );
     throw const ImageTooLargeException();
   }
 
@@ -80,17 +101,37 @@ Future<UploadPickResult?> pickAndUploadImage({
   final path = await repo.upload(
     req: CreateUploadRequest(
       purpose: purpose,
-      contentType: _guessContentType(file.path),
+      contentType: _normalizedContentType,
     ),
     bytes: bytes,
   );
-  return UploadPickResult(file: file, path: path);
+  return UploadPickResult(file: normalized.file, path: path);
 }
 
-String _guessContentType(String filePath) {
-  final lower = filePath.toLowerCase();
-  if (lower.endsWith('.png')) return 'image/png';
-  if (lower.endsWith('.heic') || lower.endsWith('.heif')) return 'image/heic';
-  if (lower.endsWith('.webp')) return 'image/webp';
-  return 'image/jpeg';
+Future<_NormalizedImage> _normalizeToJpeg(
+  XFile picked, {
+  required int imageQuality,
+}) async {
+  final originalBytes = await picked.readAsBytes();
+  final decoded = img.decodeImage(originalBytes);
+  if (decoded == null) {
+    throw const UnsupportedImageTypeException();
+  }
+
+  final quality = imageQuality.clamp(1, 100);
+  final jpegBytes = Uint8List.fromList(
+    img.encodeJpg(decoded, quality: quality),
+  );
+  final tmpDir = await getTemporaryDirectory();
+  final file = File('${tmpDir.path}/incacook-upload-${Ulid().toString()}.jpg');
+  await file.writeAsBytes(jpegBytes, flush: true);
+
+  return _NormalizedImage(file: file, bytes: jpegBytes);
+}
+
+class _NormalizedImage {
+  const _NormalizedImage({required this.file, required this.bytes});
+
+  final File file;
+  final Uint8List bytes;
 }

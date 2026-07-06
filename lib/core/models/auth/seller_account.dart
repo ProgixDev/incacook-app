@@ -47,6 +47,10 @@ abstract class SellerAccount with _$SellerAccount {
     @Default('NONE') String subscriptionStatus,
     @Default(false) bool subscriptionActive,
     String? subscriptionCurrentPeriodEnd,
+
+    // Stripe Connect payout gate. Mirrors SellerProfileResponseDto and is
+    // refreshed by /v1/users/me after hosted onboarding returns to the app.
+    @Default(false) bool stripeOnboardingCompleted,
   }) = _SellerAccount;
 
   factory SellerAccount.fromJson(Map<String, dynamic> json) =>

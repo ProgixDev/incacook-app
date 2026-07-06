@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/sizes.dart';
-import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_bottom_bar.dart';
 
 /// Reusable step layout. Every page in the flow renders inside this so
 /// titles, descriptions, and content padding stay consistent.
 ///
-/// Bottom padding automatically reserves [SignupBottomBar.reservedHeight]
-/// of clearance so page content can scroll past the floating action bar
-/// without being hidden behind it.
+/// The bottom action bar is a sibling footer in the shell's column, so it
+/// occupies its own space and content never hides behind it — this layout
+/// only owns the page's own padding.
 class SignupStepLayout extends StatelessWidget {
   const SignupStepLayout({
     super.key,
@@ -30,14 +29,6 @@ class SignupStepLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The bar sits inside a SafeArea(top: false), so its real footprint
-    // from the screen bottom is `reservedHeight + viewPadding.bottom`.
-    // Without this inset, content lands behind the bar on devices with a
-    // home indicator.
-    final systemBottom = MediaQuery.of(context).viewPadding.bottom;
-    final effectivePadding = padding.add(
-      EdgeInsets.only(bottom: SignupBottomBar.reservedHeight + systemBottom),
-    );
     final header = <Widget>[
       Text(
         title,
@@ -66,7 +57,7 @@ class SignupStepLayout extends StatelessWidget {
       // which breaks any inner [Expanded] (e.g. the legal page's
       // charter viewer flexing between header and checkboxes).
       return Padding(
-        padding: effectivePadding,
+        padding: padding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -78,7 +69,7 @@ class SignupStepLayout extends StatelessWidget {
     }
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
-      padding: effectivePadding,
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [...header, child],

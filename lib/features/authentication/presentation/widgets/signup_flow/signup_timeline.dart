@@ -17,6 +17,9 @@ class SignupTimeline extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Obx(() {
         final total = controller.totalPages;
+        // Guard against empty steps list during initialization - show nothing
+        // rather than throwing from List.generate(-1, ...) when total is 0.
+        if (total == 0) return const SizedBox.shrink();
         final current = controller.currentPage.value.clamp(0, total - 1);
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,

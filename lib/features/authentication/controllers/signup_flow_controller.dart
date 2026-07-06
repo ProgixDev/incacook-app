@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/common/widgets/navigation/navigation_menu.dart';
@@ -44,6 +41,7 @@ import 'package:incacook/features/authentication/data/repositories/users_reposit
 import 'package:incacook/features/client/presentation/client_nav_tabs.dart';
 import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:incacook/features/seller/presentation/seller_nav_tabs.dart';
+import 'package:incacook/core/utils/log.dart';
 
 /// Drives the entire IncaCook multi-step signup flow.
 ///
@@ -242,8 +240,9 @@ class SignupFlowController extends GetxController {
   // `late final` so [seedForResume] gets to write [currentPage] before
   // the PageController materializes — that way the PageView opens
   // directly on the resumed step instead of animating through page 0.
-  late final PageController pageController =
-      PageController(initialPage: currentPage.value);
+  late final PageController pageController = PageController(
+    initialPage: currentPage.value,
+  );
 
   // ---------------------------------------------------------------------------
   // Lifecycle
@@ -257,22 +256,9 @@ class SignupFlowController extends GetxController {
     ever<SellerCategory?>(sellerCategory, (_) => currentPage.refresh());
     ever<DriverVehicleType?>(vehicleType, (_) => currentPage.refresh());
 
-    // Debug seed: only apply for fresh entries. When the binding ran
-    // `seedAsSignedIn` / `seedForResume` first (NoProfile + resume
-    // paths), those flags are already true and our seed would clobber
-    // values we just pulled from UserController. The TextEditingControllers
-    // are always created — just initialized from whatever's currently
-    // in the Rx vars (debug seed, OAuth pre-fill, or empty).
-    final isPreSeeded = startedSignedUp.value || isResumeMode.value;
-    if (!isPreSeeded) {
-      final seed = kDebugMode ? _DevSeed.random() : _DevSeed.empty();
-      firstName.value = seed.firstName;
-      lastName.value = seed.lastName;
-      email.value = seed.email;
-      phone.value = seed.phone;
-      password.value = seed.password;
-      confirmPassword.value = seed.password;
-    }
+    // Text controllers are initialized from the current Rx values only.
+    // Resume/social-auth paths may pre-seed real values before onInit; fresh
+    // email/password signups stay blank in every build mode.
 
     firstNameTextController = TextEditingController(text: firstName.value)
       ..addListener(() => firstName.value = firstNameTextController.text);
@@ -293,10 +279,9 @@ class SignupFlowController extends GetxController {
     passwordTextController = TextEditingController(text: password.value)
       ..addListener(() => password.value = passwordTextController.text);
     confirmPasswordTextController =
-        TextEditingController(text: confirmPassword.value)
-          ..addListener(
-            () => confirmPassword.value = confirmPasswordTextController.text,
-          );
+        TextEditingController(text: confirmPassword.value)..addListener(
+          () => confirmPassword.value = confirmPasswordTextController.text,
+        );
   }
 
   @override
@@ -337,10 +322,7 @@ class SignupFlowController extends GetxController {
       if (!FeatureFlags.skipPhoneVerification) {
         list.add(SignupStep.phoneVerification);
       }
-      list.addAll([
-        SignupStep.biometricSetup,
-        SignupStep.legalAcceptance,
-      ]);
+      list.addAll([SignupStep.biometricSetup, SignupStep.legalAcceptance]);
       // NoProfile path: basicInfo was skipped so the wizard hasn't
       // seen a name yet. The JWT pre-fill may be incomplete (single-
       // word Google accounts don't ship `family_name`), so we always
@@ -376,10 +358,12 @@ class SignupFlowController extends GetxController {
           list.add(SignupStep.sellerKycSelfie);
         }
         list.add(SignupStep.sellerCharter);
-        // Final step 10/10: mandatory monthly subscription via RevenueCat
-        // (App Store / Google Play). Replaces Stripe payout onboarding for
-        // sellers — payouts are set up later from the dashboard banner.
-        list.add(SignupStep.sellerSubscription);
+        // The seller subscription is intentionally NOT a signup step. The seller
+        // finishes onboarding here and lands on the seller area; the monthly
+        // subscription is taken later via the [SubscriptionGate] paywall (same
+        // RevenueCat flow) the first time they open a gated tab
+        // (Accueil / Commandes / Catalogue). This shortens signup and lets them
+        // reach their account without paying up front.
       case UserRole.driver:
         list.addAll([
           SignupStep.driverDobAddress,
@@ -412,7 +396,19 @@ class SignupFlowController extends GetxController {
 
   int get totalPages => steps.length;
 
-  SignupStep get currentStep => steps[currentPage.value.clamp(0, steps.length - 1)];
+  /// Safely returns the current step, or throws a clear error if steps is empty.
+  /// This guards against initialization timing edge cases where [steps] might
+  /// temporarily be empty before [role] or [isResumeMode] are set.
+  SignupStep get currentStep {
+    final list = steps;
+    if (list.isEmpty) {
+      throw StateError(
+        'SignupStep list is empty — ensure role is set before accessing currentStep. '
+        'This can happen during initialization if roleSelection hasn\'t completed.',
+      );
+    }
+    return list[currentPage.value.clamp(0, list.length - 1)];
+  }
 
   bool get isFirstPage => currentPage.value == 0;
 
@@ -489,7 +485,8 @@ class SignupFlowController extends GetxController {
     final dob = dateOfBirth.value;
     if (dob == null) return false;
     final now = DateTime.now();
-    final age = now.year -
+    final age =
+        now.year -
         dob.year -
         ((now.month < dob.month ||
                 (now.month == dob.month && now.day < dob.day))
@@ -529,8 +526,7 @@ class SignupFlowController extends GetxController {
       case SignupStep.legalAcceptance:
         return acceptedCgu.value && acceptedCgv.value;
       case SignupStep.completeName:
-        return _isValidName(firstName.value) &&
-            _isValidName(lastName.value);
+        return _isValidName(firstName.value) && _isValidName(lastName.value);
       case SignupStep.roleSelection:
         return role.value != null;
       case SignupStep.buyerAddress:
@@ -550,14 +546,13 @@ class SignupFlowController extends GetxController {
         // SIRET. Sauve Ton Panier's "required" rule is enforced at submit (see
         // [_putSellerBusiness]) so the message only appears on submit — never
         // for Traiteur / fait-maison.
-        final base = businessName.value.trim().length >= 2 &&
+        final base =
+            businessName.value.trim().length >= 2 &&
             (siret.value.trim().isEmpty || isSiretValid);
         if (sellerCategory.value == SellerCategory.restaurant) {
           return base &&
               restaurantFacadeUrl.value.isNotEmpty &&
-              openingHours.values.any(
-                (range) => range.start != range.end,
-              );
+              openingHours.values.any((range) => range.start != range.end);
         }
         return base;
       case SignupStep.sellerCuisine:
@@ -595,8 +590,7 @@ class SignupFlowController extends GetxController {
       case SignupStep.driverZone:
         return operatingZones.isNotEmpty;
       case SignupStep.driverCharter:
-        return driverPunctualityCommitment.value &&
-            driverCareCommitment.value;
+        return driverPunctualityCommitment.value && driverCareCommitment.value;
       case SignupStep.payoutSetup:
         // Optional — payout onboarding can always be skipped (the
         // dashboard banner re-prompts later), so Continue is enabled.
@@ -633,17 +627,19 @@ class SignupFlowController extends GetxController {
   // Navigation
   // ---------------------------------------------------------------------------
   Future<void> nextPage() async {
-    debugPrint('[NAV] nextPage ENTER step=${currentStep.name} '
-        'currentPage=${currentPage.value} steps=${steps.map((s) => s.name).toList()} '
-        'len=${steps.length} isLastPage=$isLastPage '
-        'pageCtrl.hasClients=${pageController.hasClients} '
-        'pageCtrl.page=${pageController.hasClients ? pageController.page : null}');
+    logInfo(
+      '[NAV] nextPage ENTER step=${currentStep.name} '
+      'currentPage=${currentPage.value} steps=${steps.map((s) => s.name).toList()} '
+      'len=${steps.length} isLastPage=$isLastPage '
+      'pageCtrl.hasClients=${pageController.hasClients} '
+      'pageCtrl.page=${pageController.hasClients ? pageController.page : null}',
+    );
     if (!canGoNext()) {
-      debugPrint('[NAV] nextPage BLOCKED canGoNext=false');
+      logInfo('[NAV] nextPage BLOCKED canGoNext=false');
       return;
     }
     if (isLoading.value) {
-      debugPrint('[NAV] nextPage BLOCKED isLoading=true');
+      logError('[NAV] nextPage BLOCKED isLoading=true');
       return;
     }
 
@@ -652,7 +648,7 @@ class SignupFlowController extends GetxController {
     // re-enables for retry.
     submitError.value = '';
     final gateOk = await _runGateForCurrentStep();
-    debugPrint('[NAV] gateOk=$gateOk');
+    logInfo('[NAV] gateOk=$gateOk');
     if (!gateOk) return;
 
     // The page is going to change — drop focus so a keyboard left open on a
@@ -662,14 +658,16 @@ class SignupFlowController extends GetxController {
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (isLastPage) {
-      debugPrint('[NAV] -> _finishSignup (isLastPage)');
+      logInfo('[NAV] -> _finishSignup (isLastPage)');
       _finishSignup();
       return;
     }
     final next = currentPage.value + 1;
     currentPage.value = next;
-    debugPrint('[NAV] advancing to page=$next '
-        'hasClients=${pageController.hasClients}');
+    logInfo(
+      '[NAV] advancing to page=$next '
+      'hasClients=${pageController.hasClients}',
+    );
     if (pageController.hasClients) {
       pageController.animateToPage(
         next,
@@ -679,8 +677,10 @@ class SignupFlowController extends GetxController {
     }
     // Reset per-page transient state.
     charterScrolledToBottom.value = false;
-    debugPrint('[NAV] nextPage DONE currentPage=${currentPage.value} '
-        'pageCtrl.page=${pageController.hasClients ? pageController.page : null}');
+    logSuccess(
+      '[NAV] nextPage DONE currentPage=${currentPage.value} '
+      'pageCtrl.page=${pageController.hasClients ? pageController.page : null}',
+    );
   }
 
   /// Gate hook — returns false if the step's backend call(s) failed
@@ -796,8 +796,9 @@ class SignupFlowController extends GetxController {
   Future<bool> _persistAvatarIfAny() async {
     if (avatarPath.value.isEmpty) return true;
     return _runApiCall(() async {
-      final updated =
-          await _usersRepository.updateMe(avatarPath: avatarPath.value);
+      final updated = await _usersRepository.updateMe(
+        avatarPath: avatarPath.value,
+      );
       if (Get.isRegistered<UserController>()) {
         UserController.instance.setUser(updated);
       }
@@ -979,16 +980,20 @@ class SignupFlowController extends GetxController {
       // regardless, so we post both when present — extra acceptances
       // don't hurt and keep us forward-compatible if the category
       // changes later.
-      await _usersRepository.acceptCharter(AcceptCharterRequest(
-        charter: Charter.hygiene,
-        version: versions.versionFor(Charter.hygiene) ?? 'v1.0',
-      ));
+      await _usersRepository.acceptCharter(
+        AcceptCharterRequest(
+          charter: Charter.hygiene,
+          version: versions.versionFor(Charter.hygiene) ?? 'v1.0',
+        ),
+      );
       if (sellerCategory.value == SellerCategory.faitMaison ||
           faitMaisonCommitmentChecked.value) {
-        await _usersRepository.acceptCharter(AcceptCharterRequest(
-          charter: Charter.faitMaison,
-          version: versions.versionFor(Charter.faitMaison) ?? 'v1.0',
-        ));
+        await _usersRepository.acceptCharter(
+          AcceptCharterRequest(
+            charter: Charter.faitMaison,
+            version: versions.versionFor(Charter.faitMaison) ?? 'v1.0',
+          ),
+        );
       }
     });
   }
@@ -996,14 +1001,18 @@ class SignupFlowController extends GetxController {
   Future<bool> _acceptDriverCharters() async {
     return _runApiCall(() async {
       final versions = await _ensureActiveCharters();
-      await _usersRepository.acceptCharter(AcceptCharterRequest(
-        charter: Charter.punctuality,
-        version: versions.versionFor(Charter.punctuality) ?? 'v1.0',
-      ));
-      await _usersRepository.acceptCharter(AcceptCharterRequest(
-        charter: Charter.care,
-        version: versions.versionFor(Charter.care) ?? 'v1.0',
-      ));
+      await _usersRepository.acceptCharter(
+        AcceptCharterRequest(
+          charter: Charter.punctuality,
+          version: versions.versionFor(Charter.punctuality) ?? 'v1.0',
+        ),
+      );
+      await _usersRepository.acceptCharter(
+        AcceptCharterRequest(
+          charter: Charter.care,
+          version: versions.versionFor(Charter.care) ?? 'v1.0',
+        ),
+      );
     });
   }
 
@@ -1052,20 +1061,22 @@ class SignupFlowController extends GetxController {
   }
 
   AddressType? _mapAddressType(SavedAddressType? t) => switch (t) {
-        SavedAddressType.home => AddressType.home,
-        SavedAddressType.work => AddressType.work,
-        SavedAddressType.other => AddressType.other,
-        null => null,
-      };
+    SavedAddressType.home => AddressType.home,
+    SavedAddressType.work => AddressType.work,
+    SavedAddressType.other => AddressType.other,
+    null => null,
+  };
 
   List<OpeningHoursRow> _openingHoursFromUi() {
     return openingHours.entries
         .where((e) => e.value.start != e.value.end)
-        .map((e) => OpeningHoursRow(
-              dayOfWeek: e.key,
-              startTime: _formatTime(e.value.start),
-              endTime: _formatTime(e.value.end),
-            ))
+        .map(
+          (e) => OpeningHoursRow(
+            dayOfWeek: e.key,
+            startTime: _formatTime(e.value.start),
+            endTime: _formatTime(e.value.end),
+          ),
+        )
         .toList();
   }
 
@@ -1315,13 +1326,13 @@ class SignupFlowController extends GetxController {
       phoneAlreadyUsed.value = false;
       otpRequested.value = true;
       _startResendCountdown();
-      debugPrint('[PhoneOtp] resend success');
+      logError('[PhoneOtp] resend success');
       return true;
     } on ApiFailure catch (e) {
       if (_isPhoneAlreadyUsed(e)) {
         phoneAlreadyUsed.value = true;
         otpError.value = AppTexts.signupOtpPhoneAlreadyUsed;
-        debugPrint('[PhoneOtp] resend blocked: phone already used');
+        logError('[PhoneOtp] resend blocked: phone already used');
       } else {
         otpError.value = e.message;
       }
@@ -1381,58 +1392,11 @@ class SignupFlowController extends GetxController {
       phoneVerified.value = false;
       // 401 = wrong / expired code; show the wizard's localized copy.
       // Anything else: surface the backend message verbatim.
-      otpError.value =
-          e.statusCode == 401 ? AppTexts.signupOtpInvalid : e.message;
+      otpError.value = e.statusCode == 401
+          ? AppTexts.signupOtpInvalid
+          : e.message;
     } finally {
       otpVerifying.value = false;
     }
-  }
-}
-
-/// Sample data used to prefill the basic-info form in debug builds so
-/// the validation gate passes without manual typing on every hot reload.
-class _DevSeed {
-  _DevSeed({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.phone,
-    required this.password,
-  });
-
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String phone;
-  final String password;
-
-  factory _DevSeed.empty() => _DevSeed(
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-      );
-
-  factory _DevSeed.random() {
-    const firstNames = [
-      'Camille', 'Hugo', 'Manon', 'Theo', 'Sarah',
-      'Antoine', 'Marie', 'Lucas', 'Chloe', 'Nathan',
-    ];
-    const lastNames = [
-      'Dupont', 'Martin', 'Bernard', 'Moreau', 'Dubois',
-      'Laurent', 'Petit', 'Roux', 'David', 'Garnier',
-    ];
-    final rnd = Random();
-    final first = firstNames[rnd.nextInt(firstNames.length)];
-    final last = lastNames[rnd.nextInt(lastNames.length)];
-    final phone = '6${List.generate(8, (_) => rnd.nextInt(10)).join()}';
-    return _DevSeed(
-      firstName: first,
-      lastName: last,
-      email: '${first.toLowerCase()}.${last.toLowerCase()}@exemple.fr',
-      phone: phone,
-      password: 'Secret123!',
-    );
   }
 }

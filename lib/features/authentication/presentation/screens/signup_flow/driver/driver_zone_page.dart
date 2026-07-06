@@ -20,6 +20,9 @@ class _DriverZonePageState extends State<DriverZonePage> {
   final _query = TextEditingController();
   late List<String> _suggestions;
 
+  // TODO: Fetch from GET /v1/zones when backend Zone table is ready.
+  // For now, predefined zones are shown. Zones are saved but not yet
+  // used for delivery filtering (open dispatch - all drivers see all jobs).
   static const _knownZones = [
     'Paris 1er',
     'Paris 4e — Le Marais',
@@ -84,8 +87,6 @@ class _DriverZonePageState extends State<DriverZonePage> {
                   backgroundColor: colors.selectedSurface,
                   labelStyle: TextStyle(color: colors.selectedOnSurface),
                   deleteIconColor: colors.selectedOnSurface,
-                  // Pill shape so the chips match the frosted text-field
-                  // and chip-group radii used elsewhere in the flow.
                   shape: const StadiumBorder(),
                   side: BorderSide.none,
                 );

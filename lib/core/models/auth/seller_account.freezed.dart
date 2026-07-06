@@ -22,7 +22,9 @@ mixin _$SellerAccount {
  bool get canList;// Mandatory platform subscription ($4/mo). `subscriptionActive` is the
 // gate the app uses to unlock seller features; status + renewal date
 // drive the dashboard / paywall copy. Mirrors SellerProfileResponseDto.
- String get subscriptionStatus; bool get subscriptionActive; String? get subscriptionCurrentPeriodEnd;
+ String get subscriptionStatus; bool get subscriptionActive; String? get subscriptionCurrentPeriodEnd;// Stripe Connect payout gate. Mirrors SellerProfileResponseDto and is
+// refreshed by /v1/users/me after hosted onboarding returns to the app.
+ bool get stripeOnboardingCompleted;
 /// Create a copy of SellerAccount
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,16 +37,16 @@ $SellerAccountCopyWith<SellerAccount> get copyWith => _$SellerAccountCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerAccount&&(identical(other.category, category) || other.category == category)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profilePhotoUrl, profilePhotoUrl) || other.profilePhotoUrl == profilePhotoUrl)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.neighborhood, neighborhood) || other.neighborhood == neighborhood)&&(identical(other.deliveryRadiusKm, deliveryRadiusKm) || other.deliveryRadiusKm == deliveryRadiusKm)&&(identical(other.deliveryFeeCents, deliveryFeeCents) || other.deliveryFeeCents == deliveryFeeCents)&&(identical(other.prepMinMinutes, prepMinMinutes) || other.prepMinMinutes == prepMinMinutes)&&(identical(other.prepMaxMinutes, prepMaxMinutes) || other.prepMaxMinutes == prepMaxMinutes)&&(identical(other.hygieneCommitment, hygieneCommitment) || other.hygieneCommitment == hygieneCommitment)&&(identical(other.faitMaisonCommitment, faitMaisonCommitment) || other.faitMaisonCommitment == faitMaisonCommitment)&&(identical(other.business, business) || other.business == business)&&const DeepCollectionEquality().equals(other.cuisines, cuisines)&&const DeepCollectionEquality().equals(other.dishTypes, dishTypes)&&(identical(other.canList, canList) || other.canList == canList)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.subscriptionActive, subscriptionActive) || other.subscriptionActive == subscriptionActive)&&(identical(other.subscriptionCurrentPeriodEnd, subscriptionCurrentPeriodEnd) || other.subscriptionCurrentPeriodEnd == subscriptionCurrentPeriodEnd));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerAccount&&(identical(other.category, category) || other.category == category)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profilePhotoUrl, profilePhotoUrl) || other.profilePhotoUrl == profilePhotoUrl)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.neighborhood, neighborhood) || other.neighborhood == neighborhood)&&(identical(other.deliveryRadiusKm, deliveryRadiusKm) || other.deliveryRadiusKm == deliveryRadiusKm)&&(identical(other.deliveryFeeCents, deliveryFeeCents) || other.deliveryFeeCents == deliveryFeeCents)&&(identical(other.prepMinMinutes, prepMinMinutes) || other.prepMinMinutes == prepMinMinutes)&&(identical(other.prepMaxMinutes, prepMaxMinutes) || other.prepMaxMinutes == prepMaxMinutes)&&(identical(other.hygieneCommitment, hygieneCommitment) || other.hygieneCommitment == hygieneCommitment)&&(identical(other.faitMaisonCommitment, faitMaisonCommitment) || other.faitMaisonCommitment == faitMaisonCommitment)&&(identical(other.business, business) || other.business == business)&&const DeepCollectionEquality().equals(other.cuisines, cuisines)&&const DeepCollectionEquality().equals(other.dishTypes, dishTypes)&&(identical(other.canList, canList) || other.canList == canList)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.subscriptionActive, subscriptionActive) || other.subscriptionActive == subscriptionActive)&&(identical(other.subscriptionCurrentPeriodEnd, subscriptionCurrentPeriodEnd) || other.subscriptionCurrentPeriodEnd == subscriptionCurrentPeriodEnd)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,category,displayName,bio,profilePhotoUrl,dateOfBirth,neighborhood,deliveryRadiusKm,deliveryFeeCents,prepMinMinutes,prepMaxMinutes,hygieneCommitment,faitMaisonCommitment,business,const DeepCollectionEquality().hash(cuisines),const DeepCollectionEquality().hash(dishTypes),canList,subscriptionStatus,subscriptionActive,subscriptionCurrentPeriodEnd]);
+int get hashCode => Object.hashAll([runtimeType,category,displayName,bio,profilePhotoUrl,dateOfBirth,neighborhood,deliveryRadiusKm,deliveryFeeCents,prepMinMinutes,prepMaxMinutes,hygieneCommitment,faitMaisonCommitment,business,const DeepCollectionEquality().hash(cuisines),const DeepCollectionEquality().hash(dishTypes),canList,subscriptionStatus,subscriptionActive,subscriptionCurrentPeriodEnd,stripeOnboardingCompleted]);
 
 @override
 String toString() {
-  return 'SellerAccount(category: $category, displayName: $displayName, bio: $bio, profilePhotoUrl: $profilePhotoUrl, dateOfBirth: $dateOfBirth, neighborhood: $neighborhood, deliveryRadiusKm: $deliveryRadiusKm, deliveryFeeCents: $deliveryFeeCents, prepMinMinutes: $prepMinMinutes, prepMaxMinutes: $prepMaxMinutes, hygieneCommitment: $hygieneCommitment, faitMaisonCommitment: $faitMaisonCommitment, business: $business, cuisines: $cuisines, dishTypes: $dishTypes, canList: $canList, subscriptionStatus: $subscriptionStatus, subscriptionActive: $subscriptionActive, subscriptionCurrentPeriodEnd: $subscriptionCurrentPeriodEnd)';
+  return 'SellerAccount(category: $category, displayName: $displayName, bio: $bio, profilePhotoUrl: $profilePhotoUrl, dateOfBirth: $dateOfBirth, neighborhood: $neighborhood, deliveryRadiusKm: $deliveryRadiusKm, deliveryFeeCents: $deliveryFeeCents, prepMinMinutes: $prepMinMinutes, prepMaxMinutes: $prepMaxMinutes, hygieneCommitment: $hygieneCommitment, faitMaisonCommitment: $faitMaisonCommitment, business: $business, cuisines: $cuisines, dishTypes: $dishTypes, canList: $canList, subscriptionStatus: $subscriptionStatus, subscriptionActive: $subscriptionActive, subscriptionCurrentPeriodEnd: $subscriptionCurrentPeriodEnd, stripeOnboardingCompleted: $stripeOnboardingCompleted)';
 }
 
 
@@ -55,7 +57,7 @@ abstract mixin class $SellerAccountCopyWith<$Res>  {
   factory $SellerAccountCopyWith(SellerAccount value, $Res Function(SellerAccount) _then) = _$SellerAccountCopyWithImpl;
 @useResult
 $Res call({
- SellerCategory? category, String? displayName, String? bio, String? profilePhotoUrl, String? dateOfBirth, String? neighborhood, int? deliveryRadiusKm, int? deliveryFeeCents, int? prepMinMinutes, int? prepMaxMinutes, bool? hygieneCommitment, bool? faitMaisonCommitment, SellerBusinessRecord? business, List<CuisineType> cuisines, List<DishType> dishTypes, bool canList, String subscriptionStatus, bool subscriptionActive, String? subscriptionCurrentPeriodEnd
+ SellerCategory? category, String? displayName, String? bio, String? profilePhotoUrl, String? dateOfBirth, String? neighborhood, int? deliveryRadiusKm, int? deliveryFeeCents, int? prepMinMinutes, int? prepMaxMinutes, bool? hygieneCommitment, bool? faitMaisonCommitment, SellerBusinessRecord? business, List<CuisineType> cuisines, List<DishType> dishTypes, bool canList, String subscriptionStatus, bool subscriptionActive, String? subscriptionCurrentPeriodEnd, bool stripeOnboardingCompleted
 });
 
 
@@ -72,7 +74,7 @@ class _$SellerAccountCopyWithImpl<$Res>
 
 /// Create a copy of SellerAccount
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? category = freezed,Object? displayName = freezed,Object? bio = freezed,Object? profilePhotoUrl = freezed,Object? dateOfBirth = freezed,Object? neighborhood = freezed,Object? deliveryRadiusKm = freezed,Object? deliveryFeeCents = freezed,Object? prepMinMinutes = freezed,Object? prepMaxMinutes = freezed,Object? hygieneCommitment = freezed,Object? faitMaisonCommitment = freezed,Object? business = freezed,Object? cuisines = null,Object? dishTypes = null,Object? canList = null,Object? subscriptionStatus = null,Object? subscriptionActive = null,Object? subscriptionCurrentPeriodEnd = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? category = freezed,Object? displayName = freezed,Object? bio = freezed,Object? profilePhotoUrl = freezed,Object? dateOfBirth = freezed,Object? neighborhood = freezed,Object? deliveryRadiusKm = freezed,Object? deliveryFeeCents = freezed,Object? prepMinMinutes = freezed,Object? prepMaxMinutes = freezed,Object? hygieneCommitment = freezed,Object? faitMaisonCommitment = freezed,Object? business = freezed,Object? cuisines = null,Object? dishTypes = null,Object? canList = null,Object? subscriptionStatus = null,Object? subscriptionActive = null,Object? subscriptionCurrentPeriodEnd = freezed,Object? stripeOnboardingCompleted = null,}) {
   return _then(_self.copyWith(
 category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as SellerCategory?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
@@ -93,7 +95,8 @@ as List<DishType>,canList: null == canList ? _self.canList : canList // ignore: 
 as bool,subscriptionStatus: null == subscriptionStatus ? _self.subscriptionStatus : subscriptionStatus // ignore: cast_nullable_to_non_nullable
 as String,subscriptionActive: null == subscriptionActive ? _self.subscriptionActive : subscriptionActive // ignore: cast_nullable_to_non_nullable
 as bool,subscriptionCurrentPeriodEnd: freezed == subscriptionCurrentPeriodEnd ? _self.subscriptionCurrentPeriodEnd : subscriptionCurrentPeriodEnd // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,stripeOnboardingCompleted: null == stripeOnboardingCompleted ? _self.stripeOnboardingCompleted : stripeOnboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of SellerAccount
@@ -190,10 +193,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd,  bool stripeOnboardingCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerAccount() when $default != null:
-return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd);case _:
+return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd,_that.stripeOnboardingCompleted);case _:
   return orElse();
 
 }
@@ -211,10 +214,10 @@ return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd,  bool stripeOnboardingCompleted)  $default,) {final _that = this;
 switch (_that) {
 case _SellerAccount():
-return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd);case _:
+return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd,_that.stripeOnboardingCompleted);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -231,10 +234,10 @@ return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SellerCategory? category,  String? displayName,  String? bio,  String? profilePhotoUrl,  String? dateOfBirth,  String? neighborhood,  int? deliveryRadiusKm,  int? deliveryFeeCents,  int? prepMinMinutes,  int? prepMaxMinutes,  bool? hygieneCommitment,  bool? faitMaisonCommitment,  SellerBusinessRecord? business,  List<CuisineType> cuisines,  List<DishType> dishTypes,  bool canList,  String subscriptionStatus,  bool subscriptionActive,  String? subscriptionCurrentPeriodEnd,  bool stripeOnboardingCompleted)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerAccount() when $default != null:
-return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd);case _:
+return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl,_that.dateOfBirth,_that.neighborhood,_that.deliveryRadiusKm,_that.deliveryFeeCents,_that.prepMinMinutes,_that.prepMaxMinutes,_that.hygieneCommitment,_that.faitMaisonCommitment,_that.business,_that.cuisines,_that.dishTypes,_that.canList,_that.subscriptionStatus,_that.subscriptionActive,_that.subscriptionCurrentPeriodEnd,_that.stripeOnboardingCompleted);case _:
   return null;
 
 }
@@ -246,7 +249,7 @@ return $default(_that.category,_that.displayName,_that.bio,_that.profilePhotoUrl
 @JsonSerializable()
 
 class _SellerAccount implements SellerAccount {
-  const _SellerAccount({this.category, this.displayName, this.bio, this.profilePhotoUrl, this.dateOfBirth, this.neighborhood, this.deliveryRadiusKm, this.deliveryFeeCents, this.prepMinMinutes, this.prepMaxMinutes, this.hygieneCommitment, this.faitMaisonCommitment, this.business, final  List<CuisineType> cuisines = const <CuisineType>[], final  List<DishType> dishTypes = const <DishType>[], this.canList = false, this.subscriptionStatus = 'NONE', this.subscriptionActive = false, this.subscriptionCurrentPeriodEnd}): _cuisines = cuisines,_dishTypes = dishTypes;
+  const _SellerAccount({this.category, this.displayName, this.bio, this.profilePhotoUrl, this.dateOfBirth, this.neighborhood, this.deliveryRadiusKm, this.deliveryFeeCents, this.prepMinMinutes, this.prepMaxMinutes, this.hygieneCommitment, this.faitMaisonCommitment, this.business, final  List<CuisineType> cuisines = const <CuisineType>[], final  List<DishType> dishTypes = const <DishType>[], this.canList = false, this.subscriptionStatus = 'NONE', this.subscriptionActive = false, this.subscriptionCurrentPeriodEnd, this.stripeOnboardingCompleted = false}): _cuisines = cuisines,_dishTypes = dishTypes;
   factory _SellerAccount.fromJson(Map<String, dynamic> json) => _$SellerAccountFromJson(json);
 
 @override final  SellerCategory? category;
@@ -288,6 +291,9 @@ class _SellerAccount implements SellerAccount {
 @override@JsonKey() final  String subscriptionStatus;
 @override@JsonKey() final  bool subscriptionActive;
 @override final  String? subscriptionCurrentPeriodEnd;
+// Stripe Connect payout gate. Mirrors SellerProfileResponseDto and is
+// refreshed by /v1/users/me after hosted onboarding returns to the app.
+@override@JsonKey() final  bool stripeOnboardingCompleted;
 
 /// Create a copy of SellerAccount
 /// with the given fields replaced by the non-null parameter values.
@@ -302,16 +308,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerAccount&&(identical(other.category, category) || other.category == category)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profilePhotoUrl, profilePhotoUrl) || other.profilePhotoUrl == profilePhotoUrl)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.neighborhood, neighborhood) || other.neighborhood == neighborhood)&&(identical(other.deliveryRadiusKm, deliveryRadiusKm) || other.deliveryRadiusKm == deliveryRadiusKm)&&(identical(other.deliveryFeeCents, deliveryFeeCents) || other.deliveryFeeCents == deliveryFeeCents)&&(identical(other.prepMinMinutes, prepMinMinutes) || other.prepMinMinutes == prepMinMinutes)&&(identical(other.prepMaxMinutes, prepMaxMinutes) || other.prepMaxMinutes == prepMaxMinutes)&&(identical(other.hygieneCommitment, hygieneCommitment) || other.hygieneCommitment == hygieneCommitment)&&(identical(other.faitMaisonCommitment, faitMaisonCommitment) || other.faitMaisonCommitment == faitMaisonCommitment)&&(identical(other.business, business) || other.business == business)&&const DeepCollectionEquality().equals(other._cuisines, _cuisines)&&const DeepCollectionEquality().equals(other._dishTypes, _dishTypes)&&(identical(other.canList, canList) || other.canList == canList)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.subscriptionActive, subscriptionActive) || other.subscriptionActive == subscriptionActive)&&(identical(other.subscriptionCurrentPeriodEnd, subscriptionCurrentPeriodEnd) || other.subscriptionCurrentPeriodEnd == subscriptionCurrentPeriodEnd));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerAccount&&(identical(other.category, category) || other.category == category)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.profilePhotoUrl, profilePhotoUrl) || other.profilePhotoUrl == profilePhotoUrl)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.neighborhood, neighborhood) || other.neighborhood == neighborhood)&&(identical(other.deliveryRadiusKm, deliveryRadiusKm) || other.deliveryRadiusKm == deliveryRadiusKm)&&(identical(other.deliveryFeeCents, deliveryFeeCents) || other.deliveryFeeCents == deliveryFeeCents)&&(identical(other.prepMinMinutes, prepMinMinutes) || other.prepMinMinutes == prepMinMinutes)&&(identical(other.prepMaxMinutes, prepMaxMinutes) || other.prepMaxMinutes == prepMaxMinutes)&&(identical(other.hygieneCommitment, hygieneCommitment) || other.hygieneCommitment == hygieneCommitment)&&(identical(other.faitMaisonCommitment, faitMaisonCommitment) || other.faitMaisonCommitment == faitMaisonCommitment)&&(identical(other.business, business) || other.business == business)&&const DeepCollectionEquality().equals(other._cuisines, _cuisines)&&const DeepCollectionEquality().equals(other._dishTypes, _dishTypes)&&(identical(other.canList, canList) || other.canList == canList)&&(identical(other.subscriptionStatus, subscriptionStatus) || other.subscriptionStatus == subscriptionStatus)&&(identical(other.subscriptionActive, subscriptionActive) || other.subscriptionActive == subscriptionActive)&&(identical(other.subscriptionCurrentPeriodEnd, subscriptionCurrentPeriodEnd) || other.subscriptionCurrentPeriodEnd == subscriptionCurrentPeriodEnd)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,category,displayName,bio,profilePhotoUrl,dateOfBirth,neighborhood,deliveryRadiusKm,deliveryFeeCents,prepMinMinutes,prepMaxMinutes,hygieneCommitment,faitMaisonCommitment,business,const DeepCollectionEquality().hash(_cuisines),const DeepCollectionEquality().hash(_dishTypes),canList,subscriptionStatus,subscriptionActive,subscriptionCurrentPeriodEnd]);
+int get hashCode => Object.hashAll([runtimeType,category,displayName,bio,profilePhotoUrl,dateOfBirth,neighborhood,deliveryRadiusKm,deliveryFeeCents,prepMinMinutes,prepMaxMinutes,hygieneCommitment,faitMaisonCommitment,business,const DeepCollectionEquality().hash(_cuisines),const DeepCollectionEquality().hash(_dishTypes),canList,subscriptionStatus,subscriptionActive,subscriptionCurrentPeriodEnd,stripeOnboardingCompleted]);
 
 @override
 String toString() {
-  return 'SellerAccount(category: $category, displayName: $displayName, bio: $bio, profilePhotoUrl: $profilePhotoUrl, dateOfBirth: $dateOfBirth, neighborhood: $neighborhood, deliveryRadiusKm: $deliveryRadiusKm, deliveryFeeCents: $deliveryFeeCents, prepMinMinutes: $prepMinMinutes, prepMaxMinutes: $prepMaxMinutes, hygieneCommitment: $hygieneCommitment, faitMaisonCommitment: $faitMaisonCommitment, business: $business, cuisines: $cuisines, dishTypes: $dishTypes, canList: $canList, subscriptionStatus: $subscriptionStatus, subscriptionActive: $subscriptionActive, subscriptionCurrentPeriodEnd: $subscriptionCurrentPeriodEnd)';
+  return 'SellerAccount(category: $category, displayName: $displayName, bio: $bio, profilePhotoUrl: $profilePhotoUrl, dateOfBirth: $dateOfBirth, neighborhood: $neighborhood, deliveryRadiusKm: $deliveryRadiusKm, deliveryFeeCents: $deliveryFeeCents, prepMinMinutes: $prepMinMinutes, prepMaxMinutes: $prepMaxMinutes, hygieneCommitment: $hygieneCommitment, faitMaisonCommitment: $faitMaisonCommitment, business: $business, cuisines: $cuisines, dishTypes: $dishTypes, canList: $canList, subscriptionStatus: $subscriptionStatus, subscriptionActive: $subscriptionActive, subscriptionCurrentPeriodEnd: $subscriptionCurrentPeriodEnd, stripeOnboardingCompleted: $stripeOnboardingCompleted)';
 }
 
 
@@ -322,7 +328,7 @@ abstract mixin class _$SellerAccountCopyWith<$Res> implements $SellerAccountCopy
   factory _$SellerAccountCopyWith(_SellerAccount value, $Res Function(_SellerAccount) _then) = __$SellerAccountCopyWithImpl;
 @override @useResult
 $Res call({
- SellerCategory? category, String? displayName, String? bio, String? profilePhotoUrl, String? dateOfBirth, String? neighborhood, int? deliveryRadiusKm, int? deliveryFeeCents, int? prepMinMinutes, int? prepMaxMinutes, bool? hygieneCommitment, bool? faitMaisonCommitment, SellerBusinessRecord? business, List<CuisineType> cuisines, List<DishType> dishTypes, bool canList, String subscriptionStatus, bool subscriptionActive, String? subscriptionCurrentPeriodEnd
+ SellerCategory? category, String? displayName, String? bio, String? profilePhotoUrl, String? dateOfBirth, String? neighborhood, int? deliveryRadiusKm, int? deliveryFeeCents, int? prepMinMinutes, int? prepMaxMinutes, bool? hygieneCommitment, bool? faitMaisonCommitment, SellerBusinessRecord? business, List<CuisineType> cuisines, List<DishType> dishTypes, bool canList, String subscriptionStatus, bool subscriptionActive, String? subscriptionCurrentPeriodEnd, bool stripeOnboardingCompleted
 });
 
 
@@ -339,7 +345,7 @@ class __$SellerAccountCopyWithImpl<$Res>
 
 /// Create a copy of SellerAccount
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? category = freezed,Object? displayName = freezed,Object? bio = freezed,Object? profilePhotoUrl = freezed,Object? dateOfBirth = freezed,Object? neighborhood = freezed,Object? deliveryRadiusKm = freezed,Object? deliveryFeeCents = freezed,Object? prepMinMinutes = freezed,Object? prepMaxMinutes = freezed,Object? hygieneCommitment = freezed,Object? faitMaisonCommitment = freezed,Object? business = freezed,Object? cuisines = null,Object? dishTypes = null,Object? canList = null,Object? subscriptionStatus = null,Object? subscriptionActive = null,Object? subscriptionCurrentPeriodEnd = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? category = freezed,Object? displayName = freezed,Object? bio = freezed,Object? profilePhotoUrl = freezed,Object? dateOfBirth = freezed,Object? neighborhood = freezed,Object? deliveryRadiusKm = freezed,Object? deliveryFeeCents = freezed,Object? prepMinMinutes = freezed,Object? prepMaxMinutes = freezed,Object? hygieneCommitment = freezed,Object? faitMaisonCommitment = freezed,Object? business = freezed,Object? cuisines = null,Object? dishTypes = null,Object? canList = null,Object? subscriptionStatus = null,Object? subscriptionActive = null,Object? subscriptionCurrentPeriodEnd = freezed,Object? stripeOnboardingCompleted = null,}) {
   return _then(_SellerAccount(
 category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as SellerCategory?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
@@ -360,7 +366,8 @@ as List<DishType>,canList: null == canList ? _self.canList : canList // ignore: 
 as bool,subscriptionStatus: null == subscriptionStatus ? _self.subscriptionStatus : subscriptionStatus // ignore: cast_nullable_to_non_nullable
 as String,subscriptionActive: null == subscriptionActive ? _self.subscriptionActive : subscriptionActive // ignore: cast_nullable_to_non_nullable
 as bool,subscriptionCurrentPeriodEnd: freezed == subscriptionCurrentPeriodEnd ? _self.subscriptionCurrentPeriodEnd : subscriptionCurrentPeriodEnd // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,stripeOnboardingCompleted: null == stripeOnboardingCompleted ? _self.stripeOnboardingCompleted : stripeOnboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

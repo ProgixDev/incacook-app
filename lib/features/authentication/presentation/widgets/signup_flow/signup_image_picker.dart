@@ -187,13 +187,22 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
     try {
       final bytes = await file.readAsBytes();
       final path = await UploadsRepository.instance.upload(
-        req: CreateUploadRequest(purpose: widget.purpose),
+        req: CreateUploadRequest(
+          purpose: widget.purpose,
+          contentType: 'image/jpeg',
+        ),
         bytes: bytes,
       );
       if (!mounted) return;
       setState(() => _uploading = false);
       widget.onChanged(path);
     } on ApiFailure catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _uploading = false;
+        _error = e.message;
+      });
+    } on UnsupportedImageTypeException catch (e) {
       if (!mounted) return;
       setState(() {
         _uploading = false;
@@ -235,11 +244,7 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
           width: 1.4,
         ),
       ),
-      child: Icon(
-        Icons.add_a_photo_outlined,
-        size: 24,
-        color: scheme.primary,
-      ),
+      child: Icon(Icons.add_a_photo_outlined, size: 24, color: scheme.primary),
     );
 
     Widget body;
@@ -276,15 +281,16 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
       // Center); the column itself shrink-wraps to its widest child, so it must
       // also center its contents or the small avatar sits left-of-centre inside
       // the helper-text width. Rectangular (KYC/doc) slots stay left-aligned.
-      crossAxisAlignment:
-          isCircular ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: isCircular
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: AppSizes.sm),
         ],
@@ -342,18 +348,18 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
                 Flexible(
                   child: Text(
                     _error!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: scheme.error,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: scheme.error),
                   ),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   'Réessayer',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.primary,
-                        decoration: TextDecoration.underline,
-                      ),
+                    color: scheme.primary,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ],
             ),
@@ -362,9 +368,9 @@ class _SignupImagePickerState extends State<SignupImagePicker> {
           const SizedBox(height: AppSizes.sm),
           Text(
             widget.helper!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ],

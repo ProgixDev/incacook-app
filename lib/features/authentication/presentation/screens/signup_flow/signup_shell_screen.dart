@@ -157,40 +157,28 @@ class SignupShellScreen extends GetView<SignupFlowController> {
             ),
           ),
         ),
-        // Stack lets the floating SignupBottomBar's frosted blur read
-        // against PageView content scrolling underneath it.
-        // SignupStepLayout reserves SignupBottomBar.reservedHeight of
-        // bottom padding so the last input always clears the bar.
-        // StackFit.expand fills the Scaffold body slot so the inner
-        // Column gets tight bounded height — Expanded inside it then
-        // works (loose-fit Stack would leave height unbounded).
-        body: Stack(
-          fit: StackFit.expand,
+        // The bottom bar is a real layout footer (not a floating overlay), so
+        // page content is physically constrained to the space *above* it and
+        // can never hide behind it. With resizeToAvoidBottomInset the whole
+        // column shrinks above the keyboard, docking the bar just above it so
+        // "Continuer" stays visible while typing.
+        body: Column(
           children: [
-            Column(
-              children: [
-                const SignupTimeline(),
-                const Gap(AppSizes.sm),
-                Expanded(
-                  child: Obx(() {
-                    final steps = controller.steps;
-                    return PageView.builder(
-                      controller: controller.pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      onPageChanged: controller.onPageChanged,
-                      itemCount: steps.length,
-                      itemBuilder: (_, i) => _pageFor(steps[i]),
-                    );
-                  }),
-                ),
-              ],
+            const SignupTimeline(),
+            const Gap(AppSizes.sm),
+            Expanded(
+              child: Obx(() {
+                final steps = controller.steps;
+                return PageView.builder(
+                  controller: controller.pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: controller.onPageChanged,
+                  itemCount: steps.length,
+                  itemBuilder: (_, i) => _pageFor(steps[i]),
+                );
+              }),
             ),
-            const Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SignupBottomBar(),
-            ),
+            const SignupBottomBar(),
           ],
         ),
       ),
@@ -214,7 +202,10 @@ class _StepCounterBadge extends GetView<SignupFlowController> {
         child: Center(
           child: Obx(
             () => Text(
-              '${controller.currentPage.value + 1}/${controller.totalPages}',
+              // Guard against empty steps list during initialization.
+              controller.totalPages == 0
+                  ? '—'
+                  : '${controller.currentPage.value + 1}/${controller.totalPages}',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 12,

@@ -51,6 +51,7 @@ class SellerProfilePage extends StatelessWidget {
                 : AppTexts.signupSellerDisplayNameHint,
             initialValue: controller.displayName.value,
             onChanged: (v) => controller.displayName.value = v,
+            textInputAction: TextInputAction.next,
           ),
           const Gap(AppSizes.md),
           Obx(() {
@@ -62,6 +63,7 @@ class SellerProfilePage extends StatelessWidget {
               maxLength: 200,
               initialValue: controller.bio.value,
               onChanged: (v) => controller.bio.value = v,
+              textInputAction: TextInputAction.done,
               helperText: AppTexts.signupSellerBioCounter(
                 controller.bio.value.length,
               ),

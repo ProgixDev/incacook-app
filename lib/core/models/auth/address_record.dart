@@ -7,7 +7,7 @@ part 'address_record.g.dart';
 /// (§3.12) and nested inside [BuyerAccount.defaultAddress].
 ///
 /// Distinct from the UI-side [Address] in `lib/core/models/address.dart`,
-/// which uses `MapPoint coordinate` for Mapbox rendering. Map between
+/// which uses `MapPoint coordinate` for map rendering. Map between
 /// the two at the repository boundary — UI keeps using the existing
 /// [Address] type for pickers, this DTO is for the wire.
 @freezed

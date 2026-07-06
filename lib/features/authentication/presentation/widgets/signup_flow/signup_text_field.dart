@@ -95,6 +95,14 @@ class SignupTextField extends StatelessWidget {
             obscureText: obscureText,
             keyboardType: keyboardType,
             textInputAction: textInputAction,
+            onEditingComplete: () {
+              if (textInputAction == TextInputAction.next) {
+                FocusScope.of(context).nextFocus();
+              } else {
+                FocusScope.of(context).unfocus();
+              }
+            },
+            onTapOutside: (_) => FocusScope.of(context).unfocus(),
             maxLength: maxLength,
             maxLines: obscureText ? 1 : maxLines,
             minLines: minLines,

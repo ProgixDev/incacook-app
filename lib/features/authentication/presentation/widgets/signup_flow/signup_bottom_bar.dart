@@ -7,22 +7,14 @@ import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
 
 /// Sticky bottom bar with the primary "Continuer" button and an optional
-/// secondary "Passer" (Skip) button. Frosted to sit over the page content.
+/// secondary "Passer" (Skip) button. Frosted for a branded look.
 ///
-/// Designed to be rendered inside a [Stack] (not the [Scaffold.bottomNavigationBar]
-/// slot), so page content scrolls *behind* it and the frosted blur reads.
-/// Pages reserve [reservedHeight] of bottom padding via [SignupStepLayout]
-/// so scroll content can clear the floating bar.
+/// Rendered as a real layout footer (last child of the shell's column), so
+/// page content is constrained above it and never hides behind it. When the
+/// keyboard opens the shell resizes above it and the bar docks just above the
+/// keyboard, keeping "Continuer" reachable while typing.
 class SignupBottomBar extends GetView<SignupFlowController> {
   const SignupBottomBar({super.key});
-
-  /// Approximate visible height: button (52) + vertical inner padding
-  /// (12 + 16) + the [_bottomLift] gap below the bar. The system's bottom
-  /// safe-area inset is added on top by the SafeArea inside [build], so
-  /// callers add only this constant. Note: the inline error text above
-  /// the button only appears when a gate fails, so we don't reserve
-  /// extra space for it — the bar grows briefly when it shows.
-  static const double reservedHeight = 92;
 
   /// Extra space below the frosted card so it doesn't sit flush against
   /// the home-indicator / screen edge.
