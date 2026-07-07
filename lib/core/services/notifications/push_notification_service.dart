@@ -10,6 +10,7 @@ import 'package:incacook/core/services/notifications/device_tokens_repository.da
 import 'package:incacook/core/services/notifications/order_notifications_service.dart';
 import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/features/authentication/data/models/user_role.dart';
+import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:incacook/features/orders/presentation/screens/order_tracking.dart';
 import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/firebase_options.dart';
@@ -251,7 +252,18 @@ class PushNotificationService extends GetxService {
         return;
       }
 
-      // Buyer (and driver order deep-links): open the order tracking screen.
+      // Driver: a dispatch offer (delivery_available) isn't a deep-linkable
+      // screen keyed by orderId — the incoming-order modal is surfaced by the
+      // driver-home poll. So bring the driver to their home; mounting it kicks
+      // an immediate available-poll that re-offers whatever is still claimable
+      // (the specific delivery may already be claimed under open dispatch).
+      // Sending a driver to the buyer's OrderTrackingScreen was the bug.
+      if (_userController.user.value?.role == UserRole.driver) {
+        Get.offAll<void>(() => const DeliveryHomeScreen());
+        return;
+      }
+
+      // Buyer: open the order tracking screen for their order.
       Get.to<void>(() => OrderTrackingScreen(orderId: orderId));
     } catch (e) {
       logError('[FCM] route handling failed: $e');

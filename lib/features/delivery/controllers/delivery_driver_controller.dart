@@ -70,6 +70,28 @@ class DeliveryDriverController extends GetxController {
     refreshTodayStats();
   }
 
+  /// Restores the online session on relaunch from the server-side flag
+  /// (`DriverProfile.isOnline`, surfaced via `/users/me`). The local [isOnline]
+  /// always boots to `false`, so without this a driver who was online before
+  /// killing the app reappears "deactivated" with no matching. Does NOT re-POST
+  /// `/online` (already online server-side) — it just mirrors the state and
+  /// reopens the location stream so matching + tracking resume. Reactive
+  /// listeners (online marker, incoming-order polling) fire off the flip.
+  Future<void> restoreOnlineState() async {
+    if (isOnline.value) return;
+    final serverOnline =
+        UserController.instance.user.value?.driverAccount?.isOnline ?? false;
+    if (!serverOnline) return;
+    isOnline.value = true;
+    _onlineSince = DateTime.now();
+    try {
+      await LocationService.instance.start();
+    } catch (_) {
+      // GPS may be denied; matching still works off the last-known point.
+    }
+    await refreshTodayStats();
+  }
+
   /// Fetches today's earnings/deliveries and folds in the local online-time.
   /// Best-effort: on failure the previous value (or the zeroed placeholder)
   /// stays put rather than surfacing an error on the dashboard.

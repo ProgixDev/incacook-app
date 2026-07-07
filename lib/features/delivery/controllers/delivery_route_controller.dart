@@ -102,6 +102,23 @@ class DeliveryRouteController extends GetxController {
     await bootstrap();
   }
 
+  /// Restores an in-progress delivery after an app relaunch: sets the job at
+  /// its current backend [stage] (not always `prepared`), re-subscribes to
+  /// cancellations, and re-bootstraps the live route + GPS tracking — WITHOUT
+  /// re-claiming (the driver already owns it). No-op if a job is already set.
+  Future<void> restoreJob(
+    OrderDetail job, {
+    required String deliveryId,
+    required OrderStage stage,
+  }) async {
+    if (currentJob.value != null) return;
+    _deliveryId = deliveryId;
+    currentJob.value = job;
+    currentStage.value = stage;
+    _listenForCancellation();
+    await bootstrap();
+  }
+
   /// Subscribes to realtime delivery-cancellation events. If the cancelled
   /// delivery/order matches the active job, the job is cleared (GPS stopped) and
   /// a message is shown — the reactive UI then returns to available deliveries.
@@ -292,32 +309,43 @@ class DeliveryRouteController extends GetxController {
   /// [_onPositionUpdate] can detect off-route deviation. No-op when no job is
   /// accepted.
   Future<void> bootstrap() async {
-    final destination = currentDestination;
-    if (destination == null) return;
+    if (pickup == null && dropoff == null) return;
 
     final pos = await LocationService.instance.getCurrent();
     final origin =
         pos == null ? null : MapPoint(lng: pos.longitude, lat: pos.latitude);
 
-    route.value = await _computeRoute(origin, destination);
+    route.value = await _computeItinerary(origin);
     await LocationService.instance.start();
     _startPositionWatcher();
   }
 
-  /// Best-effort route for the current leg: driver → [destination]. When the
-  /// driver's position is unknown or unroutable to the destination (e.g. an
-  /// emulator's default GPS sitting far from the order), it falls back to
-  /// the seller→client trip so the map still shows a sensible route between
-  /// the two stops, and finally to a straight line. Null only if the stops
-  /// themselves are unknown.
-  Future<MapRoute?> _computeRoute(
-    MapPoint? origin,
-    MapPoint destination,
-  ) async {
+  /// The stops for the current leg's itinerary. The drawn route **always ends
+  /// at the client (dropoff)**; before pickup it passes through the seller as a
+  /// waypoint, so the driver sees the whole trip to the client — not just the
+  /// short hop to the shop. After pickup the seller waypoint drops off.
+  List<MapPoint> _itineraryWaypoints(MapPoint? origin) {
+    final p = pickup, d = dropoff;
+    final pickedUp = currentStage.value == OrderStage.onTheWay ||
+        currentStage.value == OrderStage.arrivedDropoff;
+    return <MapPoint>[
+      ?origin,
+      if (!pickedUp) ?p,
+      ?d,
+    ];
+  }
+
+  /// Best-effort itinerary for the current leg: driver → (seller) → client.
+  /// When the driver's position is unknown or the full itinerary is unroutable
+  /// (e.g. an emulator's default GPS sitting far from the order), it falls back
+  /// to the seller→client trip so the map still shows a sensible route, and
+  /// finally to a straight line. Null only if no stop is known.
+  Future<MapRoute?> _computeItinerary(MapPoint? origin) async {
     final client = Get.find<GoogleDirectionsClient>();
-    if (origin != null) {
+    final waypoints = _itineraryWaypoints(origin);
+    if (waypoints.length >= 2) {
       try {
-        return await client.getRoute(origin: origin, destination: destination);
+        return await client.getRouteThrough(waypoints);
       } catch (_) {
         //? fall through to the stop-to-stop fallback below
       }
@@ -325,7 +353,7 @@ class DeliveryRouteController extends GetxController {
     final p = pickup, d = dropoff;
     if (p != null && d != null) {
       try {
-        return await client.getRoute(origin: p, destination: d);
+        return await client.getRouteThrough([p, d]);
       } catch (_) {
         return MapRoute(points: [p, d], distanceMeters: 0, durationSeconds: 0);
       }
@@ -402,11 +430,10 @@ class DeliveryRouteController extends GetxController {
   }
 
   Future<void> _refetchRoute(MapPoint origin) async {
-    final destination = currentDestination;
-    if (destination == null) return;
+    if (pickup == null && dropoff == null) return;
     _refetching = true;
     try {
-      route.value = await _computeRoute(origin, destination);
+      route.value = await _computeItinerary(origin);
     } finally {
       _refetching = false;
     }

@@ -18,7 +18,10 @@ mixin _$DriverAccount {
  DriverVehicleType? get vehicleType; String? get dateOfBirth; List<String> get zones; bool get canDeliver;// Payout/identity gate fields (mirror DriverProfileResponseDto). Drive the
 // delivery-claim gate: a driver can only claim once KYC is APPROVED and
 // Stripe Connect payout onboarding is complete.
- String get kycStatus; bool get stripeOnboardingCompleted;
+ String get kycStatus; bool get stripeOnboardingCompleted;// Server-side online flag (mirrors DriverProfile.isOnline). Read on
+// relaunch to restore the driver's online session — the local toggle
+// otherwise always boots to offline. See DeliveryDriverController.
+ bool get isOnline;
 /// Create a copy of DriverAccount
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,16 +34,16 @@ $DriverAccountCopyWith<DriverAccount> get copyWith => _$DriverAccountCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DriverAccount&&(identical(other.vehicleType, vehicleType) || other.vehicleType == vehicleType)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&const DeepCollectionEquality().equals(other.zones, zones)&&(identical(other.canDeliver, canDeliver) || other.canDeliver == canDeliver)&&(identical(other.kycStatus, kycStatus) || other.kycStatus == kycStatus)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DriverAccount&&(identical(other.vehicleType, vehicleType) || other.vehicleType == vehicleType)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&const DeepCollectionEquality().equals(other.zones, zones)&&(identical(other.canDeliver, canDeliver) || other.canDeliver == canDeliver)&&(identical(other.kycStatus, kycStatus) || other.kycStatus == kycStatus)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,vehicleType,dateOfBirth,const DeepCollectionEquality().hash(zones),canDeliver,kycStatus,stripeOnboardingCompleted);
+int get hashCode => Object.hash(runtimeType,vehicleType,dateOfBirth,const DeepCollectionEquality().hash(zones),canDeliver,kycStatus,stripeOnboardingCompleted,isOnline);
 
 @override
 String toString() {
-  return 'DriverAccount(vehicleType: $vehicleType, dateOfBirth: $dateOfBirth, zones: $zones, canDeliver: $canDeliver, kycStatus: $kycStatus, stripeOnboardingCompleted: $stripeOnboardingCompleted)';
+  return 'DriverAccount(vehicleType: $vehicleType, dateOfBirth: $dateOfBirth, zones: $zones, canDeliver: $canDeliver, kycStatus: $kycStatus, stripeOnboardingCompleted: $stripeOnboardingCompleted, isOnline: $isOnline)';
 }
 
 
@@ -51,7 +54,7 @@ abstract mixin class $DriverAccountCopyWith<$Res>  {
   factory $DriverAccountCopyWith(DriverAccount value, $Res Function(DriverAccount) _then) = _$DriverAccountCopyWithImpl;
 @useResult
 $Res call({
- DriverVehicleType? vehicleType, String? dateOfBirth, List<String> zones, bool canDeliver, String kycStatus, bool stripeOnboardingCompleted
+ DriverVehicleType? vehicleType, String? dateOfBirth, List<String> zones, bool canDeliver, String kycStatus, bool stripeOnboardingCompleted, bool isOnline
 });
 
 
@@ -68,7 +71,7 @@ class _$DriverAccountCopyWithImpl<$Res>
 
 /// Create a copy of DriverAccount
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? vehicleType = freezed,Object? dateOfBirth = freezed,Object? zones = null,Object? canDeliver = null,Object? kycStatus = null,Object? stripeOnboardingCompleted = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? vehicleType = freezed,Object? dateOfBirth = freezed,Object? zones = null,Object? canDeliver = null,Object? kycStatus = null,Object? stripeOnboardingCompleted = null,Object? isOnline = null,}) {
   return _then(_self.copyWith(
 vehicleType: freezed == vehicleType ? _self.vehicleType : vehicleType // ignore: cast_nullable_to_non_nullable
 as DriverVehicleType?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
@@ -76,6 +79,7 @@ as String?,zones: null == zones ? _self.zones : zones // ignore: cast_nullable_t
 as List<String>,canDeliver: null == canDeliver ? _self.canDeliver : canDeliver // ignore: cast_nullable_to_non_nullable
 as bool,kycStatus: null == kycStatus ? _self.kycStatus : kycStatus // ignore: cast_nullable_to_non_nullable
 as String,stripeOnboardingCompleted: null == stripeOnboardingCompleted ? _self.stripeOnboardingCompleted : stripeOnboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -161,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted,  bool isOnline)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DriverAccount() when $default != null:
-return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted);case _:
+return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted,_that.isOnline);case _:
   return orElse();
 
 }
@@ -182,10 +186,10 @@ return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted,  bool isOnline)  $default,) {final _that = this;
 switch (_that) {
 case _DriverAccount():
-return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted);case _:
+return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted,_that.isOnline);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +206,10 @@ return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DriverVehicleType? vehicleType,  String? dateOfBirth,  List<String> zones,  bool canDeliver,  String kycStatus,  bool stripeOnboardingCompleted,  bool isOnline)?  $default,) {final _that = this;
 switch (_that) {
 case _DriverAccount() when $default != null:
-return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted);case _:
+return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver,_that.kycStatus,_that.stripeOnboardingCompleted,_that.isOnline);case _:
   return null;
 
 }
@@ -217,7 +221,7 @@ return $default(_that.vehicleType,_that.dateOfBirth,_that.zones,_that.canDeliver
 @JsonSerializable()
 
 class _DriverAccount implements DriverAccount {
-  const _DriverAccount({this.vehicleType, this.dateOfBirth, final  List<String> zones = const <String>[], this.canDeliver = false, this.kycStatus = 'PENDING', this.stripeOnboardingCompleted = false}): _zones = zones;
+  const _DriverAccount({this.vehicleType, this.dateOfBirth, final  List<String> zones = const <String>[], this.canDeliver = false, this.kycStatus = 'PENDING', this.stripeOnboardingCompleted = false, this.isOnline = false}): _zones = zones;
   factory _DriverAccount.fromJson(Map<String, dynamic> json) => _$DriverAccountFromJson(json);
 
 @override final  DriverVehicleType? vehicleType;
@@ -235,6 +239,10 @@ class _DriverAccount implements DriverAccount {
 // Stripe Connect payout onboarding is complete.
 @override@JsonKey() final  String kycStatus;
 @override@JsonKey() final  bool stripeOnboardingCompleted;
+// Server-side online flag (mirrors DriverProfile.isOnline). Read on
+// relaunch to restore the driver's online session — the local toggle
+// otherwise always boots to offline. See DeliveryDriverController.
+@override@JsonKey() final  bool isOnline;
 
 /// Create a copy of DriverAccount
 /// with the given fields replaced by the non-null parameter values.
@@ -249,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DriverAccount&&(identical(other.vehicleType, vehicleType) || other.vehicleType == vehicleType)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&const DeepCollectionEquality().equals(other._zones, _zones)&&(identical(other.canDeliver, canDeliver) || other.canDeliver == canDeliver)&&(identical(other.kycStatus, kycStatus) || other.kycStatus == kycStatus)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DriverAccount&&(identical(other.vehicleType, vehicleType) || other.vehicleType == vehicleType)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&const DeepCollectionEquality().equals(other._zones, _zones)&&(identical(other.canDeliver, canDeliver) || other.canDeliver == canDeliver)&&(identical(other.kycStatus, kycStatus) || other.kycStatus == kycStatus)&&(identical(other.stripeOnboardingCompleted, stripeOnboardingCompleted) || other.stripeOnboardingCompleted == stripeOnboardingCompleted)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,vehicleType,dateOfBirth,const DeepCollectionEquality().hash(_zones),canDeliver,kycStatus,stripeOnboardingCompleted);
+int get hashCode => Object.hash(runtimeType,vehicleType,dateOfBirth,const DeepCollectionEquality().hash(_zones),canDeliver,kycStatus,stripeOnboardingCompleted,isOnline);
 
 @override
 String toString() {
-  return 'DriverAccount(vehicleType: $vehicleType, dateOfBirth: $dateOfBirth, zones: $zones, canDeliver: $canDeliver, kycStatus: $kycStatus, stripeOnboardingCompleted: $stripeOnboardingCompleted)';
+  return 'DriverAccount(vehicleType: $vehicleType, dateOfBirth: $dateOfBirth, zones: $zones, canDeliver: $canDeliver, kycStatus: $kycStatus, stripeOnboardingCompleted: $stripeOnboardingCompleted, isOnline: $isOnline)';
 }
 
 
@@ -269,7 +277,7 @@ abstract mixin class _$DriverAccountCopyWith<$Res> implements $DriverAccountCopy
   factory _$DriverAccountCopyWith(_DriverAccount value, $Res Function(_DriverAccount) _then) = __$DriverAccountCopyWithImpl;
 @override @useResult
 $Res call({
- DriverVehicleType? vehicleType, String? dateOfBirth, List<String> zones, bool canDeliver, String kycStatus, bool stripeOnboardingCompleted
+ DriverVehicleType? vehicleType, String? dateOfBirth, List<String> zones, bool canDeliver, String kycStatus, bool stripeOnboardingCompleted, bool isOnline
 });
 
 
@@ -286,7 +294,7 @@ class __$DriverAccountCopyWithImpl<$Res>
 
 /// Create a copy of DriverAccount
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? vehicleType = freezed,Object? dateOfBirth = freezed,Object? zones = null,Object? canDeliver = null,Object? kycStatus = null,Object? stripeOnboardingCompleted = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? vehicleType = freezed,Object? dateOfBirth = freezed,Object? zones = null,Object? canDeliver = null,Object? kycStatus = null,Object? stripeOnboardingCompleted = null,Object? isOnline = null,}) {
   return _then(_DriverAccount(
 vehicleType: freezed == vehicleType ? _self.vehicleType : vehicleType // ignore: cast_nullable_to_non_nullable
 as DriverVehicleType?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
@@ -294,6 +302,7 @@ as String?,zones: null == zones ? _self._zones : zones // ignore: cast_nullable_
 as List<String>,canDeliver: null == canDeliver ? _self.canDeliver : canDeliver // ignore: cast_nullable_to_non_nullable
 as bool,kycStatus: null == kycStatus ? _self.kycStatus : kycStatus // ignore: cast_nullable_to_non_nullable
 as String,stripeOnboardingCompleted: null == stripeOnboardingCompleted ? _self.stripeOnboardingCompleted : stripeOnboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

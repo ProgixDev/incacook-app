@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import 'package:incacook/core/constants/api_constants.dart';
+import 'package:incacook/core/enums/order_stage.dart';
 import 'package:incacook/core/network/api_client.dart';
 
 /// One row in the driver's "available deliveries" list. Carries the
@@ -27,11 +28,17 @@ class DeliverySummary {
     this.orderTotalCents,
     this.placedAt,
     this.itemCount,
+    this.status,
   });
 
   final String id;
   final String orderId;
   final String orderNumber;
+
+  /// Backend [DeliveryStatus] string (e.g. `ASSIGNED`, `PICKED_UP`). Null on
+  /// the available-list rows (all `SEARCHING`); populated by `listMine`, where
+  /// it drives active-job restoration on relaunch. See [restoredStage].
+  final String? status;
   final int feeCents;
   final String dropoffCity;
   final String dropoffPostalCode;
@@ -55,6 +62,39 @@ class DeliverySummary {
   double get feeEuros => feeCents / 100.0;
   double? get totalEuros => orderTotalCents == null ? null : orderTotalCents! / 100.0;
 
+  /// Backend delivery statuses that mean "a job is in progress" — the ones we
+  /// restore on relaunch. Terminal (DELIVERED/CANCELLED/FAILED) and pre-claim
+  /// (UNASSIGNED/SEARCHING) states are excluded.
+  static const Set<String> activeStatuses = {
+    'ASSIGNED',
+    'EN_ROUTE_TO_PICKUP',
+    'AT_PICKUP',
+    'PICKED_UP',
+    'EN_ROUTE_TO_DROPOFF',
+    'AT_DROPOFF',
+  };
+
+  bool get isActive => status != null && activeStatuses.contains(status);
+
+  /// Maps the backend [DeliveryStatus] onto the driver-app [OrderStage] used by
+  /// the lifecycle card / route controller. Null for non-active statuses.
+  OrderStage? get restoredStage {
+    switch (status) {
+      case 'ASSIGNED':
+      case 'EN_ROUTE_TO_PICKUP':
+        return OrderStage.prepared;
+      case 'AT_PICKUP':
+        return OrderStage.arrivedPickup;
+      case 'PICKED_UP':
+      case 'EN_ROUTE_TO_DROPOFF':
+        return OrderStage.onTheWay;
+      case 'AT_DROPOFF':
+        return OrderStage.arrivedDropoff;
+      default:
+        return null;
+    }
+  }
+
   factory DeliverySummary.fromJson(Map<String, dynamic> json) {
     return DeliverySummary(
       id: json['id'] as String,
@@ -77,6 +117,7 @@ class DeliverySummary {
           ? DateTime.tryParse(json['placedAt'] as String)
           : null,
       itemCount: (json['itemCount'] as num?)?.toInt(),
+      status: json['status'] as String?,
     );
   }
 }
@@ -121,6 +162,32 @@ class DeliveriesRepository extends GetxService {
           .toList(),
     );
     return result.data;
+  }
+
+  /// `GET /v1/drivers/me/deliveries`. The driver's own deliveries (active +
+  /// history), newest first. Carries `status` + the geo enrichment, so it can
+  /// restore an in-progress job's map/route after an app relaunch.
+  Future<List<DeliverySummary>> listMine({int limit = 20, int offset = 0}) async {
+    final result = await _api.get<List<DeliverySummary>>(
+      '${ApiConstants.apiPrefix}/drivers/me/deliveries',
+      queryParameters: {'limit': '$limit', 'offset': '$offset'},
+      // Same TransformInterceptor list-hoisting as listAvailable.
+      decoder: (json) => (json! as List<dynamic>)
+          .map((e) => DeliverySummary.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+    return result.data;
+  }
+
+  /// The driver's current in-progress delivery, if any — the newest row whose
+  /// status is still active. Null when the driver has no active job. Used on
+  /// relaunch to resume the delivery the app was killed mid-way through.
+  Future<DeliverySummary?> activeMine() async {
+    final list = await listMine();
+    for (final d in list) {
+      if (d.isActive) return d;
+    }
+    return null;
   }
 
   /// `GET /v1/drivers/me/stats/today`. Today's completed-delivery count and

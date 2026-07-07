@@ -57,6 +57,44 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     _onlineWorker = ever<bool>(_driver.isOnline, _onOnlineChanged);
     _onlineErrorWorker =
         ever<String?>(_driver.lastError, _onOnlineErrorChanged);
+    unawaited(_restoreDriverSession());
+  }
+
+  /// Re-hydrates the driver's session on (re)entry so it survives an app
+  /// restart: restore any in-progress delivery first (so resumed polling
+  /// doesn't offer a new order over the top of it), then restore the online
+  /// status. Both read from the backend — local state always boots to
+  /// offline / no-job. Best-effort throughout.
+  Future<void> _restoreDriverSession() async {
+    // Restore the active delivery FIRST so its itinerary paints as fast as
+    // possible on open: [DeliveryRouteController.bootstrap] reads the current
+    // GPS fix and computes the route straight away, without waiting on the
+    // slower profile refresh below.
+    await _restoreActiveJob();
+    if (!mounted) return;
+    try {
+      // Refresh the profile so `driverAccount.isOnline` reflects the server,
+      // not the (possibly stale) snapshot cached at login.
+      await UserController.instance.refreshFromServer();
+    } catch (_) {
+      // Fall back to whatever profile snapshot we already have.
+    }
+    if (!mounted) return;
+    await _driver.restoreOnlineState();
+  }
+
+  Future<void> _restoreActiveJob() async {
+    if (_route.currentJob.value != null) return;
+    try {
+      final active = await DeliveriesRepository.instance.activeMine();
+      final stage = active?.restoredStage;
+      if (active == null || stage == null || !mounted) return;
+      final job = IncomingOrderController.hydrateFromSummary(active);
+      await _route.restoreJob(job, deliveryId: active.id, stage: stage);
+    } catch (_) {
+      // A failed restore just leaves the driver on the idle map; the next
+      // available-poll (once online) still works.
+    }
   }
 
   @override
@@ -219,33 +257,40 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       '[TrackingMap](driver) pickup=${fmt(pickup)}, dropoff=${fmt(dropoff)}, '
       'driver=${driver == null ? "puck-pending" : fmt(driver)}',
     );
-    if (pickup == null || dropoff == null) {
+    if (pickup == null && dropoff == null) {
       logWarning(
-        '[TrackingMap](driver) stop coords missing — markers not drawn '
+        '[TrackingMap](driver) both stop coords missing — markers not drawn '
         '(seller/client not geocoded).',
       );
       return;
     }
     if (!mounted) return;
+    // Draw whichever stops we have. Previously a single missing coordinate
+    // (e.g. an un-geocoded dropoff) skipped ALL markers AND the camera frame,
+    // leaving the map on its Paris default — the "line drawn but I see nothing"
+    // symptom. Now we frame around whatever real points exist.
     setState(() {
       _markers = {
-        Marker(
-          markerId: const MarkerId('pickup'),
-          position: LatLng(pickup.lat, pickup.lng),
-          infoWindow: const InfoWindow(title: 'Vendeur'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueOrange,
+        if (pickup != null)
+          Marker(
+            markerId: const MarkerId('pickup'),
+            position: LatLng(pickup.lat, pickup.lng),
+            infoWindow: const InfoWindow(title: 'Vendeur'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueOrange,
+            ),
           ),
-        ),
-        Marker(
-          markerId: const MarkerId('dropoff'),
-          position: LatLng(dropoff.lat, dropoff.lng),
-          infoWindow: const InfoWindow(title: 'Client'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
+        if (dropoff != null)
+          Marker(
+            markerId: const MarkerId('dropoff'),
+            position: LatLng(dropoff.lat, dropoff.lng),
+            infoWindow: const InfoWindow(title: 'Client'),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          ),
       };
     });
-    await _framePoints([pickup, dropoff]);
+    await _framePoints([?pickup, ?dropoff]);
   }
 
   Future<void> _onRouteChanged(MapRoute? route) async {
@@ -292,7 +337,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     );
   }
 
-  Future<void> _framePoints(List<MapPoint> points) async {
+  Future<void> _framePoints(List<MapPoint> points, {bool retry = true}) async {
     final map = _map;
     if (map == null || points.isEmpty) return;
     if (points.length == 1) {
@@ -316,15 +361,36 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       if (point.lng > maxLng) maxLng = point.lng;
     }
 
-    await map.animateCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLng),
-          northeast: LatLng(maxLat, maxLng),
+    try {
+      await map.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+            southwest: LatLng(minLat, minLng),
+            northeast: LatLng(maxLat, maxLng),
+          ),
+          80,
         ),
-        80,
-      ),
-    );
+      );
+    } catch (_) {
+      // `newLatLngBounds` throws on the native side when the map has no
+      // concrete size yet (common on the first frame right after accept) or
+      // when two frame animations race. Retry once after layout settles, then
+      // fall back to centring on the midpoint so the route/markers are never
+      // left off-screen on the Paris default view — the reported
+      // "zoom in, line drawn, then nothing when I zoom out" bug.
+      if (retry) {
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        if (!mounted) return;
+        await _framePoints(points, retry: false);
+        return;
+      }
+      await map.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2),
+          12,
+        ),
+      );
+    }
   }
 
   @override

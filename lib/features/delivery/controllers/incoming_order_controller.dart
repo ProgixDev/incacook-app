@@ -27,6 +27,14 @@ class IncomingOrderController extends GetxController {
 
   static const Duration _pollInterval = Duration(seconds: 5);
 
+  /// Idle-online location pushes are throttled hard: an idle driver's matching
+  /// position only needs to be coarsely fresh, so we push at most once per
+  /// minute instead of before every 5s poll. This is the main server-cost
+  /// win — a stationary online driver went from ~12 writes/min to ~1.
+  /// (Active-delivery live tracking is handled separately by
+  /// [DeliveryRouteController] and stays fast.)
+  static const Duration _minLocationPushInterval = Duration(seconds: 60);
+
   final Rxn<OrderDetail> pendingOrder = Rxn<OrderDetail>();
   final RxnString pendingDeliveryId = RxnString();
   final RxnString pendingOrderId = RxnString();
@@ -40,6 +48,10 @@ class IncomingOrderController extends GetxController {
   Worker? _onlineWorker;
   Worker? _jobWorker;
   bool _polling = false;
+
+  /// Last time an idle location push actually hit the server — throttle gate
+  /// for [_minLocationPushInterval]. Reset when going offline.
+  DateTime? _lastLocationPushAt;
 
   @override
   void onInit() {
@@ -71,6 +83,7 @@ class IncomingOrderController extends GetxController {
       pendingOrder.value = null;
       pendingDeliveryId.value = null;
       pendingOrderId.value = null;
+      _lastLocationPushAt = null;
       // Fresh slate next time the driver goes online — previously
       // passed jobs become offerable again.
       _dismissed.clear();
@@ -99,13 +112,17 @@ class IncomingOrderController extends GetxController {
     }
     _polling = true;
     try {
-      // Refresh the driver's lastKnownPoint before each poll so the
-      // proximity-based matching on the server always sees an up-to-date
-      // position — without this, an idle online driver who hasn't moved
-      // since toggling on would stop being matched if anyone else came
-      // online with a fresher fix. Best-effort: silent on failure.
+      // Refresh the driver's lastKnownPoint so proximity matching sees an
+      // up-to-date position — but throttled to at most once per
+      // [_minLocationPushInterval], NOT before every poll. Idle matching
+      // tolerates a coarse (up-to-60s-stale) position, and pushing every 5s
+      // was a needless server-cost multiplier. Best-effort: silent on failure.
+      final now = DateTime.now();
+      final lastPush = _lastLocationPushAt;
+      final pushDue =
+          lastPush == null || now.difference(lastPush) >= _minLocationPushInterval;
       final pos = LocationService.instance.currentPosition.value;
-      if (pos != null) {
+      if (pushDue && pos != null) {
         try {
           await DriversRepository.instance.pushLocation(
             lat: pos.latitude,
@@ -114,6 +131,7 @@ class IncomingOrderController extends GetxController {
             speedMps: pos.speed >= 0 ? pos.speed : null,
             accuracyM: pos.accuracy,
           );
+          _lastLocationPushAt = now;
         } catch (_) {
           // Swallow — listAvailable below will still try.
         }
@@ -140,7 +158,7 @@ class IncomingOrderController extends GetxController {
       }
       pendingDeliveryId.value = next.id;
       pendingOrderId.value = next.orderId;
-      pendingOrder.value = _hydrateMock(next);
+      pendingOrder.value = hydrateFromSummary(next);
     } catch (_) {
       // Swallow — next poll retries.
     } finally {
@@ -186,7 +204,7 @@ class IncomingOrderController extends GetxController {
   /// Other OrderDetail fields (cart line specifics, payment method, etc.)
   /// stay on the mock as visual filler — the slim list response doesn't
   /// carry them.
-  OrderDetail _hydrateMock(DeliverySummary s) {
+  static OrderDetail hydrateFromSummary(DeliverySummary s) {
     final mock = OrderMockData.demoOrder();
     // Pickup is guaranteed real by the poll filter (un-routable offers are
     // skipped); fall back to a neutral point, never to fake Paris coords.

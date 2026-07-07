@@ -24,6 +24,11 @@ abstract class DriverAccount with _$DriverAccount {
     // Stripe Connect payout onboarding is complete.
     @Default('PENDING') String kycStatus,
     @Default(false) bool stripeOnboardingCompleted,
+
+    // Server-side online flag (mirrors DriverProfile.isOnline). Read on
+    // relaunch to restore the driver's online session — the local toggle
+    // otherwise always boots to offline. See DeliveryDriverController.
+    @Default(false) bool isOnline,
   }) = _DriverAccount;
 
   factory DriverAccount.fromJson(Map<String, dynamic> json) =>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
+import 'package:incacook/core/models/order_detail.dart';
 import 'package:incacook/features/delivery/controllers/delivery_route_controller.dart';
 import 'package:incacook/features/delivery/presentation/widgets/delivery_nav_bar.dart';
 import 'package:incacook/features/delivery/presentation/widgets/delivery_settings_section.dart';
@@ -17,6 +18,12 @@ class DeliveryBottomSheet extends StatefulWidget {
 
 class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
   static const double _expandedFraction = 0.9;
+
+  /// Resting height the sheet auto-snaps to when a job becomes active — tall
+  /// enough to show the [JobLifecycleCard]'s header + destination + primary CTA
+  /// while still leaving the framed route on the map visible above it.
+  static const double _jobPeekFraction = 0.6;
+
   final DraggableScrollableController _controller =
       DraggableScrollableController();
 
@@ -31,19 +38,59 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
   /// Recomputed in [build] from MediaQuery; the listener reads it.
   double _collapsedFraction = 0.15;
 
+  /// Watches the active job so the sheet auto-reveals the driver's commands the
+  /// moment an order is accepted (or restored on relaunch), and re-collapses
+  /// when the job ends — otherwise the [JobLifecycleCard] stays hidden behind
+  /// the collapsed nav bar and the driver "sees nothing" but the map.
+  Worker? _jobWorker;
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(_updateFrostedness);
+    final route = DeliveryRouteController.instance;
+    _jobWorker = ever<OrderDetail?>(route.currentJob, _onJobChanged);
+    // A job may already be active when the sheet mounts (e.g. restored on
+    // relaunch, or a fast accept before the worker registered) — reveal it once
+    // the first frame is laid out and the drag controller is attached.
+    if (route.currentJob.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _onJobChanged(route.currentJob.value),
+      );
+    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_updateFrostedness);
+    _jobWorker?.dispose();
     _controller.dispose();
     _frostedness.dispose();
     _selectedTab.dispose();
     super.dispose();
+  }
+
+  /// Auto-snaps the sheet to the peek height on a new job (surfacing the
+  /// lifecycle commands) and back to collapsed when the job clears.
+  void _onJobChanged(OrderDetail? job) {
+    if (!mounted || !_controller.isAttached) return;
+    if (job != null) {
+      _selectedTab.value = DeliveryNavTab.drive;
+      final target = _jobPeekFraction.clamp(_collapsedFraction, _expandedFraction);
+      if (_controller.size < target) {
+        _controller.animateTo(
+          target,
+          duration: const Duration(milliseconds: 360),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    } else {
+      _controller.animateTo(
+        _collapsedFraction,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   void _updateFrostedness() {
@@ -86,13 +133,20 @@ class _DeliveryBottomSheetState extends State<DeliveryBottomSheet> {
         (DeliveryNavBar.totalHeight + MediaQuery.of(context).padding.bottom) /
         MediaQuery.of(context).size.height;
 
+    final peek = _jobPeekFraction.clamp(_collapsedFraction, _expandedFraction);
     return DraggableScrollableSheet(
       controller: _controller,
       initialChildSize: _collapsedFraction,
       minChildSize: _collapsedFraction,
       maxChildSize: _expandedFraction,
       snap: true,
-      snapSizes: [_collapsedFraction, _expandedFraction],
+      // The mid `peek` stop is where an active job auto-rests (see
+      // [_onJobChanged]); collapsed + expanded remain the manual extremes.
+      snapSizes: [
+        _collapsedFraction,
+        if (peek > _collapsedFraction && peek < _expandedFraction) peek,
+        _expandedFraction,
+      ],
       builder: (context, scrollController) {
         final scheme = Theme.of(context).colorScheme;
         return Column(

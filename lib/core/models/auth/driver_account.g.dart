@@ -20,6 +20,7 @@ _DriverAccount _$DriverAccountFromJson(Map<String, dynamic> json) =>
       kycStatus: json['kycStatus'] as String? ?? 'PENDING',
       stripeOnboardingCompleted:
           json['stripeOnboardingCompleted'] as bool? ?? false,
+      isOnline: json['isOnline'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$DriverAccountToJson(_DriverAccount instance) =>
@@ -30,6 +31,7 @@ Map<String, dynamic> _$DriverAccountToJson(_DriverAccount instance) =>
       'canDeliver': instance.canDeliver,
       'kycStatus': instance.kycStatus,
       'stripeOnboardingCompleted': instance.stripeOnboardingCompleted,
+      'isOnline': instance.isOnline,
     };
 
 const _$DriverVehicleTypeEnumMap = {
