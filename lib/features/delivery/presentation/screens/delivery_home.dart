@@ -205,8 +205,35 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
       unawaited(_onJobChanged(_route.currentJob.value));
       final existing = _route.route.value;
       if (existing != null) unawaited(_onRouteChanged(existing));
+    } else {
+      //? No active delivery: open the map centered on the driver's current
+      //? position (getCurrentPosition → animate) instead of the Paris default,
+      //? mirroring the suich_drive "determine position → animate on open"
+      //? behavior. When a job IS active the route framing owns the camera.
+      unawaited(_centerInitialCamera());
     }
     if (_driver.isOnline.value) unawaited(_refreshOnlineMarker());
+  }
+
+  /// One-shot camera snap to the driver's current position on first map load.
+  /// Reads the live fix when the stream is already running, otherwise triggers
+  /// a one-off [LocationService.getCurrent] (which also prompts for permission).
+  /// Silent on failure — no snackbar — and bails if a job became active while
+  /// the fix was in flight, so it never fights the route framing.
+  Future<void> _centerInitialCamera() async {
+    var pos = _route.currentDriverPosition;
+    if (pos == null) {
+      final current = await LocationService.instance.getCurrent();
+      if (current != null) {
+        pos = MapPoint(lat: current.latitude, lng: current.longitude);
+      }
+    }
+    final map = _map;
+    if (pos == null || map == null || !mounted) return;
+    if (_route.currentJob.value != null) return;
+    await map.animateCamera(
+      CameraUpdate.newLatLngZoom(LatLng(pos.lat, pos.lng), 15),
+    );
   }
 
   Future<void> _refreshOnlineMarker() async {
