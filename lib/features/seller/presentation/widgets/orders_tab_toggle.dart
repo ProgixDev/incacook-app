@@ -4,7 +4,7 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
-enum OrdersTab { accepted, history }
+enum OrdersTab { toAccept, accepted, history }
 
 class OrdersTabToggle extends StatelessWidget {
   const OrdersTabToggle({
@@ -25,6 +25,13 @@ class OrdersTabToggle extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         child: Row(
           children: [
+            Expanded(
+              child: _TabSegment(
+                label: AppTexts.sellerOrdersTabToAccept,
+                selected: selected == OrdersTab.toAccept,
+                onTap: () => onChanged(OrdersTab.toAccept),
+              ),
+            ),
             Expanded(
               child: _TabSegment(
                 label: AppTexts.sellerOrdersTabAccepted,

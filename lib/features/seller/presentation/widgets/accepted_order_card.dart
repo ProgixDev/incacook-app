@@ -115,6 +115,13 @@ class _StatusBadge extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final (bg, fg, label) = switch (status) {
+      AcceptedOrderStatus.awaitingAccept => (
+        //? accent pill — an order still needing the seller's accept/reject
+        //? decision, distinct from the in-progress and terminal badges.
+        scheme.primaryContainer,
+        scheme.onPrimaryContainer,
+        AppTexts.sellerOrdersBadgeToAccept,
+      ),
       AcceptedOrderStatus.readyToPickup => (
         scheme.primary,
         scheme.onPrimary,
@@ -134,6 +141,13 @@ class _StatusBadge extends StatelessWidget {
         scheme.surfaceContainerHighest,
         scheme.onSurfaceVariant,
         AppTexts.sellerOrdersFilterCompleted,
+      ),
+      AcceptedOrderStatus.cancelled => (
+        //? red pill for a cancelled/refunded/no-driver order — must read
+        //? clearly as "annulée", never as an active or neutral-done state.
+        scheme.errorContainer,
+        scheme.onErrorContainer,
+        AppTexts.sellerOrdersBadgeCancelled,
       ),
     };
 

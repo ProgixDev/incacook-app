@@ -16,6 +16,7 @@ import 'package:incacook/core/widgets/qr/qr_display_sheet.dart';
 import 'package:incacook/features/chat/presentation/chat_navigator.dart';
 import 'package:incacook/features/seller/data/seller_orders_repository.dart';
 import 'package:incacook/features/seller/domain/accepted_order.dart';
+import 'package:incacook/features/seller/domain/seller_order_status.dart';
 import 'package:incacook/features/seller/presentation/widgets/accepted_order_card.dart';
 import 'package:incacook/features/seller/presentation/widgets/seller_order_details_sheet.dart';
 import 'package:incacook/features/seller/presentation/widgets/orders_filter_panel.dart';
@@ -28,10 +29,18 @@ const _kConfirmed = 'CONFIRMED';
 const _kPreparing = 'PREPARING';
 const _kReady = 'READY';
 const _kInDelivery = 'IN_DELIVERY';
-const _kDelivered = 'DELIVERED';
-const _kCompleted = 'COMPLETED';
 const _kNoDriver = 'NO_DRIVER_AVAILABLE';
 const _kCancelled = 'CANCELLED';
+
+/// Cancellation reasons that get an explanatory banner on the seller card, so a
+/// cancelled order in Historique says *why* it ended (not just a red badge).
+const _bannerReasons = <String>{
+  'seller_unavailable',
+  'driver_disappeared',
+  'seller_cannot_provide',
+  'buyer_no_response_after_no_driver',
+  'no_driver_buyer_cancelled',
+};
 
 class OrderRequestsScreen extends StatefulWidget {
   const OrderRequestsScreen({super.key});
@@ -41,7 +50,7 @@ class OrderRequestsScreen extends StatefulWidget {
 }
 
 class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
-  OrdersTab _tab = OrdersTab.accepted;
+  OrdersTab _tab = OrdersTab.toAccept;
   OrdersStatusFilter _statusFilter;
   OrdersSortBy _sortBy = OrdersSortBy.acceptedTime;
 
@@ -86,57 +95,29 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
     await next;
   }
 
-  /// Splits the raw backend list into the "active" pane (the seller can
-  /// still act on these) vs the "history" pane (cancelled or fully done).
-  /// `CONFIRMED` (awaiting accept) intentionally lives on the home
-  /// screen's "Demandes de commande" carousel — once the seller
-  /// accepts it transitions to PREPARING and shows up here.
-  bool _isActive(SellerOrderSummary o) {
-    switch (o.status) {
-      case _kPending:
-      case _kPreparing:
-      case _kReady:
-      case _kInDelivery:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  /// Backend status → display badge. Active orders fall into either
-  /// `preparing` (PENDING/PREPARING) or `readyToPickup` (READY /
-  /// IN_DELIVERY — food is out of the kitchen, awaiting handoff).
-  /// Historic orders (DELIVERED / COMPLETED / CANCELLED / REFUNDED)
-  /// collapse to `completed` so the Historique tab shows a neutral
-  /// "Terminé" badge instead of an actionable one.
-  /// Minutes elapsed since [placedAt] (≥ 0). Used as the "X min"
-  /// label on the card's clock — replaces the previously hardcoded
-  /// 0 that showed up on every row.
+  /// Minutes elapsed since [placedAt] (≥ 0). Used as the "X min" label on the
+  /// card's clock; clamps device clock-skew to 0 so it never shows "-1 min".
   int _minutesAgo(DateTime placedAt) {
     final diff = DateTime.now().difference(placedAt).inMinutes;
     return diff < 0 ? 0 : diff;
   }
 
-  AcceptedOrderStatus _displayStatus(String backend) {
-    switch (backend) {
-      case _kReady:
-      case _kInDelivery:
-        return AcceptedOrderStatus.readyToPickup;
-      case _kDelivered:
-      case _kCompleted:
-        return AcceptedOrderStatus.completed;
-      default:
-        return AcceptedOrderStatus.preparing;
-    }
-  }
-
   List<SellerOrderSummary> _applyFilterAndSort(List<SellerOrderSummary> source) {
-    final scoped = _tab == OrdersTab.accepted
-        ? source.where(_isActive).toList()
-        : source.where((o) => !_isActive(o)).toList();
+    // Explicit, exhaustive status → bucket (see [sellerOrderBucket]): a fresh
+    // CONFIRMED order goes to "À accepter", terminal states to Historique, the
+    // rest to "En cours" — no status can fall into the wrong pane by default.
+    final bucket = switch (_tab) {
+      OrdersTab.toAccept => SellerOrderBucket.toAccept,
+      OrdersTab.accepted => SellerOrderBucket.active,
+      OrdersTab.history => SellerOrderBucket.history,
+    };
+    final scoped =
+        source.where((o) => sellerOrderBucket(o.status) == bucket).toList();
     final filtered = _statusFilter == null
         ? scoped
-        : scoped.where((o) => _displayStatus(o.status) == _statusFilter).toList();
+        : scoped
+            .where((o) => sellerOrderBadge(o.status) == _statusFilter)
+            .toList();
     return [...filtered]
       ..sort((a, b) {
         return switch (_sortBy) {
@@ -329,7 +310,7 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                               final adapter = AcceptedOrder(
                                 id: o.orderNumber,
                                 acceptedAt: o.placedAt,
-                                status: _displayStatus(o.status),
+                                status: sellerOrderBadge(o.status),
                                 // Real "minutes since the order was placed"
                                 // — replaces the hardcoded 0. Caps the
                                 // negative case (clock skew on the device)
@@ -366,9 +347,9 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                   // cancel) or driver disappeared (seller still
                                   // paid).
                                   if (o.status == _kCancelled &&
-                                      (o.cancellationReason == 'seller_unavailable' ||
-                                          o.cancellationReason == 'driver_disappeared' ||
-                                          o.cancellationReason == 'seller_cannot_provide')) ...[
+                                      o.cancellationReason != null &&
+                                      _bannerReasons.contains(
+                                          o.cancellationReason)) ...[
                                     const Gap(AppSizes.sm),
                                     _OrderCancelledBanner(reason: o.cancellationReason!),
                                   ],
@@ -494,6 +475,9 @@ class _OrderCancelledBanner extends StatelessWidget {
     final message = switch (reason) {
       'driver_disappeared' => AppTexts.sellerDriverIncidentMaintained,
       'seller_cannot_provide' => AppTexts.sellerCannotProvideBanner,
+      'buyer_no_response_after_no_driver' ||
+      'no_driver_buyer_cancelled' =>
+        AppTexts.sellerOrderCancelledNoDriver,
       _ => AppTexts.sellerOrderCancelledNoFood,
     };
     return Container(

@@ -35,10 +35,12 @@ class _OrdersFilterPanelState extends State<OrdersFilterPanel> {
 
   String _statusLabel(OrdersStatusFilter status) => switch (status) {
     null => AppTexts.sellerOrdersFilterAll,
+    AcceptedOrderStatus.awaitingAccept => AppTexts.sellerOrdersBadgeToAccept,
     AcceptedOrderStatus.readyToPickup =>
       AppTexts.sellerOrdersFilterReadyToPickup,
     AcceptedOrderStatus.preparing => AppTexts.sellerOrdersFilterPreparing,
     AcceptedOrderStatus.completed => AppTexts.sellerOrdersFilterCompleted,
+    AcceptedOrderStatus.cancelled => AppTexts.sellerOrdersBadgeCancelled,
   };
 
   void _toggleExpanded() => setState(() => _expanded = !_expanded);

@@ -735,12 +735,15 @@ class AppTexts {
       "Vous n'avez encore aucune commande";
 
   //* seller — accepted orders / history screen
-  static const String sellerOrdersTabAccepted = "Acceptées";
+  static const String sellerOrdersTabToAccept = "À accepter";
+  static const String sellerOrdersTabAccepted = "En cours";
   static const String sellerOrdersTabHistory = "Historique";
   static const String sellerOrdersFilterAll = "Tout";
   static const String sellerOrdersFilterReadyToPickup = "Prêt à récupérer";
   static const String sellerOrdersFilterPreparing = "En préparation";
   static const String sellerOrdersFilterCompleted = "Terminé";
+  static const String sellerOrdersBadgeToAccept = "À accepter";
+  static const String sellerOrdersBadgeCancelled = "Annulée";
   static const String sellerOrdersSortByLabel = "Trier par";
   static const String sellerOrdersSortAcceptedTime = "Heure d'acceptation";
   static const String sellerOrdersSortTotalPrice = "Prix total";
@@ -918,6 +921,10 @@ class AppTexts {
   static const String pickupQrSheetInstruction =
       "Montrez ce code au livreur pour confirmer la remise de la commande.";
   static const String pickupQrSheetClose = "Fermer";
+  // Manual fallback: the raw proof code shown under the QR so the handoff still
+  // works when the camera can't read the image.
+  static const String qrTokenFallbackLabel =
+      "QR illisible ? Communiquez ce code au livreur :";
   static const String pickupScanTitle = "Scanner le QR vendeur";
   static const String pickupScanInstruction =
       "Scannez le QR affiché par le vendeur pour confirmer le retrait.";
@@ -991,6 +998,9 @@ class AppTexts {
       "Commande annulée et remboursée : vendeur indisponible.";
   static const String sellerOrderCancelledNoFood =
       "Commande annulée : plat non disponible au retrait.";
+  // No driver ever accepted the delivery → the order was cancelled + refunded.
+  static const String sellerOrderCancelledNoDriver =
+      "Commande annulée : aucun livreur n'a pris la course.";
   // Driver disappeared after pickup.
   static const String buyerDriverDisappearedRefunded =
       "Commande remboursée : livraison non effectuée.";
@@ -1340,6 +1350,10 @@ class AppTexts {
   static const String signupDriverZoneEmpty = "Sélectionne au moins une zone";
   static String signupDriverZoneCount(int count) =>
       "$count zone(s) sélectionnée(s)";
+  static const String signupDriverZoneLoadError =
+      "Impossible de charger les zones. Vérifie ta connexion.";
+  static const String signupDriverZoneRetry = "Réessayer";
+  static const String signupDriverZoneNoResults = "Aucune zone trouvée";
 
   // Payout setup banner — shown on seller / driver home until Stripe Connect
   // onboarding is complete. Replaces the deleted IBAN signup step.
