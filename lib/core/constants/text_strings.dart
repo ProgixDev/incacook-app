@@ -106,13 +106,13 @@ class AppTexts {
       "Chaque commande aide à sauver des invendus et à réduire le gaspillage alimentaire. Ensemble, faisons la différence.";
 
   static const String onBoardingSubTitle11 =
-      "Chaque commande compte. Moins de gaspillage, plus de partage et une récompense plus juste.";
+      "Chaque commande compte. Moins de gaspillage, plus de partage et une récompense plus juste pour ceux qui cuisinent avec passion.";
   static const String onBoardingSubTitle21 =
-      "Les meilleurs plats ne devraient jamais finir à la poubelle. Retrouvez les surplus du jour.";
+      "Les meilleurs plats ne devraient jamais finir à la poubelle. Retrouvez les surplus du jour de vos restaurants préférés et savourez des repas de qualité à prix réduit.";
   static const String onBoardingSubTitle31 =
-      "Un cocktail, une réception, un événement ? Nos traiteurs vous proposent.";
+      "Un cocktail, une réception, un événement ? Nos traiteurs vous proposent des créations gourmandes faites maison, prêtes à régaler vos invités.";
   static const String onBoardingSubTitle41 =
-      "Oups, j’en ai préparé un peu trop pour ma famille ! Plutôt que de gaspiller.";
+      "Oups, j'en ai préparé un peu trop pour ma famille ! Plutôt que de gaspiller ces bons petits plats faits maison, je vous propose d'en profiter.";
 
   //* authentication Forum text
   static const String firstName = "Prénom";
