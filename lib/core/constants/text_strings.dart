@@ -403,7 +403,7 @@ class AppTexts {
   //* category — full official names (filter screens, headers)
   static const String homeCategorySocial = "Le Bon Fait Maison";
   static const String homeCategoryTraiteur = "L'Atelier Traiteur";
-  static const String homeCategoryRestaurant = "Sauve Ton Panier";
+  static const String homeCategoryRestaurant = "Sauve Ton Plat";
 
   //* home — subcategory group titles
   static const String categoryGroupCuisine = "Type de cuisine";
@@ -704,8 +704,8 @@ class AppTexts {
   // yet — the real breakdown appears on the summary screen after the choice.
   static const String cartFeesDeferredHint = "Calculés à l'étape suivante";
   static const String cartTotalLabel = "Total";
-  // Flat delivery fee (5,00 €) — mirrors the backend DELIVERY_FEE_CENTS=500.
-  static const double cartShippingFee = 5.00;
+  // Flat delivery fee (3,50 €) — mirrors the backend DELIVERY_FEE_CENTS=350.
+  static const double cartShippingFee = 3.50;
   // Platform buyer fee: 5% added on top of (subtotal + delivery). Mirrors the
   // backend PLATFORM_BUYER_FEE_BPS=500. Backend is the source of truth; this
   // matches its formula so the displayed total equals the Stripe charge.
@@ -1212,7 +1212,7 @@ class AppTexts {
   static const String signupSubtypeTraiteurTitle = "L'Atelier Traiteur";
   static const String signupSubtypeTraiteurSubtitle =
       "Traiteur professionnel";
-  static const String signupSubtypeRestaurantTitle = "Sauve Ton Panier";
+  static const String signupSubtypeRestaurantTitle = "Sauve Ton Plat";
   static const String signupSubtypeRestaurantSubtitle =
       "Restaurant qui vend ses surplus";
 
