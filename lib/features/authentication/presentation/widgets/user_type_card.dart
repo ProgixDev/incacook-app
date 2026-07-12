@@ -51,15 +51,25 @@ class UserTypeCard extends StatelessWidget {
             children: [
               Expanded(child: media),
               const Gap(AppSizes.sm),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: fg,
+              // On very narrow cards (e.g. iPhone 7, where the role grid sizes
+              // cards down) long labels like "Restaurateur / Cuisinier" used to
+              // wrap mid-word and ellipsize. Scale the whole label down to fit
+              // the card width instead so the role name always reads in full.
+              SizedBox(
+                width: double.infinity,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: fg,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
               const Gap(AppSizes.xs),
             ],
