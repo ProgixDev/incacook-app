@@ -51,14 +51,20 @@ class SellerProductCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        product.name,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+                      // Must be Expanded (not a bare Text + Spacer): a long dish
+                      // name would otherwise take its full intrinsic width and
+                      // push the availability switch off the right edge, so the
+                      // toggle silently disappeared on rows with long names.
+                      Expanded(
+                        child: Text(
+                          product.name,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const Spacer(),
+                      const Gap(AppSizes.sm),
                       _AvailabilitySwitch(
                         value: product.isAvailable,
                         onChanged: onAvailabilityChanged,
