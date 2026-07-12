@@ -8,6 +8,7 @@ import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/services/native_google_auth_service.dart';
+import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/notifications/push_notification_service.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
@@ -34,6 +35,16 @@ class SignOutService {
   /// Performs the sign-out without prompting. Useful for places that
   /// already confirmed (e.g. a 403 forced-logout flow if one ever lands).
   static Future<void> signOut() async {
+    // LocationService is app-permanent. Stop it explicitly before auth state and
+    // route-scoped driver controllers are torn down so logout can never leave a
+    // heartbeat or background delivery stream running for the signed-out user.
+    if (Get.isRegistered<LocationService>()) {
+      try {
+        await LocationService.instance.applyMode(LocationMode.off);
+      } catch (_) {
+        // Best-effort cleanup must never trap the user in the signed-in UI.
+      }
+    }
     // Unregister this device's FCM token FIRST — the DELETE is authenticated,
     // and AuthRepository.signout() clears the bearer in its finally. Doing it
     // here stops the logged-out device from receiving this user's pushes.
@@ -138,16 +149,16 @@ class _SignOutConfirmDialog extends StatelessWidget {
                     Text(
                       AppTexts.settingsLogoutConfirmTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const Gap(AppSizes.sm + 2),
                     Text(
                       AppTexts.settingsLogoutConfirmBody,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                            height: 1.35,
-                          ),
+                        color: scheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
                     ),
                     const Gap(AppSizes.lg),
                     Row(

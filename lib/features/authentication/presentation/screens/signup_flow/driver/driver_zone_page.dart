@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/zone.dart';
 import 'package:incacook/core/utils/theme/theme_extensions.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
+import 'package:incacook/features/authentication/data/repositories/zones_repository.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_step_layout.dart';
 import 'package:incacook/features/authentication/presentation/widgets/signup_flow/signup_text_field.dart';
 
@@ -18,40 +20,54 @@ class DriverZonePage extends StatefulWidget {
 
 class _DriverZonePageState extends State<DriverZonePage> {
   final _query = TextEditingController();
-  late List<String> _suggestions;
 
-  // TODO: Fetch from GET /v1/zones when backend Zone table is ready.
-  // For now, predefined zones are shown. Zones are saved but not yet
-  // used for delivery filtering (open dispatch - all drivers see all jobs).
-  static const _knownZones = [
-    'Paris 1er',
-    'Paris 4e — Le Marais',
-    'Paris 11e',
-    'Lyon Centre',
-    'Marseille Vieux-Port',
-    'Bordeaux Centre',
-    'Toulouse Capitole',
-    'Lille Vieux-Lille',
-    'Nantes Centre',
-    'Strasbourg Petite France',
-  ];
+  List<Zone> _zones = const [];
+  List<Zone> _suggestions = const [];
+  bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _suggestions = _knownZones;
+    _loadZones();
+  }
+
+  @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadZones() async {
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
+    try {
+      final zones = await ZonesRepository.instance.getActiveZones();
+      if (!mounted) return;
+      setState(() {
+        _zones = zones;
+        _suggestions = _filtered(_query.text, zones);
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _hasError = true;
+      });
+    }
+  }
+
+  List<Zone> _filtered(String q, List<Zone> source) {
+    final query = q.trim().toLowerCase();
+    if (query.isEmpty) return source;
+    return source.where((z) => z.name.toLowerCase().contains(query)).toList();
   }
 
   void _onQueryChanged(String q) {
-    setState(() {
-      if (q.trim().isEmpty) {
-        _suggestions = _knownZones;
-        return;
-      }
-      _suggestions = _knownZones
-          .where((z) => z.toLowerCase().contains(q.toLowerCase()))
-          .toList();
-    });
+    setState(() => _suggestions = _filtered(q, _zones));
   }
 
   @override
@@ -101,39 +117,7 @@ class _DriverZonePageState extends State<DriverZonePage> {
               border: Border.all(color: scheme.outlineVariant),
             ),
             constraints: const BoxConstraints(maxHeight: 240),
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: _suggestions.length,
-              separatorBuilder: (_, _) => Divider(
-                height: 1,
-                color: scheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-              itemBuilder: (_, i) {
-                final zone = _suggestions[i];
-                return Obx(() {
-                  final selected = controller.operatingZones.contains(zone);
-                  return ListTile(
-                    dense: true,
-                    leading: Icon(
-                      Iconsax.location,
-                      size: 18,
-                      color: scheme.onSurfaceVariant,
-                    ),
-                    title: Text(zone),
-                    trailing: selected
-                        ? Icon(Icons.check, color: scheme.primary)
-                        : null,
-                    onTap: () {
-                      if (selected) {
-                        controller.operatingZones.remove(zone);
-                      } else {
-                        controller.operatingZones.add(zone);
-                      }
-                    },
-                  );
-                });
-              },
-            ),
+            child: _buildZoneList(context, controller, scheme),
           ),
           const Gap(AppSizes.md),
           Container(
@@ -157,6 +141,91 @@ class _DriverZonePageState extends State<DriverZonePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildZoneList(
+    BuildContext context,
+    SignupFlowController controller,
+    ColorScheme scheme,
+  ) {
+    if (_loading) {
+      return const SizedBox(
+        height: 120,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_hasError) {
+      return Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Iconsax.cloud_cross, color: scheme.onSurfaceVariant, size: 28),
+            const Gap(AppSizes.sm),
+            Text(
+              AppTexts.signupDriverZoneLoadError,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+            ),
+            const Gap(AppSizes.sm),
+            TextButton(
+              onPressed: _loadZones,
+              child: const Text(AppTexts.signupDriverZoneRetry),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_suggestions.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Center(
+          child: Text(
+            AppTexts.signupDriverZoneNoResults,
+            style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: _suggestions.length,
+      separatorBuilder: (_, _) => Divider(
+        height: 1,
+        color: scheme.outlineVariant.withValues(alpha: 0.5),
+      ),
+      itemBuilder: (_, i) {
+        final zone = _suggestions[i];
+        return Obx(() {
+          final selected = controller.operatingZones.contains(zone.name);
+          return ListTile(
+            dense: true,
+            leading: Icon(
+              Iconsax.location,
+              size: 18,
+              color: scheme.onSurfaceVariant,
+            ),
+            title: Text(zone.name),
+            subtitle: zone.city != null && zone.city != zone.name
+                ? Text(zone.city!)
+                : null,
+            trailing: selected
+                ? Icon(Icons.check, color: scheme.primary)
+                : null,
+            onTap: () {
+              if (selected) {
+                controller.operatingZones.remove(zone.name);
+              } else {
+                controller.operatingZones.add(zone.name);
+              }
+            },
+          );
+        });
+      },
     );
   }
 }

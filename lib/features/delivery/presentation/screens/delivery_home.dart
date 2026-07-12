@@ -11,9 +11,11 @@ import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
 import 'package:incacook/features/delivery/controllers/delivery_driver_controller.dart';
+import 'package:incacook/features/delivery/controllers/driver_location_mode_coordinator.dart';
 import 'package:incacook/features/delivery/controllers/delivery_route_controller.dart';
 import 'package:incacook/features/delivery/controllers/incoming_order_controller.dart';
 import 'package:incacook/features/delivery/data/deliveries_repository.dart';
+import 'package:incacook/features/delivery/domain/delivery_map_policy.dart';
 import 'package:incacook/features/delivery/presentation/widgets/delivery_bottom_sheet.dart';
 import 'package:incacook/features/delivery/presentation/widgets/delivery_top_buttons.dart';
 import 'package:incacook/features/delivery/presentation/widgets/incoming_order_sheet.dart';
@@ -32,6 +34,7 @@ class DeliveryHomeScreen extends StatefulWidget {
 class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   late final DeliveryRouteController _route;
   late final DeliveryDriverController _driver;
+  late final DriverLocationModeCoordinator<OrderDetail> _locationMode;
   late final IncomingOrderController _incoming;
   GoogleMapController? _map;
   Worker? _routeWorker;
@@ -49,14 +52,25 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     super.initState();
     _route = Get.put(DeliveryRouteController());
     _driver = Get.put(DeliveryDriverController());
+    _locationMode = DriverLocationModeCoordinator<OrderDetail>(
+      online: _driver.isOnline,
+      activeJob: _route.currentJob,
+      location: LocationService.instance,
+      onError: (error) => logWarning(
+        '[DriverLocationMode] failed to apply location mode: $error',
+      ),
+    );
+    unawaited(_locationMode.start());
     _incoming = Get.put(IncomingOrderController());
     _incomingWorker = ever<OrderDetail?>(
       _incoming.pendingOrder,
       _onPendingOrderChanged,
     );
     _onlineWorker = ever<bool>(_driver.isOnline, _onOnlineChanged);
-    _onlineErrorWorker =
-        ever<String?>(_driver.lastError, _onOnlineErrorChanged);
+    _onlineErrorWorker = ever<String?>(
+      _driver.lastError,
+      _onOnlineErrorChanged,
+    );
     unawaited(_restoreDriverSession());
   }
 
@@ -104,6 +118,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     _jobWorker?.dispose();
     _onlineWorker?.dispose();
     _onlineErrorWorker?.dispose();
+    _locationMode.dispose();
     super.dispose();
   }
 
@@ -171,11 +186,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   /// hint; anything else is a generic retry message.
   String _claimErrorMessage(Object error) {
     if (error is ApiFailure) {
-      final isPayout = error.code == 'INCACOOK_PAYOUT_ONBOARDING_INCOMPLETE' ||
+      final isPayout =
+          error.code == 'INCACOOK_PAYOUT_ONBOARDING_INCOMPLETE' ||
           (error.statusCode == 403 &&
               error.message.toLowerCase().contains(
-                    'stripe connect onboarding',
-                  ));
+                'stripe connect onboarding',
+              ));
       if (isPayout) return AppTexts.incomingOrderPayoutRequired;
     }
     return AppTexts.incomingOrderClaimFailed;
@@ -201,16 +217,19 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
 
     //? A job may already be active when the map (re)mounts — `ever` only
     //? fires on change, so paint the current state once up front.
-    if (_route.currentJob.value != null) {
+    final hasActiveJob = _route.currentJob.value != null;
+    final existing = _route.route.value;
+    if (hasActiveJob) {
       unawaited(_onJobChanged(_route.currentJob.value));
-      final existing = _route.route.value;
       if (existing != null) unawaited(_onRouteChanged(existing));
-    } else {
-      //? No active delivery: open the map centered on the driver's current
-      //? position (getCurrentPosition → animate) instead of the Paris default,
-      //? mirroring the suich_drive "determine position → animate on open"
-      //? behavior. When a job IS active the route framing owns the camera.
-      unawaited(_centerInitialCamera());
+    }
+    if (shouldCenterDriverOnMapOpen(
+      hasActiveJob: hasActiveJob,
+      hasRoute: existing != null,
+    )) {
+      //? Open on the driver's current position instead of the Paris default.
+      //? Once an active route exists, route framing owns the camera.
+      unawaited(_centerInitialCamera(allowActiveJob: hasActiveJob));
     }
     if (_driver.isOnline.value) unawaited(_refreshOnlineMarker());
   }
@@ -218,9 +237,9 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
   /// One-shot camera snap to the driver's current position on first map load.
   /// Reads the live fix when the stream is already running, otherwise triggers
   /// a one-off [LocationService.getCurrent] (which also prompts for permission).
-  /// Silent on failure — no snackbar — and bails if a job became active while
-  /// the fix was in flight, so it never fights the route framing.
-  Future<void> _centerInitialCamera() async {
+  /// Silent on failure. For an idle open it bails if a job became active while
+  /// the fix was in flight; active restoration opts in until a route is ready.
+  Future<void> _centerInitialCamera({required bool allowActiveJob}) async {
     var pos = _route.currentDriverPosition;
     if (pos == null) {
       final current = await LocationService.instance.getCurrent();
@@ -230,7 +249,7 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     }
     final map = _map;
     if (pos == null || map == null || !mounted) return;
-    if (_route.currentJob.value != null) return;
+    if (!allowActiveJob && _route.currentJob.value != null) return;
     await map.animateCamera(
       CameraUpdate.newLatLngZoom(LatLng(pos.lat, pos.lng), 15),
     );
@@ -252,8 +271,9 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
           markerId: const MarkerId('driver-online'),
           position: LatLng(onlinePosition.lat, onlinePosition.lng),
           infoWindow: const InfoWindow(title: 'Vous etes en ligne'),
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
         ),
       };
     });
@@ -312,8 +332,9 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
             markerId: const MarkerId('dropoff'),
             position: LatLng(dropoff.lat, dropoff.lng),
             infoWindow: const InfoWindow(title: 'Client'),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            ),
           ),
       };
     });
@@ -525,9 +546,9 @@ class _OnlineConfirmedPill extends StatelessWidget {
                 Text(
                   'En ligne - pret a recevoir des courses',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: scheme.onSurface,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: scheme.onSurface,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ],
             ),

@@ -25,8 +25,8 @@ class ValidationUtils {
       return 'Email is required';
     }
 
-    //regular expression for email validation
-    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    //regular expression for email validation (allows `+` sub-addressing)
+    final emailRegExp = RegExp(r'^[\w+\-.]+@([\w-]+\.)+[\w-]{2,4}$');
 
     if (!emailRegExp.hasMatch(value)) {
       return 'Invalid email address';

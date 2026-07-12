@@ -6,6 +6,9 @@ import 'package:incacook/features/seller/domain/accepted_order.dart';
 /// history" gap is what put fresh `CONFIRMED` orders in Historique and made
 /// cancelled orders read as "En préparation".
 enum SellerOrderBucket {
+  /// Unpaid checkout rows are not actionable seller orders.
+  hidden,
+
   /// Awaiting the seller's accept/reject decision (`CONFIRMED`).
   toAccept,
 
@@ -14,6 +17,14 @@ enum SellerOrderBucket {
 
   /// Terminal — delivered/completed, or cancelled/refunded/disputed/no-driver.
   history,
+}
+
+enum SellerCancellationBanner {
+  noFood,
+  noDriver,
+  driverIncident,
+  sellerCannotProvide,
+  generic,
 }
 
 // Backend OrderStatus strings (mirror the server `OrderStatus` enum).
@@ -33,9 +44,10 @@ const _noDriver = 'NO_DRIVER_AVAILABLE';
 /// The seller tab an order belongs in, from its backend status.
 SellerOrderBucket sellerOrderBucket(String backendStatus) {
   switch (backendStatus) {
+    case _pending:
+      return SellerOrderBucket.hidden;
     case _confirmed:
       return SellerOrderBucket.toAccept;
-    case _pending:
     case _preparing:
     case _ready:
     case _inDelivery:
@@ -55,6 +67,9 @@ SellerOrderBucket sellerOrderBucket(String backendStatus) {
   }
 }
 
+/// Pickup proof is meaningful only while the order is waiting for pickup.
+bool sellerCanShowPickupQr(String backendStatus) => backendStatus == _ready;
+
 /// The display badge for an order, from its backend status. Every real
 /// `OrderStatus` is handled explicitly so a terminal state can never render as
 /// an active one (the "cancelled shows as En préparation" bug).
@@ -63,8 +78,11 @@ AcceptedOrderStatus sellerOrderBadge(String backendStatus) {
     case _confirmed:
       return AcceptedOrderStatus.awaitingAccept;
     case _ready:
-    case _inDelivery:
       return AcceptedOrderStatus.readyToPickup;
+    case _pickedUp:
+      return AcceptedOrderStatus.pickedUp;
+    case _inDelivery:
+      return AcceptedOrderStatus.inDelivery;
     case _delivered:
     case _completed:
       return AcceptedOrderStatus.completed;
@@ -75,9 +93,25 @@ AcceptedOrderStatus sellerOrderBadge(String backendStatus) {
       return AcceptedOrderStatus.cancelled;
     case _pending:
     case _preparing:
-    case _pickedUp:
       return AcceptedOrderStatus.preparing;
     default:
       return AcceptedOrderStatus.preparing;
   }
+}
+
+SellerCancellationBanner? sellerCancellationBanner({
+  required String status,
+  required String? reason,
+}) {
+  if (status != _cancelled && status != _refunded) return null;
+  final normalized = reason?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return switch (normalized) {
+    'seller_unavailable' => SellerCancellationBanner.noFood,
+    'driver_disappeared' => SellerCancellationBanner.driverIncident,
+    'seller_cannot_provide' => SellerCancellationBanner.sellerCannotProvide,
+    'buyer_no_response_after_no_driver' ||
+    'no_driver_buyer_cancelled' => SellerCancellationBanner.noDriver,
+    _ => SellerCancellationBanner.generic,
+  };
 }

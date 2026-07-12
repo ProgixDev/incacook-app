@@ -52,6 +52,8 @@ Updated: 2026-06-30.
 | 011 | [Reviews, messaging, moderation, notifications](specs/011-reviews-messaging-moderation-notifications/spec.md) | Done |
 | 012 | [Settings, legal & theming](specs/012-settings-legal-theming/spec.md) | Done |
 | 013 | [Net-new client requests (Phase 3)](specs/013-net-new-requests/spec.md) | Todo (scoping) |
+| 014 | [Driver app location mode](specs/014-driver-location-mode/spec.md) | Done |
+| 015 | [Buyer self-cancel](specs/015-buyer-self-cancel/spec.md) | Draft (policy open) |
 
 ## Build tasks
 

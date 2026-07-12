@@ -57,9 +57,9 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       orderNumber: order.orderNumber,
     );
     if (submitted == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Merci pour votre avis !')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Merci pour votre avis !')));
       await _refresh();
     }
   }
@@ -91,8 +91,9 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       );
     } on ApiFailure catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -146,16 +147,17 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
                 order: orders[i],
                 showPaidBadge: widget.isSeller,
                 // Buyers can review a delivered order.
-                onReview:
-                    widget.isSeller ? null : () => _openReview(orders[i]),
+                onReview: widget.isSeller ? null : () => _openReview(orders[i]),
                 // Buyers can report a post-delivery problem.
-                onDispute:
-                    widget.isSeller ? null : () => _openDispute(orders[i]),
+                onDispute: widget.isSeller
+                    ? null
+                    : () => _openDispute(orders[i]),
                 // Buyers can re-open their reception QR straight from history —
                 // so a buyer who left the live-tracking screen can still present
                 // it to the driver (the card gates it to in-delivery orders).
-                onReceptionQr:
-                    widget.isSeller ? null : () => _openReceptionQr(orders[i]),
+                onReceptionQr: widget.isSeller
+                    ? null
+                    : () => _openReceptionQr(orders[i]),
               ),
             );
           },
@@ -192,7 +194,10 @@ class _OrderCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final currency = NumberFormat.currency(locale: 'fr_FR', symbol: '€');
-    final date = DateFormat('d MMM yyyy · HH:mm', 'fr_FR').format(order.placedAt);
+    final date = DateFormat(
+      'd MMM yyyy · HH:mm',
+      'fr_FR',
+    ).format(order.placedAt);
     final itemsLabel = order.itemCount > 1 ? 'articles' : 'article';
 
     return FrostedSurface(
@@ -206,14 +211,16 @@ class _OrderCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Commande #${order.orderNumber}',
-                  style:
-                      textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               Text(
                 currency.format(order.totalEuros),
-                style:
-                    textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ],
           ),
@@ -221,7 +228,9 @@ class _OrderCard extends StatelessWidget {
           Text(
             '${order.itemCount} $itemsLabel · '
             '${order.fulfillmentChoice == 'PICKUP' ? 'À emporter' : 'Livraison'} · $date',
-            style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+            style: textTheme.bodySmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
           ),
           const Gap(AppSizes.sm),
           Row(
@@ -236,9 +245,7 @@ class _OrderCard extends StatelessWidget {
           //* Buyer reception-QR action — the order is out for delivery and the
           //* buyer must present the QR the driver scans. Reachable here so
           //* leaving the tracking screen doesn't dead-end the handoff.
-          if (onReceptionQr != null &&
-              order.status == 'IN_DELIVERY' &&
-              order.fulfillmentChoice != 'PICKUP') ...[
+          if (onReceptionQr != null && order.canShowReceptionQr) ...[
             const Gap(AppSizes.sm),
             Align(
               alignment: Alignment.centerRight,
@@ -375,7 +382,12 @@ class _PaidChip extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.label, required this.bg, required this.fg, this.icon});
+  const _Pill({
+    required this.label,
+    required this.bg,
+    required this.fg,
+    this.icon,
+  });
 
   final String label;
   final Color bg;
@@ -386,20 +398,20 @@ class _Pill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm, vertical: 4),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 13, color: fg),
-            const Gap(4),
-          ],
+          if (icon != null) ...[Icon(icon, size: 13, color: fg), const Gap(4)],
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: fg,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: fg,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -419,7 +431,10 @@ class _MessageList extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         const SizedBox(height: 120),
-        Padding(padding: const EdgeInsets.all(AppSizes.lg), child: Center(child: child)),
+        Padding(
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Center(child: child),
+        ),
       ],
     );
   }

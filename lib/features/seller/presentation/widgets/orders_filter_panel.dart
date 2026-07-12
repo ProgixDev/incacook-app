@@ -38,6 +38,8 @@ class _OrdersFilterPanelState extends State<OrdersFilterPanel> {
     AcceptedOrderStatus.awaitingAccept => AppTexts.sellerOrdersBadgeToAccept,
     AcceptedOrderStatus.readyToPickup =>
       AppTexts.sellerOrdersFilterReadyToPickup,
+    AcceptedOrderStatus.pickedUp => AppTexts.sellerOrdersBadgePickedUp,
+    AcceptedOrderStatus.inDelivery => AppTexts.sellerOrdersBadgeInDelivery,
     AcceptedOrderStatus.preparing => AppTexts.sellerOrdersFilterPreparing,
     AcceptedOrderStatus.completed => AppTexts.sellerOrdersFilterCompleted,
     AcceptedOrderStatus.cancelled => AppTexts.sellerOrdersBadgeCancelled,

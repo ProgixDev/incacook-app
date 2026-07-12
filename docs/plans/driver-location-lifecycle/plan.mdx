@@ -1,181 +1,172 @@
 ---
-title: "Driver App — Location Lifecycle"
+title: "Driver App — Location and Verified Delivery Lifecycle"
 slug: driver-location-lifecycle
 kind: plan
+status: implemented
+updated: 2026-07-11
 ---
 
-### Driver App — Location Lifecycle
+### Driver App — Location and Verified Delivery Lifecycle
 
-The driver app streams the courier's GPS through one shared `LocationService`,
-but two controllers drive it: `DeliveryDriverController` owns the **online**
-session and `DeliveryRouteController` owns the **active delivery**. The single
-stream runs in one of two platform modes — a battery-light **foreground** mode
-while the driver is idle-online, and a **background** mode (Android
-foreground-service + iOS background updates) that keeps the fix alive while the
-app is backgrounded mid-delivery, so live tracking never goes dark.
+The driver app now derives one GPS mode from two facts: whether the driver is
+online and whether they own an active delivery. A single
+`DriverLocationModeCoordinator` observes those facts and applies `off`,
+`foreground`, or `background` through `LocationService.applyMode`. Delivery,
+incoming-order, and route controllers mutate domain state but no longer start or
+stop the shared location stream themselves.
 
-Because two controllers share one stream, the *mode transitions* are the fragile
-part. This document captures the corrected lifecycle and the two ordering bugs
-just fixed: a relaunch-mid-delivery path that silently downgraded background →
-foreground, and an idle-GPS stall after a completed delivery. It is the first of
-a driver-app series under `docs/plans/`.
+The backend enforces the matching and handoff boundaries used by this client:
+only `READY` orders can be listed or claimed, no-driver timeout atomically retires
+the searchable delivery, and QR/absent delivery completion remains retryable if
+order or wallet finalization fails.
 
-### The GPS stream state machine
+### Location ownership and state machine
 
-<Diagram id="gps-state-machine" frame="show" caption="One shared stream, three driver states. The two fixed transitions are marked ▲ upgrade / ▼ re-arm.">
+<Diagram id="gps-state-machine" frame="show" caption="One coordinator owns every location-mode transition.">
 
 ```html
 <div class="sm">
-  <div class="col">
-    <div class="diagram-box" data-rough>
-      <div class="diagram-pill">GPS off</div>
-      <div class="diagram-node">Offline</div>
-      <div class="diagram-muted">no stream</div>
-    </div>
-    <div class="lane">
-      <div class="diagram-pill">go online → start()</div>
-      <div class="diagram-pill">go offline → stop()</div>
-    </div>
-    <div class="diagram-box" data-rough>
-      <div class="diagram-pill">GPS foreground</div>
-      <div class="diagram-node">Idle-online</div>
-      <div class="diagram-muted">poll /available · push ~1&#47;min</div>
-    </div>
-    <div class="lane">
-      <div class="diagram-pill" data-good>accept / restore → start(bg) ▲ upgrade</div>
-      <div class="diagram-pill" data-good>deliver → clearJob() ▼ re-arm foreground</div>
-    </div>
-    <div class="diagram-box" data-rough>
-      <div class="diagram-pill">GPS background</div>
-      <div class="diagram-node">Active delivery</div>
-      <div class="diagram-muted">foreground service · live push ~3s</div>
-    </div>
+  <div class="diagram-box" data-rough>
+    <div class="diagram-pill">online = false</div>
+    <div class="diagram-node">GPS off</div>
+    <div class="diagram-muted">No platform stream</div>
+  </div>
+  <div class="diagram-box" data-rough>
+    <div class="diagram-pill">online = true · active job = false</div>
+    <div class="diagram-node">Foreground heartbeat</div>
+    <div class="diagram-muted">Idle matching from the driver's current position</div>
+  </div>
+  <div class="diagram-box" data-rough>
+    <div class="diagram-pill">online = true · active job = true</div>
+    <div class="diagram-node">Background live tracking</div>
+    <div class="diagram-muted">Android foreground service · iOS background updates</div>
   </div>
   <div class="rule" data-rough>
-    <div class="diagram-muted">Invariant: <b>start()</b> only ever <b>upgrades</b> foreground → background.
-    A foreground start() while a background stream is live is a no-op, never an implicit downgrade.
-    Explicit downgrade goes through <b>stop()</b> then <b>start()</b>.</div>
+    <div class="diagram-muted"><b>DriverLocationModeCoordinator</b> serializes state changes and converges to the latest requested mode. Controllers never issue competing stream commands.</div>
   </div>
 </div>
 ```
 
 ```css
-.sm { display: flex; flex-direction: column; gap: 16px; }
-.col { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-.diagram-box { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 12px 16px; border: 1px solid var(--wf-line); border-radius: var(--wf-radius, 10px); background: var(--wf-card); }
-.diagram-node { font-weight: 700; color: var(--wf-ink); }
+.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.diagram-box { display: flex; flex-direction: column; gap: 5px; align-items: center; padding: 14px; border: 1px solid var(--wf-line); border-radius: var(--wf-radius, 10px); background: var(--wf-card); }
+.diagram-node { font-weight: 700; color: var(--wf-ink); text-align: center; }
 .diagram-muted { color: var(--wf-muted); font-size: 0.85em; text-align: center; }
-.diagram-pill { display: inline-block; padding: 2px 10px; border: 1px solid var(--wf-line); border-radius: 999px; color: var(--wf-ink); background: var(--wf-accent-soft); font-size: 0.82em; }
-.diagram-pill[data-good] { background: var(--wf-ok); }
-.lane { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.rule { padding: 10px 14px; border: 1px dashed var(--wf-line); border-radius: var(--wf-radius, 10px); background: var(--wf-paper); }
+.diagram-pill { display: inline-block; padding: 2px 10px; border: 1px solid var(--wf-line); border-radius: 999px; color: var(--wf-ink); background: var(--wf-accent-soft); font-size: 0.82em; text-align: center; }
+.rule { grid-column: 1 / -1; padding: 10px 14px; border: 1px dashed var(--wf-line); border-radius: var(--wf-radius, 10px); background: var(--wf-paper); }
+@media (max-width: 760px) { .sm { grid-template-columns: 1fr; } .rule { grid-column: auto; } }
 ```
 
 </Diagram>
 
-### End-to-end job flow
+The resolver is deliberately defensive: `(offline, active job)` resolves to
+`off`. Under normal server invariants a driver cannot claim while offline, but a
+single defined result prevents an ambiguous half-tracking state during restore
+or cancellation races.
 
-Once online, `IncomingOrderController` polls `GET /drivers/me/deliveries/available`,
-surfaces the first routable offer in the modal, and on accept the home screen
-`claim()`s it and calls `DeliveryRouteController.acceptJob()`, which bootstraps
-the driver → seller → client itinerary and upgrades the stream to background.
-The lifecycle then walks these stages — the persistent action bar and the full
-`JobLifecycleCard` share one `runStageCta`, so the compact and expanded views can
-never diverge on the money/penalty QR paths.
+### End-to-end verified delivery flow
 
 <Table
   id="stage-table"
-  columns={["Stage", "Driver sees", "Primary CTA", "Backend call", "Navigates to"]}
+  columns={["Boundary", "Authoritative rule", "Client outcome"]}
   rows={[
-    ["prepared", "Going to pickup", "Arrived at shop", "— (best-effort on next)", "Seller"],
-    ["arrivedPickup", "At the shop", "Picked up", "POST arrive-pickup", "Seller"],
-    ["onTheWay", "Going to client", "Arrived at door", "POST confirm-pickup (seller QR)", "Client"],
-    ["arrivedDropoff", "At the door", "Confirm delivery", "— (advance only)", "Client"],
-    ["delivered", "Delivered", "Finish → clearJob()", "POST confirm-delivery (buyer QR)", "—"],
-    ["failed", "Failed", "Finish → clearJob()", "report/abort path", "—"],
+    ["Available feed", "Delivery is SEARCHING and parent Order is READY", "Only actionable jobs appear"],
+    ["Claim", "Atomic update repeats the READY parent-order predicate", "A stale list result cannot win a timeout race"],
+    ["Pickup", "Driver scans the seller token for the assigned delivery", "Order moves to IN_DELIVERY"],
+    ["Reception", "Driver scans the buyer token while out for delivery", "Order ledger finalizes, then Delivery becomes DELIVERED"],
+    ["Absent buyer", "Photo + GPS are required", "Uses the same retry-safe order-first completion boundary"],
+    ["No driver", "Order prompt and Delivery retirement commit together", "The buyer can switch to pickup or cancel without a late claim"],
   ]}
 />
 
-<Callout id="qr-note" tone="info">
+<Callout id="completion-order" tone="decision">
 
-Pickup and delivery are **not** best-effort advances: they are token-validated QR
-scans (`confirmPickupScanned` / `confirmDeliveryScanned`) that rethrow `ApiFailure`
-so an invalid or duplicate QR surfaces the backend message and the stage does not
-advance. Fallbacks — seller-unavailable at pickup, client-absent (photo + GPS) at
-dropoff — and realtime `delivery:cancelled` events all clear the job the same way.
+Order/wallet completion is idempotent and runs before the Delivery row is marked
+`DELIVERED`. If finalization fails, the Delivery remains in an out-for-delivery
+state and the driver can retry. If the subsequent Delivery update fails, retrying
+is also safe because the order operation is idempotent.
 
 </Callout>
 
-### The two defects fixed
-
-Both were ordering bugs around the shared stream — invisible to `flutter analyze`
-and to the widget layer, which is why they survived until an end-to-end trace.
+### Failure modes closed
 
 <Table
   id="defect-table"
-  columns={["#", "Symptom", "Root cause", "Fix"]}
+  columns={["Symptom", "Root cause", "Implemented protection"]}
   rows={[
-    ["1", "After an app restart during a delivery, background persistence was silently off — the driver could 'disappear' while backgrounded.", "restoreActiveJob() starts the stream in background, then restoreOnlineState() calls start() (foreground); the old guard restarted the stream, tearing the foreground-service down.", "start() only restarts on an upgrade; a foreground start() over a live background stream is a no-op (shouldRestartStream)."],
-    ["2", "After finishing a delivery while staying online, GPS stopped entirely — idle matching pushed the frozen drop-off point and the online marker never moved.", "clearJob() calls stop() unconditionally; nothing re-armed the stream while the driver was still online.", "_onJobChanged re-arms foreground GPS on clear-while-online; stop() resets its mode flags synchronously so the re-arm doesn't race the in-flight cancel."],
+    ["Relaunch downgraded active background tracking", "Multiple controllers issued stream commands in different orders", "One coordinator derives and serializes the desired mode"],
+    ["GPS stopped after completing a delivery while online", "Job cleanup stopped the stream without a reliable re-arm", "Clearing the active job automatically converges to foreground mode"],
+    ["Driver could claim while buyer handled a no-driver prompt", "Delivery stayed SEARCHING and list/claim ignored Order status", "Atomic timeout retirement plus READY predicates in list and claim"],
+    ["Seller saw unpaid checkout rows", "Default seller query included PENDING", "Server excludes PENDING; client also hides it defensively"],
+    ["Pickup QR remained fetchable after handoff", "QR getter checked delivery existence but not Order status", "Server and client both require READY"],
+    ["Failed payout left an unretryable DELIVERED delivery", "Delivery was committed before order/wallet finalization", "Order-first idempotent completion for QR and absent-proof paths"],
   ]}
 />
 
-### What changed, by file
+### Implementation map
 
 <TabsBlock
   id="file-map"
   tabs={[
     {
-      id: "tab-location-service",
-      label: "location_service.dart",
+      id: "location-service",
+      label: "Location mode",
       blocks: [
         {
-          id: "annot-location-service",
+          id: "location-code",
           type: "annotated-code",
           data: {
             filename: "lib/core/services/location/location_service.dart",
             language: "dart",
-            code: "Future<bool> start({..., bool background = false}) async {\n  // Already streaming and no restart warranted -> nothing to do. Only an\n  // UPGRADE (foreground -> background) restarts.\n  if (_positionSub != null &&\n      !shouldRestartStream(\n        currentBackground: _backgroundMode,\n        requestedBackground: background,\n      )) {\n    return true;\n  }\n  if (!await ensurePermission()) return false;\n  // ... restart stream in the requested mode ...\n}\n\n/// Only an UPGRADE (foreground -> background) restarts. A foreground start()\n/// firing right after a background start() (relaunch-mid-delivery) must NOT\n/// tear the background service down. Explicit downgrade goes stop() then start().\nstatic bool shouldRestartStream({\n  required bool currentBackground,\n  required bool requestedBackground,\n}) =>\n    requestedBackground && !currentBackground;\n\nFuture<void> stop() async {\n  // Reset the mode flags synchronously (before the async cancel) so a start()\n  // triggered right after sees a clean, non-streaming state.\n  final sub = _positionSub;\n  _positionSub = null;\n  _backgroundMode = false;\n  await sub?.cancel();\n}",
+            code: "enum LocationMode { off, foreground, background }\n\nLocationMode desiredLocationMode({\n  required bool online,\n  required bool hasActiveJob,\n}) {\n  if (!online) return LocationMode.off;\n  return hasActiveJob\n      ? LocationMode.background\n      : LocationMode.foreground;\n}\n\nFuture<void> applyMode(LocationMode mode) async {\n  // Idempotent off / foreground / background convergence.\n}",
             annotations: [
-              { lines: "3-10", label: "Fix #1", note: "No-downgrade guard: foreground start() over a live background stream is a no-op." },
-              { lines: "16-20", label: "Pure rule", note: "Extracted + unit-tested (test/core/location_stream_mode_test.dart)." },
-              { lines: "22-28", label: "Fix #2 support", note: "Sync flag reset so the post-delivery re-arm doesn't race the cancel." },
+              { lines: "1-11", label: "Pure policy", note: "The complete 2×2 state matrix is unit-tested without platform channels." },
+              { lines: "13-15", label: "Single command", note: "Callers request a mode instead of coordinating start/stop themselves." },
+            ],
+          },
+        },
+        {
+          id: "coordinator-code",
+          type: "annotated-code",
+          data: {
+            filename: "lib/features/delivery/controllers/driver_location_mode_coordinator.dart",
+            language: "dart",
+            code: "class DriverLocationModeCoordinator<T extends Object> {\n  void start() {\n    // Observe online + activeJob and request convergence.\n  }\n\n  Future<void> _drain() async {\n    // Serialize changes and coalesce to the latest requested mode.\n  }\n}",
+            annotations: [
+              { lines: "2-4", label: "Inputs", note: "Online state and active-job state are the only location-mode inputs." },
+              { lines: "6-8", label: "Ordering", note: "Rapid restore, claim, completion, and cancellation changes cannot interleave stream operations." },
             ],
           },
         },
       ],
     },
     {
-      id: "tab-incoming",
-      label: "incoming_order_controller.dart",
+      id: "backend-guards",
+      label: "Backend guards",
       blocks: [
         {
-          id: "annot-incoming",
+          id: "claim-code",
           type: "annotated-code",
           data: {
-            filename: "lib/features/delivery/controllers/incoming_order_controller.dart",
-            language: "dart",
-            code: "void _onJobChanged(OrderDetail? job) {\n  if (job == null && DeliveryDriverController.instance.isOnline.value) {\n    // The finished delivery's stream was stopped by clearJob(); the driver is\n    // still online, so re-arm foreground GPS. Otherwise idle matching keeps\n    // pushing the (now frozen) drop-off position for the rest of the session.\n    unawaited(LocationService.instance.start());\n    _startPolling();\n  }\n}",
+            filename: "IncaCook-Server/src/modules/deliveries/deliveries.service.ts",
+            language: "typescript",
+            code: "WHERE d.status = 'SEARCHING'\n  AND o.status = 'READY'::\"OrderStatus\"\n\nUPDATE \"Delivery\"\nSET status = 'ASSIGNED'\nWHERE status = 'SEARCHING'\n  AND EXISTS (\n    SELECT 1 FROM \"Order\" o\n    WHERE o.id = \"Delivery\".\"orderId\"\n      AND o.status = 'READY'::\"OrderStatus\"\n  )",
             annotations: [
-              { lines: "6", label: "Fix #2", note: "Re-arm foreground GPS the instant a delivery clears while online." },
+              { lines: "1-2", label: "Visibility", note: "Timed-out or otherwise resolved orders disappear from the available feed." },
+              { lines: "4-11", label: "Atomic claim", note: "The parent state is checked again at the write boundary." },
             ],
           },
         },
-      ],
-    },
-    {
-      id: "tab-test",
-      label: "location_stream_mode_test.dart",
-      blocks: [
         {
-          id: "annot-test",
+          id: "timeout-code",
           type: "annotated-code",
           data: {
-            filename: "test/core/location_stream_mode_test.dart",
-            language: "dart",
-            code: "bool restart(bool current, bool requested) =>\n    LocationService.shouldRestartStream(\n      currentBackground: current,\n      requestedBackground: requested,\n    );\n\ntest('foreground -> background upgrades (restart)', () {\n  expect(restart(false, true), isTrue);\n});\ntest('background -> foreground never downgrades', () {\n  expect(restart(true, false), isFalse);\n});\ntest('same mode is a no-op', () {\n  expect(restart(false, false), isFalse);\n  expect(restart(true, true), isFalse);\n});",
+            filename: "IncaCook-Server/src/modules/orders/orders.service.ts",
+            language: "typescript",
+            code: "await prisma.$transaction(async (tx) => {\n  const retired = await tx.delivery.updateMany({\n    where: { id: delivery.id, status: 'SEARCHING', driverId: null },\n    data: { status: 'CANCELLED', failureReason: 'no_driver_available' },\n  });\n  if (retired.count !== 1) throw lostRace;\n\n  const prompted = await tx.order.updateMany({\n    where: { id: orderId, status: 'READY', fulfillmentChoice: 'DELIVERY' },\n    data: { status: 'NO_DRIVER_AVAILABLE' },\n  });\n  if (prompted.count !== 1) throw lostRace;\n});",
             annotations: [
-              { lines: "10-12", label: "Regression", note: "Locks the relaunch-mid-delivery invariant that silently broke #6." },
+              { lines: "1-6", label: "Retire offer", note: "A concurrently claimed delivery makes the whole transaction roll back." },
+              { lines: "8-12", label: "Prompt buyer", note: "Order and delivery cannot expose conflicting no-driver states." },
             ],
           },
         },
@@ -189,40 +180,38 @@ and to the widget layer, which is why they survived until an end-to-end trace.
 <Checklist
   id="verify"
   items={[
-    { id: "unit", label: "flutter test test/core/location_stream_mode_test.dart test/delivery — 12/12 pass", checked: true },
-    { id: "analyze", label: "flutter analyze lib/core/services/location lib/features/delivery — no issues", checked: true },
-    { id: "device-restore", label: "On-device: kill app mid-delivery, relaunch — confirm the foreground-service notification stays up (Android) / blue bar persists (iOS)" },
-    { id: "device-idle", label: "On-device: complete a delivery, stay online, drive away — confirm the green online marker tracks the new position" },
+    { id: "flutter-tests", label: "Flutter regression suite — 43 tests pass", checked: true },
+    { id: "flutter-analyze", label: "flutter analyze — no issues", checked: true },
+    { id: "backend-tests", label: "Backend Vitest suite — 187 tests pass", checked: true },
+    { id: "backend-static", label: "Backend TypeScript, ESLint, Prettier, and diff checks pass", checked: true },
+    { id: "ios-build", label: "Debug iOS build, install, and native launch succeeded on a physical iPhone (2026-07-10)", checked: true },
+    { id: "multi-device", label: "Manual multi-device transaction: seller pickup QR → driver scan → buyer reception QR → driver scan" },
+    { id: "background-qa", label: "Manual OS QA: background/lock/relaunch continuity on supported Android and iOS devices" },
   ]}
 />
 
-### Open Questions
+### Scope boundary
+
+This implementation does not change wire formats or database schema. Driver
+statistics and hydrated incoming-order filler remain separate gaps in feature
+spec 008. Production multi-device and background-location observation remains a
+manual QA responsibility because unit tests and successful builds cannot prove
+OS suspension behavior.
 
 <QuestionForm
   id="open-questions"
   questions={[
     {
-      id: "device-verify",
-      title: "How do we close the on-device verification of #1 / #2?",
-      subtitle: "Both fixes are proven at the unit + analyze level; the foreground-service / background-permission behavior can only be exercised on a real device.",
+      id: "manual-qa-owner",
+      title: "Who owns the final multi-device and background-location QA pass?",
+      subtitle: "Automated implementation verification is complete; these checks require real accounts and devices.",
       mode: "single",
       options: [
-        { id: "physical", label: "Run on a physical Android + iOS device", detail: "Only real path to exercise the foreground service, iOS 'Always' escalation, and background push.", recommended: true },
-        { id: "emulator", label: "Emulator smoke only", detail: "Cheaper, but emulators don't faithfully reproduce background-location throttling or the OS permission escalation." },
-        { id: "defer", label: "Defer — ship on the unit/analyze proof", detail: "Accept the risk that a device-only regression slips until QA." },
-      ],
-      required: true,
-    },
-    {
-      id: "series-scope",
-      title: "What should the next driver-app doc under docs/plans/ cover?",
-      mode: "single",
-      options: [
-        { id: "matching", label: "Online presence + matching lifecycle", detail: "isOnline expiry cron, heartbeat throttle, available-poll — ties to backend ADR-0002.", recommended: true },
-        { id: "watchdog", label: "Pre-pickup watchdog (ADR-0001)", detail: "Claim → no-arrival → PickupTimeout re-offer + retard strike, still lacking an e2e trip." },
-        { id: "money", label: "Payout + QR proof-of-delivery paths", detail: "Stripe Connect claim gate, confirm-pickup/delivery tokens, absent-dropoff proof." },
+        { id: "qa", label: "QA owner", detail: "Run the documented full-user journey on physical Android and iOS devices.", recommended: true },
+        { id: "release", label: "Release checklist", detail: "Keep the checks as a mandatory pre-release gate." },
+        { id: "defer", label: "Explicitly defer", detail: "Accept the remaining device-only risk for this release." },
       ],
     },
   ]}
-  submitLabel="Send answers"
+  submitLabel="Record QA ownership"
 />

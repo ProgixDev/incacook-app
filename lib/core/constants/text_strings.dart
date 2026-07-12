@@ -743,6 +743,8 @@ class AppTexts {
   static const String sellerOrdersFilterPreparing = "En préparation";
   static const String sellerOrdersFilterCompleted = "Terminé";
   static const String sellerOrdersBadgeToAccept = "À accepter";
+  static const String sellerOrdersBadgePickedUp = "Récupérée";
+  static const String sellerOrdersBadgeInDelivery = "En livraison";
   static const String sellerOrdersBadgeCancelled = "Annulée";
   static const String sellerOrdersSortByLabel = "Trier par";
   static const String sellerOrdersSortAcceptedTime = "Heure d'acceptation";
@@ -755,8 +757,10 @@ class AppTexts {
   static const String sellerOrderDetailsItemsLabel = "Articles";
   static const String sellerOrderDetailsFulfillmentLabel = "Mode";
   static const String sellerOrderDetailsFulfillmentDelivery = "Livraison";
-  static const String sellerOrderDetailsFulfillmentPickup = "À récupérer sur place";
-  static const String sellerOrderDetailsBuyerTotalLabel = "Total payé par le client";
+  static const String sellerOrderDetailsFulfillmentPickup =
+      "À récupérer sur place";
+  static const String sellerOrderDetailsBuyerTotalLabel =
+      "Total payé par le client";
   static const String sellerOrderDetailsEarningsLabel = "Vos revenus";
   static const String sellerOrderDetailsNoItems = "Aucun article";
 
@@ -944,6 +948,8 @@ class AppTexts {
   static const String deliveryConfirmedMessage = "Livraison confirmée";
   static const String deliveryQrUnavailable =
       "QR de réception indisponible pour le moment.";
+  static const String deliveryDemoJobUnavailable =
+      "Job de démonstration — aucune livraison réelle à confirmer.";
   // Client-absent dropoff (driver) — photo + GPS proof.
   static const String absentDropoffCta = "Client absent";
   static const String absentDropoffTitle = "Client absent";
@@ -998,6 +1004,8 @@ class AppTexts {
       "Commande annulée et remboursée : vendeur indisponible.";
   static const String sellerOrderCancelledNoFood =
       "Commande annulée : plat non disponible au retrait.";
+  static const String sellerOrderCancelledGeneric =
+      "Commande annulée : consultez les détails de la commande.";
   // No driver ever accepted the delivery → the order was cancelled + refunded.
   static const String sellerOrderCancelledNoDriver =
       "Commande annulée : aucun livreur n'a pris la course.";

@@ -3,6 +3,39 @@
 ## Date
 2026-07-05
 
+---
+
+## Update — 2026-07-06: Frontend now consumes `GET /v1/zones`
+
+The predefined hardcoded zone list in the driver signup page was a stopgap
+(see "Reverted Google Places Search" below) while the backend zones module
+was built. Now that `GET /v1/zones` is deployed and the `Zone` table is
+seeded, the Flutter app fetches its zones live instead of showing a baked-in
+list.
+
+**Files changed:**
+- `lib/core/models/zone.dart` (new) — freezed `Zone` model
+  (`id, name, displayOrder, isActive, city?, lat?, lng?`).
+- `lib/features/authentication/data/repositories/zones_repository.dart` (new)
+  — `getActiveZones()` → `GET /v1/zones`, ordered by `displayOrder`.
+- `lib/bindings/general_bindings.dart` — registered `ZonesRepository`.
+- `lib/features/.../signup_flow/driver/driver_zone_page.dart` — replaced the
+  hardcoded `_knownZones` const with a live fetch; added loading / error+retry
+  / empty-search states; kept the local search filter; removed the TODO.
+- `lib/core/constants/text_strings.dart` — load-error / retry / no-results
+  strings.
+
+**Contract preserved:** selections are still saved as free-text zone **names**
+via `PUT /v1/drivers/me/zones` (§3.18), so no backend change was required.
+The picker simply sources its options from the DB — new / renamed /
+deactivated zones now appear without an app release, and all seeded zones
+(not just the previous 10) are visible.
+
+**Still not implemented:** zone-based delivery filtering (open dispatch
+remains — see "What Doesn't Work Yet" below).
+
+---
+
 ## Changes Made
 
 ### Frontend Changes
@@ -115,10 +148,11 @@ model Zone {
 ## Current Behavior
 
 ### What Works ✅
-1. Drivers can select predefined zones during signup
-2. Zones are saved to database
+1. Drivers select zones fetched live from `GET /v1/zones` during signup
+   (as of 2026-07-06 — was a hardcoded list before)
+2. Zones are saved to database (free-text names, §3.18)
 3. Admin can manage zones via API
-4. Zones can be activated/deactivated without deployment
+4. Zones can be activated/deactivated without an app deployment
 
 ### What Doesn't Work Yet ⚠️
 1. **Zone-based delivery filtering** - NOT implemented

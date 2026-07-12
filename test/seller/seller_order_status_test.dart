@@ -9,13 +9,7 @@ import 'package:incacook/features/seller/domain/seller_order_status.dart';
 /// active "En préparation" badge. Every backend OrderStatus is asserted so a
 /// future status can't silently regress into the wrong pane.
 void main() {
-  const active = [
-    'PENDING',
-    'PREPARING',
-    'READY',
-    'IN_DELIVERY',
-    'PICKED_UP',
-  ];
+  const active = ['PREPARING', 'READY', 'IN_DELIVERY', 'PICKED_UP'];
   const terminal = [
     'DELIVERED',
     'COMPLETED',
@@ -28,6 +22,10 @@ void main() {
   group('sellerOrderBucket', () {
     test('CONFIRMED awaits acceptance (never history, never active)', () {
       expect(sellerOrderBucket('CONFIRMED'), SellerOrderBucket.toAccept);
+    });
+
+    test('unpaid PENDING orders are hidden from the seller', () {
+      expect(sellerOrderBucket('PENDING'), SellerOrderBucket.hidden);
     });
 
     test('in-progress statuses are active', () {
@@ -52,15 +50,24 @@ void main() {
       expect(sellerOrderBadge('CONFIRMED'), AcceptedOrderStatus.awaitingAccept);
     });
 
-    test('cancelled / refunded / disputed / no-driver → cancelled (the bug)', () {
-      for (final s in ['CANCELLED', 'REFUNDED', 'DISPUTED', 'NO_DRIVER_AVAILABLE']) {
-        expect(sellerOrderBadge(s), AcceptedOrderStatus.cancelled, reason: s);
-      }
-    });
+    test(
+      'cancelled / refunded / disputed / no-driver → cancelled (the bug)',
+      () {
+        for (final s in [
+          'CANCELLED',
+          'REFUNDED',
+          'DISPUTED',
+          'NO_DRIVER_AVAILABLE',
+        ]) {
+          expect(sellerOrderBadge(s), AcceptedOrderStatus.cancelled, reason: s);
+        }
+      },
+    );
 
-    test('READY / IN_DELIVERY → readyToPickup', () {
+    test('active handoff states have truthful badges', () {
       expect(sellerOrderBadge('READY'), AcceptedOrderStatus.readyToPickup);
-      expect(sellerOrderBadge('IN_DELIVERY'), AcceptedOrderStatus.readyToPickup);
+      expect(sellerOrderBadge('PICKED_UP'), AcceptedOrderStatus.pickedUp);
+      expect(sellerOrderBadge('IN_DELIVERY'), AcceptedOrderStatus.inDelivery);
     });
 
     test('DELIVERED / COMPLETED → completed', () {
@@ -68,18 +75,59 @@ void main() {
       expect(sellerOrderBadge('COMPLETED'), AcceptedOrderStatus.completed);
     });
 
-    test('PENDING / PREPARING / PICKED_UP → preparing', () {
+    test('PENDING / PREPARING → preparing', () {
       expect(sellerOrderBadge('PENDING'), AcceptedOrderStatus.preparing);
       expect(sellerOrderBadge('PREPARING'), AcceptedOrderStatus.preparing);
-      expect(sellerOrderBadge('PICKED_UP'), AcceptedOrderStatus.preparing);
     });
 
     test('a cancelled order never reads as an active badge', () {
-      expect(sellerOrderBadge('CANCELLED'), isNot(AcceptedOrderStatus.preparing));
+      expect(
+        sellerOrderBadge('CANCELLED'),
+        isNot(AcceptedOrderStatus.preparing),
+      );
       expect(
         sellerOrderBadge('NO_DRIVER_AVAILABLE'),
         isNot(AcceptedOrderStatus.readyToPickup),
       );
+    });
+  });
+
+  group('sellerCancellationBanner', () {
+    test('surfaces every supplied cancellation reason', () {
+      expect(
+        sellerCancellationBanner(
+          status: 'CANCELLED',
+          reason: 'driver_disappeared',
+        ),
+        SellerCancellationBanner.driverIncident,
+      );
+      expect(
+        sellerCancellationBanner(
+          status: 'REFUNDED',
+          reason: 'a_future_backend_reason',
+        ),
+        SellerCancellationBanner.generic,
+      );
+    });
+
+    test('does not invent a reason when none was supplied', () {
+      expect(
+        sellerCancellationBanner(status: 'CANCELLED', reason: null),
+        isNull,
+      );
+      expect(
+        sellerCancellationBanner(status: 'DELIVERED', reason: 'anything'),
+        isNull,
+      );
+    });
+  });
+
+  group('sellerCanShowPickupQr', () {
+    test('pickup proof is available only before the driver handoff', () {
+      expect(sellerCanShowPickupQr('READY'), isTrue);
+      expect(sellerCanShowPickupQr('IN_DELIVERY'), isFalse);
+      expect(sellerCanShowPickupQr('DELIVERED'), isFalse);
+      expect(sellerCanShowPickupQr('CANCELLED'), isFalse);
     });
   });
 }

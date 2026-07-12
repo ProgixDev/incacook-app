@@ -4,7 +4,23 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
-class LocationService extends GetxService {
+/// Platform behavior required by the driver's current work state.
+enum LocationMode { off, foreground, background }
+
+/// The single policy for choosing the driver's location behavior.
+LocationMode desiredLocationMode({
+  required bool online,
+  required bool hasActiveJob,
+}) {
+  if (!online) return LocationMode.off;
+  return hasActiveJob ? LocationMode.background : LocationMode.foreground;
+}
+
+abstract interface class LocationModeApplier {
+  Future<void> applyMode(LocationMode mode);
+}
+
+class LocationService extends GetxService implements LocationModeApplier {
   static LocationService get instance => Get.find();
 
   final Rx<Position?> currentPosition = Rx<Position?>(null);
@@ -23,6 +39,10 @@ class LocationService extends GetxService {
   /// [start] can restart the stream when the mode changes — e.g. idle-online
   /// (foreground) → active delivery (background).
   bool _backgroundMode = false;
+
+  LocationMode _mode = LocationMode.off;
+
+  LocationMode get mode => _mode;
 
   Future<bool> ensurePermission() async {
     if (!await Geolocator.isLocationServiceEnabled()) return false;
@@ -80,13 +100,30 @@ class LocationService extends GetxService {
 
     _positionSub =
         Geolocator.getPositionStream(
-          locationSettings:
-              _locationSettings(accuracy, distanceFilterMeters, background),
+          locationSettings: _locationSettings(
+            accuracy,
+            distanceFilterMeters,
+            background,
+          ),
         ).listen(
           (pos) => currentPosition.value = pos,
           onError: (_) => currentPosition.value = null,
         );
+    _mode = background ? LocationMode.background : LocationMode.foreground;
     return true;
+  }
+
+  @override
+  Future<void> applyMode(LocationMode mode) async {
+    switch (mode) {
+      case LocationMode.off:
+        await stop();
+      case LocationMode.foreground:
+        if (_backgroundMode) await stop();
+        await start();
+      case LocationMode.background:
+        await start(background: true);
+    }
   }
 
   /// Platform-specific stream settings. In [background] mode the Android
@@ -139,8 +176,7 @@ class LocationService extends GetxService {
   static bool shouldRestartStream({
     required bool currentBackground,
     required bool requestedBackground,
-  }) =>
-      requestedBackground && !currentBackground;
+  }) => requestedBackground && !currentBackground;
 
   Future<void> stop() async {
     // Reset the mode flags synchronously (before the async cancel) so a
@@ -150,6 +186,7 @@ class LocationService extends GetxService {
     final sub = _positionSub;
     _positionSub = null;
     _backgroundMode = false;
+    _mode = LocationMode.off;
     await sub?.cancel();
   }
 

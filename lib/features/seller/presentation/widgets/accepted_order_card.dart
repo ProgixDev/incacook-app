@@ -127,6 +127,16 @@ class _StatusBadge extends StatelessWidget {
         scheme.onPrimary,
         AppTexts.sellerOrdersFilterReadyToPickup,
       ),
+      AcceptedOrderStatus.pickedUp => (
+        scheme.tertiaryContainer,
+        scheme.onTertiaryContainer,
+        AppTexts.sellerOrdersBadgePickedUp,
+      ),
+      AcceptedOrderStatus.inDelivery => (
+        scheme.secondaryContainer,
+        scheme.onSecondaryContainer,
+        AppTexts.sellerOrdersBadgeInDelivery,
+      ),
       AcceptedOrderStatus.preparing => (
         //? high-contrast dark badge — inverseSurface flips correctly across
         //? modes (dark pill in light, light pill in dark) for the same

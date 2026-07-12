@@ -143,9 +143,11 @@ class DeliveryRouteController extends GetxController {
     if (!Get.isRegistered<TrackingSocketClient>()) return;
     _cancelSub = TrackingSocketClient.instance.deliveryCancellations().listen(
       (ev) {
-        if (!cancelMatchesJob(ev,
-            activeDeliveryId: _deliveryId,
-            activeOrderId: currentJob.value?.id)) {
+        if (!cancelMatchesJob(
+          ev,
+          activeDeliveryId: _deliveryId,
+          activeOrderId: currentJob.value?.id,
+        )) {
           return;
         }
         final message = ev.message.isNotEmpty
@@ -288,13 +290,13 @@ class DeliveryRouteController extends GetxController {
     clearJob();
   }
 
-  /// Clears the active job, the rendered route, and stops the position watcher.
+  /// Clears the active job, rendered route, and position watcher. Location mode
+  /// follows from the resulting driver state via the shared coordinator.
   void clearJob() {
     _positionWorker?.dispose();
     _positionWorker = null;
     _cancelSub?.cancel();
     _cancelSub = null;
-    LocationService.instance.stop();
     route.value = null;
     currentJob.value = null;
     currentStage.value = null;
@@ -312,15 +314,11 @@ class DeliveryRouteController extends GetxController {
     if (pickup == null && dropoff == null) return;
 
     final pos = await LocationService.instance.getCurrent();
-    final origin =
-        pos == null ? null : MapPoint(lng: pos.longitude, lat: pos.latitude);
+    final origin = pos == null
+        ? null
+        : MapPoint(lng: pos.longitude, lat: pos.latitude);
 
     route.value = await _computeItinerary(origin);
-    // Background-persistent tracking for the duration of the Active delivery:
-    // the Android foreground service / iOS background location keep the push
-    // loop alive while backgrounded so Live tracking doesn't go dark and the
-    // driver can't "disappear" mid-delivery (driver-background-persistence).
-    await LocationService.instance.start(background: true);
     _startPositionWatcher();
   }
 
@@ -330,13 +328,10 @@ class DeliveryRouteController extends GetxController {
   /// short hop to the shop. After pickup the seller waypoint drops off.
   List<MapPoint> _itineraryWaypoints(MapPoint? origin) {
     final p = pickup, d = dropoff;
-    final pickedUp = currentStage.value == OrderStage.onTheWay ||
+    final pickedUp =
+        currentStage.value == OrderStage.onTheWay ||
         currentStage.value == OrderStage.arrivedDropoff;
-    return <MapPoint>[
-      ?origin,
-      if (!pickedUp) ?p,
-      ?d,
-    ];
+    return <MapPoint>[?origin, if (!pickedUp) ?p, ?d];
   }
 
   /// Best-effort itinerary for the current leg: driver → (seller) → client.
@@ -410,7 +405,8 @@ class DeliveryRouteController extends GetxController {
       final sinceMs = now.difference(lastAt).inMilliseconds;
       if (sinceMs < _minPushIntervalMs) return;
       final lastP = _lastPushedPoint;
-      final movedEnough = lastP == null ||
+      final movedEnough =
+          lastP == null ||
           greatCircleDistance(lastP, point) >= _minPushDistanceM;
       final keepalive = sinceMs >= _keepaliveMs;
       if (!movedEnough && !keepalive) return;
@@ -447,19 +443,14 @@ class DeliveryRouteController extends GetxController {
   void onClose() {
     _positionWorker?.dispose();
     _cancelSub?.cancel();
-    LocationService.instance.stop();
     super.onClose();
   }
 }
 
 /// Thrown by the QR-handoff methods when the active job has no backend
 /// [Delivery] id (a demo/mock job). Real claimed jobs always carry one, so this
-/// only fires in demo flows — it surfaces a clear message instead of a silent
-/// dead tap when a QR is scanned. Its [toString] is the user-facing message.
+/// only fires in demo flows so presentation can surface a clear message instead
+/// of leaving a scanned QR as a silent no-op.
 class DemoJobException implements Exception {
   const DemoJobException();
-
-  @override
-  String toString() =>
-      'Job de démonstration — aucune livraison réelle à confirmer.';
 }

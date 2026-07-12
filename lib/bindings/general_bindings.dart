@@ -5,6 +5,7 @@ import 'package:incacook/core/services/map/google_directions_client.dart';
 import 'package:incacook/core/services/map/google_places_client.dart';
 import 'package:incacook/core/services/realtime/tracking_socket_client.dart';
 import 'package:incacook/core/utils/helpers/network_manager.dart';
+import 'package:incacook/features/authentication/data/repositories/zones_repository.dart';
 import 'package:incacook/features/chat/data/conversations_repository.dart';
 import 'package:incacook/features/chat/data/messages_repository.dart';
 import 'package:incacook/features/delivery/data/deliveries_repository.dart';
@@ -34,5 +35,6 @@ class GeneralBindings extends Bindings {
     Get.lazyPut(() => MessagesRepository(), fenix: true);
     Get.lazyPut(() => ConversationsRepository(), fenix: true);
     Get.lazyPut(() => NotificationsRepository(), fenix: true);
+    Get.lazyPut(() => ZonesRepository(), fenix: true);
   }
 }

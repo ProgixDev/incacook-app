@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/utils/popups/blurred_modal_sheet.dart';
+import 'package:incacook/core/widgets/qr/qr_token.dart';
 
 /// Bottom sheet that renders [qrData] as a QR for the other party to scan.
 /// Used by the seller (pickup proof) and the buyer (reception proof).
@@ -47,7 +48,7 @@ class _QrDisplaySheet extends StatelessWidget {
     // as selectable text so the handoff still works when the camera can't read
     // the QR (glare, cracked screen, one phone scanning another) — the driver's
     // scanner has a manual-entry fallback that was useless without this.
-    final token = Uri.tryParse(qrData)?.queryParameters['token'];
+    final token = handoffTokenFromPayload(qrData);
     return SafeArea(
       top: false,
       child: Padding(
@@ -57,7 +58,9 @@ class _QrDisplaySheet extends StatelessWidget {
           children: [
             Text(
               title,
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
             ),
             const Gap(AppSizes.md),
             Container(
@@ -85,7 +88,9 @@ class _QrDisplaySheet extends StatelessWidget {
             Text(
               instruction,
               textAlign: TextAlign.center,
-              style: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              style: textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
             if (token != null && token.isNotEmpty) ...[
               const Gap(AppSizes.md),

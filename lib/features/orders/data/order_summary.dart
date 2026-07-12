@@ -50,18 +50,23 @@ class OrderSummary {
 
   bool get isCancelled => status == 'CANCELLED' || status == 'REFUNDED';
 
+  bool get canShowReceptionQr =>
+      status == 'IN_DELIVERY' && fulfillmentChoice != 'PICKUP';
+
   factory OrderSummary.fromJson(Map<String, dynamic> json) {
     final rawItems = (json['items'] as List?)?.cast<dynamic>() ?? const [];
     final count = rawItems.fold<int>(
       0,
-      (sum, e) => sum + ((e as Map<String, dynamic>)['quantity'] as num? ?? 0).toInt(),
+      (sum, e) =>
+          sum + ((e as Map<String, dynamic>)['quantity'] as num? ?? 0).toInt(),
     );
     return OrderSummary(
       id: json['id'] as String,
       orderNumber: json['orderNumber'] as String? ?? '',
       status: json['status'] as String? ?? 'PENDING',
       buyerTotalCents: (json['buyerTotalCents'] as num?)?.toInt() ?? 0,
-      placedAt: DateTime.tryParse(json['placedAt'] as String? ?? '') ??
+      placedAt:
+          DateTime.tryParse(json['placedAt'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
       fulfillmentChoice: json['fulfillmentChoice'] as String? ?? 'DELIVERY',
       itemCount: count,

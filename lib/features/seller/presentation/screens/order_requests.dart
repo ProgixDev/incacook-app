@@ -30,17 +30,6 @@ const _kPreparing = 'PREPARING';
 const _kReady = 'READY';
 const _kInDelivery = 'IN_DELIVERY';
 const _kNoDriver = 'NO_DRIVER_AVAILABLE';
-const _kCancelled = 'CANCELLED';
-
-/// Cancellation reasons that get an explanatory banner on the seller card, so a
-/// cancelled order in Historique says *why* it ended (not just a red badge).
-const _bannerReasons = <String>{
-  'seller_unavailable',
-  'driver_disappeared',
-  'seller_cannot_provide',
-  'buyer_no_response_after_no_driver',
-  'no_driver_buyer_cancelled',
-};
 
 class OrderRequestsScreen extends StatefulWidget {
   const OrderRequestsScreen({super.key});
@@ -102,7 +91,9 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
     return diff < 0 ? 0 : diff;
   }
 
-  List<SellerOrderSummary> _applyFilterAndSort(List<SellerOrderSummary> source) {
+  List<SellerOrderSummary> _applyFilterAndSort(
+    List<SellerOrderSummary> source,
+  ) {
     // Explicit, exhaustive status → bucket (see [sellerOrderBucket]): a fresh
     // CONFIRMED order goes to "À accepter", terminal states to Historique, the
     // rest to "En cours" — no status can fall into the wrong pane by default.
@@ -111,20 +102,20 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
       OrdersTab.accepted => SellerOrderBucket.active,
       OrdersTab.history => SellerOrderBucket.history,
     };
-    final scoped =
-        source.where((o) => sellerOrderBucket(o.status) == bucket).toList();
+    final scoped = source
+        .where((o) => sellerOrderBucket(o.status) == bucket)
+        .toList();
     final filtered = _statusFilter == null
         ? scoped
         : scoped
-            .where((o) => sellerOrderBadge(o.status) == _statusFilter)
-            .toList();
-    return [...filtered]
-      ..sort((a, b) {
-        return switch (_sortBy) {
-          OrdersSortBy.acceptedTime => b.placedAt.compareTo(a.placedAt),
-          OrdersSortBy.totalPrice => b.totalEuros.compareTo(a.totalEuros),
-        };
-      });
+              .where((o) => sellerOrderBadge(o.status) == _statusFilter)
+              .toList();
+    return [...filtered]..sort((a, b) {
+      return switch (_sortBy) {
+        OrdersSortBy.acceptedTime => b.placedAt.compareTo(a.placedAt),
+        OrdersSortBy.totalPrice => b.totalEuros.compareTo(a.totalEuros),
+      };
+    });
   }
 
   Future<void> _advance(SellerOrderSummary o) async {
@@ -144,9 +135,9 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
       await _refresh();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Action failed: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Action failed: $e')));
     } finally {
       if (mounted) setState(() => _busy.remove(o.id));
     }
@@ -194,8 +185,10 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
     setState(() => _busy.add(o.id));
     try {
       final note = noteCtrl.text.trim();
-      await SellerOrdersRepository.instance
-          .cannotProvide(o.id, note: note.isEmpty ? null : note);
+      await SellerOrdersRepository.instance.cannotProvide(
+        o.id,
+        note: note.isEmpty ? null : note,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text(AppTexts.sellerCannotProvideSuccess)),
@@ -203,7 +196,9 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
       await _refresh();
     } on ApiFailure catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -226,11 +221,14 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
       );
     } on ApiFailure catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text(AppTexts.pickupQrUnavailable)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.pickupQrUnavailable)),
+      );
     }
   }
 
@@ -280,8 +278,11 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                       child: FutureBuilder<List<SellerOrderSummary>>(
                         future: _ordersFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState != ConnectionState.done) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState !=
+                              ConnectionState.done) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
                           if (snapshot.hasError) {
                             return _ErrorState(
@@ -289,7 +290,9 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                               onRetry: _refresh,
                             );
                           }
-                          final orders = _applyFilterAndSort(snapshot.data ?? const []);
+                          final orders = _applyFilterAndSort(
+                            snapshot.data ?? const [],
+                          );
                           if (orders.isEmpty) {
                             return ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
@@ -319,6 +322,11 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                 totalPrice: o.totalEuros,
                               );
                               final cta = _ctaLabel(o.status);
+                              final cancellationBanner =
+                                  sellerCancellationBanner(
+                                    status: o.status,
+                                    reason: o.cancellationReason,
+                                  );
                               // Seller ↔ driver chat for delivery orders once a
                               // driver is in the picture (READY → a driver is
                               // claiming; IN_DELIVERY → assigned). The backend
@@ -326,7 +334,11 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                               // with a SnackBar if none is assigned yet.
                               final showContactDriver =
                                   o.fulfillmentChoice == 'DELIVERY' &&
-                                  (o.status == _kReady || o.status == _kInDelivery);
+                                  (o.status == _kReady ||
+                                      o.status == _kInDelivery);
+                              final showPickupQr =
+                                  o.fulfillmentChoice == 'DELIVERY' &&
+                                  sellerCanShowPickupQr(o.status);
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -346,12 +358,11 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                   // seller couldn't provide (no fault beyond the
                                   // cancel) or driver disappeared (seller still
                                   // paid).
-                                  if (o.status == _kCancelled &&
-                                      o.cancellationReason != null &&
-                                      _bannerReasons.contains(
-                                          o.cancellationReason)) ...[
+                                  if (cancellationBanner != null) ...[
                                     const Gap(AppSizes.sm),
-                                    _OrderCancelledBanner(reason: o.cancellationReason!),
+                                    _OrderCancelledBanner(
+                                      kind: cancellationBanner,
+                                    ),
                                   ],
                                   if (cta != null) ...[
                                     const Gap(AppSizes.sm),
@@ -380,14 +391,26 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                             orderId: o.id,
                                             myRole: ParticipantRole.seller,
                                           ),
-                                      icon: const Icon(Icons.message_outlined, size: 18),
-                                      label: const Text(AppTexts.chatContactDriverCta),
+                                      icon: const Icon(
+                                        Icons.message_outlined,
+                                        size: 18,
+                                      ),
+                                      label: const Text(
+                                        AppTexts.chatContactDriverCta,
+                                      ),
                                     ),
+                                  ],
+                                  if (showPickupQr) ...[
                                     const Gap(AppSizes.sm),
                                     OutlinedButton.icon(
                                       onPressed: () => _showPickupQr(o.id),
-                                      icon: const Icon(Icons.qr_code_2, size: 18),
-                                      label: const Text(AppTexts.sellerPickupQrCta),
+                                      icon: const Icon(
+                                        Icons.qr_code_2,
+                                        size: 18,
+                                      ),
+                                      label: const Text(
+                                        AppTexts.sellerPickupQrCta,
+                                      ),
                                     ),
                                   ],
                                   // Seller proactive cancellation — only before
@@ -400,11 +423,17 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                       onPressed: _busy.contains(o.id)
                                           ? null
                                           : () => _cannotProvide(o),
-                                      icon: const Icon(Icons.cancel_outlined, size: 18),
-                                      label: const Text(AppTexts.sellerCannotProvideCta),
+                                      icon: const Icon(
+                                        Icons.cancel_outlined,
+                                        size: 18,
+                                      ),
+                                      label: const Text(
+                                        AppTexts.sellerCannotProvideCta,
+                                      ),
                                       style: OutlinedButton.styleFrom(
-                                        foregroundColor:
-                                            Theme.of(context).colorScheme.error,
+                                        foregroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.error,
                                       ),
                                     ),
                                   ],
@@ -443,7 +472,11 @@ class _NoDriverBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.no_transfer_outlined, size: 18, color: scheme.onErrorContainer),
+          Icon(
+            Icons.no_transfer_outlined,
+            size: 18,
+            color: scheme.onErrorContainer,
+          ),
           const Gap(AppSizes.sm),
           Expanded(
             child: Text(
@@ -464,21 +497,23 @@ class _NoDriverBanner extends StatelessWidget {
 /// provide the order at pickup, or the driver disappeared after pickup (seller
 /// is still paid in that case).
 class _OrderCancelledBanner extends StatelessWidget {
-  const _OrderCancelledBanner({required this.reason});
+  const _OrderCancelledBanner({required this.kind});
 
-  final String reason;
+  final SellerCancellationBanner kind;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final message = switch (reason) {
-      'driver_disappeared' => AppTexts.sellerDriverIncidentMaintained,
-      'seller_cannot_provide' => AppTexts.sellerCannotProvideBanner,
-      'buyer_no_response_after_no_driver' ||
-      'no_driver_buyer_cancelled' =>
+    final message = switch (kind) {
+      SellerCancellationBanner.driverIncident =>
+        AppTexts.sellerDriverIncidentMaintained,
+      SellerCancellationBanner.sellerCannotProvide =>
+        AppTexts.sellerCannotProvideBanner,
+      SellerCancellationBanner.noDriver =>
         AppTexts.sellerOrderCancelledNoDriver,
-      _ => AppTexts.sellerOrderCancelledNoFood,
+      SellerCancellationBanner.noFood => AppTexts.sellerOrderCancelledNoFood,
+      SellerCancellationBanner.generic => AppTexts.sellerOrderCancelledGeneric,
     };
     return Container(
       padding: const EdgeInsets.all(AppSizes.sm),

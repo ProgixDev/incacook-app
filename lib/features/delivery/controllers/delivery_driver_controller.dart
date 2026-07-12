@@ -84,11 +84,6 @@ class DeliveryDriverController extends GetxController {
     if (!serverOnline) return;
     isOnline.value = true;
     _onlineSince = DateTime.now();
-    try {
-      await LocationService.instance.start();
-    } catch (_) {
-      // GPS may be denied; matching still works off the last-known point.
-    }
     await refreshTodayStats();
   }
 
@@ -137,18 +132,15 @@ class DeliveryDriverController extends GetxController {
       );
       isOnline.value = next;
       if (next) {
-        // Start counting online-time and keep the geolocator stream open so
-        // the periodic push in DeliveryRouteController has data even before a
-        // job is accepted.
+        // Start counting online-time. The location-mode coordinator reacts to
+        // this state flip and opens the idle foreground stream.
         _onlineSince = DateTime.now();
-        await LocationService.instance.start();
       } else {
         // Fold the just-ended session into the running total.
         if (_onlineSince != null) {
           _accumulatedOnline += DateTime.now().difference(_onlineSince!);
           _onlineSince = null;
         }
-        LocationService.instance.stop();
       }
       // Reflect the new online-time (and pick up any deliveries closed while
       // online) on the dashboard card.
@@ -171,7 +163,8 @@ class DeliveryDriverController extends GetxController {
   }
 
   String _onlineFailureMessage(ApiFailure error) {
-    final isKycBlock = error.code == IncaCookErrorCodes.forbidden &&
+    final isKycBlock =
+        error.code == IncaCookErrorCodes.forbidden &&
         error.statusCode == 403 &&
         error.message.toLowerCase().contains('kyc');
     if (isKycBlock) {

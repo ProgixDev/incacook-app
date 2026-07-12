@@ -2,7 +2,7 @@
 
 **Feature ID**: `014-driver-location-mode`
 **Created**: 2026-07-09
-**Status**: Draft
+**Status**: Implemented (2026-07-10)
 **Mobile module**: `lib/core/services/location`, `lib/features/delivery`
 **Wire contract**: unchanged — `POST /v1/drivers/me/location` (existing);
 no new endpoints
@@ -239,3 +239,17 @@ relaunch, hand-off, or completed delivery can leave the GPS in the wrong mode.
   defensive edge: the one-active-per-driver + Online-to-claim invariants mean a
   Driver shouldn't normally be Offline with an Active delivery, but resolving it to
   a single defined mode avoids an ambiguous half-tracking state.
+
+## Verification Status
+
+- The resolver, restart rule, and ordered coordinator transition sequence are
+  covered by automated tests under `test/core/`.
+- Core, delivery, seller, and order regression suites pass; `flutter analyze`
+  reports no issues (43 Flutter tests as of 2026-07-11).
+- The corresponding backend order/delivery guarantees pass the complete server
+  suite (187 tests), TypeScript, ESLint, and Prettier checks.
+- A debug iOS build was signed, installed, and launched on a physical iPhone on
+  2026-07-10.
+- Background indicators, force-quit/relaunch continuity, and the complete
+  buyer→seller→driver production transaction remain manual multi-device QA
+  checks; code/build verification cannot substitute for those observations.

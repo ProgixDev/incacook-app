@@ -22,6 +22,14 @@ seller-unavailable cases), so I get paid.
 - `delivery_route_controller.dart` does Mapbox routing; screens `delivery_home`,
   `qr_scan_screen`, `absent_dropoff_screen`, `seller_unavailable_screen` +
   job-lifecycle / QR-handoff / issue-report sheets.
+- `DriverLocationModeCoordinator` is the single owner of GPS mode. It derives
+  `off`, `foreground`, or `background` from online + active-job state and
+  serializes rapid restore/claim/completion/cancellation transitions.
+- The available feed and atomic claim both require a `SEARCHING` delivery whose
+  parent order is still `READY`. No-driver timeout retires that delivery in the
+  same transaction that prompts the buyer.
+- Delivery and absent-dropoff proof remain retryable when order/wallet
+  finalization fails; server-side idempotency prevents duplicate credits.
 
 ## Gaps
 
@@ -41,6 +49,11 @@ seller-unavailable cases), so I get paid.
    seller-unavailable paths work.
 3. **Given** the driver home, **When** stats render, **Then** they come from
    real wallet/delivery data, not `delivery_driver_mock_data`.
+4. **Given** any online/job state transition, **When** state settles, **Then**
+   exactly one coordinator converges the shared location stream to the expected
+   mode.
+5. **Given** a no-driver timeout races a claim, **When** either wins, **Then** a
+   driver never receives an order already awaiting the buyer's decision.
 
 ## Minimal Data Contract
 
@@ -50,6 +63,9 @@ seller-unavailable cases), so I get paid.
 ## Execution Tasks
 
 - [x] Wire driver online/location/claim/QR/incident lifecycle.
+- [x] Centralize driver location mode and cover the full transition matrix.
+- [x] Guard available/claim against resolved parent orders.
+- [x] Keep QR and absent-proof completion retry-safe.
 - [ ] Wire `today_stats_card` to real earnings/delivery data.
 - [ ] Remove `_hydrateMock` filler; populate the order fully from the backend.
 - [ ] Delete `delivery_driver_mock_data.dart` once unused.

@@ -429,7 +429,8 @@ class SignupFlowController extends GetxController {
   bool get isEmailValid {
     final v = email.value;
     if (v.isEmpty) return false;
-    return RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(v);
+    // `+` allows sub-addressing (e.g. qa+driver-paris@incacook.fr).
+    return RegExp(r'^[\w+\-.]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(v);
   }
 
   bool get isPhoneValid {

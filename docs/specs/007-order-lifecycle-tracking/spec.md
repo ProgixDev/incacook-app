@@ -22,6 +22,16 @@ track my order accurately whether it's pickup or delivery.
   `qr_flutter` / `mobile_scanner`; live updates via `tracking_socket_client`.
 - Full backend lifecycle exists: `OrderStatus` / `DeliveryStatus` enums,
   no-driver-decision, delivery-proof, disputes.
+- Seller lists exclude unpaid `PENDING` checkout rows. The mobile seller bucket
+  also hides them defensively if an older server returns one.
+- Pickup proof is exposed only while an order is `READY`; reception proof is
+  exposed only while it is `IN_DELIVERY`.
+- A no-driver timeout atomically moves the order to `NO_DRIVER_AVAILABLE` and
+  retires its `SEARCHING` delivery. Available-job and claim queries independently
+  require the parent order to remain `READY`, closing stale-list claim races.
+- QR and absent-recipient completion finalize the idempotent order/wallet side
+  before marking the delivery `DELIVERED`, so a failure leaves a retryable driver
+  action instead of a split terminal state.
 
 ## Gaps (`docs/client-feedback.md` §1.4)
 
@@ -43,6 +53,14 @@ track my order accurately whether it's pickup or delivery.
    `start-preparing` / `mark-ready` / `pickup-qr` advance server state.
 3. **Given** a QR handoff, **When** scanned, **Then** the matching
    confirm-pickup / confirm-delivery endpoint fires.
+4. **Given** an unpaid checkout row, **When** the seller lists orders, **Then**
+   that `PENDING` row is not returned or rendered.
+5. **Given** a no-driver timeout racing a driver claim, **When** either write
+   wins, **Then** the order and delivery remain mutually consistent and a timed-
+   out order cannot be claimed.
+6. **Given** order/wallet finalization fails during delivery confirmation,
+   **When** the driver retries, **Then** the proof action remains retryable and
+   cannot double-credit funds.
 
 ## Minimal Data Contract
 
@@ -52,6 +70,9 @@ track my order accurately whether it's pickup or delivery.
 ## Execution Tasks
 
 - [x] Wire seller lifecycle + buyer tracking + QR + disputes.
+- [x] Enforce seller paid-order visibility and status-gated QR reachability.
+- [x] Close no-driver list/claim/decision races at the server write boundary.
+- [x] Make QR and absent-proof completion retry-safe.
 - [ ] Branch pickup-vs-delivery tracking title/subtitle; add new strings.
 - [ ] Confirm/repair the pickup stage path with backend.
 

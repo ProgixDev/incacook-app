@@ -5,6 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/widgets/qr/qr_token.dart';
 
 /// Driver-side camera scanner for a handoff QR (seller pickup or buyer
 /// reception). Pops with the extracted token (or null if the driver backs
@@ -39,23 +40,12 @@ class _QrScanScreenState extends State<QrScanScreen> {
     super.dispose();
   }
 
-  /// Pulls the token out of a scanned payload. Accepts a full
-  /// `incacook://...&token=XXX` URL or a bare token string.
-  static String? _extractToken(String raw) {
-    final trimmed = raw.trim();
-    if (trimmed.isEmpty) return null;
-    final uri = Uri.tryParse(trimmed);
-    final fromQuery = uri?.queryParameters['token'];
-    if (fromQuery != null && fromQuery.isNotEmpty) return fromQuery;
-    return trimmed;
-  }
-
   void _onDetect(BarcodeCapture capture) {
     if (_handled) return;
     for (final barcode in capture.barcodes) {
       final raw = barcode.rawValue;
       if (raw == null) continue;
-      final token = _extractToken(raw);
+      final token = handoffTokenFromPayload(raw, acceptBare: true);
       if (token != null) {
         _handled = true;
         Get.back<String>(result: token);
@@ -73,7 +63,9 @@ class _QrScanScreenState extends State<QrScanScreen> {
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(hintText: AppTexts.qrScanManualHint),
+          decoration: const InputDecoration(
+            hintText: AppTexts.qrScanManualHint,
+          ),
         ),
         actions: [
           TextButton(
@@ -87,7 +79,9 @@ class _QrScanScreenState extends State<QrScanScreen> {
         ],
       ),
     );
-    final parsed = (token == null || token.isEmpty) ? null : _extractToken(token);
+    final parsed = (token == null || token.isEmpty)
+        ? null
+        : handoffTokenFromPayload(token, acceptBare: true);
     if (parsed != null && !_handled && mounted) {
       _handled = true;
       Get.back<String>(result: parsed);

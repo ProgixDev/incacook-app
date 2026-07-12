@@ -9,6 +9,27 @@ import 'package:incacook/core/services/location/location_service.dart';
 /// foreground `start()` ran after the active-delivery's background `start()`
 /// and silently killed background persistence.
 void main() {
+  group('desiredLocationMode', () {
+    test('resolves the complete online and active-delivery matrix', () {
+      expect(
+        desiredLocationMode(online: false, hasActiveJob: false),
+        LocationMode.off,
+      );
+      expect(
+        desiredLocationMode(online: false, hasActiveJob: true),
+        LocationMode.off,
+      );
+      expect(
+        desiredLocationMode(online: true, hasActiveJob: false),
+        LocationMode.foreground,
+      );
+      expect(
+        desiredLocationMode(online: true, hasActiveJob: true),
+        LocationMode.background,
+      );
+    });
+  });
+
   bool restart(bool current, bool requested) =>
       LocationService.shouldRestartStream(
         currentBackground: current,

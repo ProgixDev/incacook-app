@@ -71,11 +71,6 @@ class IncomingOrderController extends GetxController {
 
   void _onJobChanged(OrderDetail? job) {
     if (job == null && DeliveryDriverController.instance.isOnline.value) {
-      // The finished delivery's stream was stopped by [clearJob]; the driver is
-      // still online, so re-arm foreground GPS. Otherwise idle matching keeps
-      // pushing the (now frozen) drop-off position for the rest of the session
-      // and the online marker never moves until a manual offline/online toggle.
-      unawaited(LocationService.instance.start());
       _startPolling();
     }
   }
@@ -125,7 +120,8 @@ class IncomingOrderController extends GetxController {
       final now = DateTime.now();
       final lastPush = _lastLocationPushAt;
       final pushDue =
-          lastPush == null || now.difference(lastPush) >= _minLocationPushInterval;
+          lastPush == null ||
+          now.difference(lastPush) >= _minLocationPushInterval;
       final pos = LocationService.instance.currentPosition.value;
       if (pushDue && pos != null) {
         try {
@@ -233,7 +229,8 @@ class IncomingOrderController extends GetxController {
             recipientName: s.recipientName,
             address: mock.deliveryDetails!.address.copyWith(
               fullAddress:
-                  s.dropoffFullAddress ?? mock.deliveryDetails!.address.fullAddress,
+                  s.dropoffFullAddress ??
+                  mock.deliveryDetails!.address.fullAddress,
               city: s.dropoffCity.isNotEmpty
                   ? s.dropoffCity
                   : mock.deliveryDetails!.address.city,

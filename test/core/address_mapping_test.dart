@@ -13,7 +13,7 @@ RetrievedPlace _place({
   String? country,
 }) {
   return RetrievedPlace(
-    mapboxId: 'id',
+    placeId: 'id',
     name: name,
     placeFormatted: placeFormatted,
     fullAddress: fullAddress,
