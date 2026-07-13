@@ -9,10 +9,18 @@ class DeliveryTopButtons extends StatelessWidget {
     super.key,
     // required this.onMenuTap,
     required this.onGpsTap,
+    this.onFitRouteTap,
   });
 
   // final VoidCallback onMenuTap;
+
+  /// Recenters the camera on the driver's current position.
   final VoidCallback onGpsTap;
+
+  /// Fits the camera to the whole active route (driver + pickup + dropoff +
+  /// polyline). Null when there is no active delivery, in which case the
+  /// button is hidden.
+  final VoidCallback? onFitRouteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +38,23 @@ class DeliveryTopButtons extends StatelessWidget {
               ),
             ),
 
-            //* gps — right column, mid-screen
+            //* right column, mid-screen: fit-route (when a job is active)
+            //* stacked above the driver-recenter GPS button.
             Align(
               alignment: Alignment.centerRight,
-              child: _CircleButton(icon: Iconsax.gps, onTap: onGpsTap),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (onFitRouteTap != null) ...[
+                    _CircleButton(
+                      icon: Iconsax.routing,
+                      onTap: onFitRouteTap!,
+                    ),
+                    const SizedBox(height: AppSizes.sm),
+                  ],
+                  _CircleButton(icon: Iconsax.gps, onTap: onGpsTap),
+                ],
+              ),
             ),
           ],
         ),
