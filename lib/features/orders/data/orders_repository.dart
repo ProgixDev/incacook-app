@@ -6,6 +6,7 @@ import 'package:incacook/core/models/cart_item.dart';
 import 'package:incacook/core/models/fulfillment_options.dart';
 import 'package:incacook/core/network/api_client.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
+import 'package:incacook/features/orders/data/buyer_order_detail.dart';
 import 'package:incacook/features/orders/data/order_summary.dart';
 
 /// Slim result of `POST /v1/orders`. The full response includes the
@@ -322,6 +323,18 @@ class OrdersRepository extends GetxService {
       decoder: (json) => (json! as List<dynamic>)
           .map((e) => OrderSummary.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+    return result.data;
+  }
+
+  /// `GET /v1/orders/:id` — the caller's full order (items, add-ons, price
+  /// breakdown, delivery address). Backs the buyer order-detail screen.
+  /// Throws [ApiFailure] if the order isn't the caller's.
+  Future<BuyerOrderDetail> getOrderDetail(String orderId) async {
+    final result = await _api.get<BuyerOrderDetail>(
+      '${ApiConstants.apiPrefix}/orders/$orderId',
+      decoder: (json) =>
+          BuyerOrderDetail.fromJson(json! as Map<String, dynamic>),
     );
     return result.data;
   }

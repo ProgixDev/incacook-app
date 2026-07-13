@@ -12,6 +12,7 @@ import 'package:incacook/core/widgets/qr/qr_display_sheet.dart';
 import 'package:incacook/features/orders/data/order_summary.dart';
 import 'package:incacook/features/orders/data/orders_repository.dart';
 import 'package:incacook/features/orders/presentation/screens/dispute_screen.dart';
+import 'package:incacook/features/orders/presentation/screens/order_detail_screen.dart';
 import 'package:incacook/features/reviews/presentation/review_sheet.dart';
 
 /// Profile "Mes commandes" history. Buyer mode lists the user's own orders;
@@ -73,6 +74,14 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     if (created == true && mounted) {
       await _refresh();
     }
+  }
+
+  /// Opens the full order detail (items, price breakdown, delivery address,
+  /// and a "Suivre ma commande" button for in-flight orders). Refreshes on
+  /// return so any review/dispute done from within is reflected.
+  Future<void> _openDetail(OrderSummary order) async {
+    await Get.to(() => OrderDetailScreen(orderId: order.id));
+    if (mounted) await _refresh();
   }
 
   /// Fetches the buyer's reception QR and shows it for the driver to scan —
@@ -146,6 +155,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
               itemBuilder: (_, i) => _OrderCard(
                 order: orders[i],
                 showPaidBadge: widget.isSeller,
+                onTap: () => _openDetail(orders[i]),
                 // Buyers can review a delivered order.
                 onReview: widget.isSeller ? null : () => _openReview(orders[i]),
                 // Buyers can report a post-delivery problem.
@@ -171,6 +181,7 @@ class _OrderCard extends StatelessWidget {
   const _OrderCard({
     required this.order,
     required this.showPaidBadge,
+    this.onTap,
     this.onReview,
     this.onDispute,
     this.onReceptionQr,
@@ -178,6 +189,10 @@ class _OrderCard extends StatelessWidget {
 
   final OrderSummary order;
   final bool showPaidBadge;
+
+  /// Opens the full order detail. The row body is tappable; the inner action
+  /// buttons keep their own handlers.
+  final VoidCallback? onTap;
 
   /// Buyer-side review action; shown only for DELIVERED orders.
   final VoidCallback? onReview;
@@ -200,7 +215,10 @@ class _OrderCard extends StatelessWidget {
     ).format(order.placedAt);
     final itemsLabel = order.itemCount > 1 ? 'articles' : 'article';
 
-    return FrostedSurface(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: FrostedSurface(
       borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
       padding: const EdgeInsets.all(AppSizes.md),
       child: Column(
@@ -287,6 +305,7 @@ class _OrderCard extends StatelessWidget {
             ),
           ],
         ],
+      ),
       ),
     );
   }
