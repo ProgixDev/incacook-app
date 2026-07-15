@@ -107,11 +107,23 @@ class UserController extends GetxController {
   bool get driverPayoutReady =>
       user.value?.driverAccount?.stripeOnboardingCompleted ?? false;
 
-  /// Driver-only: whether to show the wallet "Configurer mes paiements" prompt.
-  /// True when the connected user is a driver who hasn't set up payouts yet.
-  bool get driverNeedsPayoutSetup {
-    final d = user.value?.driverAccount;
-    return d != null && !d.stripeOnboardingCompleted;
+  /// Whether to show the wallet's "Configurer mes paiements" prompt: the
+  /// connected earner — seller *or* driver — hasn't finished Stripe Connect
+  /// payout onboarding. Connect gates withdrawal only, never earning, so this is
+  /// a prompt and not a block.
+  ///
+  /// Role-agnostic deliberately. Wallet lives under the ungated Profil tab, and
+  /// for a seller it is the only route to payout setup: once a subscription
+  /// lapses, the home banner falls behind [SubscriptionGate] while earnings —
+  /// which accrued without Connect — stay stranded. Withdrawing money already
+  /// earned must never require an active subscription.
+  bool get needsPayoutSetup {
+    final u = user.value;
+    final driver = u?.driverAccount;
+    if (driver != null) return !driver.stripeOnboardingCompleted;
+    final seller = u?.sellerAccount;
+    if (seller != null) return !seller.stripeOnboardingCompleted;
+    return false;
   }
 
   /// Whether the connected driver may claim deliveries — mirrors the backend

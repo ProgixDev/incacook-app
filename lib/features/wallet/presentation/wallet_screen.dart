@@ -105,10 +105,11 @@ class _WalletScreenState extends State<WalletScreen> {
               children: [
                 _BalanceCard(summary: s),
                 const Gap(AppSizes.md),
-                // Driver payout setup prompt — only while not yet configured.
-                // Reactive so it disappears once onboarding completes.
+                // Payout setup prompt for either earner role, while not yet
+                // configured. Reactive so it disappears once onboarding
+                // completes.
                 Obx(
-                  () => UserController.instance.driverNeedsPayoutSetup
+                  () => UserController.instance.needsPayoutSetup
                       ? Padding(
                           padding: const EdgeInsets.only(bottom: AppSizes.md),
                           child: _PayoutSetupCard(onConfigure: _configurePayments),
@@ -239,7 +240,7 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-/// Non-blocking prompt: drivers can deliver + earn without Stripe payout
+/// Non-blocking prompt: sellers and drivers both earn without Stripe payout
 /// onboarding; it's only needed to withdraw. Shown in the wallet until set up.
 class _PayoutSetupCard extends StatelessWidget {
   const _PayoutSetupCard({required this.onConfigure});
