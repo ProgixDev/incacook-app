@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -86,9 +87,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         if (_controller.error.value != null && _controller.items.isEmpty) {
+          // Debug builds append the raw error (status code + message) so a
+          // failing inbox is self-diagnosing during testing; release builds
+          // keep the friendly message only.
+          final detail = kDebugMode ? '\n\n${_controller.error.value}' : '';
           return _InboxMessage(
             icon: Iconsax.warning_2,
-            text: 'Impossible de charger les notifications.',
+            text: 'Impossible de charger les notifications.$detail',
             action: TextButton(
               onPressed: _controller.refreshInbox,
               child: const Text('Réessayer'),

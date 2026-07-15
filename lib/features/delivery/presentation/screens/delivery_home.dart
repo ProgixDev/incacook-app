@@ -385,6 +385,25 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
     );
   }
 
+  /// Fits the camera to the whole active route — driver, pickup, dropoff and
+  /// the drawn polyline — on demand (the map only frames automatically when the
+  /// route/job first changes). Uses the computed route points (which already
+  /// include the driver→seller→client itinerary) and falls back to the known
+  /// stops when the polyline hasn't been computed yet.
+  Future<void> _fitActiveRoute() async {
+    final points = _route.route.value?.points;
+    if (points != null && points.isNotEmpty) {
+      await _framePoints(points);
+      return;
+    }
+    final stops = <MapPoint>[
+      if (_route.currentDriverPosition != null) _route.currentDriverPosition!,
+      if (_route.pickup != null) _route.pickup!,
+      if (_route.dropoff != null) _route.dropoff!,
+    ];
+    if (stops.isNotEmpty) await _framePoints(stops);
+  }
+
   Future<void> _framePoints(List<MapPoint> points, {bool retry = true}) async {
     final map = _map;
     if (map == null || points.isEmpty) return;
@@ -474,7 +493,13 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
               ),
             ),
           ),
-          DeliveryTopButtons(onGpsTap: _centerOnDriver),
+          Obx(
+            () => DeliveryTopButtons(
+              onGpsTap: _centerOnDriver,
+              onFitRouteTap:
+                  _route.currentJob.value != null ? _fitActiveRoute : null,
+            ),
+          ),
           //* Payout setup nudge — sits just under the top buttons until the
           //* driver completes Stripe Connect Express onboarding. Hidden once
           //* payouts are ready so it disappears right after onboarding (no

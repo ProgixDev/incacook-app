@@ -3,6 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:incacook/core/services/map/models/map_route.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
@@ -300,6 +303,57 @@ class _DestinationBlock extends StatelessWidget {
   final _StageSpec spec;
   final OrderDetail job;
 
+  /// The coordinate + text query for the current stage's destination.
+  /// Pickup always has coordinates (seller location); the dropoff coordinate
+  /// can be null when the client address hasn't been geocoded, in which case
+  /// we fall back to the text address so Maps can still route to it.
+  (MapPoint?, String) get _destination => switch (spec.target) {
+        _Target.pickup => (
+            job.seller.location,
+            [job.seller.name, job.seller.neighborhood]
+                .where((s) => s.isNotEmpty)
+                .join(', '),
+          ),
+        _Target.dropoff => (
+            job.deliveryDetails?.address.coordinate,
+            [
+              job.deliveryDetails?.address.line1 ?? '',
+              job.deliveryDetails?.address.line2 ?? '',
+            ].where((s) => s.isNotEmpty).join(', '),
+          ),
+      };
+
+  /// Opens Google Maps with driving directions to this stage's destination.
+  Future<void> _openDirections(BuildContext context) async {
+    final (coord, query) = _destination;
+    final String destParam;
+    if (coord != null) {
+      destParam = '${coord.lat},${coord.lng}';
+    } else if (query.isNotEmpty) {
+      destParam = Uri.encodeComponent(query);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Adresse indisponible pour l’itinéraire.'),
+          ),
+        );
+      }
+      return;
+    }
+
+    final uri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$destParam',
+    );
+    final launched =
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible d’ouvrir Google Maps.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -312,54 +366,70 @@ class _DestinationBlock extends StatelessWidget {
       ),
     };
 
-    return Container(
-      padding: const EdgeInsets.all(AppSizes.md),
-      decoration: BoxDecoration(
-        color: scheme.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: scheme.primary.withValues(alpha: 0.18),
-              shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () => _openDirections(context),
+      child: Container(
+        padding: const EdgeInsets.all(AppSizes.md),
+        decoration: BoxDecoration(
+          color: scheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: scheme.primary.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(spec.icon, color: scheme.primary, size: 20),
             ),
-            alignment: Alignment.center,
-            child: Icon(spec.icon, color: scheme.primary, size: 20),
-          ),
-          const Gap(AppSizes.sm + 2),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleSmall?.copyWith(
-                    color: scheme.onSurface,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                if (subtitle.isNotEmpty) ...[
-                  const Gap(2),
+            const Gap(AppSizes.sm + 2),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle,
-                    maxLines: 2,
+                    title,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
+                    style: textTheme.titleSmall?.copyWith(
+                      color: scheme.onSurface,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
+                  if (subtitle.isNotEmpty) ...[
+                    const Gap(2),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+            //* Tappable directions affordance — the whole block routes to
+            //* Google Maps, this icon signals it.
+            const Gap(AppSizes.sm),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: scheme.primary.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(Iconsax.direct_right, color: scheme.primary, size: 20),
+            ),
+          ],
+        ),
       ),
     );
   }

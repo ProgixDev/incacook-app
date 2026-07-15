@@ -35,6 +35,25 @@ class NotificationsRepository extends GetxService {
         'before': ?before,
       },
       decoder: (json) {
+        // The current backend returns `{ items, hasMore, unreadCount }`. An
+        // older deployed build returns a bare array of notifications (the
+        // envelope's `data` is the list itself). Accept both so the inbox
+        // works regardless of which server version is live — otherwise the
+        // `as Map` cast throws on the array shape and the screen shows
+        // "Impossible de charger les notifications".
+        if (json is List) {
+          final items = json
+              .map((e) => AppNotification.fromJson(e as Map<String, dynamic>))
+              .toList();
+          return NotificationsPage(
+            items: items,
+            // The legacy array shape carries no cursor/meta; disable paging
+            // (avoids re-fetching page 1 if the old server ignores `before`)
+            // and derive the badge from what we have.
+            hasMore: false,
+            unreadCount: items.where((n) => !n.read).length,
+          );
+        }
         final m = json! as Map<String, dynamic>;
         return NotificationsPage(
           items: (m['items'] as List<dynamic>? ?? const [])
