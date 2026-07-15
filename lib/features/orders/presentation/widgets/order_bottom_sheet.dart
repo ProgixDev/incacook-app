@@ -74,6 +74,7 @@ class OrderBottomSheet extends StatelessWidget {
             const Gap(AppSizes.lg),
             OrderDelivererPill(
               name: driver!.fullName,
+              totalDeliveries: driver!.totalDeliveries,
               avatarUrl: ApiConstants.publicImageUrl(driver!.avatarPath),
               onCallTap: onCallTap,
               onChatTap: onChatTap,

@@ -36,6 +36,7 @@ class TrackingDriver {
     required this.lastName,
     this.avatarPath,
     this.phone,
+    this.totalDeliveries = 0,
   });
 
   final String firstName;
@@ -45,6 +46,10 @@ class TrackingDriver {
   final String? avatarPath;
   final String? phone;
 
+  /// Lifetime completed deliveries, shown to the buyer as the driver's
+  /// experience. `0` is truthful for a driver on their first job.
+  final int totalDeliveries;
+
   String get fullName => '$firstName $lastName'.trim();
 
   factory TrackingDriver.fromJson(Map<String, dynamic> m) => TrackingDriver(
@@ -52,6 +57,7 @@ class TrackingDriver {
         lastName: (m['lastName'] as String?) ?? '',
         avatarPath: m['avatarPath'] as String?,
         phone: m['phone'] as String?,
+        totalDeliveries: (m['totalDeliveries'] as num?)?.toInt() ?? 0,
       );
 }
 

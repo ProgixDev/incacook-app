@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/network/api_response.dart';
+import 'package:incacook/core/network/error_codes.dart';
 import 'package:incacook/core/services/realtime/chat_message.dart';
 import 'package:incacook/features/chat/data/conversations_repository.dart';
 import 'package:incacook/features/chat/presentation/screens/chat.dart';
@@ -56,7 +59,9 @@ class ChatNavigator {
   /// Created automatically when the driver claims the delivery; this just opens
   /// it. The backend derives the counterpart from [orderId] (the seller doesn't
   /// know the driver's user id and vice-versa) and rejects the call until a
-  /// driver is assigned (surfaced as a SnackBar). [myRole] is SELLER on the
+  /// driver is assigned. Callers should gate their CTA on the order's
+  /// `driverAssigned` rather than lean on that rejection — an order is READY
+  /// with no driver for as long as dispatch takes. [myRole] is SELLER on the
   /// seller side, DELIVERY on the driver side.
   static Future<void> openSellerDriver({
     required BuildContext context,
@@ -94,11 +99,27 @@ class ChatNavigator {
           title: peerName,
         ),
       );
+    } on ApiFailure catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_openFailureMessage(e))));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Impossible d\'ouvrir la conversation: $e')),
       );
     }
+  }
+
+  /// User-facing copy for a failed open. Interpolating the raw [ApiFailure]
+  /// leaked the error code and correlation id into the SnackBar; branch on the
+  /// typed code and fall back to the backend's message, which is already
+  /// human-readable for the cases we don't special-case.
+  static String _openFailureMessage(ApiFailure e) {
+    if (e.code == IncaCookErrorCodes.noDriverAvailable) {
+      return AppTexts.chatNoDriverAssignedYet;
+    }
+    return e.message;
   }
 }

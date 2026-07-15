@@ -145,6 +145,14 @@ class LocationService extends GetxService implements LocationModeApplier {
                     'Suivi de votre position pour la livraison en cours.',
                 enableWakeLock: true,
                 setOngoing: true,
+                // Without this, geolocator defaults to `@mipmap/ic_launcher` —
+                // the full-colour PNG, which Android alpha-masks to a white
+                // square. `ic_stat_notification` is the monochrome silhouette
+                // the FCM path already uses.
+                notificationIcon: AndroidResource(
+                  name: 'ic_stat_notification',
+                  defType: 'drawable',
+                ),
               )
             : null,
       );

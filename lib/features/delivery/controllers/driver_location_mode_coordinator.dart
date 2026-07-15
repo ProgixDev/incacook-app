@@ -19,6 +19,16 @@ class DriverLocationModeCoordinator<T extends Object> {
   final LocationModeApplier location;
   final void Function(Object error)? onError;
 
+  /// The coordinator that currently owns the shared [LocationService] mode.
+  ///
+  /// [location] is an app-permanent singleton, so ownership of it has to be
+  /// arbitrated globally. Two coordinators overlap whenever the delivery screen
+  /// is replaced while already mounted — `Get.offAll(DeliveryHomeScreen)` on a
+  /// dispatch push does exactly that, and the incoming screen's [start] races
+  /// the outgoing screen's [dispose]. Without this, a late-landing release from
+  /// the dead coordinator would switch off the live one's tracking.
+  static Object? _owner;
+
   Worker? _onlineWorker;
   Worker? _jobWorker;
   LocationMode? _requestedMode;
@@ -26,6 +36,7 @@ class DriverLocationModeCoordinator<T extends Object> {
   Completer<void>? _settling;
 
   Future<void> start() {
+    _owner = this;
     _onlineWorker ??= ever<bool>(online, (_) => unawaited(_reconcile()));
     _jobWorker ??= ever<T?>(activeJob, (_) => unawaited(_reconcile()));
     return _reconcile();
@@ -66,10 +77,33 @@ class DriverLocationModeCoordinator<T extends Object> {
     }
   }
 
+  /// Disposes the observers and releases the location mode.
+  ///
+  /// The applier ([LocationService]) is app-permanent, so it outlives this
+  /// coordinator. Dropping the workers without switching off would orphan a
+  /// running foreground service with nothing left to ever stop it — the
+  /// "Livraison en cours" notification would then survive re-entering the app,
+  /// since a warm resume never re-runs [start]. Re-entry rebuilds the
+  /// coordinator and reconciles back to the right mode, so releasing here is
+  /// safe.
+  ///
+  /// Skips the release when another coordinator has already claimed the mode
+  /// (see [_owner]) — that one's state is the live one, and switching off
+  /// underneath it would kill tracking mid-delivery. Best-effort: teardown must
+  /// never throw at the caller.
   void dispose() {
     _onlineWorker?.dispose();
     _jobWorker?.dispose();
     _onlineWorker = null;
     _jobWorker = null;
+    _requestedMode = null;
+    _appliedMode = null;
+    if (!identical(_owner, this)) return;
+    _owner = null;
+    unawaited(
+      Future<void>.sync(() => location.applyMode(LocationMode.off)).catchError(
+        (Object error) => onError?.call(error),
+      ),
+    );
   }
 }

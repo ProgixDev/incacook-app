@@ -25,4 +25,10 @@ class IncaCookErrorCodes {
 
   // Users / profile.
   static const String userProfileAlreadyComplete = 'INCACOOK_USER_PROFILE_ALREADY_COMPLETE';
+
+  // Drivers.
+  /// No driver holds the order's delivery yet. Returned when a driver-directed
+  /// action (opening the seller↔driver or buyer↔driver chat) runs before the
+  /// claim — an order sits READY with no driver until dispatch finds one.
+  static const String noDriverAvailable = 'INCACOOK_NO_DRIVER_AVAILABLE';
 }

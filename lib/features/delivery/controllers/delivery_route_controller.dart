@@ -173,10 +173,19 @@ class DeliveryRouteController extends GetxController {
   ///   arrivedDropoff  -> delivered        : POST confirm-delivery
   /// Backend errors don't block the local UI advance (kept best-effort
   /// so the demo doesn't lock up on a transient network blip).
+  ///
+  /// A terminal [next] clears the job. Without this, an aborted trip leaves
+  /// `currentJob` non-null, so [desiredLocationMode] keeps returning
+  /// `background` and the "Livraison en cours" notification never goes away.
   Future<void> advanceStage(OrderStage next) async {
     final prev = currentStage.value;
     currentStage.value = next;
     await _syncBackendTransition(prev, next);
+
+    if (next.isTerminal) {
+      clearJob();
+      return;
+    }
 
     final destinationFlipped =
         prev == OrderStage.arrivedPickup && next == OrderStage.onTheWay;

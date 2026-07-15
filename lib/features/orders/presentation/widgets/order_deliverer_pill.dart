@@ -11,6 +11,7 @@ class OrderDelivererPill extends StatelessWidget {
   const OrderDelivererPill({
     super.key,
     required this.name,
+    required this.totalDeliveries,
     this.avatarUrl,
     this.onCallTap,
     this.onChatTap,
@@ -19,6 +20,10 @@ class OrderDelivererPill extends StatelessWidget {
   /// Real assigned driver's display name. The pill is only shown once a
   /// driver is assigned, so this is never a placeholder.
   final String name;
+
+  /// The driver's real lifetime completed deliveries, from the tracking
+  /// snapshot. Rendered via [AppTexts.trackingDelivererMeta].
+  final int totalDeliveries;
 
   /// Resolved avatar URL (from the driver's avatarPath); null falls back to
   /// the default profile asset.
@@ -57,7 +62,7 @@ class OrderDelivererPill extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  AppTexts.trackingDelivererMeta,
+                  AppTexts.trackingDelivererMeta(totalDeliveries),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white.withValues(alpha: 0.7),
                   ),

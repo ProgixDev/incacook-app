@@ -23,8 +23,12 @@ class GoOnlineButton extends StatelessWidget {
       final disabledReason = controller.onlineDisabledReason;
       final canTap = !busy && controller.canToggleOnline;
       final disabled = !isOnline && !controller.canToggleOnline;
+      // Online but holding a delivery: going offline mid-job is refused (here
+      // and by the server). Distinct from [disabled], which is the offline-side
+      // KYC block — this one keeps the "Go Offline" affordance but dims it.
+      final lockedByJob = isOnline && !controller.canToggleOnline;
       final color = isOnline
-          ? BrandColors.error
+          ? BrandColors.error.withValues(alpha: lockedByJob ? 0.45 : 1)
           : disabled
           ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)
           : BrandColors.success;

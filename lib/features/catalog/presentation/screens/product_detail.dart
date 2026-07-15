@@ -529,6 +529,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final price = (l.priceCents / 100).toStringAsFixed(2);
+    // Same identity resolution as the buyer view: the seller sees their own
+    // dish presented the way buyers do. Coalesced across the detail re-fetch
+    // and the list row, since either can be the first to carry the seller.
+    final resolvedSellerName = _firstNonEmpty(
+      _fetched?.sellerName,
+      widget.listing?.sellerName,
+    );
+    final sellerAvatarUrl = ApiConstants.publicImageUrl(
+      _firstNonEmpty(_fetched?.sellerAvatarUrl, widget.listing?.sellerAvatarUrl),
+    );
 
     return Scaffold(
       appBar: const CustomAppBar(showBackArrow: true),
@@ -551,6 +561,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Seller identity — the profile photo was absent
+                            // from this view entirely; only the buyer branch
+                            // rendered it. No contact action: this is the
+                            // seller's own dish.
+                            SellerCard(
+                              name:
+                                  resolvedSellerName ??
+                                  AppTexts.productSellerFallbackName,
+                              avatarUrl: sellerAvatarUrl,
+                              initials: _initialsFrom(resolvedSellerName),
+                              rating: l.rating ?? 0,
+                              showContact: false,
+                            ),
+                            const Gap(AppSizes.md),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

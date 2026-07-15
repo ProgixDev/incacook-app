@@ -28,7 +28,6 @@ const _kPending = 'PENDING';
 const _kConfirmed = 'CONFIRMED';
 const _kPreparing = 'PREPARING';
 const _kReady = 'READY';
-const _kInDelivery = 'IN_DELIVERY';
 const _kNoDriver = 'NO_DRIVER_AVAILABLE';
 
 class OrderRequestsScreen extends StatefulWidget {
@@ -327,15 +326,11 @@ class _OrderRequestsScreenState extends State<OrderRequestsScreen> {
                                     status: o.status,
                                     reason: o.cancellationReason,
                                   );
-                              // Seller ↔ driver chat for delivery orders once a
-                              // driver is in the picture (READY → a driver is
-                              // claiming; IN_DELIVERY → assigned). The backend
-                              // derives the driver from the order and rejects
-                              // with a SnackBar if none is assigned yet.
-                              final showContactDriver =
-                                  o.fulfillmentChoice == 'DELIVERY' &&
-                                  (o.status == _kReady ||
-                                      o.status == _kInDelivery);
+                              final showContactDriver = sellerCanContactDriver(
+                                backendStatus: o.status,
+                                fulfillmentChoice: o.fulfillmentChoice,
+                                driverAssigned: o.driverAssigned,
+                              );
                               final showPickupQr =
                                   o.fulfillmentChoice == 'DELIVERY' &&
                                   sellerCanShowPickupQr(o.status);

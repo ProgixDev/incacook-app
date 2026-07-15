@@ -70,6 +70,23 @@ SellerOrderBucket sellerOrderBucket(String backendStatus) {
 /// Pickup proof is meaningful only while the order is waiting for pickup.
 bool sellerCanShowPickupQr(String backendStatus) => backendStatus == _ready;
 
+/// Whether to offer the seller↔driver chat.
+///
+/// [driverAssigned] is load-bearing, not belt-and-braces: `READY` begins when
+/// the seller marks the food ready — which spawns the delivery with no driver —
+/// and stays `READY` after a driver claims it. Gating on status alone therefore
+/// offered a chat for the whole dispatch window, where it could only fail. The
+/// backend still rejects an unassigned open, so the error path remains the
+/// fallback for the claim-between-fetch-and-tap race.
+bool sellerCanContactDriver({
+  required String backendStatus,
+  required String fulfillmentChoice,
+  required bool driverAssigned,
+}) =>
+    fulfillmentChoice == 'DELIVERY' &&
+    driverAssigned &&
+    (backendStatus == _ready || backendStatus == _inDelivery);
+
 /// The display badge for an order, from its backend status. Every real
 /// `OrderStatus` is handled explicitly so a terminal state can never render as
 /// an active one (the "cancelled shows as En préparation" bug).

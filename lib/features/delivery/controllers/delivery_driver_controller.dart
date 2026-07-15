@@ -5,6 +5,7 @@ import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/network/error_codes.dart';
 import 'package:incacook/core/services/location/location_service.dart';
+import 'package:incacook/features/delivery/controllers/delivery_route_controller.dart';
 import 'package:incacook/features/delivery/data/deliveries_repository.dart';
 import 'package:incacook/features/delivery/domain/delivery_driver_models.dart';
 
@@ -40,13 +41,29 @@ class DeliveryDriverController extends GetxController {
     return total;
   }
 
-  /// Drivers may only enter matching once KYC is approved. Staying able to go
-  /// offline is intentional, even if the local profile later becomes stale.
-  bool get canToggleOnline =>
-      isOnline.value || UserController.instance.canDriverClaim;
+  /// True while the driver holds an active delivery. Read reactively (an `Obx`
+  /// wrapping a [canToggleOnline] read tracks `currentJob`), and defensively
+  /// false when the route controller isn't registered — the driver can't be on
+  /// a job if the delivery screen was never mounted.
+  bool get hasActiveJob =>
+      Get.isRegistered<DeliveryRouteController>() &&
+      DeliveryRouteController.instance.currentJob.value != null;
+
+  /// Drivers may only enter matching once KYC is approved, and may only leave
+  /// it once they aren't holding a delivery — going offline mid-job kills the
+  /// buyer's tracking while the job stays assigned, and nothing re-offers it
+  /// post-pickup. The server enforces this too (409); this just avoids the
+  /// round-trip.
+  bool get canToggleOnline => isOnline.value
+      ? !hasActiveJob
+      : UserController.instance.canDriverClaim;
 
   String? get onlineDisabledReason {
-    if (isOnline.value) return null;
+    if (isOnline.value) {
+      return hasActiveJob
+          ? 'Terminez votre livraison en cours avant de passer hors ligne.'
+          : null;
+    }
 
     final driver = UserController.instance.user.value?.driverAccount;
     if (driver == null) {

@@ -130,4 +130,42 @@ void main() {
       expect(sellerCanShowPickupQr('CANCELLED'), isFalse);
     });
   });
+
+  group('sellerCanContactDriver', () {
+    bool canContact(
+      String status, {
+      bool driverAssigned = true,
+      String fulfillment = 'DELIVERY',
+    }) => sellerCanContactDriver(
+      backendStatus: status,
+      fulfillmentChoice: fulfillment,
+      driverAssigned: driverAssigned,
+    );
+
+    // The shipped bug: READY is entered by mark-ready, which creates the
+    // delivery with driverId=NULL, so an order is READY-with-no-driver for the
+    // whole dispatch window. Offering the chat there produced a 400 on every
+    // tap — not a rare race, the common case.
+    test('hidden while READY has no driver yet', () {
+      expect(canContact('READY', driverAssigned: false), isFalse);
+    });
+
+    test('shown once a driver holds the order', () {
+      expect(canContact('READY'), isTrue);
+      expect(canContact('IN_DELIVERY'), isTrue);
+    });
+
+    test('hidden for pickup orders, which never get a driver', () {
+      expect(canContact('READY', fulfillment: 'PICKUP'), isFalse);
+    });
+
+    test('hidden before dispatch and after the order ends', () {
+      for (final status in ['CONFIRMED', 'PREPARING']) {
+        expect(canContact(status), isFalse, reason: '$status is pre-dispatch');
+      }
+      for (final status in ['DELIVERED', 'COMPLETED', 'CANCELLED']) {
+        expect(canContact(status), isFalse, reason: '$status is terminal');
+      }
+    });
+  });
 }

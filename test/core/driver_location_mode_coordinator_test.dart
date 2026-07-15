@@ -50,4 +50,54 @@ void main() {
       ]);
     },
   );
+
+  // `Get.offAll(DeliveryHomeScreen)` on a dispatch push replaces the delivery
+  // screen while it is already mounted, so the incoming coordinator's start()
+  // runs before the outgoing one's dispose(). The dead coordinator must not
+  // switch off the live one's tracking on its way out.
+  test('dispose does not release a mode another coordinator now owns', () async {
+    final location = _RecordingModeApplier();
+    final outgoing = DriverLocationModeCoordinator<Object>(
+      online: true.obs,
+      activeJob: Rxn<Object>(Object()),
+      location: location,
+    );
+    await outgoing.start();
+
+    final incoming = DriverLocationModeCoordinator<Object>(
+      online: true.obs,
+      activeJob: Rxn<Object>(Object()),
+      location: location,
+    );
+    await incoming.start();
+    addTearDown(incoming.dispose);
+
+    outgoing.dispose();
+    await Future<void>.delayed(Duration.zero);
+
+    // The live coordinator still holds an active job — mode stays background.
+    expect(location.modes, isNot(contains(LocationMode.off)));
+    expect(location.modes.last, LocationMode.background);
+  });
+
+  test('dispose releases the location mode while a job is still active', () async {
+    final online = true.obs;
+    final activeJob = Rxn<Object>(Object());
+    final location = _RecordingModeApplier();
+    final coordinator = DriverLocationModeCoordinator<Object>(
+      online: online,
+      activeJob: activeJob,
+      location: location,
+    );
+
+    await coordinator.start();
+    expect(location.modes, [LocationMode.background]);
+
+    // The applier is app-permanent, so a dispose that only drops the workers
+    // would strand the foreground service with nothing left to stop it.
+    coordinator.dispose();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(location.modes.last, LocationMode.off);
+  });
 }

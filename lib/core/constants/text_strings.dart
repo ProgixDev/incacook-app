@@ -323,8 +323,15 @@ class AppTexts {
   static const String trackingStagePrepared = "Préparé";
   static const String trackingStageOnTheWay = "En route";
   static const String trackingStageDelivered = "Livré";
-  static const String trackingDelivererName = "Jean Dupont";
-  static const String trackingDelivererMeta = "1k+ livraisons";
+  /// The driver's experience line on the tracking card, from their real
+  /// lifetime delivery count. A driver on their first job is named as new
+  /// rather than shown a bare "0 livraisons".
+  static String trackingDelivererMeta(int totalDeliveries) =>
+      switch (totalDeliveries) {
+        <= 0 => "Nouveau livreur",
+        1 => "1 livraison",
+        _ => "$totalDeliveries livraisons",
+      };
 
   //* cart screen
   static const String cartTitle = "Panier";
@@ -1071,6 +1078,12 @@ class AppTexts {
   static const String chatContactClientCta = "Contacter le client";
   static const String chatContactSellerCta = "Contacter le vendeur";
   static const String chatContactDriverCta = "Contacter le livreur";
+
+  /// Shown when a driver chat is opened before any driver has claimed the
+  /// order. The CTA is gated on `driverAssigned`, so this is the race fallback
+  /// (the driver can unclaim, or the list can be a moment stale).
+  static const String chatNoDriverAssignedYet =
+      "Aucun livreur n'a encore pris en charge cette commande.";
 
   //* signup flow — shell + chrome
   static const String signupExitDialogTitle = "Quitter l'inscription ?";

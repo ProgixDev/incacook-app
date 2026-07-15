@@ -19,6 +19,7 @@ class SellerCard extends StatelessWidget {
     this.sellerUserId,
     this.onCallTap,
     this.onCardTap,
+    this.showContact = true,
   });
 
   final String name;
@@ -42,6 +43,12 @@ class SellerCard extends StatelessWidget {
 
   final VoidCallback? onCallTap;
   final VoidCallback? onCardTap;
+
+  /// Whether to offer the chat action. False on the seller's own product
+  /// detail, where the card is an identity block rather than a way to reach
+  /// someone — a seller can't message themselves, and the disabled-but-visible
+  /// button reads as broken.
+  final bool showContact;
 
   String get _formattedOrders {
     final s = ordersCompleted.toString();
@@ -130,28 +137,29 @@ class SellerCard extends StatelessWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: sellerUserId == null
-                  ? null
-                  : () => ChatNavigator.openBuyerSeller(
-                      context: context,
-                      peerUserId: sellerUserId!,
-                      peerName: name,
-                      myRole: ParticipantRole.buyer,
+            if (showContact)
+              GestureDetector(
+                onTap: sellerUserId == null
+                    ? null
+                    : () => ChatNavigator.openBuyerSeller(
+                        context: context,
+                        peerUserId: sellerUserId!,
+                        peerName: name,
+                        myRole: ParticipantRole.buyer,
+                      ),
+                child: Opacity(
+                  opacity: sellerUserId == null ? 0.5 : 1.0,
+                  child: CustomCircularContainer(
+                    size: 40,
+                    backgroundColor: colors.selectedSurface,
+                    child: Icon(
+                      Iconsax.message,
+                      color: colors.selectedOnSurface,
+                      size: 18,
                     ),
-              child: Opacity(
-                opacity: sellerUserId == null ? 0.5 : 1.0,
-                child: CustomCircularContainer(
-                  size: 40,
-                  backgroundColor: colors.selectedSurface,
-                  child: Icon(
-                    Iconsax.message,
-                    color: colors.selectedOnSurface,
-                    size: 18,
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

@@ -42,6 +42,7 @@ class SellerOrderSummary {
     required this.placedAt,
     required this.fulfillmentChoice,
     required this.items,
+    this.driverAssigned = false,
     this.note,
     this.cancellationReason,
   });
@@ -60,6 +61,15 @@ class SellerOrderSummary {
 
   /// `DELIVERY` or `PICKUP`.
   final String fulfillmentChoice;
+
+  /// Whether a driver currently holds this order's delivery.
+  ///
+  /// [status] can't answer this: `READY` is entered when the seller marks the
+  /// food ready — which spawns the delivery with no driver — and stays `READY`
+  /// after a driver claims it. So every delivery order spends real time
+  /// READY-with-no-driver, and driver-directed CTAs gate on this instead.
+  /// Always false for `PICKUP` orders.
+  final bool driverAssigned;
 
   final List<SellerOrderItem> items;
 
@@ -84,6 +94,7 @@ class SellerOrderSummary {
           (json['buyerTotalCents'] as num).toInt(),
       placedAt: DateTime.parse(json['placedAt'] as String),
       fulfillmentChoice: json['fulfillmentChoice'] as String,
+      driverAssigned: json['driverAssigned'] as bool? ?? false,
       note: json['note'] as String?,
       cancellationReason: json['cancellationReason'] as String?,
       items: rawItems
