@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
+import 'package:incacook/core/models/auth/payout_readiness.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
@@ -519,7 +520,14 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                 child: Obx(
                   () => UserController.instance.driverPayoutReady
                       ? const SizedBox.shrink()
-                      : PayoutSetupBanner(onTap: _configurePayments),
+                      : PayoutSetupBanner(
+                          onTap: _configurePayments,
+                          // Details already with Stripe → swap the setup
+                          // CTA for "verification in progress".
+                          pendingVerification:
+                              UserController.instance.payoutSetupState ==
+                              PayoutSetupState.pendingVerification,
+                        ),
                 ),
               ),
             ),

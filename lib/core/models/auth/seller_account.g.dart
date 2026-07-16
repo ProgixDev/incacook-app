@@ -40,6 +40,9 @@ _SellerAccount _$SellerAccountFromJson(
   subscriptionCurrentPeriodEnd: json['subscriptionCurrentPeriodEnd'] as String?,
   stripeOnboardingCompleted:
       json['stripeOnboardingCompleted'] as bool? ?? false,
+  detailsSubmitted: json['detailsSubmitted'] as bool?,
+  chargesEnabled: json['chargesEnabled'] as bool?,
+  payoutsEnabled: json['payoutsEnabled'] as bool?,
 );
 
 Map<String, dynamic> _$SellerAccountToJson(
@@ -65,6 +68,9 @@ Map<String, dynamic> _$SellerAccountToJson(
   'subscriptionActive': instance.subscriptionActive,
   'subscriptionCurrentPeriodEnd': ?instance.subscriptionCurrentPeriodEnd,
   'stripeOnboardingCompleted': instance.stripeOnboardingCompleted,
+  'detailsSubmitted': ?instance.detailsSubmitted,
+  'chargesEnabled': ?instance.chargesEnabled,
+  'payoutsEnabled': ?instance.payoutsEnabled,
 };
 
 const _$SellerCategoryEnumMap = {

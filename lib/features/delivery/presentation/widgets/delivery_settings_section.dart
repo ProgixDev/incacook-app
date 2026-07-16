@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
+import 'package:incacook/core/models/auth/payout_readiness.dart';
 import 'package:incacook/features/authentication/services/sign_out_service.dart';
 import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
 import 'package:incacook/features/settings/domain/setting_menu_item.dart';
@@ -52,9 +53,14 @@ class DeliverySettingsSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       // Obx so the "Configurer mes paiements" row appears until payouts are
-      // set up and disappears right after onboarding completes.
+      // set up and disappears right after onboarding completes. While Stripe
+      // verifies submitted details, the row reads "Vérification des
+      // paiements" instead — tapping still opens Stripe to check status.
       child: Obx(() {
         final payoutReady = UserController.instance.driverPayoutReady;
+        final payoutPending =
+            UserController.instance.payoutSetupState ==
+            PayoutSetupState.pendingVerification;
         final accountItems = <SettingMenuItem>[
           SettingMenuItem(
             icon: Iconsax.card,
@@ -63,8 +69,10 @@ class DeliverySettingsSection extends StatelessWidget {
           ),
           if (!payoutReady)
             SettingMenuItem(
-              icon: Iconsax.card_pos,
-              title: AppTexts.incomingOrderConfigurePaymentsCta,
+              icon: payoutPending ? Iconsax.clock : Iconsax.card_pos,
+              title: payoutPending
+                  ? AppTexts.payoutPendingMenuItem
+                  : AppTexts.incomingOrderConfigurePaymentsCta,
               onTap: () => _configurePayments(context),
             ),
         ];

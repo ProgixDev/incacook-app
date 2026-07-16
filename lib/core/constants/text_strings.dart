@@ -920,6 +920,12 @@ class AppTexts {
   static const String walletPayoutSetupBody =
       "Vous pouvez livrer maintenant. Configurez vos paiements uniquement "
       "lorsque vous souhaitez retirer vos gains.";
+  // Pending variant (DEC-4): details submitted, Stripe still verifying.
+  static const String walletPayoutPendingTitle = "Vérification en cours";
+  static const String walletPayoutPendingBody =
+      "Vos informations ont été transmises à Stripe. Vous pourrez retirer "
+      "vos gains dès que la vérification sera terminée.";
+  static const String walletPayoutPendingCta = "Vérifier le statut";
   // QR scanner (driver) — shared manual-entry fallback.
   static const String commonCancel = "Annuler";
   static const String commonValidate = "Valider";
@@ -1382,12 +1388,22 @@ class AppTexts {
   static const String payoutSetupBannerSubtitle =
       "2 minutes pour recevoir tes gains sur ton compte bancaire.";
   static const String payoutSetupBannerCta = "Commencer";
+  // Pending variant (DEC-4): details submitted, Stripe still verifying (or
+  // payouts revoked) — no point re-showing the initial setup CTA.
+  static const String payoutSetupBannerPendingTitle = "Vérification en cours";
+  static const String payoutSetupBannerPendingSubtitle =
+      "Stripe examine tes informations. Tes virements seront activés dès "
+      "qu'elles seront validées.";
+  static const String payoutSetupBannerPendingCta = "Vérifier";
   static const String payoutOnboardingScreenTitle = "Configurer les paiements";
   static const String payoutStatusActive = "Paiements actifs";
   static const String payoutStatusPending = "Configuration en cours";
   static const String payoutStatusFailed =
       "Configuration interrompue — réessaie";
   static const String payoutSettingsMenuItem = "Paiements";
+  // Delivery settings row title while Stripe verifies submitted details —
+  // replaces the "Configurer mes paiements" entry (DEC-4).
+  static const String payoutPendingMenuItem = "Vérification des paiements";
   static const String payoutGatingSnackbarSeller =
       "Tes annonces sont en ligne mais les paiements sont en attente.";
   static const String payoutGatingSnackbarDriver =

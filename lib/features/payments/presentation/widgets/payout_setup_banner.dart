@@ -14,9 +14,19 @@ import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 /// signup flow no longer collects payout details, so this is the
 /// post-signup nudge that takes its place.
 class PayoutSetupBanner extends StatelessWidget {
-  const PayoutSetupBanner({super.key, required this.onTap});
+  const PayoutSetupBanner({
+    super.key,
+    required this.onTap,
+    this.pendingVerification = false,
+  });
 
   final VoidCallback onTap;
+
+  /// True when the earner already submitted their details and Stripe is
+  /// verifying them (`PayoutSetupState.pendingVerification`) — swaps the
+  /// "set up payments / Commencer" copy for "verification in progress", and
+  /// the CTA re-opens Stripe to check status instead of starting over.
+  final bool pendingVerification;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +48,7 @@ class PayoutSetupBanner extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Iconsax.card_pos,
+              pendingVerification ? Iconsax.clock : Iconsax.card_pos,
               color: colors.selectedOnSurface,
               size: 20,
             ),
@@ -50,14 +60,18 @@ class PayoutSetupBanner extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppTexts.payoutSetupBannerTitle,
+                  pendingVerification
+                      ? AppTexts.payoutSetupBannerPendingTitle
+                      : AppTexts.payoutSetupBannerTitle,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const Gap(2),
                 Text(
-                  AppTexts.payoutSetupBannerSubtitle,
+                  pendingVerification
+                      ? AppTexts.payoutSetupBannerPendingSubtitle
+                      : AppTexts.payoutSetupBannerSubtitle,
                   style: textTheme.bodySmall?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -75,9 +89,11 @@ class PayoutSetupBanner extends StatelessWidget {
                 vertical: AppSizes.sm,
               ),
             ),
-            child: const Text(
-              AppTexts.payoutSetupBannerCta,
-              style: TextStyle(fontWeight: FontWeight.w700),
+            child: Text(
+              pendingVerification
+                  ? AppTexts.payoutSetupBannerPendingCta
+                  : AppTexts.payoutSetupBannerCta,
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
         ],

@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
+import 'package:incacook/core/models/auth/payout_readiness.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/features/supply_catalog/presentation/screens/supply_catalog_screen.dart';
 import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
@@ -81,6 +82,11 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                             ),
                             child: PayoutSetupBanner(
                               onTap: () => _onPayoutSetupTap(context),
+                              // Details already with Stripe → swap the
+                              // setup CTA for "verification in progress".
+                              pendingVerification:
+                                  UserController.instance.payoutSetupState ==
+                                  PayoutSetupState.pendingVerification,
                             ),
                           ),
                           const Gap(AppSizes.md),

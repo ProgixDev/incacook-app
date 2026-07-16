@@ -25,6 +25,14 @@ abstract class DriverAccount with _$DriverAccount {
     @Default('PENDING') String kycStatus,
     @Default(false) bool stripeOnboardingCompleted,
 
+    // Split Stripe Connect facts (DEC-4). Nullable so "old server didn't
+    // send them" stays distinguishable from an explicit false — readiness
+    // then falls back to [stripeOnboardingCompleted]. Derivation lives in
+    // `payout_readiness.dart` ([DriverPayoutReadiness]).
+    bool? detailsSubmitted,
+    bool? chargesEnabled,
+    bool? payoutsEnabled,
+
     // Server-side online flag (mirrors DriverProfile.isOnline). Read on
     // relaunch to restore the driver's online session — the local toggle
     // otherwise always boots to offline. See DeliveryDriverController.
