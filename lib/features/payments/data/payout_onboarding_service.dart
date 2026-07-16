@@ -68,6 +68,38 @@ class PayoutOnboardingService {
     }
   }
 
+  /// Opens the seller/driver's Stripe Express dashboard (manage bank account,
+  /// view Stripe-side payout history) in the system browser. This is the
+  /// profile "Paiement" action — distinct from [openOnboarding] (which *sets
+  /// up* payouts) and from the wallet (the internal balance).
+  ///
+  /// The backend 403s (`PayoutSetupRequired`) until onboarding is complete, so
+  /// callers should keep the entry point disabled until then; this still fails
+  /// gracefully with a SnackBar if it is reached in that state anyway.
+  static Future<void> openDashboard(BuildContext context) async {
+    try {
+      final result = await ApiClient.instance.post<String>(
+        '${ApiConstants.apiPrefix}/stripe/onboarding/dashboard-link',
+        decoder: (json) => (json! as Map<String, dynamic>)['url'] as String,
+      );
+      final opened = await launchUrl(
+        Uri.parse(result.data),
+        mode: LaunchMode.externalApplication,
+      );
+      if (!opened && context.mounted) {
+        _toast(context, 'Impossible d\'ouvrir votre tableau de bord Stripe.');
+      }
+    } on ApiFailure catch (e) {
+      if (context.mounted) {
+        _toast(context, 'Tableau de bord indisponible : ${e.message}');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        _toast(context, 'Tableau de bord indisponible : $e');
+      }
+    }
+  }
+
   /// How many times to attempt the Account Link before surfacing a failure.
   /// This is the heaviest call in the app (the backend wakes and round-trips to
   /// Stripe), so a cold/slept Railway instance can time out or drop the first

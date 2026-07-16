@@ -187,33 +187,41 @@ class _ProfileActionTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final radius = BorderRadius.circular(AppSizes.cardRadiusMd);
 
-    return FrostedSurface(
-      borderRadius: radius,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppSizes.md,
-              horizontal: AppSizes.sm,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 22, color: scheme.onSurface),
-                const Gap(AppSizes.sm),
-                Text(
-                  label,
-                  style: textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+    // A null onTap means the action isn't available for this user (e.g. a seller
+    // hasn't finished payout setup, or a buyer has no Stripe dashboard). Dim it
+    // so it reads as disabled instead of tappable-but-dead.
+    final enabled = onTap != null;
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.4,
+      child: FrostedSurface(
+        borderRadius: radius,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: radius,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSizes.md,
+                horizontal: AppSizes.sm,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 22, color: scheme.onSurface),
+                  const Gap(AppSizes.sm),
+                  Text(
+                    label,
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

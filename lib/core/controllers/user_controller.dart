@@ -126,6 +126,20 @@ class UserController extends GetxController {
     return false;
   }
 
+  /// Whether the connected earner has a usable Stripe payout account — i.e. a
+  /// seller or driver who has completed Connect onboarding. Gates the profile
+  /// "Paiement" action (the Stripe Express dashboard), which Stripe only serves
+  /// for a fully-onboarded account. False for buyers and for earners still in
+  /// setup. Role-agnostic counterpart to [needsPayoutSetup].
+  bool get payoutReady {
+    final u = user.value;
+    final driver = u?.driverAccount;
+    if (driver != null) return driver.stripeOnboardingCompleted;
+    final seller = u?.sellerAccount;
+    if (seller != null) return seller.stripeOnboardingCompleted;
+    return false;
+  }
+
   /// Whether the connected driver may claim deliveries — mirrors the backend
   /// claim gate, which is **KYC only**. Stripe Connect payout onboarding is NOT
   /// required to claim/earn (it's enforced at cashout instead), so a driver can

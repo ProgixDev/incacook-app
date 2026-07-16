@@ -85,6 +85,57 @@ void main() {
       expect(c.needsPayoutSetup, isFalse);
     });
   });
+
+  // Gates the profile "Paiement" tile (Stripe Express dashboard). It must be the
+  // mirror of needsPayoutSetup for earners, but — crucially — false for buyers,
+  // who have no payout account at all.
+  group('payoutReady', () {
+    test('false for a seller who has not completed Connect', () {
+      final c = controller();
+      c.user.value = userWith(seller: const SellerAccount());
+
+      expect(c.payoutReady, isFalse);
+    });
+
+    test('true for a seller once Connect is complete', () {
+      final c = controller();
+      c.user.value =
+          userWith(seller: const SellerAccount(stripeOnboardingCompleted: true));
+
+      expect(c.payoutReady, isTrue);
+    });
+
+    test('true for a driver once Connect is complete', () {
+      final c = controller();
+      c.user.value =
+          userWith(driver: const DriverAccount(stripeOnboardingCompleted: true));
+
+      expect(c.payoutReady, isTrue);
+    });
+
+    test('false for a buyer (no payout account, not just "not set up")', () {
+      final c = controller();
+      // A buyer has neither seller nor driver account.
+      c.user.value = User(
+        id: 'b1',
+        email: 'buyer@incacook.fr',
+        role: UserRole.buyer,
+        firstName: 'B',
+        lastName: 'Uyer',
+      );
+
+      expect(c.payoutReady, isFalse);
+      // And it must not merely be the inverse of needsPayoutSetup here:
+      expect(c.needsPayoutSetup, isFalse);
+    });
+
+    test('false when signed out', () {
+      final c = controller();
+      c.user.value = null;
+
+      expect(c.payoutReady, isFalse);
+    });
+  });
 }
 
 class _FakeUsersRepository implements UsersRepository {

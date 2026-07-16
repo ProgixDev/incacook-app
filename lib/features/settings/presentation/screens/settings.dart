@@ -21,6 +21,7 @@ import 'package:incacook/features/settings/presentation/widgets/profile_menu_car
 import 'package:incacook/features/settings/presentation/widgets/profile_user_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
 import 'package:incacook/features/settings/presentation/widgets/saved_addresses_sheet.dart';
+import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
 import 'package:incacook/features/wallet/presentation/wallet_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -255,6 +256,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPreferences: role == UserRole.buyer
                       ? () =>
                           Get.to<void>(() => const BuyerPreferencesScreen())
+                      : null,
+                  // "Paiement" opens the seller/driver's Stripe Express
+                  // dashboard (manage bank account + Stripe payout history) —
+                  // distinct from Portefeuille (internal balance). Stripe only
+                  // serves it once onboarding is complete, so the tile stays
+                  // disabled until payoutReady; buyers have no payout account.
+                  onPayment: isEarner && UserController.instance.payoutReady
+                      ? () => PayoutOnboardingService.openDashboard(context)
                       : null,
                 ),
                 const Gap(AppSizes.md),
