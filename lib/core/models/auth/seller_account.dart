@@ -51,6 +51,14 @@ abstract class SellerAccount with _$SellerAccount {
     // Stripe Connect payout gate. Mirrors SellerProfileResponseDto and is
     // refreshed by /v1/users/me after hosted onboarding returns to the app.
     @Default(false) bool stripeOnboardingCompleted,
+
+    // Split Stripe Connect facts (DEC-4). Nullable so "old server didn't
+    // send them" stays distinguishable from an explicit false — readiness
+    // then falls back to [stripeOnboardingCompleted]. Derivation lives in
+    // `payout_readiness.dart` ([SellerPayoutReadiness]).
+    bool? detailsSubmitted,
+    bool? chargesEnabled,
+    bool? payoutsEnabled,
   }) = _SellerAccount;
 
   factory SellerAccount.fromJson(Map<String, dynamic> json) =>

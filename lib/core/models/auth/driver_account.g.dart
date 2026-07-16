@@ -20,6 +20,9 @@ _DriverAccount _$DriverAccountFromJson(Map<String, dynamic> json) =>
       kycStatus: json['kycStatus'] as String? ?? 'PENDING',
       stripeOnboardingCompleted:
           json['stripeOnboardingCompleted'] as bool? ?? false,
+      detailsSubmitted: json['detailsSubmitted'] as bool?,
+      chargesEnabled: json['chargesEnabled'] as bool?,
+      payoutsEnabled: json['payoutsEnabled'] as bool?,
       isOnline: json['isOnline'] as bool? ?? false,
     );
 
@@ -31,6 +34,9 @@ Map<String, dynamic> _$DriverAccountToJson(_DriverAccount instance) =>
       'canDeliver': instance.canDeliver,
       'kycStatus': instance.kycStatus,
       'stripeOnboardingCompleted': instance.stripeOnboardingCompleted,
+      'detailsSubmitted': ?instance.detailsSubmitted,
+      'chargesEnabled': ?instance.chargesEnabled,
+      'payoutsEnabled': ?instance.payoutsEnabled,
       'isOnline': instance.isOnline,
     };
 

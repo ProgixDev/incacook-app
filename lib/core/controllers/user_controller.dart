@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import 'package:incacook/core/models/auth/payout_readiness.dart';
 import 'package:incacook/core/models/auth/user.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/network/token_storage.dart';
@@ -97,15 +98,16 @@ class UserController extends GetxController {
 
   bool get isSignedIn => user.value != null;
 
-  /// True once the seller finished Stripe Connect payout onboarding. Drives
-  /// the seller home "set up payments" prompt. Reactive.
+  /// True once the seller can receive payouts — Stripe Connect details
+  /// submitted AND payouts enabled (see [SellerPayoutReadiness]). Drives the
+  /// seller home "set up payments" prompt. Reactive.
   bool get sellerPayoutReady =>
-      user.value?.sellerAccount?.stripeOnboardingCompleted ?? false;
+      user.value?.sellerAccount?.isPayoutReady ?? false;
 
-  /// True once the driver finished Stripe Connect payout onboarding. Drives the
-  /// wallet "set up payments" prompt — NOT the ability to deliver. Reactive.
+  /// True once the driver can receive payouts. Drives the wallet "set up
+  /// payments" prompt — NOT the ability to deliver. Reactive.
   bool get driverPayoutReady =>
-      user.value?.driverAccount?.stripeOnboardingCompleted ?? false;
+      user.value?.driverAccount?.isPayoutReady ?? false;
 
   /// Whether to show the wallet's "Configurer mes paiements" prompt: the
   /// connected earner — seller *or* driver — hasn't finished Stripe Connect
@@ -120,10 +122,25 @@ class UserController extends GetxController {
   bool get needsPayoutSetup {
     final u = user.value;
     final driver = u?.driverAccount;
-    if (driver != null) return !driver.stripeOnboardingCompleted;
+    if (driver != null) return !driver.isPayoutReady;
     final seller = u?.sellerAccount;
-    if (seller != null) return !seller.stripeOnboardingCompleted;
+    if (seller != null) return !seller.isPayoutReady;
     return false;
+  }
+
+  /// Where the connected earner stands in payout onboarding — three states
+  /// instead of the collapsed ready/not-ready boolean, so the UI can tell
+  /// "never started" (show the setup CTA) apart from "submitted, Stripe is
+  /// verifying" (show pending copy). [PayoutSetupState.notStarted] for
+  /// buyers / signed-out — gate on [needsPayoutSetup] (or [payoutReady])
+  /// first, as all current call sites do. Reactive.
+  PayoutSetupState get payoutSetupState {
+    final u = user.value;
+    final driver = u?.driverAccount;
+    if (driver != null) return driver.payoutSetupState;
+    final seller = u?.sellerAccount;
+    if (seller != null) return seller.payoutSetupState;
+    return PayoutSetupState.notStarted;
   }
 
   /// Whether the connected earner has a usable Stripe payout account — i.e. a
@@ -134,9 +151,9 @@ class UserController extends GetxController {
   bool get payoutReady {
     final u = user.value;
     final driver = u?.driverAccount;
-    if (driver != null) return driver.stripeOnboardingCompleted;
+    if (driver != null) return driver.isPayoutReady;
     final seller = u?.sellerAccount;
-    if (seller != null) return seller.stripeOnboardingCompleted;
+    if (seller != null) return seller.isPayoutReady;
     return false;
   }
 
