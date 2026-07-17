@@ -1417,7 +1417,7 @@ class AppTexts {
   static const String payoutGatingSnackbarDriver =
       "Tu peux accepter des courses, mais les paiements sont en attente.";
 
-  //* signup flow — seller subscription page (RevenueCat, step 10/10)
+  //* seller subscription paywall (RevenueCat) — post-login, not a signup step
   static const String signupSubscriptionTitle = "Choisissez votre abonnement";
   static const String signupSubscriptionSubtitle =
       "Activez votre abonnement mensuel pour publier vos plats, recevoir des "
