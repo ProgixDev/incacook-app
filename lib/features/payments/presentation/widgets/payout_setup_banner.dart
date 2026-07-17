@@ -8,9 +8,7 @@ import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 
 /// Prompt shown on the seller / delivery home screens until the user
 /// finishes Stripe Connect Express onboarding. Tap [onTap] to open the
-/// hosted Stripe flow (wired once `StripeConnectService` lands).
-///
-/// The banner is a skeleton today — visuals only, no Stripe wiring. The
+/// hosted Stripe flow, wired through `PayoutOnboardingService`. The
 /// signup flow no longer collects payout details, so this is the
 /// post-signup nudge that takes its place.
 class PayoutSetupBanner extends StatelessWidget {

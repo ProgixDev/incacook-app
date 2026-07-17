@@ -28,10 +28,6 @@ enum SignupStep {
   sellerKycId,
   sellerKycSelfie,
   sellerCharter,
-  // Seller — final step 10/10: choose the monthly RevenueCat subscription
-  // (App Store / Google Play). Mandatory: "Terminer" stays disabled until an
-  // active subscription / trial exists. Replaces payout setup for sellers.
-  sellerSubscription,
   // Driver
   driverDobAddress,
   driverVehicle,
@@ -40,9 +36,12 @@ enum SignupStep {
   driverDocuments,
   driverZone,
   driverCharter,
-  // Shared (seller + driver) — optional Stripe Connect payout setup so
-  // they can receive their earnings. Last step in those flows; skippable
-  // (a dashboard banner re-prompts later). Not a backend onboarding step.
+  // Driver-only — optional Stripe Connect payout setup so they can receive
+  // their earnings. Last step in that flow; skippable (a dashboard banner
+  // re-prompts later). Not a backend onboarding step. The seller
+  // equivalent isn't a signup step at all — the seller subscription
+  // (RevenueCat) is taken later via the SubscriptionGate paywall, and
+  // payout setup is reached post-signup from Profil → Wallet.
   payoutSetup,
 }
 

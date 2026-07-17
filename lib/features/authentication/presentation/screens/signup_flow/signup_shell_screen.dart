@@ -26,7 +26,6 @@ import 'package:incacook/features/authentication/presentation/screens/signup_flo
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/seller/seller_kyc_id_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/seller/seller_kyc_selfie_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/seller/seller_profile_page.dart';
-import 'package:incacook/features/authentication/presentation/screens/signup_flow/seller/seller_subscription_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/shared/payout_setup_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/universal/basic_info_page.dart';
 import 'package:incacook/features/authentication/presentation/screens/signup_flow/universal/biometric_setup_page.dart';
@@ -76,8 +75,6 @@ class SignupShellScreen extends GetView<SignupFlowController> {
         return const SellerKycSelfiePage();
       case SignupStep.sellerCharter:
         return const SellerCharterPage();
-      case SignupStep.sellerSubscription:
-        return const SellerSubscriptionPage();
       case SignupStep.driverDobAddress:
         return const DriverDobAddressPage();
       case SignupStep.driverVehicle:

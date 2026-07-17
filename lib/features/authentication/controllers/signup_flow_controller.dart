@@ -181,13 +181,6 @@ class SignupFlowController extends GetxController {
   final Rxn<DriverVehicleType> vehicleType = Rxn<DriverVehicleType>();
 
   // ---------------------------------------------------------------------------
-  // Seller subscription (final step 10/10 — RevenueCat). The
-  // SellerSubscriptionPage flips this to true once an active subscription /
-  // trial entitlement exists; the bottom bar's "Terminer" is gated on it.
-  // ---------------------------------------------------------------------------
-  final subscriptionActive = false.obs;
-
-  // ---------------------------------------------------------------------------
   // Buyer-specific
   // ---------------------------------------------------------------------------
   final Rxn<Address> deliveryAddress = Rxn<Address>();
@@ -596,11 +589,6 @@ class SignupFlowController extends GetxController {
         // Optional — payout onboarding can always be skipped (the
         // dashboard banner re-prompts later), so Continue is enabled.
         return true;
-      case SignupStep.sellerSubscription:
-        // Mandatory: "Terminer" stays disabled until the seller has an active
-        // subscription or trial (set by SellerSubscriptionPage after a
-        // successful RevenueCat purchase/restore + backend sync).
-        return subscriptionActive.value;
     }
   }
 
@@ -762,13 +750,9 @@ class SignupFlowController extends GetxController {
       case SignupStep.driverCharter:
         return _acceptDriverCharters();
 
-      // Shared — payout onboarding is launched from the page button
-      // (Stripe Connect), not a gate; nothing to commit here.
+      // Payout onboarding is launched from the page button (Stripe Connect),
+      // not a gate; nothing to commit here.
       case SignupStep.payoutSetup:
-        return true;
-      // Seller subscription — the purchase + backend sync happen on the page;
-      // by the time "Terminer" is enabled the subscription is already active.
-      case SignupStep.sellerSubscription:
         return true;
     }
   }
