@@ -19,13 +19,14 @@ import 'package:incacook/features/authentication/data/repositories/sellers_repos
 enum _Plan { standard, premium }
 
 /// Reusable seller-subscription UI + RevenueCat purchase/restore/backend-sync
-/// logic. Single source of truth shared by:
-///   * the signup step (`SellerSubscriptionPage`), and
-///   * the post-login paywall (`SubscriptionPaywallScreen`).
+/// logic, used by the post-login paywall (`SubscriptionPaywallScreen`) — the
+/// seller subscription is intentionally not a signup step (see
+/// `signup_flow_controller.dart`'s seller branch); it's taken here the first
+/// time a lapsed/new seller opens a gated tab.
 ///
 /// The host supplies the seller [category] (drives the offering + prices) and
-/// decides what "activated" means via [onActivated] — signup unlocks
-/// "Terminer", the paywall refreshes the user so the gate reveals the home.
+/// decides what "activated" means via [onActivated] — the paywall refreshes
+/// the user so the gate reveals the home.
 ///
 /// Renders a non-scrolling [Column]; the host wraps it in its own
 /// scroll/scaffold/layout. Never logs tokens. Stripe is untouched — this is
