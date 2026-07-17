@@ -200,7 +200,7 @@ Driver
 - **Platforms:** iOS-first (App Store products + RevenueCat configured for
   `com.incacook.app`); Android wiring exists but RevenueCat Android key not
   set. Flutter + GetX.
-- **Backend hosting:** Railway (`https://incacook-api-production.up.railway.app`),
+- **Backend hosting:** Railway (`https://incacook-api-production-146b.up.railway.app`),
   Supabase Postgres + PostGIS (project ref `eoxrrofpdtrwjbhywcvz`), Redis +
   BullMQ workers for durable order/wallet timers.
 - **Payments:** Stripe Connect for orders/wallet/payouts; **RevenueCat for
