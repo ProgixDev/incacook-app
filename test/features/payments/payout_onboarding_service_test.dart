@@ -108,6 +108,28 @@ void main() {
       expect(launchedUrls.length, 1);
     });
   });
+
+  // D2 (finding 04 §D2/R3): the app process can die while the hosted
+  // onboarding tab is open, killing `_awaitReturn`'s listener with it.
+  // `reconcileFromDeepLink` is the entry point the app-wide main.dart
+  // listener calls instead, for exactly that case.
+  group('reconcileFromDeepLink (cold-start return, D2)', () {
+    test('a return bounce reconciles status without minting a link', () async {
+      await service.reconcileFromDeepLink(Uri.parse('incacook://stripe/return'));
+
+      expect(apiClient.statusGets, 1);
+      expect(apiClient.accountLinkPosts, 0);
+      expect(launchedUrls, isEmpty);
+    });
+
+    test('a refresh bounce is a no-op (no auto-relaunch on cold boot)', () async {
+      await service.reconcileFromDeepLink(Uri.parse('incacook://stripe/refresh'));
+
+      expect(apiClient.statusGets, 0);
+      expect(apiClient.accountLinkPosts, 0);
+      expect(launchedUrls, isEmpty);
+    });
+  });
 }
 
 class _FakeApiClient implements ApiClient {

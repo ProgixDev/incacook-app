@@ -15,6 +15,7 @@ import 'package:incacook/core/constants/api_constants.dart';
 import 'package:incacook/core/services/notifications/device_tokens_repository.dart';
 import 'package:incacook/core/services/notifications/order_notifications_service.dart';
 import 'package:incacook/core/services/notifications/push_notification_service.dart';
+import 'package:incacook/features/payments/data/payout_onboarding_service.dart';
 import 'package:incacook/core/controllers/theme_controller.dart';
 import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_client.dart';
@@ -168,6 +169,15 @@ void main() async {
 /// redirect never reached the app" (a dashboard redirect-URL misconfig) apart
 /// from "it reached the app but the session didn't land" (an app/native
 /// issue), which the `[Auth][OAuth] … timeout` logs alone can't distinguish.
+///
+/// Also the only app-wide listener that survives a killed
+/// `PayoutOnboardingService.openOnboarding` call: if the app process died
+/// while the Stripe hosted-onboarding tab was open (iOS jetsam / Android
+/// task kill), `_awaitReturn`'s own listener died with it, so the incoming
+/// `incacook://stripe/...` return would otherwise be silently dropped. Must
+/// stay the single early `AppLinks().uriLinkStream` subscription — it's a
+/// broadcast stream, so a second, later subscription would miss any link
+/// delivered in between and can't "catch up".
 void _initDeepLinkDiagnostic() {
   try {
     final appLinks = AppLinks();
@@ -178,10 +188,33 @@ void _initDeepLinkDiagnostic() {
         '[DeepLink] received: ${uri.scheme}://${uri.host}${uri.path} '
         '(code: $hasCode${error != null ? ', error: $error' : ''})',
       );
+      if (uri.scheme == 'incacook' && uri.host == 'stripe') {
+        _handleColdStartStripeLink(uri);
+      }
     }, onError: (Object e) => logError('[DeepLink] stream error: $e'));
   } catch (e) {
     logError('[DeepLink] diagnostic setup failed: $e');
   }
+}
+
+/// Routes a `incacook://stripe/...` deep link to
+/// [PayoutOnboardingService.reconcileFromDeepLink] once services are ready.
+/// Guards against the (practically unreachable — `runApp`'s
+/// `GeneralBindings` registers the service well before any deep-link
+/// platform-channel event could plausibly arrive) race where this fires
+/// before `PayoutOnboardingService` is registered; dropping it then is a
+/// strict improvement over today's unconditional silent drop, not a
+/// regression. `openOnboarding`'s own in-flight listener (the warm path)
+/// handles the same event independently, so a duplicate reconcile here when
+/// both are alive is harmless (the backend status read is idempotent).
+void _handleColdStartStripeLink(Uri uri) {
+  if (!Get.isRegistered<PayoutOnboardingService>()) {
+    logWarning(
+      '[Payout] stripe deep link before services ready — dropped: $uri',
+    );
+    return;
+  }
+  unawaited(PayoutOnboardingService.instance.reconcileFromDeepLink(uri));
 }
 
 /// Permanent listener whose only job is to keep Supabase auth errors from

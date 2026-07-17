@@ -232,6 +232,24 @@ class PayoutOnboardingService extends GetxService {
     }
   }
 
+  /// Called from the app-wide deep-link listener (`main.dart`) for an
+  /// `incacook://stripe/...` URI that arrives with no in-flight
+  /// [openOnboarding] call to catch it — the cold-start case, where the app
+  /// process died while the hosted onboarding browser tab was open and
+  /// `_awaitReturn`'s listener died with it. A `return` bounce reconciles
+  /// live status exactly like the warm path; a `refresh` bounce is a no-op
+  /// here — auto-reopening the browser on cold boot would be a surprising
+  /// side effect unrelated to this session, and the banner already
+  /// correctly shows "not complete" since nothing changed. (D3 already
+  /// covers the in-flight refresh case.)
+  Future<void> reconcileFromDeepLink(Uri uri) async {
+    if (uri.path == '/refresh') {
+      logInfo('[Payout] cold-start refresh_url bounce — no action');
+      return;
+    }
+    await _reconcilePayoutStatus();
+  }
+
   /// Forces the backend to re-read live Connect status
   /// (`GET /v1/stripe/onboarding/status` → `accounts.retrieve` → persist
   /// `stripeOnboardingCompleted`), so we don't depend on the `account.updated`
