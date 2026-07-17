@@ -13,25 +13,34 @@ base URL, single auth surface.
 
 ## 1. Base URL & build flags
 
-The base URL is a compile-time constant resolved from a `--dart-define`,
-with the production Railway URL as the fallback. From
-[lib/core/constants/api_constants.dart](../lib/core/constants/api_constants.dart):
+The base URL is a compile-time constant resolved from `--dart-define`s, in
+priority order (from
+[lib/core/constants/api_constants.dart](../lib/core/constants/api_constants.dart)):
 
 ```dart
-static const String baseUrl = String.fromEnvironment(
-  'API_BASE_URL',
-  defaultValue: 'https://incacook-api-production.up.railway.app',
-);
-static const String apiPrefix = '/v1';
+static const String _apiBaseUrlOverride = String.fromEnvironment('API_BASE_URL');
+static const String _lanApiBaseUrl = String.fromEnvironment('LAN_API_BASE_URL');
+static final String baseUrl = _resolveBaseUrl(); // override → LAN → local default
 ```
+
+1. `API_BASE_URL` — explicit override; **production builds MUST pass this**
+   (e.g. `https://incacook-api-production-146b.up.railway.app`).
+2. `LAN_API_BASE_URL` — your PC's IPv4, for testing on a real phone on the
+   same Wi-Fi.
+3. No define at all → a **local dev default** (`http://10.0.2.2:3000` on
+   the Android emulator, `http://localhost:3000` elsewhere) — deliberately
+   never a production host, so a build that forgets to pass `API_BASE_URL`
+   fails loudly (connection refused) instead of silently talking to the
+   wrong deployment.
 
 All endpoints are mounted under `/v1`.
 
 | Where you build | Command |
 |---|---|
-| Default (production) | `flutter run` |
-| Local backend on iOS simulator | `flutter run --dart-define=API_BASE_URL=http://127.0.0.1:3001` |
-| Local backend on Android emulator | `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:3001` |
+| Production | `flutter run --dart-define=API_BASE_URL=https://incacook-api-production-146b.up.railway.app` |
+| Local backend on iOS simulator | `flutter run` (uses the `localhost:3000` default) |
+| Local backend on Android emulator | `flutter run` (uses the `10.0.2.2:3000` default) |
+| Local backend, real device on Wi-Fi | `flutter run --dart-define=LAN_API_BASE_URL=http://<your-pc-ip>:3000` |
 | Staging / another env | `--dart-define=API_BASE_URL=https://…` |
 
 Other `--dart-define` keys consumed today:
