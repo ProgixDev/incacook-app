@@ -24,10 +24,7 @@ void main() {
   late List<Uri> launchedUrls;
   late PayoutOnboardingService service;
 
-  Future<bool> fakeLauncher(
-    Uri url, {
-    LaunchMode mode = LaunchMode.platformDefault,
-  }) async {
+  Future<bool> fakeLauncher(Uri url, {LaunchMode mode = LaunchMode.platformDefault}) async {
     launchedUrls.add(url);
     return true;
   }
@@ -118,27 +115,20 @@ void main() {
   // listener calls instead, for exactly that case.
   group('reconcileFromDeepLink (cold-start return, D2)', () {
     test('a return bounce reconciles status without minting a link', () async {
-      await service.reconcileFromDeepLink(
-        Uri.parse('incacook://stripe/return'),
-      );
+      await service.reconcileFromDeepLink(Uri.parse('incacook://stripe/return'));
 
       expect(apiClient.statusGets, 1);
       expect(apiClient.accountLinkPosts, 0);
       expect(launchedUrls, isEmpty);
     });
 
-    test(
-      'a refresh bounce is a no-op (no auto-relaunch on cold boot)',
-      () async {
-        await service.reconcileFromDeepLink(
-          Uri.parse('incacook://stripe/refresh'),
-        );
+    test('a refresh bounce is a no-op (no auto-relaunch on cold boot)', () async {
+      await service.reconcileFromDeepLink(Uri.parse('incacook://stripe/refresh'));
 
-        expect(apiClient.statusGets, 0);
-        expect(apiClient.accountLinkPosts, 0);
-        expect(launchedUrls, isEmpty);
-      },
-    );
+      expect(apiClient.statusGets, 0);
+      expect(apiClient.accountLinkPosts, 0);
+      expect(launchedUrls, isEmpty);
+    });
   });
 
   // D6 (finding 04 §D6): the status GET is the only thing that tells the app

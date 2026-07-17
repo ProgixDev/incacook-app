@@ -63,69 +63,68 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             enablePullDown: true,
             header: const WaterDropMaterialHeader(),
             child: ListView(
-              padding: EdgeInsets.only(
-                top: appBarHeight + AppSizes.md,
-                bottom: AppSizes.spaceBtwSections,
-              ),
-              children: [
-                //* Payout setup nudge — visible until the seller completes
-                //* Stripe Connect Express onboarding.
-                Obx(
-                  () => UserController.instance.sellerPayoutReady
-                      ? const SizedBox.shrink()
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSizes.md,
-                              ),
-                              child: PayoutSetupBanner(
-                                onTap: () => _onPayoutSetupTap(context),
-                                // Details already with Stripe → swap the
-                                // setup CTA for "verification in progress".
-                                pendingVerification:
-                                    UserController.instance.payoutSetupState ==
-                                    PayoutSetupState.pendingVerification,
-                                // D6: the last status check itself failed —
-                                // distinct from "not done yet".
-                                reconcileFailed: PayoutOnboardingService
-                                    .instance
-                                    .reconcileFailed
-                                    .value,
-                              ),
+            padding: EdgeInsets.only(
+              top: appBarHeight + AppSizes.md,
+              bottom: AppSizes.spaceBtwSections,
+            ),
+            children: [
+              //* Payout setup nudge — visible until the seller completes
+              //* Stripe Connect Express onboarding.
+              Obx(
+                () => UserController.instance.sellerPayoutReady
+                    ? const SizedBox.shrink()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.md,
                             ),
-                            const Gap(AppSizes.md),
-                          ],
-                        ),
+                            child: PayoutSetupBanner(
+                              onTap: () => _onPayoutSetupTap(context),
+                              // Details already with Stripe → swap the
+                              // setup CTA for "verification in progress".
+                              pendingVerification:
+                                  UserController.instance.payoutSetupState ==
+                                  PayoutSetupState.pendingVerification,
+                              // D6: the last status check itself failed —
+                              // distinct from "not done yet".
+                              reconcileFailed: PayoutOnboardingService
+                                  .instance
+                                  .reconcileFailed
+                                  .value,
+                            ),
+                          ),
+                          const Gap(AppSizes.md),
+                        ],
+                      ),
+              ),
+              //* Platform subscription status + renewal + store subscription
+              //* management. Visible here because Accueil is only reachable
+              //* once the subscription is active.
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: SubscriptionCard(),
+              ),
+              const Gap(AppSizes.md),
+              //* Shortcut to the admin-managed supply catalog (sellers buy
+              //* products from the platform).
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: _CatalogShortcut(
+                  onTap: () => Get.to<void>(() => const SupplyCatalogScreen()),
                 ),
-                //* Platform subscription status + renewal + store subscription
-                //* management. Visible here because Accueil is only reachable
-                //* once the subscription is active.
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: SubscriptionCard(),
-                ),
-                const Gap(AppSizes.md),
-                //* Shortcut to the admin-managed supply catalog (sellers buy
-                //* products from the platform).
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: _CatalogShortcut(
-                    onTap: () =>
-                        Get.to<void>(() => const SupplyCatalogScreen()),
-                  ),
-                ),
-                const Gap(AppSizes.md),
-                //? today snapshot owns its horizontal padding so order requests
-                //? can run edge-to-edge for the carousel peek.
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: TodaySnapshotCard(),
-                ),
-                const Gap(AppSizes.spaceBtwSections),
-                const OrderRequestsSection(),
-              ],
+              ),
+              const Gap(AppSizes.md),
+              //? today snapshot owns its horizontal padding so order requests
+              //? can run edge-to-edge for the carousel peek.
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: TodaySnapshotCard(),
+              ),
+              const Gap(AppSizes.spaceBtwSections),
+              const OrderRequestsSection(),
+            ],
             ),
           ),
         ],

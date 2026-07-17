@@ -497,9 +497,8 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
           Obx(
             () => DeliveryTopButtons(
               onGpsTap: _centerOnDriver,
-              onFitRouteTap: _route.currentJob.value != null
-                  ? _fitActiveRoute
-                  : null,
+              onFitRouteTap:
+                  _route.currentJob.value != null ? _fitActiveRoute : null,
             ),
           ),
           //* Payout setup nudge — sits just under the top buttons until the

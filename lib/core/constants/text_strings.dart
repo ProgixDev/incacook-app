@@ -323,7 +323,6 @@ class AppTexts {
   static const String trackingStagePrepared = "Préparé";
   static const String trackingStageOnTheWay = "En route";
   static const String trackingStageDelivered = "Livré";
-
   /// The driver's experience line on the tracking card, from their real
   /// lifetime delivery count. A driver on their first job is named as new
   /// rather than shown a bare "0 livraisons".
@@ -1230,7 +1229,8 @@ class AppTexts {
       "Particulier qui cuisine à la maison";
   static const String signupSubtypeFaitMaisonNote = "Prix max 4,50 €";
   static const String signupSubtypeTraiteurTitle = "L'Atelier Traiteur";
-  static const String signupSubtypeTraiteurSubtitle = "Traiteur professionnel";
+  static const String signupSubtypeTraiteurSubtitle =
+      "Traiteur professionnel";
   static const String signupSubtypeRestaurantTitle = "Sauve Ton Plat";
   static const String signupSubtypeRestaurantSubtitle =
       "Restaurant qui vend ses surplus";
