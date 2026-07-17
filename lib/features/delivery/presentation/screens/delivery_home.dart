@@ -527,6 +527,12 @@ class _DeliveryHomeScreenState extends State<DeliveryHomeScreen> {
                           pendingVerification:
                               UserController.instance.payoutSetupState ==
                               PayoutSetupState.pendingVerification,
+                          // D6: the last status check itself failed —
+                          // distinct from "not done yet".
+                          reconcileFailed: PayoutOnboardingService
+                              .instance
+                              .reconcileFailed
+                              .value,
                         ),
                 ),
               ),

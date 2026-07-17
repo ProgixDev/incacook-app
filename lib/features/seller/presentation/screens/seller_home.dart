@@ -87,6 +87,12 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
                               pendingVerification:
                                   UserController.instance.payoutSetupState ==
                                   PayoutSetupState.pendingVerification,
+                              // D6: the last status check itself failed —
+                              // distinct from "not done yet".
+                              reconcileFailed: PayoutOnboardingService
+                                  .instance
+                                  .reconcileFailed
+                                  .value,
                             ),
                           ),
                           const Gap(AppSizes.md),

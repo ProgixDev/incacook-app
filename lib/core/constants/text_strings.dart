@@ -1395,6 +1395,14 @@ class AppTexts {
       "Stripe examine tes informations. Tes virements seront activés dès "
       "qu'elles seront validées.";
   static const String payoutSetupBannerPendingCta = "Vérifier";
+  // Error variant (D6): the last status check itself failed (offline,
+  // transport stall) — distinct from "not done yet" so the user isn't left
+  // guessing why the prompt hasn't gone away.
+  static const String payoutSetupBannerErrorTitle = "Vérification impossible";
+  static const String payoutSetupBannerErrorSubtitle =
+      "Nous n'avons pas pu vérifier ton statut de paiement. Vérifie ta "
+      "connexion et réessaie.";
+  static const String payoutSetupBannerErrorCta = "Réessayer";
   static const String payoutOnboardingScreenTitle = "Configurer les paiements";
   static const String payoutStatusActive = "Paiements actifs";
   static const String payoutStatusPending = "Configuration en cours";

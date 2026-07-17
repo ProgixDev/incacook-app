@@ -74,6 +74,18 @@ class PayoutOnboardingService extends GetxService {
   final PayoutReturnLinkSource _linkSource;
   final UrlLauncher _urlLauncher;
 
+  /// True when the last reconcile attempt (warm return or cold-start deep
+  /// link) couldn't even ask the backend for live status — network stall,
+  /// offline, cold instance. The banner reads this to tell "not done yet"
+  /// apart from "we couldn't check" (D6), instead of silently staying in
+  /// whatever state it was in. Reset at the start of every attempt, so a
+  /// later successful reconcile clears a previous failure automatically.
+  /// Deliberately NOT set when the subsequent local
+  /// [UserController.refreshFromServer] fails — the backend/DB state is
+  /// already correct by that point; only the local cache read is stale,
+  /// which the rest of the codebase already treats as best-effort.
+  final RxBool reconcileFailed = false.obs;
+
   /// How many times a `refresh_url` bounce is allowed to re-mint and reopen
   /// a fresh Account Link before giving up and falling through to reconcile
   /// (belt-and-braces so a link that keeps expiring immediately can't loop
@@ -258,6 +270,7 @@ class PayoutOnboardingService extends GetxService {
   /// Android can resume the app before Stripe's account object has fully
   /// settled, so poll briefly instead of doing a single stale read.
   Future<void> _reconcilePayoutStatus() async {
+    reconcileFailed.value = false;
     for (var attempt = 0; attempt < 6; attempt++) {
       try {
         final result = await _apiClient.get<Object?>(
@@ -278,6 +291,7 @@ class PayoutOnboardingService extends GetxService {
         logWarning(
           '[Payout] status refresh failed: $e (users/me will still refresh)',
         );
+        reconcileFailed.value = true;
         break;
       }
       await Future<void>.delayed(const Duration(seconds: 2));

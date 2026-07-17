@@ -130,11 +130,84 @@ void main() {
       expect(launchedUrls, isEmpty);
     });
   });
+
+  // D6 (finding 04 §D6): the status GET is the only thing that tells the app
+  // whether onboarding actually completed. If it throws, the old code only
+  // logged and returned — the banner stayed exactly as it was, with no way
+  // for the user to tell "not done yet" apart from "we couldn't check".
+  // `reconcileFailed` is the reactive signal the banner reads instead.
+  group('reconcileFailed (D6 — silent status-check failure)', () {
+    test('starts false', () {
+      expect(service.reconcileFailed.value, isFalse);
+    });
+
+    test('a return bounce reconciles cleanly → stays false even though '
+        'the local refreshFromServer always throws in this fake', () async {
+      // _FakeUsersRepository throws UnimplementedError on every call, so
+      // every test in this file already exercises a failing
+      // refreshFromServer. Asserting false here pins the distinction: only
+      // the STATUS GET failing is user-facing; the local cache refresh
+      // failing is the existing "best-effort, next poll retries" case.
+      await service.reconcileFromDeepLink(
+        Uri.parse('incacook://stripe/return'),
+      );
+
+      expect(service.reconcileFailed.value, isFalse);
+    });
+
+    test(
+      'cold-start reconcile sets reconcileFailed when the status GET throws',
+      () async {
+        apiClient.failStatusGet = true;
+
+        await service.reconcileFromDeepLink(
+          Uri.parse('incacook://stripe/return'),
+        );
+
+        expect(service.reconcileFailed.value, isTrue);
+      },
+    );
+
+    testWidgets(
+      'warm-path reconcile (end of openOnboarding) sets reconcileFailed '
+      'when the status GET throws',
+      (tester) async {
+        final ctx = await pumpContext(tester);
+        apiClient.failStatusGet = true;
+
+        await tester.runAsync(() async {
+          final result = service.openOnboarding(ctx);
+          await settle(); // POST #1 + launch #1 + _awaitReturn armed
+
+          linkSource.emit(Uri.parse('incacook://stripe/return'));
+
+          expect(await result, isTrue);
+          expect(service.reconcileFailed.value, isTrue);
+        });
+      },
+    );
+
+    test('a later successful reconcile clears a previous failure', () async {
+      apiClient.failStatusGet = true;
+      await service.reconcileFromDeepLink(
+        Uri.parse('incacook://stripe/return'),
+      );
+      expect(service.reconcileFailed.value, isTrue);
+
+      apiClient.failStatusGet = false;
+      await service.reconcileFromDeepLink(
+        Uri.parse('incacook://stripe/return'),
+      );
+
+      expect(service.reconcileFailed.value, isFalse);
+    });
+  });
 }
 
 class _FakeApiClient implements ApiClient {
   int accountLinkPosts = 0;
   int statusGets = 0;
+  bool failStatusGet = false;
 
   @override
   Future<ApiSuccess<T>> post<T>(
@@ -161,6 +234,13 @@ class _FakeApiClient implements ApiClient {
   }) async {
     if (path.contains('status')) {
       statusGets++;
+      if (failStatusGet) {
+        throw const ApiFailure(
+          statusCode: 0,
+          code: 'INCACOOK_OFFLINE',
+          message: 'offline',
+        );
+      }
       return ApiSuccess<T>(
         decoder({
           'onboardingCompleted': true,
