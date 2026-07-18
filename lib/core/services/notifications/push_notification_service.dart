@@ -12,8 +12,14 @@ import 'package:incacook/core/utils/theme/brand_colors.dart';
 import 'package:incacook/features/authentication/data/models/user_role.dart';
 import 'package:incacook/features/delivery/presentation/screens/delivery_home.dart';
 import 'package:incacook/features/orders/presentation/screens/order_tracking.dart';
+import 'package:incacook/features/wallet/presentation/wallet_screen.dart';
 import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/firebase_options.dart';
+
+/// FCM `type` sent when a PENDING ledger entry crosses the 24h release
+/// window. Carries no `orderId` — it's not order-scoped — so it must be
+/// checked before the `order_`/`delivery_` + orderId-required routing below.
+const String _kWalletFundsAvailableType = 'wallet_funds_available';
 
 /// Index of the "Commandes" tab in `kSellerNavTabs` (Accueil=0, Commandes=1,
 /// Messages=2, Mes plats=3, Profil=4). Where a seller's orders live, so a
@@ -239,6 +245,12 @@ class PushNotificationService extends GetxService {
   void _routeForNotification(RemoteMessage message) {
     try {
       final type = (message.data['type'] as String?) ?? '';
+
+      if (type == _kWalletFundsAvailableType) {
+        Get.to<void>(() => const WalletScreen());
+        return;
+      }
+
       final orderId = (message.data['orderId'] as String?) ?? '';
       if (orderId.isEmpty) return;
       if (!type.startsWith('order_') && !type.startsWith('delivery_')) return;

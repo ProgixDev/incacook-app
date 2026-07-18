@@ -10,6 +10,7 @@ import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/notifications/controllers/notifications_controller.dart';
 import 'package:incacook/features/notifications/domain/app_notification.dart';
 import 'package:incacook/features/orders/presentation/screens/order_tracking.dart';
+import 'package:incacook/features/wallet/presentation/wallet_screen.dart';
 
 /// The notification inbox (the bell). Lists persisted notifications newest
 /// first, marks them read on tap, and deep-links order/delivery events to the
@@ -51,6 +52,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _onTapNotification(AppNotification n) {
     _controller.markRead(n);
+    if (n.type == 'wallet_funds_available') {
+      Get.to<void>(() => const WalletScreen());
+      return;
+    }
     final orderId = n.orderId;
     if (orderId != null &&
         orderId.isNotEmpty &&
@@ -222,6 +227,7 @@ class _NotificationTile extends StatelessWidget {
       return Iconsax.truck;
     }
     if (type.startsWith('order_')) return Iconsax.receipt_1;
+    if (type == 'wallet_funds_available') return Iconsax.wallet;
     return Iconsax.notification;
   }
 

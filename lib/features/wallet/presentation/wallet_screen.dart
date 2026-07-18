@@ -17,25 +17,58 @@ import 'package:incacook/features/wallet/data/wallet_repository.dart';
 /// Seller / driver wallet: real balance from `GET /v1/wallet/me`, ledger, and a
 /// withdrawal request (enabled only when available >= the server minimum, 50 €).
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({super.key});
+  const WalletScreen({super.key, WalletRepository? repository})
+    : _repository = repository;
+
+  /// Test seam — production call sites always omit this and get a fresh
+  /// [WalletRepository] per fetch, same as before this field existed.
+  final WalletRepository? _repository;
 
   @override
   State<WalletScreen> createState() => _WalletScreenState();
 }
 
-class _WalletScreenState extends State<WalletScreen> {
+class _WalletScreenState extends State<WalletScreen>
+    with WidgetsBindingObserver {
   late Future<WalletSummary> _future;
   bool _withdrawing = false;
+
+  WalletRepository get _repo => widget._repository ?? WalletRepository();
 
   @override
   void initState() {
     super.initState();
-    _future = WalletRepository().getSummary();
+    WidgetsBinding.instance.addObserver(this);
+    _future = _repo.getSummary();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// The wallet screen otherwise has zero proactive freshness (fetch-once on
+  /// mount, then only on manual pull-to-refresh) — a ledger transition that
+  /// lands while the user is foregrounded on this screen would never appear
+  /// until they backed out and back in. Refresh on every resume so it does.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refresh();
+    }
   }
 
   Future<void> _refresh() async {
-    final next = WalletRepository().getSummary();
-    setState(() => _future = next);
+    final next = _repo.getSummary();
+    // Block body, not `() => _future = next` — an arrow-expression closure
+    // here evaluates to the assignment's value (the Future itself), and
+    // setState() asserts in debug mode if its callback returns one.
+    if (mounted) {
+      setState(() {
+        _future = next;
+      });
+    }
     await next;
   }
 
@@ -53,7 +86,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _withdraw() async {
     setState(() => _withdrawing = true);
     try {
-      await WalletRepository().withdraw();
+      await _repo.withdraw();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande de retrait envoyée.')),
