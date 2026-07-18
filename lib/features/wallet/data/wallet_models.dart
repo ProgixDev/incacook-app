@@ -12,7 +12,7 @@ class WalletEntry {
   final String id;
 
   /// Backend `WalletEntryType`: ORDER_EARNING | DELIVERY_EARNING | COMMISSION
-  /// | REFUND | WITHDRAWAL.
+  /// | REFUND | WITHDRAWAL | DRIVER_DEBT | SELLER_DEBT | PLATFORM_FEE.
   final String type;
 
   /// Positive = credit; negative = debit (WITHDRAWAL).
@@ -39,7 +39,10 @@ class WalletEntry {
       case 'WITHDRAWAL':
         return 'Retrait';
       case 'DRIVER_DEBT':
+      case 'SELLER_DEBT':
         return 'Dette (remboursement)';
+      case 'PLATFORM_FEE':
+        return 'Frais de plateforme';
       default:
         return type;
     }
