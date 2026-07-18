@@ -98,6 +98,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
               ? widget.deliveryDetails?.scheduledAt
               : null,
           termsAccepted: widget.termsAccepted,
+          idempotencyKey: cart.checkoutIdempotencyKey,
         );
         _orderId = result.id;
         _orderNumber = result.orderNumber;
