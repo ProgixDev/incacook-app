@@ -233,6 +233,13 @@ class OrdersRepository extends GetxService {
     DateTime? scheduledAt,
     String? note,
     bool termsAccepted = false,
+
+    /// Caller-supplied idempotency key, stable across retries of the same
+    /// checkout attempt (e.g. [CartController.checkoutIdempotencyKey]).
+    /// Without one, [ApiClient.post] mints a fresh random key per call,
+    /// so a retry through a new screen instance would create a duplicate
+    /// order instead of being deduplicated server-side.
+    String? idempotencyKey,
   }) async {
     assert(
       (dropoffAddress == null) != (dropoffAddressId == null) ||
@@ -267,6 +274,7 @@ class OrdersRepository extends GetxService {
       '${ApiConstants.apiPrefix}/orders',
       body: body,
       requiresIdempotencyKey: true,
+      idempotencyKey: idempotencyKey,
       decoder: (json) {
         final map = json! as Map<String, dynamic>;
         final order = map['order'] as Map<String, dynamic>;

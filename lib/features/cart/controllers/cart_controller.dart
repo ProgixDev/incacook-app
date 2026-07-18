@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ulid/ulid.dart';
 import 'package:incacook/core/models/cart_item.dart';
 import 'package:incacook/core/models/food_listing.dart';
 import 'package:incacook/core/utils/log.dart';
@@ -14,6 +15,20 @@ class CartController extends GetxController {
   final RxList<CartItem> items = <CartItem>[].obs;
 
   int _sequence = 0;
+
+  /// A stable key for one checkout attempt against the cart's current
+  /// contents. Lazily minted on first read and reused across retries (e.g.
+  /// a failed payment → "choose another method" → pay again constructs a
+  /// new `PaymentProcessingScreen`) so the server's create-order dedup can
+  /// recognize a retry as the same attempt instead of creating a duplicate
+  /// order. Any cart mutation invalidates it, since that's a genuinely new
+  /// attempt the server should not deduplicate against the old one.
+  String? _checkoutIdempotencyKey;
+
+  String get checkoutIdempotencyKey =>
+      _checkoutIdempotencyKey ??= Ulid().toString();
+
+  void _invalidateCheckoutKey() => _checkoutIdempotencyKey = null;
 
   bool get isEmpty => items.isEmpty;
   bool get isNotEmpty => items.isNotEmpty;
@@ -53,6 +68,7 @@ class CartController extends GetxController {
   }
 
   void _addInternal(CartItem draft) {
+    _invalidateCheckoutKey();
     _sequence++;
     items.add(
       CartItem(
@@ -70,6 +86,7 @@ class CartController extends GetxController {
     if (index == -1) return;
     final item = items[index];
     if (item.quantity >= item.listing.portionsLeft) return;
+    _invalidateCheckoutKey();
     items[index] = item.copyWith(quantity: item.quantity + 1);
     items.refresh();
     _logTotals();
@@ -84,6 +101,7 @@ class CartController extends GetxController {
     final index = items.indexWhere((i) => i.id == lineId);
     if (index == -1) return;
     final item = items[index];
+    _invalidateCheckoutKey();
     if (item.quantity <= 1) {
       logInfo('[Cart] remove item=$lineId');
       items.removeAt(index);
@@ -97,6 +115,7 @@ class CartController extends GetxController {
 
   void removeItem(String lineId) {
     logInfo('[Cart] remove item=$lineId');
+    _invalidateCheckoutKey();
     items.removeWhere((i) => i.id == lineId);
     items.refresh();
     _logTotals();
@@ -119,6 +138,7 @@ class CartController extends GetxController {
   }
 
   void clear() {
+    _invalidateCheckoutKey();
     items.clear();
   }
 }
