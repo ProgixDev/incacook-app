@@ -162,13 +162,17 @@ class CatalogClaim {
 /// Seller-facing catalog API (browse + purchase). All endpoints require the
 /// SELLER role server-side, so buyers/public can't reach them.
 class SupplyCatalogRepository {
-  const SupplyCatalogRepository();
+  const SupplyCatalogRepository({ApiClient? api}) : _api = api;
+
+  final ApiClient? _api;
+
+  ApiClient get _client => _api ?? ApiClient.instance;
 
   static const String _base = '${ApiConstants.apiPrefix}/catalog';
 
   /// Active products available to buy.
   Future<List<CatalogItem>> listProducts() async {
-    final res = await ApiClient.instance.get<List<CatalogItem>>(
+    final res = await _client.get<List<CatalogItem>>(
       '$_base/products',
       decoder: (json) => (json! as List<dynamic>)
           .map((e) => CatalogItem.fromJson(e as Map<String, dynamic>))
@@ -178,17 +182,25 @@ class SupplyCatalogRepository {
   }
 
   /// Creates a PENDING order + PaymentIntent; returns the client secret.
+  ///
+  /// [idempotencyKey] should be stable across retries of the same purchase
+  /// attempt (e.g. cached by the caller and reused until the quantity
+  /// changes) so a retry after a transient failure doesn't create a second
+  /// order for the same purchase.
   Future<CatalogCheckout> createOrder({
     required String productId,
     required int quantity,
+    String? idempotencyKey,
   }) async {
-    final res = await ApiClient.instance.post<CatalogCheckout>(
+    final res = await _client.post<CatalogCheckout>(
       '$_base/orders',
       body: {
         'items': [
           {'productId': productId, 'quantity': quantity},
         ],
       },
+      requiresIdempotencyKey: true,
+      idempotencyKey: idempotencyKey,
       decoder: (json) =>
           CatalogCheckout.fromJson(json! as Map<String, dynamic>),
     );
@@ -197,7 +209,7 @@ class SupplyCatalogRepository {
 
   /// Server-verified confirm after the card is confirmed in-app.
   Future<void> confirmPayment(String orderId) async {
-    await ApiClient.instance.post<void>(
+    await _client.post<void>(
       '$_base/orders/$orderId/confirm-payment',
       decoder: (_) {},
     );
@@ -205,7 +217,7 @@ class SupplyCatalogRepository {
 
   /// The seller's own catalog purchases, newest first.
   Future<List<CatalogOrder>> listMyOrders() async {
-    final res = await ApiClient.instance.get<List<CatalogOrder>>(
+    final res = await _client.get<List<CatalogOrder>>(
       '$_base/orders',
       decoder: (json) => (json! as List<dynamic>)
           .map((e) => CatalogOrder.fromJson(e as Map<String, dynamic>))
@@ -216,7 +228,7 @@ class SupplyCatalogRepository {
 
   /// The seller's own SAV claims (to show status next to orders).
   Future<List<CatalogClaim>> listMyClaims() async {
-    final res = await ApiClient.instance.get<List<CatalogClaim>>(
+    final res = await _client.get<List<CatalogClaim>>(
       '$_base/claims',
       decoder: (json) => (json! as List<dynamic>)
           .map((e) => CatalogClaim.fromJson(e as Map<String, dynamic>))
@@ -232,7 +244,7 @@ class SupplyCatalogRepository {
     required String description,
     List<String>? photoUrls,
   }) async {
-    final res = await ApiClient.instance.post<CatalogClaim>(
+    final res = await _client.post<CatalogClaim>(
       '$_base/orders/$orderId/claims',
       body: {
         'type': type,
