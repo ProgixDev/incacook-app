@@ -2,6 +2,19 @@
 
 A new Flutter project.
 
+## Local setup
+
+Copy `.vscode/dart_defines.example.json` to `.vscode/dart_defines.json` (git-
+ignored — never commit real values) and fill in real credentials. This
+example file is the **canonical, tracked list** of every dart-define the app
+reads (verified against `String.fromEnvironment`/`bool.fromEnvironment`/
+`int.fromEnvironment` call sites) — keep it in sync whenever a define is
+added, renamed, or removed in code, so the shipped artifact's config stays
+auditable even though the real values never enter git. VS Code's Run/Debug
+configs in `.vscode/launch.json` already pass
+`--dart-define-from-file=.vscode/dart_defines.json`; `flutter test` doesn't
+need it (no test reads a real dart-define).
+
 ## Build scripts
 
 This repo uses Melos for release build shortcuts. All scripts pass the local

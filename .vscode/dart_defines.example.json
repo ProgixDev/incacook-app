@@ -1,0 +1,15 @@
+{
+  "API_BASE_URL": "https://your-backend.example.com",
+  "LAN_API_BASE_URL": "http://192.168.1.100:3000",
+  "SUPABASE_URL": "https://your-project.supabase.co",
+  "SUPABASE_ANON_KEY": "REPLACE_WITH_SUPABASE_ANON_KEY",
+  "SUPABASE_STORAGE_BASE_URL": "https://your-project.supabase.co/storage/v1/object/public",
+  "STRIPE_PUBLISHABLE_KEY": "pk_test_REPLACE_ME",
+  "GOOGLE_MAPS_API_KEY": "REPLACE_WITH_GOOGLE_MAPS_API_KEY",
+  "GOOGLE_WEB_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+  "GOOGLE_IOS_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+  "REVENUECAT_IOS_KEY": "appl_REPLACE_ME",
+  "REVENUECAT_ANDROID_KEY": "goog_REPLACE_ME",
+  "INCACOOK_LOG_API_RESPONSES": "false",
+  "INCACOOK_LOG_API_RESPONSE_MAX_CHARS": "2000"
+}

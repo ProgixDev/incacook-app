@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  analyze-and-test:
+    name: Analyze, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: flutter analyze
+        run: flutter analyze
+
+      - name: flutter test
+        run: flutter test
+
+      # `dart format --set-exit-if-changed` deliberately omitted: as of
+      # 2026-07-18 it flags ~177 pre-existing files repo-wide (unrelated to
+      # any single change), so enforcing it here would fail on day one. Add
+      # it back once that drift is cleaned up in its own dedicated slice.
