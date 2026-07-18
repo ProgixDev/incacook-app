@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:ulid/ulid.dart';
 
 import 'package:incacook/core/config/stripe_config.dart';
 import 'package:incacook/core/network/api_response.dart';
@@ -27,7 +28,23 @@ class _SupplyProductDetailScreenState extends State<SupplyProductDetailScreen> {
   int _qty = 1;
   bool _busy = false;
 
+  //? Created order is remembered so a retry after a transient failure
+  //? re-presents payment instead of creating a duplicate order +
+  //? PaymentIntent for the same purchase (mirrors PaymentProcessingScreen's
+  //? _orderId cache in the main buyer checkout).
+  String? _orderId;
+  String? _clientSecret;
+  String? _idempotencyKey;
+
   int get _totalCents => widget.item.priceCents * _qty;
+
+  /// A genuinely different purchase (quantity changed) must not be
+  /// deduplicated against a stale attempt.
+  void _resetAttempt() {
+    _orderId = null;
+    _clientSecret = null;
+    _idempotencyKey = null;
+  }
 
   Future<void> _buy() async {
     if (!StripeConfig.isConfigured) {
@@ -40,13 +57,26 @@ class _SupplyProductDetailScreenState extends State<SupplyProductDetailScreen> {
 
     setState(() => _busy = true);
     try {
-      // 2. Create order + PaymentIntent.
-      final checkout = await _repo.createOrder(
-        productId: widget.item.id,
-        quantity: _qty,
-      );
+      // 2. Create order + PaymentIntent once; a retry reuses the cached
+      //    order instead of creating a second one.
+      String orderId;
+      String? secret;
+      if (_orderId case final cachedId?) {
+        orderId = cachedId;
+        secret = _clientSecret;
+      } else {
+        final key = _idempotencyKey ??= Ulid().toString();
+        final checkout = await _repo.createOrder(
+          productId: widget.item.id,
+          quantity: _qty,
+          idempotencyKey: key,
+        );
+        orderId = checkout.orderId;
+        secret = checkout.clientSecret;
+        _orderId = orderId;
+        _clientSecret = secret;
+      }
       // 3. Confirm the card against the PaymentIntent.
-      final secret = checkout.clientSecret;
       if (secret != null && secret.isNotEmpty) {
         await Stripe.instance.confirmPayment(
           paymentIntentClientSecret: secret,
@@ -57,8 +87,15 @@ class _SupplyProductDetailScreenState extends State<SupplyProductDetailScreen> {
           ),
         );
       }
-      // 4. Server-verified confirm → marks the order PAID.
-      await _repo.confirmPayment(checkout.orderId);
+      // 4. Server-verified confirm → marks the order PAID. Best-effort: if
+      //    this fails after Stripe already charged the card, the webhook
+      //    confirms the order asynchronously, so we don't show the seller a
+      //    false "purchase failed" for a charge that actually succeeded.
+      try {
+        await _repo.confirmPayment(orderId);
+      } catch (_) {
+        // Non-fatal — webhook backstop will confirm.
+      }
       if (mounted) {
         _toast('Achat confirmé !');
         Navigator.of(context).pop();
@@ -122,7 +159,12 @@ class _SupplyProductDetailScreenState extends State<SupplyProductDetailScreen> {
               Text('Quantité', style: text.titleSmall),
               const Spacer(),
               IconButton.filledTonal(
-                onPressed: _qty > 1 ? () => setState(() => _qty--) : null,
+                onPressed: _qty > 1
+                    ? () => setState(() {
+                        _qty--;
+                        _resetAttempt();
+                      })
+                    : null,
                 icon: const Icon(Iconsax.minus),
               ),
               Padding(
@@ -130,7 +172,12 @@ class _SupplyProductDetailScreenState extends State<SupplyProductDetailScreen> {
                 child: Text('$_qty', style: text.titleMedium),
               ),
               IconButton.filledTonal(
-                onPressed: _qty < 999 ? () => setState(() => _qty++) : null,
+                onPressed: _qty < 999
+                    ? () => setState(() {
+                        _qty++;
+                        _resetAttempt();
+                      })
+                    : null,
                 icon: const Icon(Iconsax.add),
               ),
             ],
