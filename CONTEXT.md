@@ -53,6 +53,21 @@ purposes and run on different clocks. Do not conflate them.
   clock. A committed Driver (has an Active delivery) is governed by watchdogs,
   never by the idle Heartbeat expiry.
 
+## Payments & Subscriptions
+
+- **Seller subscription entitlement** — whether a Seller's platform
+  subscription is active, gating Accueil/Commandes/Mes plats. **RevenueCat is
+  the sole source of truth** (DEC-8, resolved `#11`): the RevenueCat webhook
+  is the only writer of `SellerProfile.subscriptionStatus` /
+  `subscriptionCurrentPeriodEnd`. A parallel Stripe Checkout/Billing-Portal
+  path existed but was never reachable from the app and has been removed —
+  do not reintroduce a second writer of these fields without revisiting this
+  decision.
+- **Payout readiness** (Stripe Connect) is a **separate concept** from
+  subscription entitlement — see DEC-2/DEC-3 precedent in
+  `.agent-board/map.md`: Stripe governs payout/withdrawal readiness only,
+  never app access or subscription state.
+
 ## Sanctions
 
 - **Strike** — one penalty point in a single system that spans all three actors
