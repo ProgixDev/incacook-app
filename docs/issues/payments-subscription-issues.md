@@ -14,7 +14,7 @@ Decided approach for the Stripe return-to-app: **custom-scheme bridge** — reus
 the existing `incacook://` scheme, no new domain/entitlements (see ISSUE-2
 solution).
 
-Last updated: 2026-07-04.
+Last updated: 2026-07-19.
 
 **Status legend:** 🔧 Ready to fix (root cause found, fix known) · ⚙️ Config only
 (dashboard/env) · 🤔 Needs decision · ✅ Already correct in source (verify/ship) ·
@@ -51,6 +51,7 @@ Last updated: 2026-07-04.
 | [ISSUE-27](#issue-27) | Driver signup area search has 5 static options | Driver / signup | 🟡 Medium | 🔧 Ready to fix — implement real search |
 | [ISSUE-28](#issue-28) | Keyboard lacks "Done" button across the app | General / UX | 🟡 Medium | ⚙️ Platform-level — keyboardType configuration |
 | [ISSUE-29](#issue-29) | Add product form keyboard overshadows screen | Seller / UX | 🟡 Medium | 🔧 Related to ISSUE-11 (partially addressed) |
+| [ISSUE-30](#issue-30) | Second seller account sharing an Apple ID hits Apple's native "already subscribed" sheet | Subscriptions / iOS IAP | 🟡 Medium | ✅ Fixed + verified on device (PR #43, merged) |
 
 ---
 
@@ -894,10 +895,110 @@ The form doesn't pad for `MediaQuery.viewInsets.bottom` or scroll focused fields
 
 ---
 
+# Client-reported app bugs (round 4 — 2026-07-19)
+
+<a name="issue-30"></a>
+## ISSUE-30 — Second seller account sharing an Apple ID hits Apple's native "already subscribed" sheet 🟡
+
+### Symptom (reported / screenshot)
+"En utilisant un autre compte, il m'indique que je dispose déjà d'un
+abonnement." Tapping to subscribe on a **different** backend seller account
+(same device) shows Apple's own native StoreKit sheet — "Abonnement requis" →
+"Vous êtes déjà abonné — Votre abonnement à Le Bon Fait Maison Standard sera
+renouvelé le 8 juil. 2026… touchez Gérer" — instead of a purchase sheet. The
+green card + "Gérer"/"OK" buttons + the mandatory beta-tester disclaimer are
+Apple's own UI, not anything IncaCook renders.
+
+### Root cause — **not (only) a code bug: Apple ties the entitlement to the Apple ID, not our app account**
+- App Store subscriptions are scoped to **(Apple ID × subscription group)**.
+  The same Apple ID/sandbox tester already holding an active "Fait Maison"
+  subscription under seller-account A cannot hold a second, independent one
+  under seller-account B on the same device — iOS intercepts the purchase
+  attempt itself, before `Purchases.purchase()` in
+  `lib/core/services/revenuecat_service.dart` even returns. No app code
+  causes this dialog; it's an inherent platform constraint, not something we
+  can suppress.
+- **What IS a real gap: nothing in our code handles this outcome.**
+  - `RevenueCatService.purchase()` (`lib/core/services/revenuecat_service.dart:179-193`)
+    only special-cases `PurchasesErrorCode.purchaseCancelledError`; any other
+    result — including whatever this dialog resolves to — falls through to a
+    generic `"Abonnement impossible. Veuillez réessayer."` with no
+    explanation or recovery path (e.g. pointing at "Restaurer mes achats").
+  - Server-side, `RevenueCatWebhookHandlerService.handleEvent`
+    (`IncaCook-Server/src/modules/payments/webhooks/revenuecat-webhook-handler.service.ts:55`)
+    explicitly no-ops `TRANSFER` events: `// TEST / TRANSFER /
+    SUBSCRIBER_ALIAS / etc. — nothing to apply.` If RevenueCat's dashboard
+    "Transfer Behavior" (default: transfer to the new app_user_id) ever moves
+    this entitlement from seller A to seller B, the backend never learns
+    about it via webhook — activation for B would depend entirely on the
+    client's own post-purchase `syncSubscription()` call happening to catch
+    the transferred `CustomerInfo`, which is unverified.
+- **Status: traced via code inspection, not confirmed on a physical device**
+  (no device available in this pass) — the mechanism above fully explains the
+  screenshot, but the exact `PlatformException` code / `CustomerInfo` state
+  `Purchases.purchase()` returns after the user dismisses this specific sheet
+  needs a real sandbox repro to pin down before writing the fix.
+
+### Decision — block with a clear message (2026-07-19)
+Chosen over transfer-and-activate: matches "one Apple ID = one seller" as an
+explicit product rule, and avoids the added complexity of wiring the
+currently-inert `TRANSFER` webhook + deciding what happens to seller A's
+`SellerProfile` when an entitlement moves.
+
+### Fix implemented
+`RevenueCatService.purchase()` (`lib/core/services/revenuecat_service.dart`)
+now special-cases two RevenueCat error codes documented for "this store
+receipt is already tied to a *different* app_user_id" —
+`receiptAlreadyInUseError`, `receiptInUseByOtherSubscriberError` — and throws
+a `RevenueCatException` with an explanatory French message ("Cet identifiant
+Apple/Google dispose déjà d'un abonnement actif sur un autre compte vendeur.
+Un seul compte vendeur par identifiant.") instead of the generic "Abonnement
+impossible. Veuillez réessayer." `productAlreadyPurchasedError` is
+deliberately **not** included — that code fires when the *same* app_user_id
+already owns the product (e.g. a double-tap on subscribe), which the generic
+message already handles correctly; bundling it in would misfire the
+cross-account message on an unrelated case. The seller paywall
+(`seller_subscription_view.dart`) already surfaces
+`RevenueCatException.message` verbatim via a snackbar, so no UI change was
+needed.
+
+**Required companion action — not code, a dashboard setting.** The client-side
+catch above only fires if `Purchases.purchase()` actually throws one of those
+codes. RevenueCat's project-level **Transfer Behavior** setting controls what
+happens instead: if it's left on its default ("Transfer to new App User ID"),
+RevenueCat may silently move the entitlement to seller B's app_user_id and
+return a *successful* `CustomerInfo` — no exception, so this fix's catch block
+never runs and the block-vs-transfer decision is silently overridden by the
+dashboard config. To make "block" actually hold, the RevenueCat dashboard
+Transfer Behavior must be set to keep the entitlement with the original
+app_user_id (not auto-transfer).
+
+**✅ Confirmed 2026-07-20** — dashboard was on "Transfer to new App User ID"
+(the default); changed to "Keep with original App User ID." See config
+checklist below.
+
+**✅ Confirmed on physical device — 2026-07-20.** Reproduced on iPhone d'Ali
+(real sandbox, not simulator/StoreKit file): attempted to subscribe under a
+second seller account while the sandbox tester already held an active
+subscription under a different account. `Purchases.purchase()` threw
+`PurchasesErrorCode.receiptAlreadyInUseError` — exactly one of the two codes
+this fix catches — and the app showed the new explanatory message instead of
+the generic "Abonnement impossible." Log: `[RevenueCat] purchase blocked:
+already-subscribed-elsewhere code=PurchasesErrorCode.receiptAlreadyInUseError`.
+Both open items (Transfer Behavior dashboard setting + on-device repro) are
+now closed — **ISSUE-30 fully verified, no further work needed.**
+
+---
+
 ## Cross-cutting config checklist (Railway env + dashboards)
 
 - [ ] `REVENUECAT_WEBHOOK_AUTH_TOKEN` set in Railway **and** RevenueCat webhook (ISSUE-1, 3)
 - [ ] `REVENUECAT_SECRET_API_KEY` set in Railway (server-side sync verify)
+- [x] RevenueCat dashboard **Transfer Behavior** set to "Keep with original
+      App User ID" (was "Transfer to new App User ID", the default) — set
+      2026-07-20 (ISSUE-30 — required for the "block, don't transfer"
+      decision to actually hold; the default setting would have silently
+      overridden it)
 - [ ] Stripe webhook endpoint listens to **connected-account** `account.updated` (ISSUE-3)
 - [ ] `STRIPE_WEBHOOK_SECRET` matches the endpoint (ISSUE-3)
 - [x] `STRIPE_ONBOARDING_RETURN_URL` / `REFRESH_URL` → backend HTTPS bridge routes that bounce to `incacook://stripe/...` (ISSUE-2)

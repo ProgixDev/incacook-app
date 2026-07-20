@@ -181,9 +181,20 @@ class RevenueCatService extends GetxService {
       final result = await Purchases.purchase(PurchaseParams.package(package));
       return _outcomeFrom(result.customerInfo);
     } on PlatformException catch (e) {
-      if (PurchasesErrorHelper.getErrorCode(e) ==
-          PurchasesErrorCode.purchaseCancelledError) {
+      final code = PurchasesErrorHelper.getErrorCode(e);
+      if (code == PurchasesErrorCode.purchaseCancelledError) {
         return const SubscriptionOutcome(cancelled: true);
+      }
+      if (_isAlreadySubscribedElsewhere(code)) {
+        // Same Apple ID/Google account already holds this entitlement under a
+        // *different* seller account (ISSUE-30) — explain instead of the
+        // generic retry message.
+        logWarning('[RevenueCat] purchase blocked: already-subscribed-elsewhere code=$code');
+        throw const RevenueCatException(
+          "Cet identifiant Apple/Google dispose déjà d'un abonnement actif "
+          "sur un autre compte vendeur. Un seul compte vendeur par "
+          "identifiant.",
+        );
       }
       // Never surface raw store/receipt internals — generic French message.
       throw const RevenueCatException(
@@ -191,6 +202,17 @@ class RevenueCatService extends GetxService {
       );
     }
   }
+
+  /// Error codes RevenueCat returns when the underlying store receipt (i.e.
+  /// the Apple ID / Google account) already has this entitlement active under
+  /// a *different* app_user_id — the "one Apple ID, two seller accounts" case
+  /// (ISSUE-30). Deliberately excludes `productAlreadyPurchasedError`, which
+  /// fires when the *same* app_user_id already owns the product (e.g. a
+  /// double-tap on subscribe) — a different situation the generic message
+  /// already covers correctly.
+  static bool _isAlreadySubscribedElsewhere(PurchasesErrorCode code) =>
+      code == PurchasesErrorCode.receiptAlreadyInUseError ||
+      code == PurchasesErrorCode.receiptInUseByOtherSubscriberError;
 
   /// Restores prior purchases and returns the resulting seller entitlement
   /// state. Throws [RevenueCatException] on a store error.
