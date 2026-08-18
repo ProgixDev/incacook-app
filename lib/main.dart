@@ -33,6 +33,7 @@ import 'package:incacook/features/authentication/data/repositories/sellers_repos
 import 'package:incacook/features/authentication/data/repositories/uploads_repository.dart';
 import 'package:incacook/features/authentication/data/repositories/users_repository.dart';
 import 'package:incacook/features/authentication/services/post_auth_router.dart';
+import 'package:incacook/features/authentication/services/oauth_session_recovery.dart';
 import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -137,10 +138,8 @@ void main() async {
   Get.put<SellersRepository>(SellersRepository(), permanent: true);
   Get.put<DriversRepository>(DriversRepository(), permanent: true);
   Get.put<SupabaseOAuthService>(SupabaseOAuthService(), permanent: true);
-  Get.put<NativeGoogleAuthService>(
-    NativeGoogleAuthService(),
-    permanent: true,
-  );
+  Get.put<OAuthSessionRecovery>(OAuthSessionRecovery(), permanent: true);
+  Get.put<NativeGoogleAuthService>(NativeGoogleAuthService(), permanent: true);
   Get.put<PostAuthRouter>(PostAuthRouter(), permanent: true);
   // Always available (even if Firebase/push init later fails or is off on
   // iOS) so order screens can subscribe unconditionally. The push service is
@@ -230,8 +229,9 @@ void _initSupabaseAuthErrorGuard() {
     Supabase.instance.client.auth.onAuthStateChange.listen(
       (_) {},
       onError: (Object e) {
-        final message =
-            e is AuthException ? e.message : e.runtimeType.toString();
+        final message = e is AuthException
+            ? e.message
+            : e.runtimeType.toString();
         logError('[Auth][OAuth] supabase auth error: $message');
       },
     );

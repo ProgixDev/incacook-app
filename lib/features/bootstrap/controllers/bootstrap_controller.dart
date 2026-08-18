@@ -5,6 +5,8 @@ import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/core/network/token_storage.dart';
 import 'package:incacook/features/authentication/presentation/screens/welcome.dart';
+import 'package:incacook/features/authentication/presentation/screens/complete_email_screen.dart';
+import 'package:incacook/features/authentication/services/oauth_session_recovery.dart';
 import 'package:incacook/features/authentication/services/post_auth_router.dart';
 import 'package:incacook/features/onboarding/presentation/screens/onboarding.dart';
 
@@ -25,13 +27,16 @@ class BootstrapController extends GetxController {
   BootstrapController({
     TokenStorage? tokenStorage,
     PostAuthRouter? router,
+    OAuthSessionRecovery? oauthRecovery,
     GetStorage? storage,
-  })  : _tokenStorage = tokenStorage ?? Get.find<TokenStorage>(),
-        _router = router ?? Get.find<PostAuthRouter>(),
-        _storage = storage ?? GetStorage();
+  }) : _tokenStorage = tokenStorage ?? Get.find<TokenStorage>(),
+       _router = router ?? Get.find<PostAuthRouter>(),
+       _oauthRecovery = oauthRecovery ?? Get.find<OAuthSessionRecovery>(),
+       _storage = storage ?? GetStorage();
 
   final TokenStorage _tokenStorage;
   final PostAuthRouter _router;
+  final OAuthSessionRecovery _oauthRecovery;
   final GetStorage _storage;
 
   @override
@@ -50,8 +55,31 @@ class BootstrapController extends GetxController {
 
     final hasSession = await _tokenStorage.hasSession();
     if (!hasSession) {
-      Get.offAll<void>(() => const WelcomeScreen());
-      return;
+      try {
+        final recovered = await _oauthRecovery.recover();
+        if (recovered == null) {
+          Get.offAll<void>(() => const WelcomeScreen());
+          return;
+        }
+        if (recovered.needsEmail) {
+          final completed = await Get.to<bool>(
+            () => const CompleteEmailScreen(),
+          );
+          if (completed != true) {
+            Get.offAll<void>(() => const WelcomeScreen());
+            return;
+          }
+        }
+      } on ApiFailure catch (e) {
+        if (e.statusCode == 401 || e.statusCode == 403) {
+          await _tokenStorage.clear();
+        }
+        Get.offAll<void>(() => const WelcomeScreen());
+        return;
+      } catch (_) {
+        Get.offAll<void>(() => const WelcomeScreen());
+        return;
+      }
     }
 
     // Rehydrate the in-memory auth email from storage before any screen

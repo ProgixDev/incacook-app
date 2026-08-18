@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:incacook/core/config/supabase_config.dart';
 import 'package:incacook/core/utils/log.dart';
+import 'package:incacook/features/authentication/services/oauth_session_snapshot.dart';
 
 /// Hosted social sign-in via Supabase OAuth — currently used for Facebook.
 /// Google uses [NativeGoogleAuthService] instead so users stay in the native
@@ -41,7 +42,21 @@ class SupabaseOAuthService extends GetxService {
   /// Development mode, or `incacook://auth/callback` missing from Supabase's
   /// Redirect URLs). Kept short for debugging; raise it for production if real
   /// logins routinely take longer than this.
-  static const Duration _redirectTimeout = Duration(seconds: 30);
+  static const Duration _redirectTimeout = Duration(minutes: 5);
+
+  /// The Supabase session cached by a callback that completed while the app
+  /// was backgrounded or being relaunched. Bootstrap copies this into
+  /// IncaCook's TokenStorage through [OAuthSessionRecovery].
+  OAuthSessionSnapshot? get currentSessionSnapshot {
+    if (!SupabaseConfig.isConfigured) return null;
+    final session = _auth.currentSession;
+    if (session == null) return null;
+    return OAuthSessionSnapshot(
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken ?? '',
+      expiresAt: session.expiresAt ?? 0,
+    );
+  }
 
   /// Launches [provider]'s OAuth browser and resolves with the Supabase
   /// [Session] once the redirect lands. Throws [OAuthSignInException] on a
@@ -101,8 +116,9 @@ class SupabaseOAuthService extends GetxService {
     final queryParams = _accountSelectionParams(provider);
     // Safe: provider + the flag only — never tokens. e.g.
     // "[Auth][OAuth] provider=google prompt=select_account".
-    final paramsDesc =
-        queryParams.entries.map((e) => '${e.key}=${e.value}').join(' ');
+    final paramsDesc = queryParams.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join(' ');
     logError('[Auth][OAuth] provider=${provider.name} $paramsDesc');
 
     // Explicitly request the email scope (Facebook returns no email without it

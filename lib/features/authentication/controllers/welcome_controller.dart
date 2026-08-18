@@ -8,7 +8,6 @@ import 'package:incacook/core/services/native_google_auth_service.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
 import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
 import 'package:incacook/features/authentication/presentation/screens/complete_email_screen.dart';
-import 'package:incacook/features/authentication/presentation/screens/facebook_email_completion_screen.dart';
 import 'package:incacook/features/authentication/services/post_auth_router.dart';
 import 'package:incacook/core/utils/log.dart';
 
@@ -32,10 +31,10 @@ class WelcomeController extends GetxController {
     NativeGoogleAuthService? googleAuth,
     AuthRepository? authRepository,
     PostAuthRouter? router,
-  })  : _oauth = oauth ?? Get.find<SupabaseOAuthService>(),
-        _googleAuth = googleAuth ?? Get.find<NativeGoogleAuthService>(),
-        _authRepository = authRepository ?? Get.find<AuthRepository>(),
-        _router = router ?? Get.find<PostAuthRouter>();
+  }) : _oauth = oauth ?? Get.find<SupabaseOAuthService>(),
+       _googleAuth = googleAuth ?? Get.find<NativeGoogleAuthService>(),
+       _authRepository = authRepository ?? Get.find<AuthRepository>(),
+       _router = router ?? Get.find<PostAuthRouter>();
 
   final SupabaseOAuthService _oauth;
   final NativeGoogleAuthService _googleAuth;
@@ -54,12 +53,12 @@ class WelcomeController extends GetxController {
   Future<void> signInWithGoogle() => _signInWithNativeGoogle();
 
   Future<void> signInWithFacebook() => _signInWith(
-        provider: OAuthProvider.facebook,
-        tag: 'Facebook',
-        loading: isFacebookLoading,
-        errorTitle: AppTexts.facebookSignInTitle,
-        errorMessage: AppTexts.facebookSignInError,
-      );
+    provider: OAuthProvider.facebook,
+    tag: 'Facebook',
+    loading: isFacebookLoading,
+    errorTitle: AppTexts.facebookSignInTitle,
+    errorMessage: AppTexts.facebookSignInError,
+  );
 
   Future<void> _signInWith({
     required OAuthProvider provider,
@@ -79,38 +78,16 @@ class WelcomeController extends GetxController {
 
       await _completeSocialSignIn(tag: tag, session: session);
     } on OAuthEmailMissingException {
-      // Provider returned no email AND no Supabase session was created.
+      // With Facebook email-optional enabled in Supabase, a no-email account
+      // still produces a session and follows sync.needsEmail below. If the
+      // hosted project is not configured that way, there is no provider
+      // identity to preserve; never create a separate email-only account and
+      // mislabel it as Facebook recovery.
       logError('[Auth][$tag] callback/session received: false');
-      if (provider != OAuthProvider.facebook) {
-        CustomLoaders.errorSnackBar(
-          title: errorTitle,
-          message: AppTexts.facebookNoEmailError,
-        );
-        return;
-      }
-      // Recoverable: collect + verify an email by OTP (PUBLIC endpoints, no
-      // session needed), then continue to the same destination as a normal
-      // social login. Replaces the old blocking red error.
-      logWarning('[Auth][Facebook] missing email fallback opened');
-      final completed = await Get.to<bool>(
-        () => const FacebookEmailCompletionScreen(),
+      CustomLoaders.errorSnackBar(
+        title: errorTitle,
+        message: AppTexts.facebookNoEmailError,
       );
-      if (completed != true) return; // user cancelled → back at login
-      // The repository persisted the fresh (email-verified) session; sync the
-      // identity and route exactly like a normal social login.
-      try {
-        final sync = await _authRepository.syncOAuthUser();
-        logInfo(
-          '[Auth][Facebook] manual email login synced '
-          '(profileExists=${sync.profileExists} needsEmail=${sync.needsEmail})',
-        );
-        final decision = await _router.decide();
-        _router.navigateTo(decision);
-      } on ApiFailure catch (e) {
-        CustomLoaders.errorSnackBar(title: errorTitle, message: e.message);
-      } catch (_) {
-        CustomLoaders.errorSnackBar(title: errorTitle, message: errorMessage);
-      }
     } on OAuthSignInException {
       // Launch failure, or no callback/session within the timeout. Surface a
       // clean toast (loading is reset in the finally below).
@@ -196,7 +173,8 @@ class WelcomeController extends GetxController {
   void _logAvatarPresence(Session session) {
     final meta = session.user.userMetadata;
     bool nonEmpty(Object? v) => v is String && v.isNotEmpty;
-    final hasAvatar = meta != null &&
+    final hasAvatar =
+        meta != null &&
         (nonEmpty(meta['avatar_url']) || nonEmpty(meta['picture']));
     logInfo('[Auth][OAuth] avatar exists: $hasAvatar');
   }
