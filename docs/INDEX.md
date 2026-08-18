@@ -33,6 +33,12 @@ Updated: 2026-06-30.
   — seller subscription store/dashboard setup + QA.
 - **[qa/supabase-firebase-apple-auth-reset.md](qa/supabase-firebase-apple-auth-reset.md)**
   — Firebase project rewire, Supabase Google/Apple auth setup, and QA DB reset.
+- **[qa/end-to-end-qa-master-checklist.md](qa/end-to-end-qa-master-checklist.md)**
+  — full A-to-Z manual QA entry point across mobile **and** the
+  `incacook-admin` dashboard, ending in payments/subscriptions/orders
+  cross-app verification. Links to
+  **[qa/admin-dashboard-testing.md](qa/admin-dashboard-testing.md)** and
+  **[qa/payments-orders-subscriptions-deep-dive.md](qa/payments-orders-subscriptions-deep-dive.md)**.
 - **[local-testing.md](local-testing.md)** — running the backend locally.
 
 ## Specs (per-feature: current behavior + gaps)
