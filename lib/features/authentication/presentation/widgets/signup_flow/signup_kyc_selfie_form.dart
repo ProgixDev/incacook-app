@@ -3,22 +3,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
-import 'package:incacook/core/models/auth/upload_info.dart';
-import 'package:incacook/core/network/api_response.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
-import 'package:incacook/features/authentication/data/services/upload_picker.dart';
+import 'package:incacook/features/authentication/data/services/face_photo_validator.dart';
+import 'package:incacook/features/authentication/data/services/selfie_capture_service.dart';
 
 /// Shared selfie capture used by both seller and driver KYC pages.
 ///
-/// Camera-only in release — never accepts a gallery upload (fraud
-/// prevention). In debug builds we fall back to the gallery so the
-/// flow is testable on the iOS simulator / Android emulator, neither
-/// of which can access a real camera. Selfie path lives on
-/// `controller.selfieUrl`; this widget keeps the locally-picked `File`
-/// for preview and surfaces upload errors inline.
+/// Camera-only, front-facing — never accepts a gallery upload (fraud
+/// prevention). [SelfieCaptureService] validates the capture on-device
+/// (face presence/framing/pose/lighting — see `face_photo_validator.dart`)
+/// before uploading; a rejected photo is never uploaded and never reaches
+/// `controller.selfieUrl`. This widget keeps the locally-picked `File` for
+/// preview and surfaces the retry/error message inline.
 class SignupKycSelfieForm extends StatefulWidget {
   const SignupKycSelfieForm({super.key});
 
@@ -39,30 +37,31 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
       _error = null;
     });
     try {
-      final result = await pickAndUploadImage(
-        // A KYC selfie must be a live capture (a gallery photo defeats the
-        // liveness check), so always use the camera — including debug builds
-        // on a real device. (On a camera-less simulator this will no-op.)
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.front,
-        purpose: UploadPurpose.kycDocument,
-      );
+      // A KYC selfie must be a live, on-device-validated capture — the
+      // service is camera-only/front-facing and never uploads (or lets
+      // `selfieUrl` get populated for) a rejected photo.
+      final outcome = await SelfieCaptureService().captureValidateAndUpload();
       if (!mounted) return;
-      if (result == null) {
-        setState(() => _uploading = false);
-        return;
+      switch (outcome) {
+        case SelfieCaptureCancelled():
+          setState(() => _uploading = false);
+        case SelfieCaptureRejected(:final reason):
+          setState(() {
+            _uploading = false;
+            _error = reason.message;
+          });
+        case SelfieCaptureFailed(:final message):
+          setState(() {
+            _uploading = false;
+            _error = message;
+          });
+        case SelfieCaptureUploaded(:final file, :final path):
+          setState(() {
+            _localFile = file;
+            _uploading = false;
+          });
+          _controller.selfieUrl.value = path;
       }
-      setState(() {
-        _localFile = result.file;
-        _uploading = false;
-      });
-      _controller.selfieUrl.value = result.path;
-    } on ApiFailure catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _uploading = false;
-        _error = e.message;
-      });
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -161,9 +160,9 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
               Flexible(
                 child: Text(
                   _error!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.error,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: scheme.error),
                 ),
               ),
             ],
@@ -172,10 +171,7 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
         const Gap(AppSizes.sm),
         Text(
           AppTexts.signupKycSelfieFooter,
-          style: TextStyle(
-            color: scheme.onSurfaceVariant,
-            fontSize: 12,
-          ),
+          style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12),
         ),
       ],
     );

@@ -45,6 +45,9 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.8.0
   path_provider: ^2.1.5
+  # On-device face-presence/quality gate for the KYC selfie (issue #45).
+  # Focused package, not the aggregate google_ml_kit bundle.
+  google_mlkit_face_detection: ^0.15.1
   pinput: ^6.0.2
   socket_io_client: ^2.0.3+1
   qr_flutter: ^4.1.0
