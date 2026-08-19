@@ -1,5 +1,6 @@
 # iOS deployment target for Firebase, Google Maps, and related native plugins.
-platform :ios, '15.0'
+# 15.5 (not 15.0) is required by google_mlkit_face_detection / google_mlkit_commons.
+platform :ios, '15.5'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

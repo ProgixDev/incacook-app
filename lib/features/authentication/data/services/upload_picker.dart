@@ -57,7 +57,7 @@ class UnsupportedImageTypeException implements Exception {
 /// downscales to [maxWidth] × [maxHeight] at [imageQuality], so a normal
 /// gallery photo lands well under this; the check only catches pathological
 /// inputs (huge PNGs, panoramas) that survive compression.
-const int _maxUploadBytes = 5 * 1024 * 1024;
+const int maxUploadBytes = 5 * 1024 * 1024;
 const String _normalizedContentType = 'image/jpeg';
 
 Future<UploadPickResult?> pickAndUploadImage({
@@ -81,7 +81,10 @@ Future<UploadPickResult?> pickAndUploadImage({
   );
   if (picked == null) return null;
 
-  final normalized = await _normalizeToJpeg(picked, imageQuality: imageQuality);
+  final normalized = await normalizeImageToJpeg(
+    picked,
+    imageQuality: imageQuality,
+  );
   final bytes = normalized.bytes;
   logInfo(
     '[Upload] picked bytes=${bytes.length} '
@@ -90,9 +93,9 @@ Future<UploadPickResult?> pickAndUploadImage({
 
   // Don't fail silently / spin forever: reject before the upload if still too
   // large so the caller can show a clear error.
-  if (bytes.length > _maxUploadBytes) {
+  if (bytes.length > maxUploadBytes) {
     logError(
-      '[Upload] rejected: image exceeds ${_maxUploadBytes ~/ (1024 * 1024)} MB',
+      '[Upload] rejected: image exceeds ${maxUploadBytes ~/ (1024 * 1024)} MB',
     );
     throw const ImageTooLargeException();
   }
@@ -108,7 +111,11 @@ Future<UploadPickResult?> pickAndUploadImage({
   return UploadPickResult(file: normalized.file, path: path);
 }
 
-Future<_NormalizedImage> _normalizeToJpeg(
+/// Decodes [picked], re-encodes it as JPEG, and writes the result to a fresh
+/// temp file. Shared by [pickAndUploadImage] and the KYC selfie capture flow
+/// (`selfie_capture_service.dart`), which validates the normalized JPEG
+/// locally before ever calling [UploadsRepository.upload].
+Future<NormalizedImage> normalizeImageToJpeg(
   XFile picked, {
   required int imageQuality,
 }) async {
@@ -126,11 +133,11 @@ Future<_NormalizedImage> _normalizeToJpeg(
   final file = File('${tmpDir.path}/incacook-upload-${Ulid().toString()}.jpg');
   await file.writeAsBytes(jpegBytes, flush: true);
 
-  return _NormalizedImage(file: file, bytes: jpegBytes);
+  return NormalizedImage(file: file, bytes: jpegBytes);
 }
 
-class _NormalizedImage {
-  const _NormalizedImage({required this.file, required this.bytes});
+class NormalizedImage {
+  const NormalizedImage({required this.file, required this.bytes});
 
   final File file;
   final Uint8List bytes;

@@ -297,6 +297,7 @@ class AppTexts {
   static const String trackingStagePrepared = "Préparé";
   static const String trackingStageOnTheWay = "En route";
   static const String trackingStageDelivered = "Livré";
+
   /// The driver's experience line on the tracking card, from their real
   /// lifetime delivery count. A driver on their first job is named as new
   /// rather than shown a bare "0 livraisons".
@@ -1203,8 +1204,7 @@ class AppTexts {
       "Particulier qui cuisine à la maison";
   static const String signupSubtypeFaitMaisonNote = "Prix max 4,50 €";
   static const String signupSubtypeTraiteurTitle = "L'Atelier Traiteur";
-  static const String signupSubtypeTraiteurSubtitle =
-      "Traiteur professionnel";
+  static const String signupSubtypeTraiteurSubtitle = "Traiteur professionnel";
   static const String signupSubtypeRestaurantTitle = "Sauve Ton Plat";
   static const String signupSubtypeRestaurantSubtitle =
       "Restaurant qui vend ses surplus";
@@ -1454,6 +1454,30 @@ class AppTexts {
       "Image trop volumineuse. Veuillez choisir une image plus légère.";
   static const String imagePickerUnsupported =
       "Format d'image non pris en charge. Veuillez choisir une photo JPEG, PNG ou WebP.";
+
+  //* signup flow — KYC selfie local validation retry messages. Each maps to
+  //* one FaceRejectionReason (face_photo_validator.dart) — a presence/quality
+  //* gate only, never claimed as liveness or identity verification.
+  static const String kycSelfieRejectionNoFace =
+      "Aucun visage détecté. Cadre bien ton visage dans l'ovale et réessaie.";
+  static const String kycSelfieRejectionMultipleFaces =
+      "Plusieurs visages détectés. Assure-toi d'être seul·e face à la caméra.";
+  static const String kycSelfieRejectionTooSmall =
+      "Rapproche-toi un peu : ton visage doit remplir davantage le cadre.";
+  static const String kycSelfieRejectionTooLarge =
+      "Éloigne-toi un peu : ton visage est trop proche de la caméra.";
+  static const String kycSelfieRejectionOffCenter =
+      "Centre ton visage au milieu de l'ovale.";
+  static const String kycSelfieRejectionMissingLandmarks =
+      "Visage partiellement caché. Dégage tes yeux, ton nez et ta bouche (lunettes, cheveux, masque) et réessaie.";
+  static const String kycSelfieRejectionPose =
+      "Regarde bien la caméra, visage droit et de face.";
+  static const String kycSelfieRejectionTooDark =
+      "Photo trop sombre pour être vérifiée. Va dans un endroit mieux éclairé et réessaie.";
+  static const String kycSelfieRejectionDetectorFailure =
+      "Impossible d'analyser la photo. Réessaie.";
+  static const String kycSelfieCaptureFailed =
+      "Impossible de prendre la photo. Vérifie l'accès à la caméra et réessaie.";
 
   //* signup flow — address picker
   static const String signupAddressSearchHint = "Cherche une adresse…";
