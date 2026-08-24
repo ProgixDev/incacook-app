@@ -36,6 +36,19 @@ class UsersRepository extends GetxService {
     return result.data;
   }
 
+  /// `DELETE /v1/users/me` (#51) — permanently deletes/anonymises the
+  /// caller's account. Succeeds with `200`/`204`. The backend refuses with
+  /// a `409 ApiFailure` (code `ACTIVE_ORDER` | `NONZERO_WALLET` |
+  /// `OUTSTANDING_DEBT`) when the account has business in flight — callers
+  /// should map `e.code` to a readable French message rather than showing
+  /// the raw code.
+  Future<void> deleteAccount() async {
+    await _api.delete<void>(
+      '${ApiConstants.apiPrefix}/users/me',
+      decoder: (_) {},
+    );
+  }
+
   /// `GET /v1/users/me` (§3.22) — the full aggregate, used for
   /// post-login routing and for refreshing the UI after a per-concept
   /// PUT lands.
