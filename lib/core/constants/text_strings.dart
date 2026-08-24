@@ -216,9 +216,9 @@ class AppTexts {
   static const String supportUnavailable =
       "Aucune application e-mail. Écrivez-nous à support@incacook.app";
   // Public privacy-policy page, opened externally from Settings (#49).
-  // TODO: CONFIRM the real production admin domain before release — this is
+  
   // a placeholder pending confirmation of incacook-admin's public base URL.
-  static const String privacyPolicyUrl = "https://admin.incacook.com/privacy";
+  static const String privacyPolicyUrl = "https://incacook-admin.vercel.app/privacy";
   static const String settingsPrivacyPolicy = "Politique de confidentialité";
   static const String appName = "IncaCook";
   static const String appLegalese = "© 2026 IncaCook";
