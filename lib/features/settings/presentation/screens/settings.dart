@@ -86,6 +86,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// "Politique de confidentialité" → opens the public privacy policy page
+  /// in the system browser (#49), same external-launch pattern as
+  /// `subscription_card.dart`'s "Gérer l'abonnement".
+  Future<void> _openPrivacyPolicy(BuildContext context) async {
+    final uri = Uri.tryParse(AppTexts.privacyPolicyUrl);
+    final opened = uri != null &&
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.supportUnavailable)),
+      );
+    }
+  }
+
   /// "À propos de l'application" → native about dialog (name + legalese).
   void _showAbout(BuildContext context) {
     showAboutDialog(
@@ -142,6 +156,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         icon: Iconsax.info_circle,
         title: AppTexts.settingsAboutApp,
         onTap: () => _showAbout(context),
+      ),
+      SettingMenuItem(
+        icon: Iconsax.shield_tick,
+        title: AppTexts.settingsPrivacyPolicy,
+        onTap: () => _openPrivacyPolicy(context),
       ),
     ];
 

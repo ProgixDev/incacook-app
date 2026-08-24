@@ -55,6 +55,9 @@ class AppTexts {
       "Connexion Facebook impossible : Facebook n'a pas retourné d'adresse "
       "e-mail. Vérifiez que le compte Facebook possède une adresse e-mail "
       "confirmée.";
+  static const String appleSignInTitle = "Connexion Apple";
+  static const String appleSignInError =
+      "Connexion Apple impossible. Veuillez réessayer.";
 
   //* network — transport error copy
   static const String serverUnreachableError =
@@ -212,6 +215,11 @@ class AppTexts {
   static const String supportEmailSubject = "Aide IncaCook";
   static const String supportUnavailable =
       "Aucune application e-mail. Écrivez-nous à support@incacook.app";
+  // Public privacy-policy page, opened externally from Settings (#49).
+  // TODO: CONFIRM the real production admin domain before release — this is
+  // a placeholder pending confirmation of incacook-admin's public base URL.
+  static const String privacyPolicyUrl = "https://admin.incacook.com/privacy";
+  static const String settingsPrivacyPolicy = "Politique de confidentialité";
   static const String appName = "IncaCook";
   static const String appLegalese = "© 2026 IncaCook";
   static const String settingsLogout = "Se déconnecter";
@@ -220,6 +228,69 @@ class AppTexts {
       "Tu devras te reconnecter pour accéder à ton compte.";
   static const String settingsLogoutConfirmCancel = "Annuler";
   static const String settingsLogoutConfirmAction = "Se déconnecter";
+
+  //* Settings — blocked users (#54)
+  static const String settingsBlockedUsers = "Utilisateurs bloqués";
+  static const String blockedUsersTitle = "Utilisateurs bloqués";
+  static const String blockedUsersEmpty = "Aucun utilisateur bloqué.";
+  static const String blockedUsersUnblockCta = "Débloquer";
+  static const String blockedUsersUnblockSuccess = "Utilisateur débloqué.";
+  static const String blockedUsersLoadError =
+      "Impossible de charger la liste des utilisateurs bloqués.";
+
+  //* Chat — block/report a user (#54)
+  static const String chatBlockUserCta = "Bloquer cet utilisateur";
+  static const String chatReportUserCta = "Signaler cet utilisateur";
+  static const String chatReportMessageCta = "Signaler ce message";
+  static const String chatBlockConfirmTitle = "Bloquer cet utilisateur ?";
+  static const String chatBlockConfirmBody =
+      "Vous ne pourrez plus vous envoyer de messages. Vous pourrez le "
+      "débloquer à tout moment depuis Réglages → Utilisateurs bloqués.";
+  static const String chatBlockConfirmCancel = "Annuler";
+  static const String chatBlockConfirmAction = "Bloquer";
+  static const String chatBlockSuccess = "Utilisateur bloqué.";
+  static const String chatBlockError =
+      "Impossible de bloquer cet utilisateur pour le moment.";
+  static const String chatUnblockError =
+      "Impossible de débloquer cet utilisateur pour le moment.";
+
+  //* Settings — delete account (#51)
+  static const String settingsDeleteAccount = "Supprimer mon compte";
+  static const String deleteAccountConfirmTitle = "Supprimer votre compte ?";
+  static const String deleteAccountConfirmBody =
+      "Cette action est irréversible. Vos données personnelles seront "
+      "supprimées ou anonymisées, conformément à notre politique de "
+      "confidentialité.";
+  static const String deleteAccountConfirmCancel = "Annuler";
+  static const String deleteAccountConfirmContinue = "Continuer";
+  static const String deleteAccountFinalTitle = "Confirmer la suppression";
+  static const String deleteAccountFinalBody =
+      "Dernière étape : cette action ne peut pas être annulée. Voulez-vous "
+      "vraiment supprimer définitivement votre compte IncaCook ?";
+  static const String deleteAccountFinalCancel = "Annuler";
+  static const String deleteAccountFinalAction = "Supprimer définitivement";
+  static const String deleteAccountSubscriptionWarningTitle =
+      "Abonnement en cours";
+  static const String deleteAccountSubscriptionWarningBody =
+      "Supprimer votre compte n'annule PAS votre abonnement vendeur — vous "
+      "continuerez à être facturé. Gérez ou annulez d'abord votre abonnement "
+      "depuis le store.";
+  static const String deleteAccountSubscriptionWarningManageCta =
+      "Gérer mon abonnement";
+  static const String deleteAccountSubscriptionWarningContinueCta =
+      "Continuer quand même";
+  static const String deleteAccountSuccess = "Votre compte a été supprimé.";
+  static const String deleteAccountGenericError =
+      "Suppression impossible pour le moment. Réessayez plus tard.";
+  static const String deleteAccountBlockedActiveOrder =
+      "Impossible de supprimer votre compte : une commande est en cours. "
+      "Réessayez une fois celle-ci terminée.";
+  static const String deleteAccountBlockedNonzeroWallet =
+      "Impossible de supprimer votre compte : votre portefeuille n'est pas "
+      "à zéro. Retirez votre solde avant de continuer.";
+  static const String deleteAccountBlockedOutstandingDebt =
+      "Impossible de supprimer votre compte : un solde reste dû. "
+      "Contactez le support pour régulariser la situation.";
 
   //* Appearance sheet
   static const String appearanceSheetTitle = "Apparence";
@@ -1307,6 +1378,19 @@ class AppTexts {
   static const String signupKycSelfieRetakeCta = "Refaire le selfie";
   static const String signupKycSelfieFooter =
       "Capture en direct uniquement — pas de galerie.";
+
+  //* KYC selfie — consent gate, shown before the camera opens (#55)
+  static const String kycConsentTitle = "Vérification de votre identité";
+  static const String kycConsentBody =
+      "Pour vérifier votre identité, nous prenons une photo de votre "
+      "visage. Cette photo est d'abord analysée sur votre appareil, puis "
+      "envoyée et stockée de façon sécurisée pour la vérification. Elle "
+      "n'est jamais utilisée à d'autres fins.";
+  static const String kycConsentCheckbox =
+      "J'accepte que ma photo soit utilisée pour vérifier mon identité";
+  static const String kycConsentReadPrivacyLink =
+      "Lire la politique de confidentialité";
+  static const String kycConsentContinueCta = "Continuer";
 
   static const String signupSellerCharterTitle = "Charte d'hygiène";
   static const String signupSellerCharterSubtitle =
