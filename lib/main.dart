@@ -21,6 +21,7 @@ import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_client.dart';
 import 'package:incacook/core/network/token_storage.dart';
 import 'package:incacook/core/services/map/google_maps_native_config.dart';
+import 'package:incacook/core/services/native_apple_auth_service.dart';
 import 'package:incacook/core/services/native_google_auth_service.dart';
 import 'package:incacook/core/services/revenuecat_service.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
@@ -140,6 +141,7 @@ void main() async {
   Get.put<SupabaseOAuthService>(SupabaseOAuthService(), permanent: true);
   Get.put<OAuthSessionRecovery>(OAuthSessionRecovery(), permanent: true);
   Get.put<NativeGoogleAuthService>(NativeGoogleAuthService(), permanent: true);
+  Get.put<NativeAppleAuthService>(NativeAppleAuthService(), permanent: true);
   Get.put<PostAuthRouter>(PostAuthRouter(), permanent: true);
   // Always available (even if Firebase/push init later fails or is off on
   // iOS) so order screens can subscribe unconditionally. The push service is

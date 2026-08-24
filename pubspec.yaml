@@ -65,6 +65,10 @@ dependencies:
   purchases_flutter: ^10.2.3
   pull_to_refresh: ^2.0.0
   google_sign_in: ^7.2.0
+  # Native Sign in with Apple (#53, guideline 4.8 — iOS-only button).
+  sign_in_with_apple: ^7.0.1
+  # Nonce hashing for the Sign in with Apple + Supabase id-token exchange.
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:

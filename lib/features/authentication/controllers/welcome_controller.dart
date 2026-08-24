@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:incacook/core/common/styles/loaders.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/controllers/user_controller.dart';
 import 'package:incacook/core/network/api_response.dart';
+import 'package:incacook/core/services/native_apple_auth_service.dart';
 import 'package:incacook/core/services/native_google_auth_service.dart';
 import 'package:incacook/core/services/supabase_oauth_service.dart';
 import 'package:incacook/features/authentication/data/repositories/auth_repository.dart';
@@ -29,28 +31,37 @@ class WelcomeController extends GetxController {
   WelcomeController({
     SupabaseOAuthService? oauth,
     NativeGoogleAuthService? googleAuth,
+    NativeAppleAuthService? appleAuth,
     AuthRepository? authRepository,
     PostAuthRouter? router,
   }) : _oauth = oauth ?? Get.find<SupabaseOAuthService>(),
        _googleAuth = googleAuth ?? Get.find<NativeGoogleAuthService>(),
+       _appleAuth = appleAuth ??
+           (Get.isRegistered<NativeAppleAuthService>()
+               ? Get.find<NativeAppleAuthService>()
+               : Get.put(NativeAppleAuthService(), permanent: true)),
        _authRepository = authRepository ?? Get.find<AuthRepository>(),
        _router = router ?? Get.find<PostAuthRouter>();
 
   final SupabaseOAuthService _oauth;
   final NativeGoogleAuthService _googleAuth;
+  final NativeAppleAuthService _appleAuth;
   final AuthRepository _authRepository;
   final PostAuthRouter _router;
 
   /// Per-provider in-flight flags. Each button binds to its own flag for the
-  /// spinner; [isAnySocialLoading] disables *both* buttons so the two
-  /// providers can never run at once and no button can double-launch.
+  /// spinner; [isAnySocialLoading] disables *all* buttons so no two
+  /// providers can run at once and no button can double-launch.
   final isGoogleLoading = false.obs;
   final isFacebookLoading = false.obs;
+  final isAppleLoading = false.obs;
 
   bool get isAnySocialLoading =>
-      isGoogleLoading.value || isFacebookLoading.value;
+      isGoogleLoading.value || isFacebookLoading.value || isAppleLoading.value;
 
   Future<void> signInWithGoogle() => _signInWithNativeGoogle();
+
+  Future<void> signInWithApple() => _signInWithNativeApple();
 
   Future<void> signInWithFacebook() => _signInWith(
     provider: OAuthProvider.facebook,
@@ -137,15 +148,68 @@ class WelcomeController extends GetxController {
     }
   }
 
+  Future<void> _signInWithNativeApple() async {
+    if (isAnySocialLoading) return;
+    isAppleLoading.value = true;
+    const tag = 'Apple';
+    logInfo('[Auth][$tag] button clicked');
+    try {
+      logInfo('[Auth][$tag] starting native Sign in with Apple');
+      final result = await _appleAuth.signIn();
+      if (result == null) return;
+      logInfo('[Auth][$tag] native session received: true');
+
+      await _completeSocialSignIn(
+        tag: tag,
+        session: result.session,
+        // Apple sends given/family name ONLY on the very first
+        // authorization — persist it now, it's unrecoverable afterwards.
+        overrideFirstName: result.firstName,
+        overrideLastName: result.lastName,
+      );
+    } on OAuthSignInException {
+      logError('[Auth][$tag] native session received: false');
+      CustomLoaders.errorSnackBar(
+        title: AppTexts.appleSignInTitle,
+        message: AppTexts.appleSignInError,
+      );
+    } on ApiFailure catch (e) {
+      CustomLoaders.errorSnackBar(
+        title: AppTexts.appleSignInTitle,
+        message: e.message,
+      );
+    } catch (_) {
+      CustomLoaders.errorSnackBar(
+        title: AppTexts.appleSignInTitle,
+        message: AppTexts.appleSignInError,
+      );
+    } finally {
+      isAppleLoading.value = false;
+    }
+  }
+
   Future<void> _completeSocialSignIn({
     required String tag,
     required Session session,
+    String? overrideFirstName,
+    String? overrideLastName,
   }) async {
     await _authRepository.persistOAuthSession(
       accessToken: session.accessToken,
       refreshToken: session.refreshToken ?? '',
       expiresAt: session.expiresAt ?? 0,
     );
+    // Apple's identity token carries no name claim — persistOAuthSession's
+    // JWT-claim decode leaves authFirstName/authLastName null for it. Apply
+    // the name from the (first-authorization-only) Apple credential after,
+    // so it isn't lost for the rest of onboarding.
+    if ((overrideFirstName != null || overrideLastName != null) &&
+        Get.isRegistered<UserController>()) {
+      UserController.instance.setAuthName(
+        firstName: overrideFirstName,
+        lastName: overrideLastName,
+      );
+    }
     _logAvatarPresence(session);
     _logEmailPresence(tag, session);
 

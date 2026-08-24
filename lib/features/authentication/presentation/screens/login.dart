@@ -94,6 +94,9 @@ class LoginScreen extends StatelessWidget {
                       onFacebook: social.isAnySocialLoading
                           ? null
                           : social.signInWithFacebook,
+                      onApple: social.isAnySocialLoading
+                          ? null
+                          : social.signInWithApple,
                       showFacebook: !FeatureFlags.hideFacebookSignIn,
                     ),
                   ),

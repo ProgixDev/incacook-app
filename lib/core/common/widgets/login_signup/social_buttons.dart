@@ -1,24 +1,42 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:incacook/core/constants/image_strings.dart';
 import 'package:incacook/core/constants/sizes.dart';
 
 class SocialButtons extends StatelessWidget {
-  const SocialButtons({
+  SocialButtons({
     super.key,
     this.onGoogle,
     this.onFacebook,
+    this.onApple,
     this.showGoogle = true,
     this.showFacebook = true,
-  });
+    bool? showApple,
+  }) : showApple = showApple ?? (!kIsWeb && _isIOS);
 
   /// Tap handlers for the provider buttons. Optional so existing callers
   /// that only want the decorative row keep working; the login screen
   /// passes the [WelcomeController] flows.
   final VoidCallback? onGoogle;
   final VoidCallback? onFacebook;
+  final VoidCallback? onApple;
   final bool showGoogle;
   final bool showFacebook;
+
+  /// Apple Sign-In defaults to iOS-only (#53 / guideline 4.8 applies most
+  /// strictly there) — pass an explicit value to override.
+  final bool showApple;
+
+  static bool get _isIOS {
+    try {
+      return Platform.isIOS;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +45,11 @@ class SocialButtons extends StatelessWidget {
         _SocialButton(logo: AppImages.googleLogo, onTap: onGoogle),
       if (showFacebook)
         _SocialButton(logo: AppImages.facebookLogo, onTap: onFacebook),
+      if (showApple)
+        _SocialButton(
+          icon: Icons.apple,
+          onTap: onApple,
+        ),
     ];
 
     if (buttons.isEmpty) return const SizedBox.shrink();
@@ -47,9 +70,19 @@ class SocialButtons extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton({required this.logo, required this.onTap});
+  const _SocialButton({this.logo, this.icon, required this.onTap})
+      : assert(
+          logo != null || icon != null,
+          'Provide either a logo asset or an icon.',
+        );
 
-  final String logo;
+  /// Asset path for a provider logo image (Google, Facebook).
+  final String? logo;
+
+  /// Material glyph for a provider without a bundled asset (Apple's
+  /// system glyph, per Apple's Human Interface Guidelines).
+  final IconData? icon;
+
   // Nullable: a null `onTap` disables (and dims) the button — used while a
   // social login is already running to block double / simultaneous launches.
   final VoidCallback? onTap;
@@ -72,11 +105,13 @@ class _SocialButton extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: scheme.outlineVariant),
             ),
-            child: Image(
-              image: AssetImage(logo),
-              height: AppSizes.iconMd,
-              width: AppSizes.iconMd,
-            ),
+            child: icon != null
+                ? Icon(icon, size: AppSizes.iconMd, color: Colors.black)
+                : Image(
+                    image: AssetImage(logo!),
+                    height: AppSizes.iconMd,
+                    width: AppSizes.iconMd,
+                  ),
           ),
         ),
       ),
