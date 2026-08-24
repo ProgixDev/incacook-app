@@ -23,6 +23,10 @@ enum Charter {
   punctuality,
   @JsonValue('CARE')
   care,
+  // KYC selfie consent (#55) — accepted right before the on-device face
+  // capture opens, not part of Gate 2's body either.
+  @JsonValue('KYC_BIOMETRIC')
+  kycBiometric,
 }
 
 /// Response of `GET /v1/charters/active` (§3.10). Keys are uppercase
@@ -54,6 +58,7 @@ class ActiveCharters {
     Charter.faitMaison => 'FAIT_MAISON',
     Charter.punctuality => 'PUNCTUALITY',
     Charter.care => 'CARE',
+    Charter.kycBiometric => 'KYC_BIOMETRIC',
   };
 
   Map<String, String> toJson() => Map.unmodifiable(_byCode);

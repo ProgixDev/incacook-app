@@ -27,4 +27,5 @@ const _$CharterEnumMap = {
   Charter.faitMaison: 'FAIT_MAISON',
   Charter.punctuality: 'PUNCTUALITY',
   Charter.care: 'CARE',
+  Charter.kycBiometric: 'KYC_BIOMETRIC',
 };

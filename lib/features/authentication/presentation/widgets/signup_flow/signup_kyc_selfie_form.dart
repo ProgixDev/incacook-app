@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,9 +6,14 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:incacook/core/constants/sizes.dart';
 import 'package:incacook/core/constants/text_strings.dart';
+import 'package:incacook/core/models/auth/charter.dart';
+import 'package:incacook/core/utils/log.dart';
 import 'package:incacook/features/authentication/controllers/signup_flow_controller.dart';
+import 'package:incacook/features/authentication/data/models/requests/accept_charter_request.dart';
+import 'package:incacook/features/authentication/data/repositories/users_repository.dart';
 import 'package:incacook/features/authentication/data/services/face_photo_validator.dart';
 import 'package:incacook/features/authentication/data/services/selfie_capture_service.dart';
+import 'package:incacook/features/settings/presentation/widgets/privacy_policy_link.dart';
 
 /// Shared selfie capture used by both seller and driver KYC pages.
 ///
@@ -30,6 +36,45 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
   File? _localFile;
   bool _uploading = false;
   String? _error;
+
+  // KYC consent gate (#55) — the camera never opens until this is true.
+  // Already-uploaded selfies (resuming the wizard) imply consent was given
+  // in an earlier pass through this screen, so they skip straight past it.
+  bool _consentGiven = false;
+  bool _consentChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _consentGiven = _controller.selfieUrl.value.isNotEmpty;
+  }
+
+  /// Records the KYC selfie consent, best-effort. Never blocks the flow —
+  /// the checkbox itself is the real gate; this is a server-side record of
+  /// it for audit purposes.
+  // TODO: confirm exact backend endpoint once #55 backend lands. Assumes
+  // the existing charter-acceptance endpoint (POST /v1/users/me/charters,
+  // used for CGU/CGV) also accepts kind KYC_BIOMETRIC.
+  Future<void> _recordConsent() async {
+    try {
+      await UsersRepository.instance.acceptCharter(
+        const AcceptCharterRequest(
+          charter: Charter.kycBiometric,
+          version: '1',
+        ),
+      );
+    } catch (e) {
+      // Best-effort — never blocks KYC capture on a consent-recording
+      // failure; the on-device checkbox is the real gate.
+      logWarning('[KYC] consent record failed: $e');
+    }
+  }
+
+  void _continueFromConsent() {
+    if (!_consentChecked) return;
+    setState(() => _consentGiven = true);
+    unawaited(_recordConsent());
+  }
 
   Future<void> _takeSelfie() async {
     setState(() {
@@ -74,6 +119,10 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
+    if (!_consentGiven) {
+      return _buildConsent(context, scheme);
+    }
 
     return Column(
       children: [
@@ -172,6 +221,69 @@ class _SignupKycSelfieFormState extends State<SignupKycSelfieForm> {
         Text(
           AppTexts.signupKycSelfieFooter,
           style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12),
+        ),
+      ],
+    );
+  }
+
+  /// Consent step shown before the camera ever opens (#55): plain-French
+  /// explanation of the on-device check + upload + storage, a link to the
+  /// privacy policy, and a checkbox that must be ticked before "Continuer"
+  /// enables — mirrors `TermsConsentTile`'s checkbox + link visual pattern
+  /// from `legal_terms_screen.dart`.
+  Widget _buildConsent(BuildContext context, ColorScheme scheme) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.face_retouching_natural, size: 56, color: scheme.primary),
+        const Gap(AppSizes.md),
+        Text(
+          AppTexts.kycConsentTitle,
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const Gap(AppSizes.sm),
+        Text(
+          AppTexts.kycConsentBody,
+          style: textTheme.bodyMedium?.copyWith(height: 1.4),
+        ),
+        const Gap(AppSizes.sm),
+        const PrivacyPolicyLink(),
+        const Gap(AppSizes.md),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: Checkbox(
+                value: _consentChecked,
+                onChanged: (v) => setState(() => _consentChecked = v ?? false),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+            const Gap(AppSizes.sm),
+            Expanded(
+              child: GestureDetector(
+                onTap: () =>
+                    setState(() => _consentChecked = !_consentChecked),
+                child: Text(
+                  AppTexts.kycConsentCheckbox,
+                  style: textTheme.bodyMedium,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const Gap(AppSizes.lg),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _consentChecked ? _continueFromConsent : null,
+            child: const Text(AppTexts.kycConsentContinueCta),
+          ),
         ),
       ],
     );
