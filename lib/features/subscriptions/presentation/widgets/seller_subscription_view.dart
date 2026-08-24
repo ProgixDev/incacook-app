@@ -56,6 +56,11 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
   bool _busy = false;
   // Precise unavailability message (null once the products are available).
   String? _unavailableReason;
+  // Set when the backend sync failed after a purchase/restore, even after a
+  // retry. Non-blocking: the entitlement is already active locally and
+  // [onActivated] still ran — this only surfaces a "we'll keep trying" note
+  // instead of silently logging "webhook will reconcile" and moving on.
+  bool _syncFailed = false;
 
   SellerCategory get _category => widget.category;
 
@@ -179,28 +184,49 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
   }
 
   /// Syncs the result with the backend and then hands off to [onActivated].
-  /// The local entitlement already authorises proceeding; a failed sync is
-  /// logged but not fatal — the RevenueCat webhook reconciles the backend.
+  /// The local entitlement already authorises proceeding, so a sync failure
+  /// never blocks the user — but it's retried once before giving up, and a
+  /// final failure surfaces a visible (non-blocking) note instead of being
+  /// silently swallowed. The launch-time reconcile in `PostAuthRouter`
+  /// catches anything still unsynced on the next app open.
   Future<void> _syncAndActivate(SubscriptionOutcome outcome) async {
-    try {
-      final result = await _sellers.syncSubscription(
-        entitlementId: outcome.entitlementId,
-        productId: outcome.productId,
-        expiresAtMs: outcome.expiresAtMs,
-        isTrial: outcome.isTrial,
-        revenueCatCustomerId: UserController.instance.user.value?.id,
-        category: _category,
-      );
-      logSuccess('[Subscription] backend sync: active=${result.active} status=${result.status}');
-    } on ApiFailure catch (e) {
-      logWarning('[Subscription] backend sync failed: ${e.code} (webhook will reconcile)');
+    var synced = false;
+    ApiFailure? lastFailure;
+    for (var attempt = 1; attempt <= 2; attempt++) {
+      try {
+        final result = await _sellers.syncSubscription(
+          entitlementId: outcome.entitlementId,
+          productId: outcome.productId,
+          expiresAtMs: outcome.expiresAtMs,
+          isTrial: outcome.isTrial,
+          revenueCatCustomerId: UserController.instance.user.value?.id,
+          category: _category,
+        );
+        logSuccess('[Subscription] backend sync: active=${result.active} status=${result.status}');
+        synced = true;
+        break;
+      } on ApiFailure catch (e) {
+        lastFailure = e;
+        logWarning('[Subscription] backend sync failed (attempt $attempt): ${e.code}');
+      }
     }
+    if (mounted) setState(() => _syncFailed = !synced);
     await widget.onActivated();
     if (!mounted) return;
-    CustomLoaders.successSnackBar(
-      title: AppTexts.signupSubscriptionTitle,
-      message: AppTexts.signupSubscriptionSuccess,
-    );
+    if (synced) {
+      CustomLoaders.successSnackBar(
+        title: AppTexts.signupSubscriptionTitle,
+        message: AppTexts.signupSubscriptionSuccess,
+      );
+    } else {
+      logWarning(
+        '[Subscription] backend sync gave up after retry: ${lastFailure?.code}',
+      );
+      CustomLoaders.warningSnackBar(
+        title: AppTexts.signupSubscriptionTitle,
+        message: AppTexts.signupSubscriptionSyncPending,
+      );
+    }
   }
 
   @override
@@ -212,6 +238,12 @@ class _SellerSubscriptionViewState extends State<SellerSubscriptionView> {
         if (_productsUnavailable) ...[
           _UnavailableBanner(
             message: _unavailableReason ?? AppTexts.signupSubscriptionUnavailable,
+          ),
+          const Gap(AppSizes.md),
+        ],
+        if (_syncFailed) ...[
+          const _UnavailableBanner(
+            message: AppTexts.signupSubscriptionSyncPending,
           ),
           const Gap(AppSizes.md),
         ],

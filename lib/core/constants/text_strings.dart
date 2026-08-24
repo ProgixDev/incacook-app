@@ -1421,6 +1421,12 @@ class AppTexts {
       "Abonnement impossible. Veuillez réessayer.";
   static const String signupSubscriptionUnavailable =
       "Abonnement indisponible. Vérifiez la configuration RevenueCat.";
+  // Shown when the post-purchase/restore backend sync fails even after a
+  // retry. Non-blocking: the store entitlement is already active, and the
+  // launch-time reconcile (PostAuthRouter) will pick it up on next open.
+  static const String signupSubscriptionSyncPending =
+      "Achat confirmé. La synchronisation avec votre compte est en cours — "
+      "réessayez plus tard si votre abonnement n'apparaît pas actif.";
   // Precise paywall errors (TestFlight debugging) — one per failure cause.
   static const String subscriptionErrorKeyMissing =
       "Configuration RevenueCat manquante.";
