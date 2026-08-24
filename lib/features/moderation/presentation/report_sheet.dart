@@ -62,24 +62,71 @@ class _OptionTile extends StatelessWidget {
   }
 }
 
-/// Bottom sheet to report a dish. "Non fait maison" is only offered for
-/// FAIT_MAISON listings (the backend also enforces this). Submits to
-/// `POST /v1/reports`; pops `true` on success.
+/// What a report targets — drives the reason set offered and the request
+/// payload's target field (#54 added [message] and [user] alongside the
+/// original dish/seller reporting).
+enum ReportTarget { listing, message, user }
+
+/// Bottom sheet to report a dish, a chat message, or a user. The reason set
+/// adapts to [target] — "Non fait maison" only for FAIT_MAISON listings (the
+/// backend also enforces this). Submits to `POST /v1/reports`; pops `true`
+/// on success.
 class ReportSheet extends StatefulWidget {
   const ReportSheet({
     super.key,
-    required this.listingId,
-    required this.isFaitMaison,
+    this.target = ReportTarget.listing,
+    this.listingId,
+    this.sellerId,
+    this.messageId,
+    this.userId,
+    this.isFaitMaison = false,
   });
 
-  final String listingId;
+  final ReportTarget target;
+  final String? listingId;
+  final String? sellerId;
+  final String? messageId;
+  final String? userId;
   final bool isFaitMaison;
 
+  /// Reports a dish listing. Preserved for existing call sites.
   static Future<bool?> show(
     BuildContext context, {
     required String listingId,
     required bool isFaitMaison,
   }) {
+    return _showSheet(
+      context,
+      ReportSheet(
+        listingId: listingId,
+        isFaitMaison: isFaitMaison,
+      ),
+    );
+  }
+
+  /// Reports a single chat message (#54) — reachable via long-press.
+  static Future<bool?> showForMessage(
+    BuildContext context, {
+    required String messageId,
+  }) {
+    return _showSheet(
+      context,
+      ReportSheet(target: ReportTarget.message, messageId: messageId),
+    );
+  }
+
+  /// Reports a user directly (#54) — reachable from the chat header.
+  static Future<bool?> showForUser(
+    BuildContext context, {
+    required String userId,
+  }) {
+    return _showSheet(
+      context,
+      ReportSheet(target: ReportTarget.user, userId: userId),
+    );
+  }
+
+  static Future<bool?> _showSheet(BuildContext context, ReportSheet sheet) {
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -87,10 +134,7 @@ class ReportSheet extends StatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => ReportSheet(
-        listingId: listingId,
-        isFaitMaison: isFaitMaison,
-      ),
+      builder: (_) => sheet,
     );
   }
 
@@ -104,12 +148,33 @@ class _ReportSheetState extends State<ReportSheet> {
   bool _submitting = false;
   String? _error;
 
-  List<_ReportOption> get _options => [
-    if (widget.isFaitMaison)
-      const _ReportOption('Non fait maison', 'NON_FAIT_MAISON'),
-    const _ReportOption('Mauvaise hygiène', 'MAUVAISE_HYGIENE'),
-    const _ReportOption('Autre', 'OTHER'),
-  ];
+  String get _title => switch (widget.target) {
+    ReportTarget.listing => 'Signaler ce plat',
+    ReportTarget.message => 'Signaler ce message',
+    ReportTarget.user => 'Signaler cet utilisateur',
+  };
+
+  List<_ReportOption> get _options => switch (widget.target) {
+    ReportTarget.listing => [
+        if (widget.isFaitMaison)
+          const _ReportOption('Non fait maison', 'NON_FAIT_MAISON'),
+        const _ReportOption('Mauvaise hygiène', 'MAUVAISE_HYGIENE'),
+        const _ReportOption('Autre', 'OTHER'),
+      ],
+    ReportTarget.message => const [
+        _ReportOption('Spam', 'SPAM'),
+        _ReportOption('Contenu inapproprié', 'INAPPROPRIATE'),
+        _ReportOption('Contenu offensant', 'OFFENSIVE'),
+        _ReportOption('Autre', 'OTHER'),
+      ],
+    ReportTarget.user => const [
+        _ReportOption('Spam', 'SPAM'),
+        _ReportOption('Comportement inapproprié', 'INAPPROPRIATE'),
+        _ReportOption('Comportement offensant', 'OFFENSIVE'),
+        _ReportOption('Faux profil', 'FAKE'),
+        _ReportOption('Autre', 'OTHER'),
+      ],
+  };
 
   @override
   void dispose() {
@@ -131,6 +196,9 @@ class _ReportSheetState extends State<ReportSheet> {
       await ReportsRepository().submit(
         type: type,
         listingId: widget.listingId,
+        sellerId: widget.sellerId,
+        messageId: widget.messageId,
+        userId: widget.userId,
         reason: _comment.text,
       );
       if (!mounted) return;
@@ -179,7 +247,7 @@ class _ReportSheetState extends State<ReportSheet> {
             ),
             const Gap(AppSizes.md),
             Text(
-              'Signaler ce plat',
+              _title,
               style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const Gap(AppSizes.lg),

@@ -97,6 +97,7 @@ class ChatNavigator {
           conversationId: ref.id,
           myRole: myRole,
           title: peerName,
+          peerUserId: peerUserId,
         ),
       );
     } on ApiFailure catch (e) {

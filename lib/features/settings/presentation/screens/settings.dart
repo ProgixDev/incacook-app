@@ -17,6 +17,8 @@ import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
 import 'package:incacook/features/authentication/services/sign_out_service.dart';
+import 'package:incacook/features/moderation/presentation/blocked_users_screen.dart';
+import 'package:incacook/features/settings/presentation/widgets/delete_account_service.dart';
 import 'package:incacook/features/settings/presentation/widgets/profile_menu_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/profile_user_card.dart';
 import 'package:incacook/features/settings/presentation/widgets/appearance_sheet.dart';
@@ -139,6 +141,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: AppTexts.settingsAddresses,
         onTap: () => SavedAddressesSheet.show(context),
       ),
+      SettingMenuItem(
+        icon: Iconsax.user_remove,
+        title: AppTexts.settingsBlockedUsers,
+        onTap: () => Get.to<void>(() => const BlockedUsersScreen()),
+      ),
     ];
 
     final supportItems = <SettingMenuItem>[
@@ -170,6 +177,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: AppTexts.settingsLogout,
         showChevron: false,
         onTap: () => SignOutService.promptAndSignOut(context),
+      ),
+      SettingMenuItem(
+        icon: Iconsax.trash,
+        title: AppTexts.settingsDeleteAccount,
+        showChevron: false,
+        onTap: () => DeleteAccountService.start(context),
       ),
     ];
 

@@ -9,6 +9,7 @@ import 'package:incacook/core/services/realtime/chat_message.dart';
 import 'package:incacook/core/widgets/images/user_avatar.dart';
 import 'package:incacook/features/chat/data/conversations_repository.dart';
 import 'package:incacook/features/chat/presentation/screens/chat.dart';
+import 'package:incacook/features/moderation/controllers/blocked_users_controller.dart';
 
 /// One reusable conversation list screen. Buyer's messages tab and
 /// seller's messages tab both render this, parameterized by [filter]:
@@ -42,6 +43,9 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
   void initState() {
     super.initState();
     _future = _load();
+    // Best-effort — lets a block/unblock elsewhere (chat header, Settings)
+    // hide/show conversations here reactively without a refetch (#54).
+    BlockedUsersController.instance.ensureHydrated();
   }
 
   Future<List<ConversationListItem>> _load() =>
@@ -105,54 +109,68 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                 ],
               );
             }
-            final items = snapshot.data ?? const <ConversationListItem>[];
-            if (items.isEmpty) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  const SizedBox(height: 100),
-                  Center(
-                    child: Text(
-                      'Aucune discussion pour l\'instant.',
-                      style: textTheme.titleMedium
-                          ?.copyWith(color: scheme.onSurfaceVariant),
-                    ),
-                  ),
-                ],
-              );
-            }
-            return ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.md,
-                vertical: AppSizes.md,
-              ),
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Gap(AppSizes.sm),
-              itemBuilder: (context, i) {
-                final c = items[i];
-                return _ConversationTile(
-                  item: c,
-                  trailing: c.lastMessageAt != null
-                      ? _relativeTime(c.lastMessageAt!)
-                      : null,
-                  onTap: () async {
-                    await Get.to<void>(
-                      () => ChatScreen(
-                        conversationId: c.id,
-                        myRole: c.myRole,
-                        title: c.peer.displayName,
-                        avatarPath: c.peer.avatarPath,
-                      ),
-                    );
-                    if (mounted) _refresh();
-                  },
-                );
-              },
-            );
+            return Obx(() {
+              final blocked = BlockedUsersController.instance.blockedUserIds;
+              final items = (snapshot.data ?? const <ConversationListItem>[])
+                  .where((c) => !blocked.contains(c.peer.userId))
+                  .toList();
+              return _buildList(items, scheme, textTheme);
+            });
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildList(
+    List<ConversationListItem> items,
+    ColorScheme scheme,
+    TextTheme textTheme,
+  ) {
+    if (items.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 100),
+          Center(
+            child: Text(
+              'Aucune discussion pour l\'instant.',
+              style: textTheme.titleMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.md,
+        vertical: AppSizes.md,
+      ),
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: items.length,
+      separatorBuilder: (_, _) => const Gap(AppSizes.sm),
+      itemBuilder: (context, i) {
+        final c = items[i];
+        return _ConversationTile(
+          item: c,
+          trailing: c.lastMessageAt != null
+              ? _relativeTime(c.lastMessageAt!)
+              : null,
+          onTap: () async {
+            await Get.to<void>(
+              () => ChatScreen(
+                conversationId: c.id,
+                myRole: c.myRole,
+                title: c.peer.displayName,
+                avatarPath: c.peer.avatarPath,
+                peerUserId: c.peer.userId,
+              ),
+            );
+            if (mounted) _refresh();
+          },
+        );
+      },
     );
   }
 }

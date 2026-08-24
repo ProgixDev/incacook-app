@@ -10,13 +10,17 @@ class ReportsRepository extends GetxService {
   final ApiClient _api;
 
   /// Files a report. [type] is the backend `ReportReason` string
-  /// (`NON_FAIT_MAISON` | `MAUVAISE_HYGIENE` | `OTHER`). Provide a target:
-  /// [listingId] (a dish) or [sellerId] (a seller). [reason] is an optional
-  /// free-text comment.
+  /// (`NON_FAIT_MAISON` | `MAUVAISE_HYGIENE` | `SPAM` | `INAPPROPRIATE` |
+  /// `OFFENSIVE` | `FAKE` | `DUPLICATE` | `OTHER`). Provide exactly one
+  /// target: [listingId] (a dish), [sellerId] (a seller), [messageId] (a
+  /// chat message — #54), or [userId] (a user — #54). [reason] is an
+  /// optional free-text comment.
   Future<void> submit({
     required String type,
     String? listingId,
     String? sellerId,
+    String? messageId,
+    String? userId,
     String? reason,
   }) async {
     await _api.post<void>(
@@ -25,6 +29,8 @@ class ReportsRepository extends GetxService {
         'type': type,
         'listingId': ?listingId,
         'sellerId': ?sellerId,
+        'messageId': ?messageId,
+        'userId': ?userId,
         if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
       },
       decoder: (_) {},

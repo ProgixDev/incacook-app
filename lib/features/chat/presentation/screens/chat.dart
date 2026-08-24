@@ -12,9 +12,12 @@ import 'package:incacook/core/services/realtime/tracking_socket_client.dart';
 import 'package:incacook/core/utils/device/device_utility.dart';
 import 'package:incacook/core/widgets/decor/decor_blob.dart';
 import 'package:incacook/core/widgets/effects/frosted_surface.dart';
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/features/chat/data/conversations_repository.dart';
 import 'package:incacook/features/chat/data/messages_repository.dart';
 import 'package:incacook/features/chat/presentation/widgets/chat_input_field.dart';
+import 'package:incacook/features/moderation/controllers/blocked_users_controller.dart';
+import 'package:incacook/features/moderation/presentation/report_sheet.dart';
 
 /// Persisted-conversation chat screen. The caller passes the
 /// conversation id (returned by `POST /v1/conversations`) plus the
@@ -28,6 +31,7 @@ class ChatScreen extends StatefulWidget {
     required this.myRole,
     this.title,
     this.avatarPath,
+    this.peerUserId,
   });
 
   /// DB id of the conversation — same one used for the socket room
@@ -44,6 +48,12 @@ class ChatScreen extends StatefulWidget {
   /// Optional peer photo (storage key or URL) shown in the header. Null
   /// when opened from an entry point that doesn't know it yet.
   final String? avatarPath;
+
+  /// The other participant's user id (#54) — needed for "Signaler cet
+  /// utilisateur" / "Bloquer cet utilisateur" in the header overflow menu.
+  /// Null disables those actions (entry point didn't know it, e.g. some
+  /// order-tracking pills).
+  final String? peerUserId;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -166,6 +176,59 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _reportUser() async {
+    final peerId = widget.peerUserId;
+    if (peerId == null) return;
+    await ReportSheet.showForUser(context, userId: peerId);
+  }
+
+  Future<void> _reportMessage(Message msg) async {
+    await ReportSheet.showForMessage(context, messageId: msg.id);
+  }
+
+  Future<void> _blockUser() async {
+    final peerId = widget.peerUserId;
+    if (peerId == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(AppTexts.chatBlockConfirmTitle),
+        content: const Text(AppTexts.chatBlockConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(AppTexts.chatBlockConfirmCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
+            child: const Text(AppTexts.chatBlockConfirmAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await BlockedUsersController.instance.block(peerId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.chatBlockSuccess)),
+      );
+      // The conversation with a blocked peer should disappear from the
+      // list without waiting for a refetch — leaving the thread plus the
+      // reactive blockedUserIds set (read by ConversationsListScreen)
+      // achieves that immediately.
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppTexts.chatBlockError)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appBarHeight =
@@ -214,6 +277,28 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           actions: [
             UserAvatar(path: widget.avatarPath, size: 40),
+            if (widget.peerUserId != null)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  switch (value) {
+                    case 'report':
+                      _reportUser();
+                    case 'block':
+                      _blockUser();
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Text(AppTexts.chatReportUserCta),
+                  ),
+                  PopupMenuItem(
+                    value: 'block',
+                    child: Text(AppTexts.chatBlockUserCta),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
@@ -296,22 +381,27 @@ class _ChatScreenState extends State<ChatScreen> {
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.7,
             ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.md,
-                vertical: AppSizes.sm,
-              ),
-              decoration: BoxDecoration(
-                color: isMine
-                    ? scheme.primary
-                    : scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Text(
-                msg.content,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isMine ? scheme.onPrimary : scheme.onSurface,
-                    ),
+            // Reporting a message you sent yourself makes no sense — the
+            // long-press action is only offered on the peer's messages (#54).
+            child: GestureDetector(
+              onLongPress: isMine ? null : () => _reportMessage(msg),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.md,
+                  vertical: AppSizes.sm,
+                ),
+                decoration: BoxDecoration(
+                  color: isMine
+                      ? scheme.primary
+                      : scheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  msg.content,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isMine ? scheme.onPrimary : scheme.onSurface,
+                      ),
+                ),
               ),
             ),
           ),
