@@ -23,3 +23,33 @@ scripts:
   "build:ios:ipa":
     description: Build the signed iOS release IPA for distribution.
     run: flutter build ipa --release --dart-define-from-file=.vscode/dart_defines.json
+
+  "verify:android:keystore":
+    description: >-
+      Print the release keystore's SHA-1/SHA-256 fingerprints (needed to
+      register with RevenueCat, Play Console App Signing, Firebase, and the
+      Google Maps API key restriction). Read-only — does not build anything.
+    run: >-
+      keytool -list -v
+      -keystore android/keystores/incacook-upload.jks
+      -storepass "$(grep -m1 '^storePassword=' android/key.properties | cut -d'=' -f2-)"
+      -alias "$(grep -m1 '^keyAlias=' android/key.properties | cut -d'=' -f2-)"
+      | grep -E "Alias name|Valid from|SHA1:|SHA256:"
+
+  "verify:android:manifest":
+    description: >-
+      Confirm com.android.vending.BILLING survives manifest merge in a real
+      release build (#58). Requires a prior `melos run build:android:aab`.
+    run: >-
+      bundletool dump manifest
+      --bundle=build/app/outputs/bundle/release/app-release.aab
+      | grep -i "vending.BILLING" || echo "NOT FOUND — see issue #58"
+
+  "verify:ios:entitlements":
+    description: >-
+      Confirm a release archive's resolved entitlements (aps-environment must
+      be 'production', not 'development' — #57). Requires a prior Xcode
+      archive at build/Runner.xcarchive.
+    run: >-
+      codesign -d --entitlements :-
+      build/Runner.xcarchive/Products/Applications/Runner.app
