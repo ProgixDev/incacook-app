@@ -69,8 +69,6 @@
 	<string>IncaCook utilise la caméra pour vos photos de plats et pour vérifier votre visage lors de l’inscription.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>IncaCook utilise Face ID pour sécuriser votre connexion.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>IncaCook needs microphone access for video recordings attached to listings.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>IncaCook uses your location to show nearby kitchens and track deliveries.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

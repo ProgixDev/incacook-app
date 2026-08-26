@@ -57,15 +57,22 @@ Le goût de chez toi, près de chez toi.
 ## Politique de confidentialité
 `https://incacook-admin.vercel.app/privacy`
 
+## Compte utilisateur / Suppression de compte (section "Username and other authentication")
+- **"Mon app ne permet pas aux utilisateurs de créer un compte"** → Ne pas cocher — l'app permet la création de compte (acheteur/vendeur/livreur).
+- **Delete account URL** : `https://incacook-admin.vercel.app/data-deletion`
+  - Cette page (mise à jour le 2026-08-26) satisfait les 3 exigences de Google : elle nomme IncaCook, détaille les étapes (in-app en priorité : Réglages → "Supprimer mon compte" ; e-mail en solution de secours), et précise explicitement quelles données sont supprimées immédiatement (KYC, avatar, jetons push, profil acheteur, accès de connexion) vs anonymisées et conservées indéfiniment (commandes, avis, portefeuille, profil vendeur/livreur, journal d'audit) vs soumises à une obligation légale de conservation (comptable/fiscale).
+  - Ne pas confondre avec l'URL de la politique de confidentialité (champ séparé, ci-dessus) — Play Console demande les deux.
+
 ## Data safety (Sécurité des données)
-À déclarer dans Play Console → Politique → Sécurité des données (mêmes catégories que la privacy nutrition label iOS, à confirmer avec le backend) :
-- **Localisation précise** — collectée, utilisée pour la fonctionnalité de l'app (livraison), partagée avec le livreur pendant une commande active
-- **Infos personnelles** (nom, e-mail, téléphone, adresse) — collectées, requises pour créer un compte
-- **Photos** (KYC selfie, photos de plats) — collectées, requises pour la fonctionnalité vendeur/livreur
-- **Infos financières** — traitées via le prestataire de paiement (Stripe) — préciser si IncaCook les stocke ou seulement le prestataire
-- **Messages** (chat acheteur-vendeur) — collectés, non partagés avec des tiers
-- Cocher "Les données sont chiffrées en transit" si HTTPS partout (à confirmer)
-- Cocher si un mécanisme de suppression des données existe → Oui (#51, suppression de compte)
+À déclarer dans Play Console → Politique → Sécurité des données :
+- **Localisation précise** — collectée ET partagée avec le livreur pendant une commande active ; utilisée pour la fonctionnalité de l'app (livraison), pas pour la pub. Le tracking en arrière-plan (livreur) est justifié par un foreground service Android réel (`ACCESS_BACKGROUND_LOCATION` + `FOREGROUND_SERVICE_LOCATION`, notification persistante "Livraison en cours" — vérifié dans le code, cf. section Permissions ci-dessous).
+- **Infos personnelles** (nom, e-mail, téléphone, adresse) — collectées, requises pour créer un compte.
+- **Infos et documents d'identité (sensibles)** — selfie KYC + pièce d'identité, requis pour la fonctionnalité vendeur/livreur. Validation de visage sur l'appareil avant envoi ; consentement explicite requis avant capture (#55). À déclarer dans la catégorie "Informations sur la santé/vérification d'identité" si Play Console la propose séparément des "Photos".
+- **Infos financières** — traitées via Stripe (modèle Connect) ; IncaCook ne stocke pas les données de carte, uniquement une référence `stripeCustomerId`.
+- **Messages** (chat acheteur-vendeur) — collectés, non partagés avec des tiers, modérés avec report/block (#54).
+- **Chiffrement en transit** : cocher Oui — toutes les requêtes API passent par HTTPS (aucun endpoint `http://` non chiffré identifié dans le code, cf. audit App Store 2026-08-24).
+- **Suppression de compte in-app** : cocher Oui — implémenté (#51) ; référencer l'URL ci-dessus.
+- **Publicité / tracking tiers** : cocher Non — aucun SDK publicitaire ou d'attribution identifié.
 
 ## Classification du contenu (content rating questionnaire — IARC)
 - Catégorie : Utilitaires / Productivité / Shopping (pas "Réseaux sociaux" à moins que le chat soit public)
@@ -79,8 +86,31 @@ Le goût de chez toi, près de chez toi.
 Première version d'IncaCook : commandez des plats faits maison, devenez vendeur ou livreur, et suivez tout en temps réel.
 ```
 
+## Permissions Android — audit de nécessité (vérifié 2026-08-26)
+
+Chaque permission déclarée dans `android/app/src/main/AndroidManifest.xml` a été
+vérifiée contre le code réel — aucune permission inutilisée trouvée, aucune
+permission manquante identifiée :
+
+| Permission | Justifiée par | Statut |
+|---|---|---|
+| `INTERNET` | Tous les appels API | ✅ |
+| `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` | `geolocator` — carte livreur, suivi de livraison, recherche d'adresse ("utiliser ma position") | ✅ |
+| `ACCESS_BACKGROUND_LOCATION` | `location_service.dart` — suivi de position du livreur pendant une livraison active, app en arrière-plan | ✅ |
+| `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_LOCATION` | Foreground service Android réel confirmé dans le code (`ForegroundNotificationConfig`, `location_service.dart:141-157`) avec notification persistante "Livraison en cours" — pas une déclaration "au cas où" | ✅ |
+| `CAMERA` | Photos de plats, selfie KYC (`image_picker`) | ✅ |
+| `POST_NOTIFICATIONS` | Push FCM (commandes, statut livraison) | ✅ |
+| `USE_BIOMETRIC` / `USE_FINGERPRINT` | Connexion biométrique optionnelle (`local_auth`) | ✅ |
+
+**Pas de `RECORD_AUDIO`** sur Android — cohérent avec le retrait de
+`NSMicrophoneUsageDescription` côté iOS le même jour : le bouton micro dans le
+chat (`chat_input_field.dart`) est un `onPressed: widget.onMic ?? () {}` —
+un no-op, aucune fonctionnalité d'enregistrement audio n'existe.
+
+**Pas de `READ/WRITE_EXTERNAL_STORAGE`** — non nécessaire, `image_picker` et
+`path_provider` utilisent le stockage scoped de l'app.
+
 ## Points d'attention Google Play
 - **Politique sur les données utilisateur sensibles** : le KYC (selfie + détection de visage) doit être justifié dans Data Safety et respecter la Politique relative aux données personnelles et sensibles.
-- **Permissions Android** : vérifier que `AndroidManifest.xml` ne demande que les permissions réellement utilisées (localisation, caméra, stockage) — Play Console flague les permissions inutilisées.
-- **App bundle** : publier un `.aab` signé (App Bundle), pas un APK brut.
-- **Target API level** : vérifier `compileSdkVersion`/`targetSdkVersion` dans `android/app/build.gradle` respecte le minimum Play actuel (API 34+ au moment de la rédaction — à revérifier à la date de soumission).
+- **App bundle** : publier un `.aab` signé (App Bundle), pas un APK brut — `melos run build:android:aab`.
+- **Target API level** : `targetSdk`/`compileSdk` sont hérités du SDK Flutter installé (`android/app/build.gradle.kts:53,72-73`), pas de valeur fixe dans le repo — vérifier avec `melos run verify:android:manifest` sur la machine qui produit réellement le build de soumission (cf. #62, toujours ouvert).

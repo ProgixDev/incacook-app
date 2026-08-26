@@ -53,8 +53,9 @@ plats maison,livraison repas,cuisine locale,vendeur cuisine,livreur,repas fait m
 
 ## URLs
 - **URL marketing** : à définir (site vitrine IncaCook, si disponible — sinon laisser vide)
-- **URL du support** : à définir (ex. `https://incacook-admin.vercel.app/support` ou une adresse e-mail dédiée)
+- **URL du support** : à définir — pas de page `/support` publique sur `incacook-admin.vercel.app` à ce jour ; utiliser une adresse e-mail dédiée en attendant, ou en créer une (le bouton "Obtenir de l'aide" in-app pointe vers `_openSupport()` dans `settings.dart` — vérifier ce qu'il ouvre réellement avant de choisir l'URL ici)
 - **URL de la politique de confidentialité** : `https://incacook-admin.vercel.app/privacy`
+- **URL de suppression de compte** (si demandée séparément) : `https://incacook-admin.vercel.app/data-deletion`
 
 ## Notes de version (What's New) — première soumission
 ```
@@ -67,15 +68,18 @@ Répondre "Non" à tout contenu sensible (violence, contenu adulte, jeux d'argen
 - Prévoir 18+ minimum pour créer un compte vendeur/livreur si paiements réels impliqués → cf. section KYC.
 
 ## Confidentialité (App Privacy / "Nutrition label")
-Types de données probablement collectées (à confirmer avec l'équipe backend) :
-- **Contact Info** : nom, email, téléphone (compte)
-- **Location** : position précise (livraison, carte livreur), utilisée pour la fonctionnalité de l'app
-- **Financial Info** : infos de paiement (gérées par le fournisseur de paiement — préciser si Stripe custodial ou pass-through)
-- **User Content** : messages (chat acheteur/vendeur), photos (KYC selfie, plats)
-- **Identifiers** : ID utilisateur, ID appareil
-- **Diagnostics** : rapports de crash (si Crashlytics/Sentry actif)
+Types de données confirmés (contenu réel de la politique de confidentialité, `incacook-admin` `app/(public)/privacy/page.tsx`) :
+- **Contact Info** : nom, email, téléphone (compte) — Linked to you
+- **Location** : position précise (livraison, carte livreur), y compris en arrière-plan pour les livreurs pendant une livraison active — Linked to you
+- **Financial Info** : infos de paiement traitées par Stripe (modèle Connect — IncaCook ne stocke pas les données de carte, seul un `stripeCustomerId` de référence est conservé) — Linked to you
+- **Sensitive Info** : photo de vérification d'identité (selfie KYC), document d'identité — validation de visage effectuée sur l'appareil avant envoi (cf. #45), consentement explicite requis avant capture (cf. #55) — Linked to you
+- **User Content** : messages (chat acheteur/vendeur, modéré avec report/block — #54), photos de plats
+- **Identifiers** : ID utilisateur, ID appareil (jeton FCM push)
+- **Diagnostics** : aucun SDK de crash-reporting tiers identifié dans `pubspec.yaml` à ce jour — ne pas déclarer Crashlytics/Sentry sauf ajout futur
 
-Pour chaque type : préciser s'il est lié à l'identité de l'utilisateur ("Linked to you") — c'est probablement le cas ici (compte requis) — et s'il sert au tracking (normalement Non, sauf pub tierce).
+**Tracking (ATT)** : Non — aucun SDK publicitaire ni d'attribution ne collecte l'IDFA (confirmé, cf. audit App Store 2026-08-24). Ne pas déclencher le prompt App Tracking Transparency.
+
+**Suppression de compte** : implémentée in-app (#51) — mentionner dans "App Privacy" que les utilisateurs peuvent supprimer leur compte et leurs données directement dans l'app.
 
 ## Compte de démonstration pour la revue Apple
 Fournir dans "App Review Information" :
@@ -89,4 +93,7 @@ Fournir dans "App Review Information" :
 - **Sign in with Apple** : déjà implémenté (#53) — obligatoire si Google/Facebook Sign-In est proposé (Guideline 4.8). ✅
 - **Suppression de compte** : déjà implémenté (#51) — requis par Guideline 5.1.1(v). ✅
 - **Contenu généré par les utilisateurs (chat)** : modération + report/block déjà en place (#54) — requis par Guideline 1.2. ✅
-- **Permissions runtime** : vérifier que chaque usage de localisation/caméra/photos a une chaîne `NSUsageDescription` claire dans `Info.plist`.
+- **Permissions runtime — vérifiées le 2026-08-26** :
+  - `NSCameraUsageDescription`, `NSFaceIDUsageDescription`, `NSPhotoLibraryUsageDescription`, `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` : chacune correspond à une fonctionnalité réelle et utilisée. ✅
+  - `NSMicrophoneUsageDescription` : **retirée d'`Info.plist`** — aucune fonctionnalité d'enregistrement audio/vidéo n'existe dans le code (seul `ImagePicker().pickImage`, jamais `pickVideo`) ; la description ("video recordings attached to listings") ne correspondait à rien de réel et aurait pu déclencher une question de l'équipe de revue.
+  - Incohérence de langue restante (Caméra/Face ID en français, Location/Photos en anglais) : non corrigée dans ce passage (cf. ticket #60), sans impact sur la fonctionnalité.
