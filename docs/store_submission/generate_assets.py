@@ -222,6 +222,17 @@ def main():
     IOS_SIZE = (1320, 2868)     # iPhone 6.9" — App Store mandatory display size
     ANDROID_SIZE = (1080, 1920)  # Play Store phone screenshot, 9:16
 
+    # Tablet/iPad sizes. Neither platform has a distinct tablet UI to
+    # screenshot (this is a phone-first app), so these are the same phone
+    # mockup + marketing headline, rendered onto a larger canvas — the
+    # standard approach for apps without a bespoke tablet layout.
+    ANDROID_TABLET_7IN_SIZE = (1440, 2560)  # Play "7-inch tablet" slot, exact 9:16
+    # 12.9"/13" iPad display class. VERIFY against App Store Connect at
+    # upload time — Apple has changed the mandatory iPad size more than
+    # once; if Connect asks for a different size, edit IOS_IPAD_SIZE and
+    # rerun rather than hand-resizing the output.
+    IOS_IPAD_SIZE = (2048, 2732)
+
     for src, headline, redact, name in screens:
         if not src:
             print("MISSING source for", name)
@@ -230,6 +241,10 @@ def main():
                          os.path.join(OUT_DIR, "ios", "screenshots_6.9in", f"{name}.png"), redact)
         make_screenshot(src, headline, ANDROID_SIZE,
                          os.path.join(OUT_DIR, "android", "screenshots_phone", f"{name}.png"), redact)
+        make_screenshot(src, headline, ANDROID_TABLET_7IN_SIZE,
+                         os.path.join(OUT_DIR, "android", "screenshots_tablet_7in", f"{name}.png"), redact)
+        make_screenshot(src, headline, IOS_IPAD_SIZE,
+                         os.path.join(OUT_DIR, "ios", "screenshots_ipad_12.9in", f"{name}.png"), redact)
 
     icon = make_icon_1024()
     make_icon_512(icon)
