@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 
+import 'package:incacook/core/constants/text_strings.dart';
 import 'package:incacook/core/models/order_detail.dart';
 import 'package:incacook/core/services/location/location_service.dart';
 import 'package:incacook/core/services/map/models/map_route.dart';
@@ -203,8 +204,11 @@ class IncomingOrderController extends GetxController {
   ///   - deliveryFee                                  (driver payout)
   ///   - items[*].quantity                            (item count badge)
   /// Other OrderDetail fields (cart line specifics, payment method, etc.)
-  /// stay on the mock as visual filler — the slim list response doesn't
-  /// carry them.
+  /// stay on the mock as structural filler — the slim list response doesn't
+  /// carry them, and none of them render anywhere on the driver-facing
+  /// screens. Every field above that IS driver-visible falls back to a
+  /// neutral placeholder (never the mock's concrete-looking template
+  /// value) when the backend omits it — see Apple 2.1(a) audit in #61.
   static OrderDetail hydrateFromSummary(DeliverySummary s) {
     final mock = OrderMockData.demoOrder();
     // Pickup is guaranteed real by the poll filter (un-routable offers are
@@ -223,6 +227,9 @@ class IncomingOrderController extends GetxController {
       location: pickup,
     );
 
+    // Reviewer-visible dropoff fields: fall back to an honest neutral
+    // placeholder when the slim summary omits them, never to the mock
+    // template's concrete-looking fake street/city (Apple 2.1(a)).
     final hydratedDelivery = mock.deliveryDetails == null
         ? null
         : mock.deliveryDetails!.copyWith(
@@ -230,13 +237,9 @@ class IncomingOrderController extends GetxController {
             address: mock.deliveryDetails!.address.copyWith(
               fullAddress:
                   s.dropoffFullAddress ??
-                  mock.deliveryDetails!.address.fullAddress,
-              city: s.dropoffCity.isNotEmpty
-                  ? s.dropoffCity
-                  : mock.deliveryDetails!.address.city,
-              postalCode: s.dropoffPostalCode.isNotEmpty
-                  ? s.dropoffPostalCode
-                  : mock.deliveryDetails!.address.postalCode,
+                  AppTexts.incomingOrderAddressUnavailable,
+              city: s.dropoffCity,
+              postalCode: s.dropoffPostalCode,
               coordinate: dropoffCoord,
             ),
           );
@@ -245,14 +248,17 @@ class IncomingOrderController extends GetxController {
     // quantity equals the real backend item count. OrderDetail.itemCount
     // is derived as `items.fold(quantities)`, so this makes the badge
     // ("X articles") match what the buyer actually ordered without
-    // having to load every line item.
+    // having to load every line item. Never fall back to the mock
+    // template's own (arbitrary-looking) item count.
     final firstMockItem = mock.items.first;
-    final realCount = (s.itemCount ?? mock.itemCount).clamp(1, 99);
+    final realCount = (s.itemCount ?? 1).clamp(1, 99);
     final hydratedItems = [firstMockItem.copyWith(quantity: realCount)];
 
     return mock.copyWith(
       id: s.orderId,
-      orderNumber: s.orderNumber.isNotEmpty ? s.orderNumber : mock.orderNumber,
+      orderNumber: s.orderNumber.isNotEmpty
+          ? s.orderNumber
+          : AppTexts.incomingOrderNumberUnavailable,
       placedAt: s.placedAt ?? mock.placedAt,
       total: s.totalEuros ?? mock.total,
       // Backend's driverPayoutCents (== order.fulfillmentFeeCents) is

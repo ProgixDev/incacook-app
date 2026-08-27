@@ -950,6 +950,10 @@ class AppTexts {
   static const String incomingOrderItemSuffix = "article";
   static const String incomingOrderAcceptCta = "Accepter";
   static const String incomingOrderDeclineCta = "Refuser";
+  // Honest fallbacks when the backend's slim delivery summary omits a
+  // reviewer-visible field — never fall back to mock/template content here.
+  static const String incomingOrderNumberUnavailable = "—";
+  static const String incomingOrderAddressUnavailable = "Adresse indisponible";
   // Shown on the offer when the driver hasn't completed Stripe payout setup:
   // the "Accepter" button is disabled and this CTA opens onboarding.
   static const String incomingOrderPayoutRequired =
