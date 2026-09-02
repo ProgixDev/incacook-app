@@ -5,7 +5,7 @@
 docs/store_submission/
 ├── ios/
 │   ├── icon_1024.png                 — icône App Store (1024×1024, sans alpha)
-│   └── screenshots_6.9in/            — 4 captures, 1320×2868 (iPhone 6.9")
+│   └── screenshots_6.9in/            — 4 captures, 1284×2778 (iPhone 6.7")
 ├── android/
 │   ├── icon_512.png                  — icône Play Store (512×512)
 │   ├── feature_graphic_1024x500.png  — bannière "feature graphic"
@@ -18,7 +18,7 @@ docs/store_submission/
 ```
 
 ## ⚠️ Avant de publier — à vérifier vous-même
-1. **Résolution source des captures d'écran.** Les 4 captures fournies (WhatsApp) ne font que 592×1280 px — nettement en dessous de la résolution cible (1320×2868 / 1080×1920). Le rendu reste net à l'écran normal, mais si vous zoomez sur les stores, ça se voit. **Recommandé avant la vraie soumission** : recapturer ces 4 écrans nativement en pleine résolution (simulateur iPhone 16 Pro Max ou `xcrun simctl io booted screenshot`, émulateur Android Pixel), puis relancer `python3 docs/store_submission/generate_assets.py` en pointant vers les nouveaux fichiers dans `assets/screenshots/`.
+1. **Résolution source des captures d'écran.** Les 4 captures fournies (WhatsApp) ne font que 592×1280 px — nettement en dessous de la résolution cible (1284×2778 / 1080×1920). Le rendu reste net à l'écran normal, mais si vous zoomez sur les stores, ça se voit. **Recommandé avant la vraie soumission** : recapturer ces 4 écrans nativement en pleine résolution (simulateur iPhone 16 Pro Max ou `xcrun simctl io booted screenshot`, émulateur Android Pixel), puis relancer `python3 docs/store_submission/generate_assets.py` en pointant vers les nouveaux fichiers dans `assets/screenshots/`.
 2. **Capture 4 (adresse)** contenait une adresse réelle ("Bd André Malraux, 78990 Élancourt") — elle a été masquée par un bandeau "Adresse masquée" dans la version générée. Si vous recapturez cet écran, utilisez une adresse fictive dès le départ pour éviter tout problème.
 3. **Nombre de captures** : Apple exige 3 à 10 captures par taille d'affichage, Google 2 à 8. 4 suffisent pour publier mais 6–8 convertissent mieux (ajoutez des écrans de menu plats, chat, notation, etc. si disponibles).
 4. **`Info.plist`** : les textes `NSPhotoLibraryUsageDescription`/`NSMicrophoneUsageDescription` sont en anglais alors que le reste de l'app est en français — pas bloquant pour la revue, mais à uniformiser en français par cohérence produit.

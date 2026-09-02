@@ -219,7 +219,10 @@ def main():
         (find("23.42.20 (3).jpeg"), "Une livraison précise,\ndirectement à votre porte", True, "04_address"),
     ]
 
-    IOS_SIZE = (1320, 2868)     # iPhone 6.9" — App Store mandatory display size
+    # Apple accepts 1284 × 2778 for the 6.7-inch iPhone screenshot slot.
+    # Keep this exact size: App Store Connect rejects the former 1320 × 2868
+    # canvas for the current listing configuration.
+    IOS_SIZE = (1284, 2778)
     ANDROID_SIZE = (1080, 1920)  # Play Store phone screenshot, 9:16
 
     # Tablet/iPad sizes. Neither platform has a distinct tablet UI to
